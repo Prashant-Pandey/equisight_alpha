@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { path } from '../../utils/paths';
 
 const allReports = await getCollection('reports');
 const sortedReports = allReports.sort(
@@ -33,7 +34,7 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
           <div>
             <div class="flex items-center justify-between text-xs mb-2.5">
               <a
-                href={`/tickers/${report.data.ticker.toLowerCase()}`}
+                href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
                 class="font-mono font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/40 hover:border-emerald-400 transition-colors"
                 title={`View all research for $${report.data.ticker}`}
               >
@@ -45,7 +46,7 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
             </div>
 
             <h2 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2">
-              <a href={`/reports/${report.slug}`}>{report.data.title}</a>
+              <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
             </h2>
 
             <p class="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">
@@ -58,7 +59,7 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
               {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(1)}% Session
             </span>
             <a
-              href={`/reports/${report.slug}`}
+              href={path(`/reports/${report.slug}`)}
               class="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1"
             >
               Read Deep Dive &rarr;

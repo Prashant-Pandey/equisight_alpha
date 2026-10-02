@@ -1,4 +1,5 @@
 ---
+import { path } from '../utils/paths';
 ---
 
 <header class="sticky top-0 z-50 bg-slate-950/85 backdrop-blur-md border-b border-slate-800">
@@ -26,7 +27,7 @@
   <!-- Primary Navigation -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
     <div class="flex items-center gap-8">
-      <a href="/" class="flex items-center gap-2.5 group">
+      <a href={path('/')} class="flex items-center gap-2.5 group">
         <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
           E
         </div>
@@ -41,15 +42,15 @@
       </a>
 
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
-        <a href="/" class="hover:text-emerald-400 transition-colors">Market Radar</a>
-        <a href="/reports" class="hover:text-emerald-400 transition-colors">Research Archive</a>
-        <a href="/disclaimer" class="hover:text-amber-400 transition-colors">Regulatory Exemption</a>
+        <a href={path('/')} class="hover:text-emerald-400 transition-colors">Market Radar</a>
+        <a href={path('/reports')} class="hover:text-emerald-400 transition-colors">Research Archive</a>
+        <a href={path('/disclaimer')} class="hover:text-amber-400 transition-colors">Regulatory Exemption</a>
       </nav>
     </div>
 
     <div class="flex items-center gap-3">
       <a
-        href="/rss.xml"
+        href={path('/rss.xml')}
         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-xs font-medium text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
         title="Subscribe to RSS Feed"
       >
@@ -60,7 +61,7 @@
       </a>
 
       <a
-        href="/reports"
+        href={path('/reports')}
         class="inline-flex items-center justify-center px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-sm"
       >
         Explore 5,000+ Reports

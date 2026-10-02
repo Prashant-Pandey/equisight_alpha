@@ -1,4 +1,6 @@
 ---
+import { path } from '../utils/paths';
+
 export interface Props {
   title: string;
   description: string;
@@ -153,8 +155,8 @@ const breadcrumbSchema = {
 {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
 
 <!-- Favicon and Brand Icons -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="apple-touch-icon" href="/logo.png" />
+<link rel="icon" type="image/svg+xml" href={path('/favicon.svg')} />
+<link rel="apple-touch-icon" href={path('/logo.png')} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={ogType} />
@@ -181,8 +183,8 @@ const breadcrumbSchema = {
 <meta name="twitter:image:alt" content={`${title} - ${siteName}`} />
 
 <!-- Sitemaps & RSS Feeds -->
-<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml" />
-<link rel="alternate" type="application/rss+xml" title="EquiSight Alpha Daily Equity Intelligence RSS" href="/rss.xml" />
+<link rel="sitemap" type="application/xml" title="Sitemap" href={path('/sitemap-index.xml')} />
+<link rel="alternate" type="application/rss+xml" title="EquiSight Alpha Daily Equity Intelligence RSS" href={path('/rss.xml')} />
 
 <!-- Structured Data: JSON-LD -->
 {websiteSchema && (

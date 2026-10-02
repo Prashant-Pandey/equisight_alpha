@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
+import { path } from '../utils/paths';
 
 // Fetch all reports and sort by publishDate descending
 const allReports = await getCollection('reports');
@@ -82,7 +83,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
         <div class="space-y-3">
           {topGainers.map((report) => (
             <a
-              href={`/reports/${report.slug}`}
+              href={path(`/reports/${report.slug}`)}
               class="block p-4 rounded-xl border border-slate-800/80 bg-slate-900/60 hover:bg-slate-850 hover:border-emerald-500/40 transition-all group"
             >
               <div class="flex items-center justify-between">
@@ -140,7 +141,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
         <div class="space-y-3">
           {topLosers.map((report) => (
             <a
-              href={`/reports/${report.slug}`}
+              href={path(`/reports/${report.slug}`)}
               class="block p-4 rounded-xl border border-slate-800/80 bg-slate-900/60 hover:bg-slate-850 hover:border-rose-500/40 transition-all group"
             >
               <div class="flex items-center justify-between">
@@ -187,7 +188,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
           <h2 class="text-2xl font-bold text-white tracking-tight">Recent Research Feed</h2>
           <p class="text-xs text-slate-400 mt-0.5">Comprehensive balance sheet stress tests and valuation deep dives</p>
         </div>
-        <a href="/reports" class="text-xs font-semibold text-emerald-400 hover:text-emerald-300">
+        <a href={path('/reports')} class="text-xs font-semibold text-emerald-400 hover:text-emerald-300">
           View All Archive &rarr;
         </a>
       </div>
@@ -198,7 +199,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
             <div>
               <div class="flex items-center justify-between text-xs mb-3">
                 <a
-                  href={`/tickers/${report.data.ticker.toLowerCase()}`}
+                  href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
                   class="font-mono font-bold text-emerald-400 hover:underline"
                   title={`View historical research for $${report.data.ticker}`}
                 >
@@ -209,7 +210,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
                 </span>
               </div>
               <h3 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2">
-                <a href={`/reports/${report.slug}`}>{report.data.title}</a>
+                <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
               </h3>
               <p class="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">
                 {report.data.description}
@@ -218,7 +219,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
 
             <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
               <span class="text-slate-400">{report.data.sector}</span>
-              <a href={`/reports/${report.slug}`} class="font-semibold text-emerald-400 hover:text-emerald-300">
+              <a href={path(`/reports/${report.slug}`)} class="font-semibold text-emerald-400 hover:text-emerald-300">
                 Read Deep Dive &rarr;
               </a>
             </div>
