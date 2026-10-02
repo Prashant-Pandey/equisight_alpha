@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Trigger the workflow every time code is pushed to the main branch
+  push:
+    branches: [ main ]
+  # Allows triggering the workflow manually from the GitHub Actions tab
+  workflow_dispatch:
+
+# Grant GitHub Actions permissions to deploy to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment to avoid conflicting runs
+concurrency:
+  group: 'pages'
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Astro Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install, build, and upload site
+        uses: withastro/action@v6
+        with:
+          node-version: 22
+        env:
+          NODE_ENV: production
+          SITE_URL: ${{ vars.SITE_URL || 'https://equisight-alpha.com' }}
+          BASE_PATH: ${{ vars.BASE_PATH || '/' }}
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
