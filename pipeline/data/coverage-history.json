@@ -1,0 +1,182 @@
+[
+  {
+    "ticker": "ACN",
+    "companyName": "Accenture plc",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-01T17:11:57.252Z",
+    "category": "gainer",
+    "movePercent": 18.544476,
+    "slug": "acn-gain-19-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "EFXT",
+    "companyName": "Enerflex Ltd",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-01T17:11:57.586Z",
+    "category": "gainer",
+    "movePercent": 12.637117,
+    "slug": "efxt-gain-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "FICO",
+    "companyName": "Fair Isaac Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-01T17:11:57.747Z",
+    "category": "gainer",
+    "movePercent": 11.745032,
+    "slug": "fico-gain-12-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SNPS",
+    "companyName": "Synopsys, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-01T17:11:57.968Z",
+    "category": "gainer",
+    "movePercent": 11.052849,
+    "slug": "snps-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "COHR",
+    "companyName": "Coherent Corp.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-01T17:11:58.203Z",
+    "category": "gainer",
+    "movePercent": 10.724955,
+    "slug": "cohr-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CTVA",
+    "companyName": "Corteva, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-01T17:11:58.355Z",
+    "category": "loser",
+    "movePercent": -84.51384,
+    "slug": "ctva-loss-85-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LQDA",
+    "companyName": "Liquidia Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-01T17:11:58.590Z",
+    "category": "loser",
+    "movePercent": -13.317913,
+    "slug": "lqda-loss-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PSKY",
+    "companyName": "Paramount Skydance Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-01T17:11:58.808Z",
+    "category": "loser",
+    "movePercent": -8.083253,
+    "slug": "psky-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "GRND",
+    "companyName": "Grindr Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-01T17:11:58.961Z",
+    "category": "loser",
+    "movePercent": -8.036298,
+    "slug": "grnd-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SECZ",
+    "companyName": "Securitize Corp.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-01T17:11:59.194Z",
+    "category": "loser",
+    "movePercent": -7.5736837,
+    "slug": "secz-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MAT",
+    "companyName": "MATTEL INC /DE/",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T02:54:09.049Z",
+    "category": "gainer",
+    "movePercent": 18.7994,
+    "slug": "mattel-mat-surges-takeover-buzz-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "INOD",
+    "companyName": "INNODATA INC",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T02:55:19.405Z",
+    "category": "gainer",
+    "movePercent": 9.26094,
+    "slug": "innodata-inod-surges-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "GWRE",
+    "companyName": "Guidewire Software, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-02T02:55:57.818Z",
+    "category": "gainer",
+    "movePercent": 8.93534,
+    "slug": "guidewire-software-gwre-surges-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "AAOI",
+    "companyName": "Applied Optoelectronics, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T02:56:28.135Z",
+    "category": "gainer",
+    "movePercent": 8.12009,
+    "slug": "aaoi-surge-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "CRDO",
+    "companyName": "Credo Technology Group Holding Ltd",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T02:56:50.276Z",
+    "category": "gainer",
+    "movePercent": 7.89569,
+    "slug": "crdo-surges-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "SLS",
+    "companyName": "SELLAS Life Sciences Group, Inc",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T02:57:23.302Z",
+    "category": "loser",
+    "movePercent": -7.96101,
+    "slug": "sls-stock-drops-valuation-fundamental-analysis"
+  },
+  {
+    "ticker": "RGEN",
+    "companyName": "REPLIGEN CORP",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T02:57:52.076Z",
+    "category": "loser",
+    "movePercent": -7.80315,
+    "slug": "rgen-drops-valuation-fundamental-deep-dive"
+  },
+  {
+    "ticker": "VRDN",
+    "companyName": "Viridian Therapeutics, Inc./DE",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T02:59:09.864Z",
+    "category": "loser",
+    "movePercent": -7.77076,
+    "slug": "vrdn-drops-7-77-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "CAI",
+    "companyName": "CARIS LIFE SCIENCES, INC.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:00:31.261Z",
+    "category": "loser",
+    "movePercent": -7.44368,
+    "slug": "cai-drops-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "GPCR",
+    "companyName": "Structure Therapeutics Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:01:02.755Z",
+    "category": "loser",
+    "movePercent": -7.32332,
+    "slug": "gpcr-drops-7-32-fundamental-valuation-deep-dive"
+  }
+]

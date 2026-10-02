@@ -1,0 +1,134 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  canonicalUrl?: string;
+  ogType?: 'website' | 'article';
+  publishDate?: string;
+  ticker?: string;
+  companyName?: string;
+  sector?: string;
+  keywords?: string[];
+  ogImage?: string;
+}
+
+const {
+  title,
+  description,
+  canonicalUrl = Astro.url.href,
+  ogType = 'website',
+  publishDate,
+  ticker,
+  companyName,
+  sector,
+  keywords = [],
+  ogImage = `${Astro.site || 'https://equisight-alpha.com'}/og-card-default.png`
+} = Astro.props;
+
+const siteName = 'EquiSight Alpha';
+const platformUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : 'https://equisight-alpha.com';
+
+// Construct Schema.org FinancialArticle JSON-LD
+const articleSchema = ogType === 'article' ? {
+  '@context': 'https://schema.org',
+  '@type': 'FinancialArticle',
+  'headline': title,
+  'description': description,
+  'mainEntityOfPage': {
+    '@type': 'WebPage',
+    '@id': canonicalUrl
+  },
+  'datePublished': publishDate ? new Date(publishDate).toISOString() : new Date().toISOString(),
+  'dateModified': publishDate ? new Date(publishDate).toISOString() : new Date().toISOString(),
+  'author': {
+    '@type': 'Organization',
+    'name': 'EquiSight Algorithmic Intelligence Group',
+    'url': platformUrl
+  },
+  'publisher': {
+    '@type': 'Organization',
+    'name': siteName,
+    'logo': {
+      '@type': 'ImageObject',
+      'url': `${platformUrl}/logo.png`
+    }
+  },
+  'about': ticker ? {
+    '@type': 'Corporation',
+    'name': companyName || ticker,
+    'tickerSymbol': ticker
+  } : undefined,
+  'keywords': keywords.join(', ')
+} : null;
+
+// Construct BreadcrumbList JSON-LD
+const breadcrumbSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  'itemListElement': [
+    {
+      '@type': 'ListItem',
+      'position': 1,
+      'name': 'Home',
+      'item': platformUrl
+    },
+    ...(ticker ? [
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Reports',
+        'item': `${platformUrl}/reports`
+      },
+      {
+        '@type': 'ListItem',
+        'position': 3,
+        'name': `${ticker} Analysis`,
+        'item': canonicalUrl
+      }
+    ] : [
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': title,
+        'item': canonicalUrl
+      }
+    ])
+  ]
+};
+---
+
+<!-- Core Meta Tags -->
+<title>{title} | {siteName}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+{keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={ogType} />
+<meta property="og:site_name" content={siteName} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+{publishDate && <meta property="article:published_time" content={new Date(publishDate).toISOString()} />}
+{sector && <meta property="article:section" content={sector} />}
+
+<!-- Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content="@EquiSightAlpha" />
+<meta name="twitter:creator" content="@EquiSightAlpha" />
+<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- Structured Data: FinancialArticle & BreadcrumbList -->
+{articleSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+)}
+<script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+
+<!-- RSS Feed Link -->
+<link rel="alternate" type="application/rss+xml" title="EquiSight Alpha Daily Equity Intelligence RSS" href="/rss.xml" />

@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const allReports = await getCollection('reports');
+const sortedReports = allReports.sort(
+  (a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime()
+);
+
+const pageTitle = "Complete Equity Research Archive | EquiSight Alpha";
+const pageDescription = "Full index of algorithmic fundamental and macroeconomic reports on US and European equities.";
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-10 pb-6 border-b border-slate-800">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        Algorithmic Research Archive
+      </h1>
+      <p class="text-sm text-slate-400 mt-2">
+        Index of {sortedReports.length} evidence-based reports published under the statutory Publisher's Exemption.
+      </p>
+    </div>
+
+    <!-- Reports Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {sortedReports.map((report) => (
+        <article class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between text-xs mb-2.5">
+              <span class="font-mono font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/40">
+                ${report.data.ticker}
+              </span>
+              <span class="text-slate-500 font-mono text-[11px]">
+                {new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+              </span>
+            </div>
+
+            <h2 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2">
+              <a href={`/reports/${report.slug}`}>{report.data.title}</a>
+            </h2>
+
+            <p class="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">
+              {report.data.description}
+            </p>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+            <span class={`font-mono font-semibold ${report.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(1)}%
+            </span>
+            <a href={`/reports/${report.slug}`} class="text-slate-300 hover:text-emerald-400 font-medium">
+              Read Analysis &rarr;
+            </a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

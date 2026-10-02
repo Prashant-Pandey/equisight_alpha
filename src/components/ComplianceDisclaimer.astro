@@ -1,0 +1,44 @@
+---
+export interface Props {
+  variant?: 'banner' | 'full' | 'compact';
+}
+
+const { variant = 'full' } = Astro.props;
+---
+
+{variant === 'banner' && (
+  <div class="bg-amber-500/10 border-b border-amber-500/20 py-2 px-4 text-center text-xs text-amber-300">
+    <span class="font-semibold">Regulatory Notice:</span> Content generated for educational and informational purposes under the statutory Publisher's Exemption. Not individualized investment advice.
+  </div>
+)}
+
+{variant === 'compact' && (
+  <div class="text-[11px] text-slate-500 border-t border-slate-800 pt-3 mt-6">
+    <p>
+      <strong>Compliance Exemption:</strong> Published under Section 202(a)(11)(D) of the Investment Advisers Act of 1940. EquiSight Alpha provides impersonal algorithmic research. Equities carry capital risk.
+    </p>
+  </div>
+)}
+
+{variant === 'full' && (
+  <aside class="my-10 p-6 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-400 text-xs leading-relaxed space-y-3">
+    <div class="flex items-center gap-2 text-slate-200 font-semibold text-sm">
+      <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+      </svg>
+      <span>Mandatory Statutory Publisher's Exemption & Regulatory Disclosure</span>
+    </div>
+    <p>
+      <strong>1. Impersonal Educational Analysis:</strong> All research, valuation data, financial statement ratios, and social sentiment metrics presented by <em>EquiSight Alpha</em> are prepared strictly for general informational and educational purposes. This publication qualifies for the bona fide publisher's exclusion under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and the precedent established in <em>Lowe v. SEC</em>, 472 U.S. 181 (1985).
+    </p>
+    <p>
+      <strong>2. No Fiduciary or Advisory Relationship:</strong> Nothing contained within this report constitutes an offer, solicitation, or recommendation to purchase or liquidate any security, derivative, or commodity. We do not provide personalized financial, legal, or tax advice. Readers must conduct independent due diligence or consult a registered investment adviser (RIA) licensed by the SEC or FINRA prior to executing transactions.
+    </p>
+    <p>
+      <strong>3. Historical & Algorithmic Risks:</strong> Past performance, algorithmic multi-agent simulations, and historical ratios are not indicative of future outcomes. Equities are volatile financial instruments susceptible to total capital loss. 
+    </p>
+    <p>
+      <strong>4. Affiliate Compensation Disclosure (FTC 16 CFR § 255.5):</strong> We may maintain commercial affiliate partnerships with selected brokerages and financial platforms referenced in this report. If you open an account or purchase services through our links, we may receive compensation at zero supplemental cost to you. Editorial selection of covered tickers is determined strictly by automated algorithmic volume and volatility filters.
+    </p>
+  </aside>
+)}

@@ -1,0 +1,84 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const pageTitle = "Publisher's Exemption & Regulatory Compliance Policy";
+const pageDescription = "Statutory compliance statement regarding the Publisher's Exemption under the Investment Advisers Act of 1940, FINRA Rule 2210, and FTC affiliate disclosures.";
+---
+
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="mb-10 pb-6 border-b border-slate-800">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 border border-amber-500/30 text-amber-300 mb-3">
+        Regulatory Exemption Framework
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        Publisher's Exemption & Compliance Policy
+      </h1>
+      <p class="text-sm text-slate-400 mt-2">
+        Legal basis for operation, editorial independence, and algorithmic research disclosures.
+      </p>
+    </div>
+
+    <div class="prose prose-invert prose-emerald max-w-none text-slate-300 text-sm leading-relaxed space-y-8">
+      <section id="sec">
+        <h2 class="text-xl font-bold text-white mb-3">1. Statutory Publisher's Exemption (Investment Advisers Act of 1940)</h2>
+        <p>
+          EquiSight Alpha operates as an impersonal financial publication under the statutory exclusion set forth in Section 202(a)(11)(D) of the United States Investment Advisers Act of 1940 (15 U.S.C. § 80b-2(a)(11)(D)), which expressly excludes from the definition of an investment adviser:
+        </p>
+        <blockquote class="border-l-2 border-emerald-500 pl-4 py-1 italic text-slate-400">
+          "the publisher of any bona fide newspaper, news magazine or business or financial publication of general and regular circulation."
+        </blockquote>
+        <p>
+          This exclusion was comprehensively upheld by the Supreme Court of the United States in <em>Lowe v. Securities and Exchange Commission</em>, 472 U.S. 181 (1985). Under the doctrine articulated by the Supreme Court, a publication qualifies for the publisher's exclusion when it is:
+        </p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li><strong>Bona Fide:</strong> Containing disinterested commentary, factual reporting, and objective analysis, rather than promotional material or touting.</li>
+          <li><strong>Impersonal:</strong> Rendered without regard to the individualized investment needs, portfolio, tax status, or financial situation of any specific subscriber or reader.</li>
+          <li><strong>General and Regular Circulation:</strong> Distributed systematically on a regular recurring schedule (such as our automated daily market cycles) rather than timed to individual trading orders.</li>
+        </ul>
+      </section>
+
+      <section id="finra">
+        <h2 class="text-xl font-bold text-white mb-3">2. FINRA Rule 2210 Communications Standards</h2>
+        <p>
+          Consistent with FINRA Rule 2210 (Communications with the Public), all reports published by EquiSight Alpha adhere to strict standards of commercial honor and just principles of trade:
+        </p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>All statements are balanced, with both upside catalysts (Bull Case) and downside vulnerabilities (Bear Case) presented with equal prominence.</li>
+          <li>No claims of guaranteed returns, exaggerated forecasts, or unjustified target prices are made.</li>
+          <li>Historical data, valuation multiples, and financial statement ratios are cited directly from public filings and standardized market data feeds.</li>
+        </ul>
+      </section>
+
+      <section id="ai-disclosure">
+        <h2 class="text-xl font-bold text-white mb-3">3. Multi-Agent AI & Algorithmic Synthesis Disclosure</h2>
+        <p>
+          Content on this platform is synthesized using automated multi-agent computational pipelines. Raw fundamental data, SEC financial statements, and macroeconomic indicators are retrieved programmatically and processed through an anti-hallucination verification engine. While rigorous checks are conducted, quantitative models can reflect reporting anomalies or data feed delays. Readers are advised to verify primary SEC EDGAR or European national registry filings independently.
+        </p>
+      </section>
+
+      <section id="affiliate">
+        <h2 class="text-xl font-bold text-white mb-3">4. Commercial Affiliate Disclosures (FTC 16 CFR § 255.5)</h2>
+        <p>
+          In accordance with Federal Trade Commission (FTC) guidelines concerning the use of endorsements and testimonials in advertising, please be advised:
+        </p>
+        <p>
+          EquiSight Alpha maintains affiliate marketing partnerships with third-party brokerages, charting platforms, and financial software vendors. When readers open accounts or subscribe to software through links marked as sponsored or affiliate links, we may receive financial remuneration. This remuneration occurs at zero additional cost to the user.
+        </p>
+        <p>
+          Crucially, our automated ticker selection algorithm operates entirely autonomously. The algorithm selects daily covered stocks based strictly on objective mathematical filters (session price percentage delta, liquidity, and 12-month exclusion rules) without human editorial interference or commercial partner influence.
+        </p>
+      </section>
+
+      <section id="risk">
+        <h2 class="text-xl font-bold text-white mb-3">5. Investment Risk & Capital Preservation Warning</h2>
+        <p class="font-semibold text-rose-300">
+          INVESTMENT IN EQUITIES, DERIVATIVES, AND FOREIGN CURRENCIES CARRIES SUBSTANTIAL RISK OF LOSS AND IS NOT SUITABLE FOR EVERY INVESTOR. PAST PERFORMANCE IS NO GUARANTEE OF FUTURE PERFORMANCE.
+        </p>
+        <p>
+          Before making any investment decision, you should consult with a certified financial planner, registered investment adviser, or legal counsel licensed in your jurisdiction.
+        </p>
+      </section>
+    </div>
+  </div>
+</BaseLayout>

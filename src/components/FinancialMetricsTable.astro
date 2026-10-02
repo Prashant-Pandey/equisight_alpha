@@ -1,0 +1,75 @@
+---
+export interface Props {
+  metrics: {
+    marketCap: number;
+    peRatio: number | null;
+    forwardPE: number | null;
+    dividendYield: number;
+    currentPrice: number;
+    currency: string;
+    movePercent: number;
+    riskScore: number;
+  };
+}
+
+const { metrics } = Astro.props;
+const isPositive = metrics.movePercent >= 0;
+---
+
+<div class="my-8 rounded-xl border border-slate-800 bg-slate-900/50 overflow-hidden shadow-sm">
+  <div class="px-5 py-3 border-b border-slate-800 bg-slate-900/80 flex items-center justify-between">
+    <h3 class="text-sm font-semibold text-slate-200">Fundamental Snapshot & Core Valuation Multiples</h3>
+    <span class={`text-xs font-mono font-bold px-2 py-0.5 rounded ${isPositive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/40' : 'bg-rose-950 text-rose-400 border border-rose-800/40'}`}>
+      {isPositive ? '+' : ''}{metrics.movePercent.toFixed(2)}% Session Move
+    </span>
+  </div>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-800">
+    <div class="p-4">
+      <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Market Cap</div>
+      <div class="text-lg font-bold text-white mt-1">
+        ${(metrics.marketCap / 1e9).toFixed(2)}B
+      </div>
+      <div class="text-[10px] text-slate-500 mt-0.5">Consolidated Equity Value</div>
+    </div>
+
+    <div class="p-4">
+      <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Trailing P/E</div>
+      <div class="text-lg font-bold text-white mt-1">
+        {metrics.peRatio ? `${metrics.peRatio.toFixed(1)}x` : 'N/A'}
+      </div>
+      <div class="text-[10px] text-slate-500 mt-0.5">Price-to-Earnings (TTM)</div>
+    </div>
+
+    <div class="p-4">
+      <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Forward P/E</div>
+      <div class="text-lg font-bold text-white mt-1">
+        {metrics.forwardPE ? `${metrics.forwardPE.toFixed(1)}x` : 'N/A'}
+      </div>
+      <div class="text-[10px] text-slate-500 mt-0.5">Next 12M Consensus</div>
+    </div>
+
+    <div class="p-4">
+      <div class="text-[11px] font-medium text-slate-400 uppercase tracking-wider">Dividend Yield</div>
+      <div class="text-lg font-bold text-white mt-1">
+        {metrics.dividendYield > 0 ? `${metrics.dividendYield.toFixed(2)}%` : '0.00%'}
+      </div>
+      <div class="text-[10px] text-slate-500 mt-0.5">Annualized Distribution</div>
+    </div>
+  </div>
+
+  <div class="px-5 py-2.5 bg-slate-950/50 border-t border-slate-800 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
+    <div>
+      Current Market Price: <span class="text-slate-100 font-semibold font-mono">${metrics.currentPrice.toFixed(2)} {metrics.currency}</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span>Fundamental Risk Rating:</span>
+      <div class="flex gap-1 items-center">
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div class={`w-2 h-2 rounded-full ${i < metrics.riskScore ? (metrics.riskScore > 7 ? 'bg-rose-500' : metrics.riskScore > 4 ? 'bg-amber-400' : 'bg-emerald-400') : 'bg-slate-800'}`} />
+        ))}
+      </div>
+      <span class="font-mono text-[11px] text-slate-300">({metrics.riskScore}/10)</span>
+    </div>
+  </div>
+</div>

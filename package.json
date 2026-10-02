@@ -1,0 +1,34 @@
+{
+  "name": "stock-intel-platform",
+  "version": "1.0.0",
+  "description": "Zero-touch automated equity intelligence and fundamental analysis platform",
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "pipeline:run": "tsx pipeline/src/orchestrator.ts --run-now",
+    "pipeline:cron": "tsx pipeline/src/orchestrator.ts",
+    "pipeline:distribute": "tsx pipeline/src/distribution/socialPublisher.ts",
+    "pipeline:test": "tsx tests/pipeline.test.ts"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.0",
+    "@astrojs/sitemap": "^3.2.1",
+    "@astrojs/tailwind": "^6.0.0",
+    "@tailwindcss/typography": "^0.5.16",
+    "astro": "^5.4.2",
+    "dotenv": "^16.4.7",
+    "gray-matter": "^4.0.3",
+    "node-cron": "^3.0.3",
+    "tailwindcss": "^3.4.17",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.9",
+    "@types/node-cron": "^3.0.11",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
