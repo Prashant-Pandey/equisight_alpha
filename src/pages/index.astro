@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-// Fetch all generated reports and sort by publishDate descending
+// Fetch all reports and sort by publishDate descending
 const allReports = await getCollection('reports');
 const sortedReports = allReports.sort((a, b) => {
   const dateA = new Date(a.data.publishDate).getTime();
@@ -10,13 +10,13 @@ const sortedReports = allReports.sort((a, b) => {
   return dateB - dateA;
 });
 
-// Extract recent 10 reports
-const recentReports = sortedReports.slice(0, 10);
+// Extract recent 10 reports and top movers
+const recentReports = sortedReports.slice(0, 12);
 const topGainers = sortedReports.filter((r) => r.data.category === 'gainer').slice(0, 5);
 const topLosers = sortedReports.filter((r) => r.data.category === 'loser').slice(0, 5);
 
 const pageTitle = "Daily Evidence-Based Equity Intelligence & Fundamental Reports";
-const pageDescription = "Automated institutional-grade fundamental and macroeconomic research covering top daily market movers across US and European exchanges.";
+const pageDescription = "Institutional-grade fundamental and macroeconomic equity research covering top daily market movers across US and European exchanges.";
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -32,7 +32,7 @@ const pageDescription = "Automated institutional-grade fundamental and macroecon
           Evidence-Based Equity Analysis for <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">Rational Capital</span>
         </h1>
         <p class="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed">
-          Automated multi-agent synthesis isolating fundamental solvency, free cash flow conversion, and macroeconomic headwinds across US and European bourses.
+          Independent quantitative research isolating fundamental solvency, free cash flow conversion, and macroeconomic headwinds across US and European bourses.
         </p>
       </div>
 
@@ -197,7 +197,13 @@ const pageDescription = "Automated institutional-grade fundamental and macroecon
           <article class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between text-xs mb-3">
-                <span class="font-mono font-bold text-emerald-400">${report.data.ticker}</span>
+                <a
+                  href={`/tickers/${report.data.ticker.toLowerCase()}`}
+                  class="font-mono font-bold text-emerald-400 hover:underline"
+                  title={`View historical research for $${report.data.ticker}`}
+                >
+                  ${report.data.ticker}
+                </a>
                 <span class="text-slate-500 font-mono text-[11px]">
                   {new Date(report.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>

@@ -28,7 +28,7 @@ const companyName = latestReport ? latestReport.data.companyName : ticker;
 const sector = latestReport ? latestReport.data.sector : 'Equities';
 
 const pageTitle = `${companyName} ($${ticker}) Fundamental Analysis & Research Hub`;
-const pageDescription = `Historical research reports, valuation multiples, balance sheet stress tests, and financial health trends for ${companyName} (${ticker}).`;
+const pageDescription = `Historical equity research reports, valuation multiples, balance sheet stress tests, and financial health trends for ${companyName} (${ticker}).`;
 ---
 
 <BaseLayout
@@ -39,6 +39,15 @@ const pageDescription = `Historical research reports, valuation multiples, balan
   sector={sector}
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Breadcrumb Bar -->
+    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6 font-mono">
+      <a href="/" class="hover:text-emerald-400 transition-colors">Home</a>
+      <span>&rsaquo;</span>
+      <a href="/reports" class="hover:text-emerald-400 transition-colors">Reports</a>
+      <span>&rsaquo;</span>
+      <span class="text-slate-200">${ticker} Research Hub</span>
+    </nav>
+
     <!-- Header -->
     <div class="mb-10 pb-6 border-b border-slate-800">
       <div class="flex items-center gap-3 mb-2">
@@ -47,11 +56,13 @@ const pageDescription = `Historical research reports, valuation multiples, balan
         </span>
         <div>
           <h1 class="text-3xl font-extrabold text-white tracking-tight">{companyName}</h1>
-          <p class="text-xs text-slate-400 font-mono">{latestReport.data.exchange} &bull; {sector} &bull; {latestReport.data.industry}</p>
+          <p class="text-xs text-slate-400 font-mono mt-0.5">
+            {latestReport ? `${latestReport.data.exchange} • ${sector} • ${latestReport.data.industry}` : 'Equities Research'}
+          </p>
         </div>
       </div>
       <p class="text-sm text-slate-300 mt-4 max-w-3xl leading-relaxed">
-        Comprehensive institutional intelligence archive for {companyName}. Automated multi-agent reports evaluate solvency, cash flow generation, and macroeconomic sensitivity over time.
+        Comprehensive institutional research archive for {companyName}. In-depth fundamental reports evaluate balance sheet solvency, cash flow generation, and macroeconomic sensitivity over time.
       </p>
     </div>
 
@@ -61,15 +72,19 @@ const pageDescription = `Historical research reports, valuation multiples, balan
       
       <div class="space-y-4">
         {reports.map((report) => (
-          <div class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <article class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <div class="flex items-center gap-3 text-xs text-slate-400 mb-1">
-                <span class="font-mono">{new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                <time datetime={new Date(report.data.publishDate).toISOString()} class="font-mono">
+                  {new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </time>
                 <span class={`font-mono font-bold ${report.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(2)}% Move
                 </span>
                 <span class="text-slate-600">&bull;</span>
-                <span>P/E: {report.data.peRatio ? `${report.data.peRatio.toFixed(1)}x` : 'N/A'}</span>
+                <span>P/E: <strong class="text-slate-200">{report.data.peRatio ? `${report.data.peRatio.toFixed(1)}x` : 'N/A'}</strong></span>
+                <span class="text-slate-600">&bull;</span>
+                <span>Cap: <strong class="text-slate-200">${(report.data.marketCap / 1e9).toFixed(1)}B</strong></span>
               </div>
               <h3 class="text-base font-bold text-white hover:text-emerald-400 transition-colors">
                 <a href={`/reports/${report.slug}`}>{report.data.title}</a>
@@ -81,7 +96,7 @@ const pageDescription = `Historical research reports, valuation multiples, balan
             >
               Read Report &rarr;
             </a>
-          </div>
+          </article>
         ))}
       </div>
     </div>

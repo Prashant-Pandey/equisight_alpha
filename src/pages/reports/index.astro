@@ -8,17 +8,21 @@ const sortedReports = allReports.sort(
 );
 
 const pageTitle = "Complete Equity Research Archive | EquiSight Alpha";
-const pageDescription = "Full index of algorithmic fundamental and macroeconomic reports on US and European equities.";
+const pageDescription = "Full index of evidence-based fundamental equity research reports, valuation multiples, and solvency stress tests covering US and European equities.";
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Header -->
     <div class="mb-10 pb-6 border-b border-slate-800">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 border border-emerald-500/30 text-emerald-400 mb-3">
+        Comprehensive Research Database
+      </div>
       <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-        Algorithmic Research Archive
+        Equity Research Archive
       </h1>
-      <p class="text-sm text-slate-400 mt-2">
-        Index of {sortedReports.length} evidence-based reports published under the statutory Publisher's Exemption.
+      <p class="text-sm text-slate-400 mt-2 max-w-2xl">
+        Index of {sortedReports.length} evidence-based fundamental reports published under the statutory Publisher's Exemption.
       </p>
     </div>
 
@@ -28,12 +32,16 @@ const pageDescription = "Full index of algorithmic fundamental and macroeconomic
         <article class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between text-xs mb-2.5">
-              <span class="font-mono font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/40">
+              <a
+                href={`/tickers/${report.data.ticker.toLowerCase()}`}
+                class="font-mono font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/40 hover:border-emerald-400 transition-colors"
+                title={`View all research for $${report.data.ticker}`}
+              >
                 ${report.data.ticker}
-              </span>
-              <span class="text-slate-500 font-mono text-[11px]">
+              </a>
+              <time datetime={new Date(report.data.publishDate).toISOString()} class="text-slate-500 font-mono text-[11px]">
                 {new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-              </span>
+              </time>
             </div>
 
             <h2 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2">
@@ -47,10 +55,13 @@ const pageDescription = "Full index of algorithmic fundamental and macroeconomic
 
           <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
             <span class={`font-mono font-semibold ${report.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-              {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(1)}%
+              {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(1)}% Session
             </span>
-            <a href={`/reports/${report.slug}`} class="text-slate-300 hover:text-emerald-400 font-medium">
-              Read Analysis &rarr;
+            <a
+              href={`/reports/${report.slug}`}
+              class="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1"
+            >
+              Read Deep Dive &rarr;
             </a>
           </div>
         </article>

@@ -6,6 +6,7 @@ import mdx from '@astrojs/mdx';
 // https://astro.build/config
 export default defineConfig({
   site: process.env.SITE_URL || 'https://equisight-alpha.com',
+  base: process.env.BASE_PATH || '/',
   output: 'static',
   compressHTML: true,
   build: {

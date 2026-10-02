@@ -34,8 +34,22 @@ try {
 const report = entry.data;
 const isPositive = report.movePercent >= 0;
 const primaryAffiliate = report.affiliates?.[0];
-const secondaryAffiliate = report.affiliates?.[1];
 
+// Fetch contextual related research for SEO internal linking
+const allReports = await getCollection('reports');
+const relatedReports = allReports
+  .filter((r) => r.slug !== entry.slug)
+  .filter((r) => r.data.sector === report.sector || r.data.category === report.category)
+  .slice(0, 3);
+
+if (relatedReports.length < 3) {
+  const fallbackFillers = allReports
+    .filter((r) => r.slug !== entry.slug && !relatedReports.some((rel) => rel.slug === r.slug))
+    .slice(0, 3 - relatedReports.length);
+  relatedReports.push(...fallbackFillers);
+}
+
+const publishDateIso = typeof report.publishDate === 'string' ? report.publishDate : report.publishDate.toISOString();
 const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
   weekday: 'long',
   year: 'numeric',
@@ -48,7 +62,7 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
   title={report.title}
   description={report.description}
   ogType="article"
-  publishDate={typeof report.publishDate === 'string' ? report.publishDate : report.publishDate.toISOString()}
+  publishDate={publishDateIso}
   ticker={report.ticker}
   companyName={report.companyName}
   sector={report.sector}
@@ -56,14 +70,14 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
 >
   <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <!-- Breadcrumb Bar -->
-    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6 font-mono">
+    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6 font-mono" aria-label="Breadcrumbs">
       <a href="/" class="hover:text-emerald-400 transition-colors">Home</a>
       <span>&rsaquo;</span>
       <a href="/reports" class="hover:text-emerald-400 transition-colors">Reports</a>
       <span>&rsaquo;</span>
-      <a href={`/tickers/${report.ticker}`} class="hover:text-emerald-400 transition-colors">${report.ticker}</a>
+      <a href={`/tickers/${report.ticker.toLowerCase()}`} class="hover:text-emerald-400 transition-colors">${report.ticker}</a>
       <span>&rsaquo;</span>
-      <span class="text-slate-200 truncate">{report.ticker} Analysis</span>
+      <span class="text-slate-200 truncate">{report.companyName}</span>
     </nav>
 
     <!-- Top Notice Banner -->
@@ -72,9 +86,13 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
     <!-- Article Header -->
     <header class="my-8">
       <div class="flex flex-wrap items-center gap-2.5 mb-4">
-        <span class="font-mono font-black text-lg px-2.5 py-0.5 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/40">
+        <a
+          href={`/tickers/${report.ticker.toLowerCase()}`}
+          class="font-mono font-black text-lg px-2.5 py-0.5 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-900 transition-colors"
+          title={`View full ${report.companyName} research hub`}
+        >
           ${report.ticker}
-        </span>
+        </a>
         <span class="text-xs font-mono uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
           {report.exchange} &bull; {report.region}
         </span>
@@ -82,7 +100,7 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
           {report.sector}
         </span>
         <span class="text-slate-600">&bull;</span>
-        <time class="text-xs text-slate-400 font-mono">{formattedDate}</time>
+        <time datetime={publishDateIso} class="text-xs text-slate-400 font-mono">{formattedDate}</time>
       </div>
 
       <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-snug">
@@ -131,6 +149,21 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
       <ContentComponent />
     </div>
 
+    <!-- Permanent Ticker Hub Cross-Link Callout -->
+    <div class="my-8 p-4 rounded-xl border border-slate-800 bg-slate-900/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div>
+        <h4 class="text-sm font-bold text-white">Tracking ${report.ticker} ({report.companyName})?</h4>
+        <p class="text-xs text-slate-400 mt-0.5">Explore the historical coverage hub with multi-quarter valuation trends and solvency stress tests.</p>
+      </div>
+      <a
+        href={`/tickers/${report.ticker.toLowerCase()}`}
+        class="inline-flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-900 transition-colors text-xs font-semibold"
+      >
+        <span>View ${report.ticker} Research Hub</span>
+        <span>&rarr;</span>
+      </a>
+    </div>
+
     <!-- Contextual Affiliate Offer -->
     {primaryAffiliate && (
       <div class="my-10">
@@ -142,6 +175,39 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
     <!-- Bottom Native Ad Slot -->
     {report.adSlots.bottomBanner && (
       <AdSlot slotId="report-bottom-ad" format="rectangle" minHeight="250px" />
+    )}
+
+    <!-- Related Market Research (High-Value Internal Linking) -->
+    {relatedReports.length > 0 && (
+      <section class="my-12 border-t border-slate-800/80 pt-8">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-base font-bold text-white">Related Equity Deep Dives</h3>
+          <a href="/reports" class="text-xs text-emerald-400 hover:text-emerald-300">View Archive &rarr;</a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {relatedReports.map((rel) => (
+            <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between text-xs mb-1.5">
+                  <span class="font-mono font-bold text-emerald-400">${rel.data.ticker}</span>
+                  <span class={`font-mono text-[11px] ${rel.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {rel.data.movePercent >= 0 ? '+' : ''}{rel.data.movePercent.toFixed(1)}%
+                  </span>
+                </div>
+                <h4 class="text-xs font-semibold text-white hover:text-emerald-400 transition-colors line-clamp-2">
+                  <a href={`/reports/${rel.slug}`}>{rel.data.title}</a>
+                </h4>
+              </div>
+              <a
+                href={`/reports/${rel.slug}`}
+                class="mt-3 text-[11px] text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1"
+              >
+                Read Deep Dive &rarr;
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
     )}
 
     <!-- Social Distribution Hooks Container -->

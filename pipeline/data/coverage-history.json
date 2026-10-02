@@ -178,5 +178,95 @@
     "category": "loser",
     "movePercent": -7.32332,
     "slug": "gpcr-drops-7-32-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "CIEN",
+    "companyName": "Ciena Corp",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-02T03:19:08.208Z",
+    "category": "gainer",
+    "movePercent": 7.76534,
+    "slug": "ciena-cien-surges-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "LITE",
+    "companyName": "Lumentum Holdings Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:20:14.744Z",
+    "category": "gainer",
+    "movePercent": 7.67251,
+    "slug": "lumentum-holdings-lite-surge-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "KD",
+    "companyName": "Kyndryl Holdings, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-02T03:20:45.649Z",
+    "category": "gainer",
+    "movePercent": 7.63765,
+    "slug": "kyndryl-holdings-kd-surges-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "HURN",
+    "companyName": "HURON CONSULTING GROUP INC.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:22:08.776Z",
+    "category": "gainer",
+    "movePercent": 7.39017,
+    "slug": "hurn-surges-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "APPN",
+    "companyName": "APPIAN CORPORATION",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:23:40.478Z",
+    "category": "gainer",
+    "movePercent": 7.08818,
+    "slug": "appn-gain-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TGB",
+    "companyName": "Trekor Metals Limited",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:25:11.632Z",
+    "category": "loser",
+    "movePercent": -6.734,
+    "slug": "tgb-loss-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PPC",
+    "companyName": "PILGRIM’S PRIDE CORPORATION",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:25:47.572Z",
+    "category": "loser",
+    "movePercent": -6.70122,
+    "slug": "ppc-drops-6-70-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "TEM",
+    "companyName": "Tempus AI, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:26:14.887Z",
+    "category": "loser",
+    "movePercent": -6.59341,
+    "slug": "tempus-ai-tem-drops-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "VKTX",
+    "companyName": "Viking Therapeutics, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:27:25.090Z",
+    "category": "loser",
+    "movePercent": -6.41104,
+    "slug": "vktx-stock-drop-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "ALNY",
+    "companyName": "ALNYLAM PHARMACEUTICALS, INC.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-02T03:27:58.012Z",
+    "category": "loser",
+    "movePercent": -6.30624,
+    "slug": "alny-drops-fundamental-valuation-deep-dive"
   }
 ]

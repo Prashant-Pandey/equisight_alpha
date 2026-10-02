@@ -15,18 +15,21 @@ export interface Props {
 const {
   title,
   description,
-  canonicalUrl = Astro.url.href,
+  canonicalUrl,
   ogType = 'website',
   publishDate,
   ticker,
   companyName,
   sector,
   keywords = [],
-  ogImage = `${Astro.site || 'https://equisight-alpha.com'}/og-card-default.png`
+  ogImage
 } = Astro.props;
 
 const siteName = 'EquiSight Alpha';
 const platformUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : 'https://equisight-alpha.com';
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const normalizedCanonical = canonicalUrl || (currentPath === '/' ? platformUrl : `${platformUrl}${currentPath}`);
+const resolvedOgImage = ogImage || `${platformUrl}/og-card-default.png`;
 
 // Construct Schema.org FinancialArticle JSON-LD
 const articleSchema = ogType === 'article' ? {
@@ -36,29 +39,59 @@ const articleSchema = ogType === 'article' ? {
   'description': description,
   'mainEntityOfPage': {
     '@type': 'WebPage',
-    '@id': canonicalUrl
+    '@id': normalizedCanonical
   },
   'datePublished': publishDate ? new Date(publishDate).toISOString() : new Date().toISOString(),
   'dateModified': publishDate ? new Date(publishDate).toISOString() : new Date().toISOString(),
   'author': {
     '@type': 'Organization',
-    'name': 'EquiSight Algorithmic Intelligence Group',
+    'name': 'EquiSight Research Group',
     'url': platformUrl
   },
   'publisher': {
     '@type': 'Organization',
     'name': siteName,
+    'url': platformUrl,
     'logo': {
       '@type': 'ImageObject',
-      'url': `${platformUrl}/logo.png`
+      'url': `${platformUrl}/logo.png`,
+      'width': 512,
+      'height': 512
     }
   },
+  'image': {
+    '@type': 'ImageObject',
+    'url': resolvedOgImage,
+    'width': 1200,
+    'height': 630
+  },
+  'isAccessibleForFree': true,
   'about': ticker ? {
     '@type': 'Corporation',
     'name': companyName || ticker,
     'tickerSymbol': ticker
   } : undefined,
   'keywords': keywords.join(', ')
+} : null;
+
+// Construct Schema.org WebSite JSON-LD for non-article root pages
+const websiteSchema = ogType === 'website' ? {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  'name': siteName,
+  'url': platformUrl,
+  'description': 'Institutional-grade fundamental equity research and macroeconomic analysis covering active US and European market movers.',
+  'publisher': {
+    '@type': 'Organization',
+    'name': siteName,
+    'url': platformUrl,
+    'logo': {
+      '@type': 'ImageObject',
+      'url': `${platformUrl}/logo.png`,
+      'width': 512,
+      'height': 512
+    }
+  }
 } : null;
 
 // Construct BreadcrumbList JSON-LD
@@ -76,21 +109,35 @@ const breadcrumbSchema = {
       {
         '@type': 'ListItem',
         'position': 2,
-        'name': 'Reports',
+        'name': 'Research Archive',
         'item': `${platformUrl}/reports`
       },
       {
         '@type': 'ListItem',
         'position': 3,
         'name': `${ticker} Analysis`,
-        'item': canonicalUrl
+        'item': normalizedCanonical
+      }
+    ] : currentPath.startsWith('/reports') ? [
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Research Archive',
+        'item': normalizedCanonical
+      }
+    ] : currentPath.startsWith('/disclaimer') ? [
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': 'Publisher\'s Exemption & Compliance Policy',
+        'item': normalizedCanonical
       }
     ] : [
       {
         '@type': 'ListItem',
         'position': 2,
         'name': title,
-        'item': canonicalUrl
+        'item': normalizedCanonical
       }
     ])
   ]
@@ -100,18 +147,26 @@ const breadcrumbSchema = {
 <!-- Core Meta Tags -->
 <title>{title} | {siteName}</title>
 <meta name="description" content={description} />
-<link rel="canonical" href={canonicalUrl} />
+<link rel="canonical" href={normalizedCanonical} />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
 {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
 
+<!-- Favicon and Brand Icons -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="apple-touch-icon" href="/logo.png" />
+
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={ogType} />
 <meta property="og:site_name" content={siteName} />
-<meta property="og:url" content={canonicalUrl} />
+<meta property="og:url" content={normalizedCanonical} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
-<meta property="og:image" content={ogImage} />
+<meta property="og:image" content={resolvedOgImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={`${title} - ${siteName}`} />
+<meta property="og:locale" content="en_US" />
 {publishDate && <meta property="article:published_time" content={new Date(publishDate).toISOString()} />}
 {sector && <meta property="article:section" content={sector} />}
 
@@ -119,16 +174,21 @@ const breadcrumbSchema = {
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:site" content="@EquiSightAlpha" />
 <meta name="twitter:creator" content="@EquiSightAlpha" />
-<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:url" content={normalizedCanonical} />
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image" content={resolvedOgImage} />
+<meta name="twitter:image:alt" content={`${title} - ${siteName}`} />
 
-<!-- Structured Data: FinancialArticle & BreadcrumbList -->
+<!-- Sitemaps & RSS Feeds -->
+<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap-index.xml" />
+<link rel="alternate" type="application/rss+xml" title="EquiSight Alpha Daily Equity Intelligence RSS" href="/rss.xml" />
+
+<!-- Structured Data: JSON-LD -->
+{websiteSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+)}
 {articleSchema && (
   <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
 )}
 <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
-
-<!-- RSS Feed Link -->
-<link rel="alternate" type="application/rss+xml" title="EquiSight Alpha Daily Equity Intelligence RSS" href="/rss.xml" />

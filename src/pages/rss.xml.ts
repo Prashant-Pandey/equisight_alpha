@@ -27,7 +27,7 @@ export const GET: APIRoute = async (context) => {
   <channel>
     <title>EquiSight Alpha - Evidence-Based Equity Intelligence</title>
     <link>${siteUrl}</link>
-    <description>Daily automated institutional fundamental research reports covering US and European market movers.</description>
+    <description>Daily institutional fundamental equity research reports covering US and European market movers.</description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
