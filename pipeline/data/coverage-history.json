@@ -331,5 +331,77 @@
     "category": "loser",
     "movePercent": -10.2139,
     "slug": "stx-loss-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "UCTT",
+    "companyName": "Ultra Clean Holdings, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:50:48.235Z",
+    "category": "loser",
+    "movePercent": -7.56612,
+    "slug": "uctt-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "GDS",
+    "companyName": "GDS Holdings Limited",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:51:50.056Z",
+    "category": "loser",
+    "movePercent": -7.48322,
+    "slug": "gds-holdings-drops-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "MMYT",
+    "companyName": "MakeMyTrip Limited",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:52:41.239Z",
+    "category": "loser",
+    "movePercent": -6.55498,
+    "slug": "makemytrip-mmyt-drops-valuation-fundamental-analysis"
+  },
+  {
+    "ticker": "CYBN",
+    "companyName": "Cybin Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-03T16:53:20.189Z",
+    "category": "gainer",
+    "movePercent": 28.5,
+    "slug": "cybin-cybn-surges-28-percent-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "SENS",
+    "companyName": "Senseonics Holdings, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-03T16:54:51.494Z",
+    "category": "gainer",
+    "movePercent": 27.3,
+    "slug": "sens-gain-27-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MVIS",
+    "companyName": "MICROVISION, INC.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:55:29.866Z",
+    "category": "loser",
+    "movePercent": -27.2,
+    "slug": "mvis-drops-27-percent-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "VISL",
+    "companyName": "VISLINK TECHNOLOGIES, INC.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:57:01.102Z",
+    "category": "loser",
+    "movePercent": -26.4,
+    "slug": "visl-loss-26-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BZX.SPEC",
+    "companyName": "Cboe BZX Volatility Index Entity",
+    "exchange": "OTHER",
+    "coveredAt": "2026-10-03T16:57:35.467Z",
+    "category": "loser",
+    "movePercent": -22.4,
+    "slug": "bzx-spec-drops-22-percent-fundamental-valuation-deep-dive"
   }
 ]
