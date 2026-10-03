@@ -67,11 +67,15 @@ export class PipelineOrchestrator {
     const publishedReports: { ticker: string; slug: string; path: string }[] = [];
 
     try {
-      // 1. Ingest Market Movers and apply 12-Month Lockout Filter
-      const { gainers, losers } = await marketMoverIngestor.getEligibleMovers();
-      const targetMovers: MarketMover[] = [...gainers, ...losers];
+      // 1. Ingest Market Movers and Penny Stocks, applying 12-Month Lockout Filter
+      const { gainers, losers, pennyStocks } = await marketMoverIngestor.getEligibleMovers({ includePennyStocks: true });
+      const targetMovers: MarketMover[] = [
+        ...gainers,
+        ...losers,
+        ...(pennyStocks ? [...pennyStocks.gainers, ...pennyStocks.losers] : [])
+      ];
 
-      console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} equities`);
+      console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} equities (${gainers.length} gainers, ${losers.length} losers${pennyStocks ? `, ${pennyStocks.gainers.length + pennyStocks.losers.length} penny stocks` : ''})`);
 
       // 2. Ingest Global Macro Context
       const macroBackdrop = await macroContextIngestor.getMacroBackdrop();
@@ -79,20 +83,20 @@ export class PipelineOrchestrator {
       // 3. Process each equity with isolated failover boundaries
       for (let i = 0; i < targetMovers.length; i++) {
         const mover = targetMovers[i];
-        console.log(`\n--- [Processing ${i + 1}/${targetMovers.length}: $${mover.ticker} (${mover.category.toUpperCase()})] ---`);
+        console.log(`\n--- [Processing ${i + 1}/${targetMovers.length}: $${mover.ticker} (${mover.category.toUpperCase()}${mover.isPennyStock ? ' - PENNY STOCK' : ''})] ---`);
 
         try {
           // A. Ingest Fundamentals
           const fundamentals = await fundamentalDataIngestor.getFundamentals(mover.ticker, mover.name);
 
-          // B. Ingest Social Sentiment & Web Intelligence
-          const sentiment = await socialSentimentIngestor.getSentiment(mover.ticker, mover.category, mover.name);
+          // B. Ingest Social Sentiment & Web Intelligence with Artificial Inflation Analysis
+          const sentiment = await socialSentimentIngestor.getSentiment(mover.ticker, mover.category, mover.name, mover);
 
           // C. LLM Multi-Agent Synthesis & Anti-Hallucination Fact-Checking
           const analysis = await synthesisAgent.generateReport(mover, fundamentals, macroBackdrop, sentiment);
 
           // D. Programmatic Affiliate & Ad Injection
-          const { frontmatter, enrichedMarkdown } = adInjector.injectMonetization(mover, fundamentals, analysis);
+          const { frontmatter, enrichedMarkdown } = adInjector.injectMonetization(mover, fundamentals, analysis, sentiment);
 
           // E. Save Astro Content Collection Report & Update 12-Month Lockout
           const savedPath = await reportGenerator.saveReport(mover, analysis.slug, frontmatter, enrichedMarkdown);

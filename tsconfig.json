@@ -15,5 +15,5 @@
       "@pipeline/*": ["pipeline/src/*"]
     }
   },
-  "include": ["src/**/*", "pipeline/**/*", "tests/**/*"]
+  "include": [".astro/types.d.ts", "src/**/*", "pipeline/**/*", "tests/**/*"]
 }

@@ -3,7 +3,7 @@
  * Handles both root deployment (base: '/') and subpath deployment (e.g. GitHub Pages base: '/equisight_alpha').
  */
 export function path(subpath: string = '/'): string {
-  const rawBase = import.meta.env.BASE_URL || '/';
+  const rawBase = (import.meta as any).env?.BASE_URL || '/';
   const base = rawBase.endsWith('/') ? rawBase.slice(0, -1) : rawBase;
   const clean = subpath.startsWith('/') ? subpath : `/${subpath}`;
   if (clean === '/') {

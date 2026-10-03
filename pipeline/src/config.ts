@@ -60,6 +60,17 @@ export const CONFIG = {
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
   TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID || '',
 
+  // Affiliate Partner IDs
+  AFFILIATE_IBKR_ID: process.env.AFFILIATE_IBKR_ID || 'equisight',
+  AFFILIATE_WEBULL_ID: process.env.AFFILIATE_WEBULL_ID || 'equisight',
+  AFFILIATE_TRADINGVIEW_ID: process.env.AFFILIATE_TRADINGVIEW_ID || 'equisight',
+  AFFILIATE_BENZINGA_ID: process.env.AFFILIATE_BENZINGA_ID || 'equisight',
+  AFFILIATE_SEEKINGALPHA_ID: process.env.AFFILIATE_SEEKINGALPHA_ID || 'equisight',
+
+  // Cron Schedules
+  CRON_SCHEDULE_PREMARKET: process.env.CRON_SCHEDULE_PREMARKET || '0 7 * * 1-5',
+  CRON_SCHEDULE_POSTMARKET: process.env.CRON_SCHEDULE_POSTMARKET || '30 16 * * 1-5',
+
   // Automated Deployment (Git)
   AUTO_TRIGGER_DEPLOY: process.env.AUTO_TRIGGER_DEPLOY === 'true',
   DEPLOY_COMMIT_MESSAGE: process.env.DEPLOY_COMMIT_MESSAGE || process.env.GIT_COMMIT_MESSAGE || '',

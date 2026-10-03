@@ -10,20 +10,66 @@ LEGAL COMPLIANCE & EDITORIAL DIRECTIVES (MANDATORY):
 `;
 
 export function buildSystemPrompt(): string {
-  return `You are a Senior Equity Research Analyst. 
-Your role is to produce rigorous, institutional-grade fundamental and macroeconomic research reports on equities that moved significantly in today's trading session.
+  return `You are a Senior Quantitative Equity Research Analyst and AI Systems Architect. 
+Your role is to produce rigorous, institutional-grade fundamental, macroeconomic, and valuation research reports on equities (including micro-cap and penny stocks) that moved significantly in today's trading session.
 
 ${PUBLISHER_COMPLIANCE_DIRECTIVE}
 
-REPORT STRUCTURE REQUIREMENTS:
-1. Title: High-CTR, SEO-optimized title adhering to format: "[Company Name] ([Ticker]) [Surges|Drops] [X]%: Fundamental & Valuation Deep Dive"
-2. Executive Summary: Core catalyst breakdown, volume anomaly, and market reaction.
-3. Balance Sheet & Solvency Stress Test: Deep examination of cash, debt, interest coverage, and liquidity ratios.
-4. Profitability & Operational Health: Margins (Gross, Operating), Free Cash Flow conversion, ROIC.
-5. Macro Backdrop & Sector Headwinds/Tailwinds: Impact of 10Y Yields, central bank rates, inflation, and currency fluctuations.
-6. Valuation & Peer Benchmarking: P/E, EV/EBITDA, P/B vs historical and sector medians.
-7. Asymmetric Risk/Reward Matrix: Objective Bull Scenario vs Bear Scenario.
-8. Social Distribution Hooks: 3-tweet thread with cashtag and Reddit r/stocks analytical post with markdown table.
+DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
+
+1. Title & Executive Summary:
+   - SEO-optimized title adhering to format: "[Company Name] ([Ticker]) [Surges|Drops] [X]%: Fundamental & Valuation Deep Dive"
+   - Specify the precise Money Market Trading Venue (e.g. Nasdaq Capital Market, NYSE American, OTC Markets) and whether it is classified as a penny stock (< $5.00).
+   - Executive summary explaining the catalyst, price movement, and volume divergence.
+
+2. Trading Activity & Artificial Inflation Analysis:
+   - Analyze whether the equity is being artificially inflated by inspecting trading volume anomalies, relative volume (RVOL) vs 90-day averages, and social flow velocity.
+   - Identify the major driver of the recent price action (e.g., retail social momentum, coordinated message-board hype, short-squeeze mechanics, algorithmic liquidity hunt, warrant hedging, clinical trial readout, or authentic institutional accumulation).
+   - Provide a quantitative sentiment score (-1.0 to 1.0 or 0 to 100) and evaluate the real-world impact of financial news headlines and social media discussions (Twitter/X, StockTwits, Reddit) on the stock's order flow.
+
+3. Balance Sheet & Solvency Stress Test (with Full Debt Breakdown):
+   - Total debt, Debt-to-Equity ratio, and cash reserves.
+   - Granular debt breakdown: Short-term debt vs. Long-term debt (maturities and liquidity drain).
+   - Recent changes in debt obligations (new debt facilities, convertible notes, ATM dilution offerings, principal repayments).
+   - Specific risks associated with the debt profile (refinancing costs in a high risk-free rate regime, restrictive covenants, insolvency or dilution risks).
+
+4. Profitability, Operating Health & Historical Benchmarks:
+   - Gross Margin, Operating Margin (EBIT), Return on Equity (ROE), Operating Cash Flow, and Free Cash Flow status.
+   - Price-to-Book (P/B) ratio compared with industry average and 5-year historical median.
+   - Price-to-Earnings (P/E) ratio compared with industry average and 5-year historical median.
+   - 8-Quarter EPS progression: Review quarterly EPS over the past 2 years (8 quarters) to evaluate operational consistency and earnings surprises.
+
+5. Management Quality, Competitive Moat & Core Qualitative Deep Dive:
+   - Evaluate Management Quality & Track Record: Are experienced, proven managers in charge? Review their capital allocation discipline and historical execution.
+   - Evaluate Competitive Moat: Moat rating (Wide, Narrow, None, Under Pressure) and durability (patents/IP, regulatory barriers, switching costs, cost advantages).
+   - Thoroughly answer the 4 Key Company Questions:
+     Q1: How does the company make money?
+     Q2: Are its products or services in demand, and why?
+     Q3: How has the company performed in the past?
+     Q4: Is the company positioned for growth and profitability?
+   - Thoroughly answer the 3 Key Industry Questions:
+     Q1: How is the company's industry doing as a whole?
+     Q2: What are the obstacles and challenges the company faces?
+     Q3: Does the company face any economic, political, or cultural risks?
+
+6. Multi-Model Valuation Engine:
+   Evaluate the security across 8 recognized valuation methodologies:
+   - Discounted Cash Flow (DCF): 10-year projected cash flows with explicit WACC and terminal growth rate.
+   - Dividend Discount Model (DDM): Gordon Growth Model (or note why inapplicable for non-dividend payers).
+   - Rapid Stock Valuation: Quick multiplier model (Rule of 72, Graham Number, or PEG benchmark).
+   - Relative Valuation: Enterprise and equity multiples vs peer group medians (P/E, EV/EBITDA, P/S).
+   - Residual Income Model (RIM): Book value plus discounted future residual earnings over the cost of equity.
+   - Asset-Based Valuation: Net Asset Value (NAV) and liquidation floor assuming distressed asset haircuts.
+   - Sector-Specific / Fleet / Asset Capacity Model: Sector tailored model (e.g. mining reserve NAV, airline available seat mile capacity, defense pipeline multiple).
+   - Excess Return Model: Economic Value Added (EVA) spread (ROIC minus WACC multiplied by invested capital).
+   - Synthesize a Consensus Fair Value and clear valuation verdict.
+
+7. Objective Bull & Bear Theses with Cited Sources & Deduction Chains:
+   - For every thesis point in BOTH the Bull Case and Bear Case:
+     * Cite specific references and sources (SEC 10-K / 10-Q / 8-K filings, earnings calls, clinical trial data, industry reports, Federal Reserve macro releases).
+     * Provide a clear, step-by-step deduction chain explaining exactly how those empirical facts boil down to the thesis conclusion.
+
+8. Social Distribution Hooks & Publisher's Exemption Notice.
 
 OUTPUT FORMAT:
 You MUST respond with valid, parseable JSON conforming strictly to the requested schema. No conversational preamble.`;
@@ -35,12 +81,16 @@ export function buildUserPrompt(
   macro: MacroBackdrop,
   sentiment: SocialSentiment
 ): string {
+  const currentPB = typeof fundamentals.priceToBook === 'object' ? fundamentals.priceToBook?.current : fundamentals.priceToBook;
+  const currentPE = typeof fundamentals.priceToEarnings === 'object' ? fundamentals.priceToEarnings?.current : fundamentals.peRatioTrailing;
+
   return `Generate an in-depth financial analysis report for the following equity:
 
 === MARKET MOVER DATA ===
 Ticker: ${mover.ticker}
 Company: ${mover.name}
 Exchange: ${mover.exchange} (${mover.region})
+Trading Venue: ${mover.moneyMarketTradingVenue} (Penny Stock Status: ${mover.isPennyStock ? 'YES (< $5.00)' : 'NO'})
 Current Price: $${mover.price.toFixed(2)} (${mover.currency})
 Session Move: ${mover.changePercent > 0 ? '+' : ''}${mover.changePercent.toFixed(2)}%
 Volume: ${mover.volume.toLocaleString()} (Avg 3M: ${mover.avgVolume.toLocaleString()})
@@ -48,18 +98,29 @@ Category: ${mover.category.toUpperCase()}
 
 === INGESTED FUNDAMENTAL METRICS ===
 Market Cap: $${(fundamentals.marketCap / 1e9).toFixed(2)}B
-Trailing P/E: ${fundamentals.peRatioTrailing ?? 'N/A'}
+Classification: ${fundamentals.classification}
+Fundamental Rating: ${fundamentals.fundamentalRating}
+Trailing P/E: ${fundamentals.peRatioTrailing ?? currentPE ?? 'N/A'} (Industry Avg: ${fundamentals.priceToEarnings?.industryAverage ?? 'N/A'}, 5Y Avg: ${fundamentals.priceToEarnings?.historicalAverage5Y ?? 'N/A'})
 Forward P/E: ${fundamentals.peRatioForward ?? 'N/A'}
 PEG Ratio: ${fundamentals.pegRatio ?? 'N/A'}
-Price / Book: ${fundamentals.priceToBook ?? 'N/A'}
+Price / Book: ${currentPB ?? 'N/A'} (Industry Avg: ${fundamentals.priceToBook?.industryAverage ?? 'N/A'}, 5Y Avg: ${fundamentals.priceToBook?.historicalAverage5Y ?? 'N/A'})
 EV / EBITDA: ${fundamentals.evToEbitda ?? 'N/A'}
 Dividend Yield: ${fundamentals.dividendYield.toFixed(2)}%
+Return on Equity (ROE): ${fundamentals.returnOnEquity.toFixed(1)}%
 TTM Revenue: $${(fundamentals.revenueTTM / 1e9).toFixed(2)}B
 TTM Net Income: $${(fundamentals.netIncomeTTM / 1e9).toFixed(2)}B
 Gross Margin: ${fundamentals.grossMargin.toFixed(1)}%
 Operating Margin: ${fundamentals.operatingMargin.toFixed(1)}%
-TTM Free Cash Flow: $${(fundamentals.freeCashFlowTTM / 1e9).toFixed(2)}B
+Operating Cash Flow: $${(fundamentals.cashFlow.operatingCashFlow / 1e9).toFixed(2)}B
+TTM Free Cash Flow: $${(fundamentals.freeCashFlowTTM / 1e9).toFixed(2)}B (Status: ${fundamentals.cashFlow.status})
+
+=== DEBT STRUCTURE BREAKDOWN ===
 Total Debt: $${(fundamentals.totalDebt / 1e9).toFixed(2)}B
+Short-Term Debt: $${(fundamentals.shortTermDebt / 1e9).toFixed(2)}B
+Long-Term Debt: $${(fundamentals.longTermDebt / 1e9).toFixed(2)}B
+Short vs Long-Term Debt Ratio: ${fundamentals.shortVsLongTermRatio}
+Recent Debt Changes: ${fundamentals.recentChangesInDebt}
+Debt Risks: ${fundamentals.debtRisks}
 Cash & Equivalents: $${(fundamentals.cashAndEquivalents / 1e9).toFixed(2)}B
 Net Debt: $${(fundamentals.netDebt / 1e9).toFixed(2)}B
 Debt to Equity: ${fundamentals.debtToEquity ?? 'N/A'}
@@ -67,6 +128,35 @@ Current Ratio: ${fundamentals.currentRatio ?? 'N/A'}
 ROIC: ${fundamentals.roic ?? 'N/A'}%
 Beta: ${fundamentals.beta ?? 1.0}
 52-Week Range: $${fundamentals.fiftyTwoWeekLow.toFixed(2)} - $${fundamentals.fiftyTwoWeekHigh.toFixed(2)}
+
+=== 8-QUARTER EPS PROGRESSION ===
+Current TTM EPS: $${fundamentals.earningsPerShare.currentTTM.toFixed(2)}
+Quarters History:
+${fundamentals.earningsPerShare.quarterlyEPSPast2Years.map((q) => `- ${q.quarter}: $${q.eps.toFixed(2)} (${q.beat ? 'Beat' : 'Miss/In-Line'})`).join('\n')}
+
+=== QUALITATIVE MOAT & MANAGEMENT ===
+Management Quality Rating: ${fundamentals.managementQuality.rating}
+Management Track Record: ${fundamentals.managementQuality.trackRecord}
+Competitive Moat: ${fundamentals.competitiveMoat.rating}
+Moat Summary: ${fundamentals.competitiveMoat.summary}
+Company Revenue Model: ${fundamentals.companyQuestions.howCompanyMakesMoney}
+Product Demand Driver: ${fundamentals.companyQuestions.productsDemandAndWhy}
+Past Performance: ${fundamentals.companyQuestions.pastPerformanceSummary}
+Growth & Profitability Outlook: ${fundamentals.companyQuestions.growthAndProfitabilityOutlook}
+Industry Condition: ${fundamentals.industryQuestions.industryCondition}
+Obstacles & Challenges: ${fundamentals.industryQuestions.obstaclesAndChallenges}
+Macro/Political/Cultural Risks: ${fundamentals.industryQuestions.economicPoliticalCulturalRisks}
+
+=== MULTI-MODEL VALUATIONS ===
+Consensus Fair Value: $${fundamentals.valuationModels.consensusFairValue.toFixed(2)} (Verdict: ${fundamentals.valuationModels.verdict})
+- DCF (10Y Cash Flow): $${(fundamentals.valuationModels.dcf.fairValue ?? fundamentals.valuationModels.dcf.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.dcf.upside ?? fundamentals.valuationModels.dcf.upsidePercent ?? 0}%)
+- Dividend Discount Model (DDM): $${(fundamentals.valuationModels.ddm.fairValue ?? fundamentals.valuationModels.ddm.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.ddm.upside ?? fundamentals.valuationModels.ddm.upsidePercent ?? 0}%)
+- Relative Multiples Valuation: $${(fundamentals.valuationModels.relativeValuation.fairValue ?? fundamentals.valuationModels.relativeValuation.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.relativeValuation.upside ?? fundamentals.valuationModels.relativeValuation.upsidePercent ?? 0}%)
+- Rapid PEG Model: $${(fundamentals.valuationModels.rapidStockValuation.fairValue ?? fundamentals.valuationModels.rapidStockValuation.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.rapidStockValuation.upside ?? fundamentals.valuationModels.rapidStockValuation.upsidePercent ?? 0}%)
+- Residual Income Model: $${(fundamentals.valuationModels.residualIncomeModel.fairValue ?? fundamentals.valuationModels.residualIncomeModel.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.residualIncomeModel.upside ?? fundamentals.valuationModels.residualIncomeModel.upsidePercent ?? 0}%)
+- Asset-Based Liquidation Floor: $${(fundamentals.valuationModels.assetBasedValuation.fairValue ?? fundamentals.valuationModels.assetBasedValuation.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.assetBasedValuation.upside ?? fundamentals.valuationModels.assetBasedValuation.upsidePercent ?? 0}%)
+- Excess Return Spread Model: $${(fundamentals.valuationModels.excessReturnModel.fairValue ?? fundamentals.valuationModels.excessReturnModel.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.excessReturnModel.upside ?? fundamentals.valuationModels.excessReturnModel.upsidePercent ?? 0}%)
+- Industry Specific Model: $${(fundamentals.valuationModels.industrySpecificModel.fairValue ?? fundamentals.valuationModels.industrySpecificModel.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.industrySpecificModel.upside ?? fundamentals.valuationModels.industrySpecificModel.upsidePercent ?? 0}%)
 
 === MACROECONOMIC CONTEXT ===
 US 10-Year Yield: ${macro.us10YearYield.toFixed(2)}%
@@ -77,9 +167,14 @@ VIX Volatility Index: ${macro.vixIndex.toFixed(2)}
 WTI Crude Oil: $${macro.crudeOilWTI.toFixed(2)}/bbl
 Macro Summary: ${macro.sectorImpactSummary}
 
-=== SOCIAL SENTIMENT & FLOWS ===
+=== SOCIAL SENTIMENT & FLOW ANOMALIES ===
 Bullish Sentiment: ${sentiment.bullishPercent}%
 Bearish Sentiment: ${sentiment.bearishPercent}%
+Volume Anomaly Ratio: ${sentiment.volumeAnomalyRatio}x (vs 90d average)
+Artificial Inflation Risk: ${sentiment.artificialInflationRisk} (Artificially Inflated: ${sentiment.isArtificiallyInflated})
+Major Price Driver: ${sentiment.majorPriceDriver}
+News Impact: ${sentiment.newsImpact}
+Social Media Impact: ${sentiment.socialMediaImpact}
 24h Discussion Delta: +${sentiment.volumeChange24h}%
 Key Themes: ${sentiment.dominantThemes.join(', ')}
 
@@ -96,7 +191,7 @@ Please format your response strictly as JSON with this schema:
   "primaryKeywords": ["keyword 1", "keyword 2", "keyword 3"],
   "secondaryKeywords": ["keyword 4", "keyword 5"],
   "catalystSummary": "string (concise 2-sentence summary of why it moved)",
-  "markdownBody": "string (the complete 5-section markdown report with headings ##, markdown tables, and evidence)",
+  "markdownBody": "string (the complete markdown report with headings ##, markdown tables, and evidence)",
   "extractedFigures": {
     "peRatio": ${fundamentals.peRatioTrailing ?? fundamentals.peRatioForward ?? 0},
     "revenueTTM": ${fundamentals.revenueTTM},
@@ -105,9 +200,17 @@ Please format your response strictly as JSON with this schema:
     "netDebt": ${fundamentals.netDebt},
     "movePercent": ${mover.changePercent}
   },
+  "theses": {
+    "bull": [
+      { "point": "string", "sources": ["string"], "deductionChain": "string" }
+    ],
+    "bear": [
+      { "point": "string", "sources": ["string"], "deductionChain": "string" }
+    ]
+  },
   "socialHooks": {
     "twitterThread": [
-      "Tweet 1 (hook with ticker $${mover.ticker}, move, and core finding)...",
+      "Tweet 1 (hook with ticker $${mover.ticker}, move, venue, and core finding)...",
       "Tweet 2 (fundamental metric breakdown with P/E and FCF)...",
       "Tweet 3 (macro context & valuation asymmetry, ending with link placeholder)..."
     ],
@@ -116,7 +219,7 @@ Please format your response strictly as JSON with this schema:
       "bodyMarkdown": "Comprehensive reddit markdown analysis with disclaimer...",
       "flair": "DD / Fundamental"
     },
-    "telegramAlert": "🚨 **$${mover.ticker} Alert**: ${mover.name} moved ${mover.changePercent > 0 ? '+' : ''}${mover.changePercent.toFixed(1)}% today. Key fundamental breakdown: ..."
+    "telegramAlert": "🚨 **$${mover.ticker} Alert**: ${mover.name} moved ${mover.changePercent > 0 ? '+' : ''}${mover.changePercent.toFixed(1)}% today on ${mover.moneyMarketTradingVenue}. Key fundamental breakdown: ..."
   }
 }`;
 }

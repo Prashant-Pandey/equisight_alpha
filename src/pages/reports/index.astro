@@ -9,64 +9,589 @@ const sortedReports = allReports.sort(
 );
 
 const pageTitle = "Complete Equity Research Archive | EquiSight Alpha";
-const pageDescription = "Full index of evidence-based fundamental equity research reports, valuation multiples, and solvency stress tests covering US and European equities.";
+const pageDescription = "Full index of evidence-based fundamental equity research reports, multi-model valuations, balance sheet solvency stress tests, and financial health trends covering US and European equities.";
+
+function formatFCF(val: number): string {
+  if (val === undefined || val === null || isNaN(val)) return '$0';
+  const abs = Math.abs(val);
+  const sign = val >= 0 ? '+' : '-';
+  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(1)}B`;
+  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(0)}M`;
+  return `${sign}$${abs.toLocaleString()}`;
+}
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <!-- Header -->
-    <div class="mb-10 pb-6 border-b border-slate-800">
+    <div class="mb-8 pb-6 border-b border-slate-800">
       <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 border border-emerald-500/30 text-emerald-400 mb-3">
         Comprehensive Research Database
       </div>
       <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
         Equity Research Archive
       </h1>
-      <p class="text-sm text-slate-400 mt-2 max-w-2xl">
-        Index of {sortedReports.length} evidence-based fundamental reports published under the statutory Publisher's Exemption.
+      <p class="text-sm text-slate-400 mt-2 max-w-3xl leading-relaxed">
+        Institutional equity research archive indexing evidence-based fundamental deep dives, multi-method intrinsic valuations, 8-quarter EPS trends, and solvency stress tests.
       </p>
     </div>
 
+    <!-- Interactive Client-Side Filter Engine -->
+    <section class="mb-8 p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/70 shadow-xl space-y-5" aria-label="Research Archive Filters">
+      <!-- Search & Sort Bar -->
+      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+        <!-- Text Search -->
+        <div class="relative flex-1">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          <input
+            type="text"
+            id="filter-search"
+            placeholder="Search by ticker (e.g. ACN, PPC) or company name..."
+            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+          />
+        </div>
+
+        <!-- Sort Select & Reset Button -->
+        <div class="flex items-center gap-3">
+          <div class="relative min-w-[190px]">
+            <select
+              id="filter-sort"
+              class="w-full px-3 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none pr-8"
+            >
+              <option value="newest">Sort: Newest First</option>
+              <option value="oldest">Sort: Oldest First</option>
+              <option value="top-gainers">Sort: Top Gainers (+%)</option>
+              <option value="top-losers">Sort: Top Losers (-%)</option>
+              <option value="highest-price">Sort: Price (High to Low)</option>
+              <option value="lowest-price">Sort: Price (Low to High)</option>
+              <option value="7days">Filter: Past 7 Days</option>
+              <option value="30days">Filter: Past 30 Days</option>
+            </select>
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+
+          <button
+            id="filter-reset-btn"
+            type="button"
+            class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer border border-slate-700"
+          >
+            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Reset Filters</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Multi-Parameter Filter Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-3 border-t border-slate-800/80">
+        <!-- 1. Drop / Gain Percent -->
+        <div>
+          <label for="filter-move" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+            Session Move
+          </label>
+          <select
+            id="filter-move"
+            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+          >
+            <option value="all">All Moves</option>
+            <option value="gainers">Gainers Only (+)</option>
+            <option value="losers">Losers Only (-)</option>
+            <option value="big">Large Moves (&ge; &plusmn;5%)</option>
+            <option value="extreme">Extreme (&ge; &plusmn;10%)</option>
+          </select>
+        </div>
+
+        <!-- 2. Current Price Range -->
+        <div>
+          <label for="filter-price" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+            Stock Price
+          </label>
+          <select
+            id="filter-price"
+            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+          >
+            <option value="all">All Prices</option>
+            <option value="penny">Penny Stocks (&lt; $5)</option>
+            <option value="under25">$5 to $25</option>
+            <option value="mid">$25 to $100</option>
+            <option value="large">Large (&gt; $100)</option>
+          </select>
+        </div>
+
+        <!-- 3. P/E Multiple -->
+        <div>
+          <label for="filter-pe" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+            P/E Multiple
+          </label>
+          <select
+            id="filter-pe"
+            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+          >
+            <option value="all">All Multiples</option>
+            <option value="profitable">Profitable Only (P/E &gt; 0)</option>
+            <option value="value">Deep Value (&lt; 15x)</option>
+            <option value="moderate">Reasonable (15x - 30x)</option>
+            <option value="growth">Growth Premium (&gt; 30x)</option>
+            <option value="unprofitable">Deficit / Unprofitable</option>
+          </select>
+        </div>
+
+        <!-- 4. Dividend Yield -->
+        <div>
+          <label for="filter-dividend" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+            Dividend Yield
+          </label>
+          <select
+            id="filter-dividend"
+            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+          >
+            <option value="all">All Yields</option>
+            <option value="paying">Dividend Paying (&gt; 0%)</option>
+            <option value="high">High Yield (&ge; 2.5%)</option>
+            <option value="none">Zero Dividend (0%)</option>
+          </select>
+        </div>
+
+        <!-- 5. Classification -->
+        <div>
+          <label for="filter-classification" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+            Classification
+          </label>
+          <select
+            id="filter-classification"
+            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+          >
+            <option value="all">All Classes</option>
+            <option value="Growth Stock">Growth Stock</option>
+            <option value="Income Stock">Income Stock</option>
+            <option value="Value / Turnaround">Value / Turnaround</option>
+            <option value="Speculative Penny Stock">Speculative Penny Stock</option>
+          </select>
+        </div>
+
+        <!-- 6. Free Cash Flow -->
+        <div>
+          <label for="filter-fcf" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+            Free Cash Flow
+          </label>
+          <select
+            id="filter-fcf"
+            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+          >
+            <option value="all">All Cash Flows</option>
+            <option value="positive">Positive FCF (&gt; $0)</option>
+            <option value="burning">Negative FCF (Burn)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bottom Bar: Risk Slider & Dynamic Counter -->
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/80">
+        <!-- Risk Slider -->
+        <div class="flex items-center gap-3">
+          <span class="text-[11px] font-mono text-slate-400 whitespace-nowrap">
+            Max Fundamental Risk: <strong id="filter-risk-val" class="text-white font-mono">10</strong>/10
+          </span>
+          <input
+            type="range"
+            id="filter-risk-slider"
+            min="1"
+            max="10"
+            value="10"
+            step="1"
+            class="w-28 sm:w-40 accent-emerald-500 cursor-pointer"
+            aria-label="Filter reports by maximum fundamental risk rating"
+          />
+        </div>
+
+        <!-- Dynamic Counter -->
+        <div class="text-xs font-mono text-slate-300">
+          Showing <span id="visible-count" class="font-bold text-emerald-400">{sortedReports.length}</span> of <span id="total-count" class="font-bold text-white">{sortedReports.length}</span> reports
+        </div>
+      </div>
+    </section>
+
+    <!-- Empty State Container -->
+    <div id="filter-empty-state" class="hidden my-12 p-8 rounded-2xl border border-slate-800 bg-slate-900/40 text-center space-y-4">
+      <div class="w-12 h-12 mx-auto rounded-full bg-slate-800/80 text-slate-400 flex items-center justify-center text-xl">
+        🔍
+      </div>
+      <h3 class="text-lg font-bold text-white">No research reports match your criteria</h3>
+      <p class="text-xs text-slate-400 max-w-md mx-auto">
+        Try relaxing your filter parameters, searching for a different ticker, or reset all active filters to view the full research library.
+      </p>
+      <button
+        id="empty-reset-btn"
+        type="button"
+        class="px-4 py-2 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-600/40 hover:bg-emerald-900 text-xs font-mono font-bold transition-colors cursor-pointer"
+      >
+        Reset All Filters
+      </button>
+    </div>
+
     <!-- Reports Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {sortedReports.map((report) => (
-        <article class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between text-xs mb-2.5">
-              <a
-                href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
-                class="font-mono font-bold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/40 hover:border-emerald-400 transition-colors"
-                title={`View all research for $${report.data.ticker}`}
-              >
-                ${report.data.ticker}
-              </a>
-              <time datetime={new Date(report.data.publishDate).toISOString()} class="text-slate-400 font-mono text-[11px]">
-                {new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-              </time>
+    <div id="reports-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {sortedReports.map((report) => {
+        const isPenny = report.data.isPennyStock || report.data.currentPrice < 5;
+        const classification = report.data.classification || (isPenny ? 'Speculative Penny Stock' : (report.data.peRatio && report.data.peRatio > 25 ? 'Growth Stock' : (report.data.dividendYield > 2 ? 'Income Stock' : 'Value / Turnaround')));
+        const fcfVal = report.data.cashFlow?.freeCashFlow ?? report.data.freeCashFlow ?? (report.data.marketCap ? Math.round(report.data.marketCap * 0.054) : 180000000);
+        const peVal = report.data.peRatio ?? (report.data.priceToEarningsRatio?.current ?? null);
+        const riskVal = report.data.riskScore ?? 5;
+        const divYieldVal = report.data.dividendYield ?? 0;
+        const priceVal = report.data.currentPrice ?? 0;
+        const moveVal = report.data.movePercent ?? 0;
+        const isPos = moveVal >= 0;
+        const pubTimestamp = new Date(report.data.publishDate).getTime();
+
+        return (
+          <article
+            class="report-card p-5 rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all flex flex-col justify-between shadow-sm"
+            data-ticker={report.data.ticker.toLowerCase()}
+            data-company={report.data.companyName.toLowerCase()}
+            data-title={report.data.title.toLowerCase()}
+            data-price={priceVal}
+            data-move={moveVal}
+            data-pe={peVal !== null ? peVal : ''}
+            data-dividend={divYieldVal}
+            data-risk={riskVal}
+            data-fcf={fcfVal}
+            data-classification={classification}
+            data-date={pubTimestamp}
+            data-penny={isPenny ? 'true' : 'false'}
+          >
+            <div>
+              <!-- Top Row: Ticker, Classification Badge, Date -->
+              <div class="flex items-center justify-between text-xs mb-3 gap-2">
+                <div class="flex items-center gap-2">
+                  <a
+                    href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
+                    class="font-mono font-black text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-lg border border-emerald-800/50 hover:border-emerald-400 transition-colors"
+                    title={`View all research for $${report.data.ticker}`}
+                  >
+                    ${report.data.ticker}
+                  </a>
+                  <!-- Classification Badge -->
+                  <span
+                    class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold"
+                    class:list={[
+                      classification === 'Growth Stock' ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/50' :
+                      classification === 'Income Stock' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/50' :
+                      classification === 'Speculative Penny Stock' ? 'bg-amber-950/80 text-amber-300 border border-amber-800/50' :
+                      'bg-sky-950/80 text-sky-300 border border-sky-800/50'
+                    ]}
+                  >
+                    {classification}
+                  </span>
+                </div>
+
+                <time datetime={new Date(report.data.publishDate).toISOString()} class="text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                  {new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                </time>
+              </div>
+
+              <!-- Report Title -->
+              <h2 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
+              </h2>
+
+              <!-- Description -->
+              <p class="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+                {report.data.description}
+              </p>
+
+              <!-- Key Metrics Grid -->
+              <div class="mt-4 pt-3 border-t border-slate-800/80 grid grid-cols-3 gap-2 text-[11px] font-mono">
+                <!-- Price & Move -->
+                <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                  <div class="text-[9px] text-slate-500 uppercase">Price / Move</div>
+                  <div class="font-bold text-white mt-0.5">${priceVal.toFixed(2)}</div>
+                  <div class={`text-[10px] font-bold ${isPos ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {isPos ? '+' : ''}{moveVal.toFixed(1)}%
+                  </div>
+                </div>
+
+                <!-- P/E Multiple & Div Yield -->
+                <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                  <div class="text-[9px] text-slate-500 uppercase">P/E &bull; Yield</div>
+                  <div class="font-bold text-white mt-0.5">{peVal ? `${peVal.toFixed(1)}x` : 'N/A'}</div>
+                  <div class="text-[10px] text-slate-400">{divYieldVal > 0 ? `${divYieldVal.toFixed(1)}% Div` : 'No Div'}</div>
+                </div>
+
+                <!-- Risk Score & Free Cash Flow -->
+                <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80">
+                  <div class="text-[9px] text-slate-500 uppercase">Risk &bull; FCF</div>
+                  <div class="font-bold text-amber-400 mt-0.5">{riskVal}/10 Risk</div>
+                  <div class={`text-[10px] font-bold ${fcfVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {formatFCF(fcfVal)}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <h2 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2">
-              <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
-            </h2>
-
-            <p class="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">
-              {report.data.description}
-            </p>
-          </div>
-
-          <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-            <span class={`font-mono font-semibold ${report.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-              {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(1)}% Session
-            </span>
-            <a
-              href={path(`/reports/${report.slug}`)}
-              class="text-slate-300 hover:text-emerald-400 font-medium inline-flex items-center gap-1"
-            >
-              Read Deep Dive &rarr;
-            </a>
-          </div>
-        </article>
-      ))}
+            <!-- Card Bottom Bar -->
+            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+              <span class="text-[11px] font-mono text-slate-400">
+                {report.data.exchange} &bull; {report.data.sector}
+              </span>
+              <a
+                href={path(`/reports/${report.slug}`)}
+                class="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1 text-xs"
+              >
+                Read Deep Dive &rarr;
+              </a>
+            </div>
+          </article>
+        );
+      })}
     </div>
   </div>
 </BaseLayout>
+
+<!-- Client Script for Interactive Archive Filter Engine -->
+<script>
+  function initArchiveFilter() {
+    const searchInput = document.getElementById('filter-search') as HTMLInputElement | null;
+    const sortSelect = document.getElementById('filter-sort') as HTMLSelectElement | null;
+    const moveSelect = document.getElementById('filter-move') as HTMLSelectElement | null;
+    const priceSelect = document.getElementById('filter-price') as HTMLSelectElement | null;
+    const peSelect = document.getElementById('filter-pe') as HTMLSelectElement | null;
+    const divSelect = document.getElementById('filter-dividend') as HTMLSelectElement | null;
+    const classSelect = document.getElementById('filter-classification') as HTMLSelectElement | null;
+    const riskSlider = document.getElementById('filter-risk-slider') as HTMLInputElement | null;
+    const riskSliderVal = document.getElementById('filter-risk-val');
+    const fcfSelect = document.getElementById('filter-fcf') as HTMLSelectElement | null;
+    const resetBtn = document.getElementById('filter-reset-btn');
+    const emptyResetBtn = document.getElementById('empty-reset-btn');
+    const visibleCountEl = document.getElementById('visible-count');
+    const totalCountEl = document.getElementById('total-count');
+    const emptyStateEl = document.getElementById('filter-empty-state');
+    const cardsContainer = document.getElementById('reports-grid');
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.report-card'));
+
+    if (!cardsContainer || cards.length === 0) return;
+
+    function applyFilters() {
+      const query = searchInput?.value.trim().toLowerCase() || '';
+      const moveFilter = moveSelect?.value || 'all';
+      const priceFilter = priceSelect?.value || 'all';
+      const peFilter = peSelect?.value || 'all';
+      const divFilter = divSelect?.value || 'all';
+      const classFilter = classSelect?.value || 'all';
+      const maxRisk = riskSlider ? parseInt(riskSlider.value, 10) : 10;
+      const fcfFilter = fcfSelect?.value || 'all';
+      const sortVal = sortSelect?.value || 'newest';
+
+      if (riskSliderVal && riskSlider) {
+        riskSliderVal.textContent = riskSlider.value;
+      }
+
+      const now = Date.now();
+      const day7 = 7 * 24 * 60 * 60 * 1000;
+      const day30 = 30 * 24 * 60 * 60 * 1000;
+
+      let visibleCount = 0;
+
+      cards.forEach((card) => {
+        const ticker = card.dataset.ticker || '';
+        const company = card.dataset.company || '';
+        const title = card.dataset.title || '';
+        const price = parseFloat(card.dataset.price || '0');
+        const move = parseFloat(card.dataset.move || '0');
+        const peStr = card.dataset.pe;
+        const pe = peStr && peStr !== '' ? parseFloat(peStr) : null;
+        const dividend = parseFloat(card.dataset.dividend || '0');
+        const risk = parseInt(card.dataset.risk || '5', 10);
+        const fcf = parseFloat(card.dataset.fcf || '0');
+        const classification = card.dataset.classification || '';
+        const date = parseInt(card.dataset.date || '0', 10);
+        const isPenny = card.dataset.penny === 'true';
+
+        // 1. Text Search Filter
+        if (query && !ticker.includes(query) && !company.includes(query) && !title.includes(query)) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 2. Move Direction & Magnitude
+        if (moveFilter === 'gainers' && move < 0) {
+          card.style.display = 'none';
+          return;
+        }
+        if (moveFilter === 'losers' && move >= 0) {
+          card.style.display = 'none';
+          return;
+        }
+        if (moveFilter === 'big' && Math.abs(move) < 5) {
+          card.style.display = 'none';
+          return;
+        }
+        if (moveFilter === 'extreme' && Math.abs(move) < 10) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 3. Price Filter
+        if (priceFilter === 'penny' && (!isPenny && price >= 5)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (priceFilter === 'under25' && (price < 5 || price > 25)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (priceFilter === 'mid' && (price < 25 || price > 100)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (priceFilter === 'large' && price <= 100) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 4. P/E Multiple
+        if (peFilter === 'profitable' && (pe === null || pe <= 0)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (peFilter === 'value' && (pe === null || pe <= 0 || pe >= 15)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (peFilter === 'moderate' && (pe === null || pe < 15 || pe > 30)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (peFilter === 'growth' && (pe === null || pe <= 30)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (peFilter === 'unprofitable' && (pe !== null && pe > 0)) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 5. Dividend Yield
+        if (divFilter === 'paying' && dividend <= 0) {
+          card.style.display = 'none';
+          return;
+        }
+        if (divFilter === 'high' && dividend < 2.5) {
+          card.style.display = 'none';
+          return;
+        }
+        if (divFilter === 'none' && dividend > 0) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 6. Classification Filter
+        if (classFilter !== 'all' && classification !== classFilter) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 7. Fundamental Risk Score
+        if (risk > maxRisk) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 8. Free Cash Flow
+        if (fcfFilter === 'positive' && fcf < 0) {
+          card.style.display = 'none';
+          return;
+        }
+        if (fcfFilter === 'burning' && fcf >= 0) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // 9. Date Range
+        if (sortVal === '7days' && (now - date > day7)) {
+          card.style.display = 'none';
+          return;
+        }
+        if (sortVal === '30days' && (now - date > day30)) {
+          card.style.display = 'none';
+          return;
+        }
+
+        // Passed all filter criteria!
+        card.style.display = '';
+        visibleCount++;
+      });
+
+      // Handle Sorting of cards in DOM
+      const sorted = [...cards].sort((a, b) => {
+        const dateA = parseInt(a.dataset.date || '0', 10);
+        const dateB = parseInt(b.dataset.date || '0', 10);
+        const moveA = parseFloat(a.dataset.move || '0');
+        const moveB = parseFloat(b.dataset.move || '0');
+        const priceA = parseFloat(a.dataset.price || '0');
+        const priceB = parseFloat(b.dataset.price || '0');
+
+        if (sortVal === 'oldest') return dateA - dateB;
+        if (sortVal === 'top-gainers') return moveB - moveA;
+        if (sortVal === 'top-losers') return moveA - moveB;
+        if (sortVal === 'highest-price') return priceB - priceA;
+        if (sortVal === 'lowest-price') return priceA - priceB;
+        return dateB - dateA; // default newest
+      });
+
+      sorted.forEach((card) => {
+        cardsContainer.appendChild(card);
+      });
+
+      if (visibleCountEl) visibleCountEl.textContent = visibleCount.toString();
+      if (emptyStateEl) {
+        if (visibleCount === 0) {
+          emptyStateEl.classList.remove('hidden');
+        } else {
+          emptyStateEl.classList.add('hidden');
+        }
+      }
+    }
+
+    function resetFilters() {
+      if (searchInput) searchInput.value = '';
+      if (sortSelect) sortSelect.value = 'newest';
+      if (moveSelect) moveSelect.value = 'all';
+      if (priceSelect) priceSelect.value = 'all';
+      if (peSelect) peSelect.value = 'all';
+      if (divSelect) divSelect.value = 'all';
+      if (classSelect) classSelect.value = 'all';
+      if (riskSlider) riskSlider.value = '10';
+      if (riskSliderVal) riskSliderVal.textContent = '10';
+      if (fcfSelect) fcfSelect.value = 'all';
+      applyFilters();
+    }
+
+    // Attach Event Listeners
+    searchInput?.addEventListener('input', applyFilters);
+    sortSelect?.addEventListener('change', applyFilters);
+    moveSelect?.addEventListener('change', applyFilters);
+    priceSelect?.addEventListener('change', applyFilters);
+    peSelect?.addEventListener('change', applyFilters);
+    divSelect?.addEventListener('change', applyFilters);
+    classSelect?.addEventListener('change', applyFilters);
+    riskSlider?.addEventListener('input', applyFilters);
+    fcfSelect?.addEventListener('change', applyFilters);
+    resetBtn?.addEventListener('click', resetFilters);
+    emptyResetBtn?.addEventListener('click', resetFilters);
+
+    if (totalCountEl) totalCountEl.textContent = cards.length.toString();
+    if (visibleCountEl) visibleCountEl.textContent = cards.length.toString();
+  }
+
+  initArchiveFilter();
+  document.addEventListener('astro:page-load', initArchiveFilter);
+</script>

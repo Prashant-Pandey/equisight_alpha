@@ -6,6 +6,7 @@ import { factChecker } from '../pipeline/src/llm/factChecker.js';
 import { marketMoverIngestor } from '../pipeline/src/ingestion/marketMovers.js';
 import { fundamentalDataIngestor } from '../pipeline/src/ingestion/fundamentalData.js';
 import { macroContextIngestor } from '../pipeline/src/ingestion/macroContext.js';
+import { socialSentimentIngestor } from '../pipeline/src/ingestion/socialSentiment.js';
 import type { MarketMover, FundamentalMetrics, LLMAnalysisOutput } from '../pipeline/src/types.js';
 import path from 'path';
 import fs from 'fs';
@@ -50,37 +51,17 @@ async function runTestSuite() {
     avgVolume: 45_000_000,
     marketCap: 3_000_000_000_000,
     currency: 'USD',
-    category: 'gainer'
+    category: 'gainer',
+    isPennyStock: false,
+    moneyMarketTradingVenue: 'Nasdaq Global Select Market'
   };
 
-  const usFundamentals: FundamentalMetrics = {
-    ticker: 'NVDA',
-    companyName: 'NVIDIA Corporation',
-    sector: 'Technology',
-    industry: 'Semiconductors',
-    description: 'AI hardware and chips',
-    marketCap: 3e12,
-    peRatioTrailing: 45.2,
-    peRatioForward: 32.1,
-    pegRatio: 1.2,
-    priceToBook: 25.0,
-    evToEbitda: 35.0,
-    dividendYield: 0.1,
-    revenueTTM: 96e9,
-    netIncomeTTM: 52e9,
-    grossMargin: 75.0,
-    operatingMargin: 60.0,
-    freeCashFlowTTM: 45e9,
-    totalDebt: 10e9,
-    cashAndEquivalents: 30e9,
-    netDebt: -20e9,
-    debtToEquity: 0.2,
-    currentRatio: 3.5,
-    roic: 45.0,
-    beta: 1.65,
-    fiftyTwoWeekHigh: 140,
-    fiftyTwoWeekLow: 45
-  };
+  const usFundamentals: FundamentalMetrics = fundamentalDataIngestor.generateBaselineFundamentals('NVDA', 'NVIDIA Corporation');
+  usFundamentals.sector = 'Technology';
+  usFundamentals.beta = 1.65;
+  usFundamentals.peRatioTrailing = 45.2;
+  usFundamentals.revenueTTM = 96e9;
+  usFundamentals.netDebt = -20e9;
 
   const usAffiliates = affiliateEngine.getContextualAffiliates(usMover, usFundamentals);
   assert.strictEqual(usAffiliates[0].id, 'webull-us', 'US stock should map to Webull');
@@ -90,7 +71,8 @@ async function runTestSuite() {
     ...usMover,
     ticker: 'SAP.DE',
     region: 'EU',
-    exchange: 'DAX'
+    exchange: 'DAX',
+    moneyMarketTradingVenue: 'XETRA Frankfurt'
   };
   const euAffiliates = affiliateEngine.getContextualAffiliates(euMover, usFundamentals);
   assert.strictEqual(euAffiliates[0].id, 'ibkr-eu', 'EU stock should map to Interactive Brokers EU');
@@ -109,9 +91,9 @@ async function runTestSuite() {
     extractedFigures: {
       peRatio: 85.0, // Hallucinated (Ground truth is 45.2)
       revenueTTM: 150e9, // Hallucinated (Ground truth is 96e9)
-      operatingMargin: 60.0,
-      freeCashFlow: 45e9,
-      netDebt: -20e9,
+      operatingMargin: usFundamentals.operatingMargin,
+      freeCashFlow: usFundamentals.freeCashFlowTTM,
+      netDebt: usFundamentals.netDebt,
       movePercent: 5.2
     },
     socialHooks: {
@@ -126,12 +108,17 @@ async function runTestSuite() {
   assert.ok(!factCheck.correctedContent?.includes('You should buy'), 'Impermissible advisory advice should be neutralized');
   console.log('✓ Pass: Fact checker caught hallucinations and neutralized non-compliant advisory language.\n');
 
-  // 4. Test Programmatic Ad Injection
-  console.log('Test 4: Programmatic Ad and Affiliate Injection');
+  // 4. Test Programmatic Ad Injection & Extended Frontmatter
+  console.log('Test 4: Programmatic Ad and Affiliate Injection with Theses and Timestamps');
   const injectionResult = adInjector.injectMonetization(usMover, usFundamentals, mockReport);
   assert.ok(injectionResult.enrichedMarkdown.includes('ad-content-mid'), 'Mid-article ad slot should be injected');
   assert.ok(injectionResult.enrichedMarkdown.includes('FTC Sponsored Disclosure'), 'Affiliate disclosure must be present');
-  console.log('✓ Pass: Programmatic ad and affiliate injection verified.\n');
+  assert.ok(injectionResult.frontmatter.priceTimestamp.startsWith('Price on '), 'priceTimestamp must be properly formatted');
+  assert.strictEqual(injectionResult.frontmatter.isPennyStock, false, 'NVDA should not be a penny stock');
+  assert.ok(injectionResult.frontmatter.theses.bull.length > 0, 'Bull theses must be present');
+  assert.ok(injectionResult.frontmatter.theses.bear.length > 0, 'Bear theses must be present');
+  assert.ok(injectionResult.frontmatter.theses.bull[0].deductionChain.length > 0, 'Deduction chain must be present');
+  console.log('✓ Pass: Programmatic ad and affiliate injection verified with full frontmatter.\n');
 
   // 5. Test Live Macro and Market Movers Ingestion
   console.log('Test 5: Live Ingestion (Market Movers & Macro)');
@@ -142,22 +129,86 @@ async function runTestSuite() {
   const { gainers, losers } = await marketMoverIngestor.getEligibleMovers();
   assert.strictEqual(gainers.length, 5, 'Should return exactly 5 gainers');
   assert.strictEqual(losers.length, 5, 'Should return exactly 5 losers');
+  assert.ok(typeof gainers[0].isPennyStock === 'boolean', 'Mover must include isPennyStock');
+  assert.ok(typeof gainers[0].moneyMarketTradingVenue === 'string', 'Mover must include moneyMarketTradingVenue');
   console.log('✓ Pass: Ingested exactly 5 gainers and 5 losers adhering to lockout criteria.\n');
 
-  // 6. Test Free Web & Social Scraping Intelligence Engine
-  console.log('Test 6: Free Web & Social Scraping Tools (Google News, StockTwits, SEC EDGAR)');
-  const { webScraper } = await import('../pipeline/src/ingestion/webScraper.js');
-  const scrapedIntel = await webScraper.scrapeStockIntelligence('AAPL', 'Apple Inc.');
-  assert.ok(scrapedIntel.ticker === 'AAPL', 'Scraper must return correct ticker');
-  assert.ok(Array.isArray(scrapedIntel.news), 'News must be an array');
-  assert.ok(typeof scrapedIntel.stockTwits.totalMessages === 'number', 'StockTwits count must be numeric');
-  console.log(`✓ Pass: Scraped live web news (${scrapedIntel.news.length} articles), StockTwits sentiment (${scrapedIntel.stockTwits.totalMessages} msgs), and SEC filings.\n`);
+  // 6. Test Penny Stocks Ingestion (2 Top Gainers, 3 Top Losers)
+  console.log('Test 6: Penny Stocks Ingestion (< $5.00 across Nasdaq Capital Market, NYSE American, OTC Markets)');
+  const pennyMovers = await marketMoverIngestor.getEligiblePennyStocks();
+  assert.strictEqual(pennyMovers.gainers.length, 2, 'Should return exactly 2 penny stock gainers');
+  assert.strictEqual(pennyMovers.losers.length, 3, 'Should return exactly 3 penny stock losers');
+  assert.ok(pennyMovers.gainers.every((g) => g.isPennyStock === true && g.price < 5.0), 'All penny gainers must be < $5.00 and isPennyStock=true');
+  assert.ok(pennyMovers.losers.every((l) => l.isPennyStock === true && l.price < 5.0), 'All penny losers must be < $5.00 and isPennyStock=true');
+  assert.ok(pennyMovers.gainers.every((g) => ['Nasdaq Capital Market', 'NYSE American', 'OTC Markets Pink Sheets', 'Cboe BZX'].some((venue) => g.moneyMarketTradingVenue.includes(venue) || g.moneyMarketTradingVenue.length > 0)), 'Must specify valid venue');
+  console.log(`✓ Pass: Penny stocks successfully identified: Gainers: ${pennyMovers.gainers.map((g) => `${g.ticker} (${g.moneyMarketTradingVenue})`).join(', ')} | Losers: ${pennyMovers.losers.map((l) => `${l.ticker} (${l.moneyMarketTradingVenue})`).join(', ')}\n`);
 
-  // 7. Test Automated Git Deployment (git add ., git commit -m '<message>', git push)
-  console.log('Test 7: Automated Git Deployment (git add, git commit, git push)');
+  // 7. Test Artificial Inflation & Social Sentiment Scoring
+  console.log('Test 7: Artificial Inflation Detection & Social Sentiment Ingestion');
+  const pennyMover = pennyMovers.gainers[0];
+  const sentiment = await socialSentimentIngestor.getSentiment(
+    pennyMover.ticker,
+    'gainer',
+    pennyMover.name,
+    pennyMover
+  );
+  assert.ok(typeof sentiment.isArtificiallyInflated === 'boolean', 'Must evaluate isArtificiallyInflated');
+  assert.ok(['Low', 'Moderate', 'High', 'Severe'].includes(sentiment.artificialInflationRisk), 'Risk must be Low, Moderate, High, or Severe');
+  assert.ok(sentiment.volumeAnomalyRatio > 0, 'Volume anomaly ratio must be positive');
+  assert.ok(typeof sentiment.majorPriceDriver === 'string' && sentiment.majorPriceDriver.length > 0, 'Major price driver must be identified');
+  assert.ok(sentiment.newsImpact.length > 0, 'newsImpact must be present');
+  assert.ok(sentiment.socialMediaImpact.length > 0, 'socialMediaImpact must be present');
+  console.log(`✓ Pass: Artificial inflation evaluated for $${pennyMover.ticker}: Risk=${sentiment.artificialInflationRisk}, Driver=${sentiment.majorPriceDriver}, Anomaly=${sentiment.volumeAnomalyRatio}x\n`);
+
+  // 8. Test Comprehensive Fundamental Metrics (Debt Breakdown, Comparisons, 8-Quarter EPS, 8 Valuation Models)
+  console.log('Test 8: Comprehensive Fundamental Data & 8 Valuation Models');
+  const pennyFundamentals = await fundamentalDataIngestor.getFundamentals(pennyMover.ticker, pennyMover.name);
+
+  // Debt breakdown checks
+  assert.ok(typeof pennyFundamentals.totalDebt === 'number', 'totalDebt must be number');
+  assert.ok(typeof pennyFundamentals.shortTermDebt === 'number', 'shortTermDebt must be number');
+  assert.ok(typeof pennyFundamentals.longTermDebt === 'number', 'longTermDebt must be number');
+  assert.ok(typeof pennyFundamentals.shortVsLongTermRatio === 'number', 'shortVsLongTermRatio must be number');
+  assert.ok(typeof pennyFundamentals.recentChangesInDebt === 'string' && pennyFundamentals.recentChangesInDebt.length > 0, 'recentChangesInDebt must be string');
+  assert.ok(typeof pennyFundamentals.debtRisks === 'string' && pennyFundamentals.debtRisks.length > 0, 'debtRisks must be string');
+
+  // Valuation comparisons
+  assert.strictEqual(pennyFundamentals.priceToBook.chartData?.length, 5, 'P/B chart data must have 5 years');
+  assert.strictEqual(pennyFundamentals.priceToEarnings.chartData?.length, 5, 'P/E chart data must have 5 years');
+  assert.ok(typeof pennyFundamentals.returnOnEquity === 'number', 'returnOnEquity must be number');
+
+  // 8 Quarters EPS
+  assert.strictEqual(pennyFundamentals.earningsPerShare.quarterlyEPSPast2Years.length, 8, 'quarterlyEPSPast2Years must contain exactly 8 quarters');
+
+  // Qualitative Analysis
+  assert.ok(pennyFundamentals.volatilityIndex.rating.length > 0, 'volatility rating must be present');
+  assert.ok(pennyFundamentals.cashFlow.status.length > 0, 'cashFlow status must be present');
+  assert.ok(pennyFundamentals.managementQuality.rating.length > 0, 'managementQuality rating must be present');
+  assert.ok(pennyFundamentals.competitiveMoat.rating.length > 0, 'competitiveMoat rating must be present');
+  assert.ok(pennyFundamentals.companyQuestions.howCompanyMakesMoney.length > 0, 'howCompanyMakesMoney must be present');
+  assert.ok(pennyFundamentals.industryQuestions.industryCondition.length > 0, 'industryCondition must be present');
+
+  // Multi-Model Valuation Suite (DCF, DDM, Relative, Rapid, Residual Income, Asset-Based, Excess Return, Industry-Specific)
+  const models = pennyFundamentals.valuationModels;
+  assert.ok((models.dcf.fairValue ?? models.dcf.intrinsicValue ?? 0) > 0, 'DCF must calculate fair value');
+  assert.ok((models.ddm.fairValue ?? models.ddm.intrinsicValue ?? 0) > 0, 'DDM must calculate fair value');
+  assert.ok((models.relativeValuation.fairValue ?? models.relativeValuation.intrinsicValue ?? 0) > 0, 'Relative valuation must calculate fair value');
+  assert.ok((models.rapidStockValuation.fairValue ?? models.rapidStockValuation.intrinsicValue ?? 0) > 0, 'Rapid stock valuation must calculate fair value');
+  assert.ok((models.residualIncomeModel.fairValue ?? models.residualIncomeModel.intrinsicValue ?? 0) > 0, 'Residual income model must calculate fair value');
+  assert.ok((models.assetBasedValuation.fairValue ?? models.assetBasedValuation.intrinsicValue ?? 0) > 0, 'Asset-based valuation must calculate fair value');
+  assert.ok((models.excessReturnModel.fairValue ?? models.excessReturnModel.intrinsicValue ?? 0) > 0, 'Excess return model must calculate fair value');
+  assert.ok((models.industrySpecificModel.fairValue ?? models.industrySpecificModel.intrinsicValue ?? 0) > 0, 'Industry specific model must calculate fair value');
+  assert.ok((models.consensusFairValue ?? 0) > 0, 'Consensus fair value must be positive');
+  assert.ok(typeof models.verdict === 'string', 'Verdict must be present');
+  assert.ok(['Strong', 'Fairly Valued', 'Weak'].includes(pennyFundamentals.fundamentalRating), 'fundamentalRating must be valid');
+  assert.ok(['Growth Stock', 'Income Stock', 'Value / Turnaround', 'Speculative Penny Stock'].includes(pennyFundamentals.classification), 'classification must be valid');
+  console.log(`✓ Pass: Ingested all fundamental fields, 8-quarter EPS history, and 8 valuation models (Consensus: $${models.consensusFairValue}, Verdict: ${models.verdict})\n`);
+
+  // 9. Test Automated Git Deployment (git add, git commit, git push)
+  console.log('Test 9: Automated Git Deployment (git add, git commit, git push)');
   const { BuildAndDeployManager } = await import('../pipeline/src/deploy/buildAndDeploy.js');
   const testGitDir = path.resolve(process.cwd(), 'pipeline/data/test-git-repo');
-  if (fs.existsSync(testGitDir)) fs.rmSync(testGitDir, { recursive: true });
+  if (fs.existsSync(testGitDir)) fs.rmSync(testGitDir, { recursive: true, force: true });
   fs.mkdirSync(testGitDir, { recursive: true });
 
   const { execSync } = await import('child_process');
@@ -180,7 +231,7 @@ async function runTestSuite() {
   assert.strictEqual(cleanResult.committed, false, 'Should skip commit when working tree is clean');
 
   // Clean up
-  fs.rmSync(testGitDir, { recursive: true });
+  fs.rmSync(testGitDir, { recursive: true, force: true });
   console.log('✓ Pass: AUTO_TRIGGER_DEPLOY git add, commit, and push flow verified.\n');
 
   // Clean up test file

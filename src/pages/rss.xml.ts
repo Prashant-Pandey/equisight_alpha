@@ -6,10 +6,10 @@ export const GET: APIRoute = async (context) => {
   const siteUrl = (context.site?.toString() || 'https://equisight-alpha.com').replace(/\/$/, '');
 
   const sortedReports = reports.sort(
-    (a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime()
+    (a: any, b: any) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime()
   ).slice(0, 50);
 
-  const rssItems = sortedReports.map((report) => `
+  const rssItems = sortedReports.map((report: any) => `
     <item>
       <title><![CDATA[${report.data.title}]]></title>
       <link>${siteUrl}/reports/${report.slug}</link>
