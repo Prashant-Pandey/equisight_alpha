@@ -108,13 +108,13 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
                   <span class="inline-block font-mono font-bold text-sm text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded border border-emerald-800/40">
                     +{report.data.movePercent.toFixed(2)}%
                   </span>
-                  <div class="text-[10px] text-slate-500 mt-1 font-mono">${report.data.currentPrice.toFixed(2)}</div>
+                  <div class="text-[10px] text-slate-400 mt-1 font-mono">${report.data.currentPrice.toFixed(2)}</div>
                 </div>
               </div>
             </a>
           ))}
           {topGainers.length === 0 && (
-            <div class="text-center py-8 text-sm text-slate-500">
+            <div class="text-center py-8 text-sm text-slate-400">
               Awaiting pre-market data ingestion cycle...
             </div>
           )}
@@ -166,13 +166,13 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
                   <span class="inline-block font-mono font-bold text-sm text-rose-400 bg-rose-950/80 px-2.5 py-1 rounded border border-rose-800/40">
                     {report.data.movePercent.toFixed(2)}%
                   </span>
-                  <div class="text-[10px] text-slate-500 mt-1 font-mono">${report.data.currentPrice.toFixed(2)}</div>
+                  <div class="text-[10px] text-slate-400 mt-1 font-mono">${report.data.currentPrice.toFixed(2)}</div>
                 </div>
               </div>
             </a>
           ))}
           {topLosers.length === 0 && (
-            <div class="text-center py-8 text-sm text-slate-500">
+            <div class="text-center py-8 text-sm text-slate-400">
               Awaiting post-market data ingestion cycle...
             </div>
           )}
@@ -205,7 +205,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
                 >
                   ${report.data.ticker}
                 </a>
-                <span class="text-slate-500 font-mono text-[11px]">
+                <span class="text-slate-400 font-mono text-[11px]">
                   {new Date(report.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               </div>
@@ -228,4 +228,7 @@ const pageDescription = "Institutional-grade fundamental and macroeconomic equit
       </div>
     </div>
   </section>
+
+  <!-- Google Site Verification Link -->
+  <a href={path('/google610bb287ece732d9.html')} class="sr-only" aria-hidden="true" tabindex="-1" rel="author">Google Site Verification</a>
 </BaseLayout>

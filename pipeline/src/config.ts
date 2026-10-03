@@ -1,8 +1,16 @@
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 // Load environment variables from .env if present
 dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const defaultProjectRoot = fs.existsSync(path.resolve(process.cwd(), 'astro.config.mjs'))
+  ? path.resolve(process.cwd())
+  : path.resolve(__dirname, '../../..');
 
 export const CONFIG = {
   // System environment
@@ -52,14 +60,15 @@ export const CONFIG = {
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN || '',
   TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID || '',
 
-  // Deployment Hook
-  DEPLOY_WEBHOOK_URL: process.env.DEPLOY_WEBHOOK_URL || '',
+  // Automated Deployment (Git)
   AUTO_TRIGGER_DEPLOY: process.env.AUTO_TRIGGER_DEPLOY === 'true',
+  DEPLOY_COMMIT_MESSAGE: process.env.DEPLOY_COMMIT_MESSAGE || process.env.GIT_COMMIT_MESSAGE || '',
+  DEPLOY_WEBHOOK_URL: process.env.DEPLOY_WEBHOOK_URL || '',
 
   // Paths
-  PROJECT_ROOT: path.resolve(process.cwd()),
-  REPORTS_DIR: path.resolve(process.cwd(), 'src/content/reports'),
-  HISTORY_FILE: path.resolve(process.cwd(), 'pipeline/data/coverage-history.json'),
+  PROJECT_ROOT: defaultProjectRoot,
+  REPORTS_DIR: path.resolve(defaultProjectRoot, 'src/content/reports'),
+  HISTORY_FILE: path.resolve(defaultProjectRoot, 'pipeline/data/coverage-history.json'),
 
   // Compliance
   PUBLISHER_EXEMPTION_LEGAL_ENTITY: 'EquiSight Analytics Media LLC',

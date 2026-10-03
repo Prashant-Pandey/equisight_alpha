@@ -153,6 +153,36 @@ async function runTestSuite() {
   assert.ok(typeof scrapedIntel.stockTwits.totalMessages === 'number', 'StockTwits count must be numeric');
   console.log(`✓ Pass: Scraped live web news (${scrapedIntel.news.length} articles), StockTwits sentiment (${scrapedIntel.stockTwits.totalMessages} msgs), and SEC filings.\n`);
 
+  // 7. Test Automated Git Deployment (git add ., git commit -m '<message>', git push)
+  console.log('Test 7: Automated Git Deployment (git add, git commit, git push)');
+  const { BuildAndDeployManager } = await import('../pipeline/src/deploy/buildAndDeploy.js');
+  const testGitDir = path.resolve(process.cwd(), 'pipeline/data/test-git-repo');
+  if (fs.existsSync(testGitDir)) fs.rmSync(testGitDir, { recursive: true });
+  fs.mkdirSync(testGitDir, { recursive: true });
+
+  const { execSync } = await import('child_process');
+  execSync('git init', { cwd: testGitDir });
+  execSync('git config user.name "Test Bot"', { cwd: testGitDir });
+  execSync('git config user.email "test@example.com"', { cwd: testGitDir });
+  fs.writeFileSync(path.join(testGitDir, 'report.md'), '# Test Equity Report');
+
+  const deployManager = new BuildAndDeployManager(testGitDir);
+  const commitMsg = 'chore(deploy): auto-publish research reports [2026-10-03]';
+  const gitResult = await deployManager.triggerGitDeploy(commitMsg, { cwd: testGitDir, skipPush: true });
+  assert.strictEqual(gitResult.committed, true, 'Should stage and commit new files');
+  assert.strictEqual(gitResult.pushed, true, 'Should complete push flow');
+
+  const commitLog = execSync('git log -n 1 --pretty=format:%s', { cwd: testGitDir }).toString();
+  assert.strictEqual(commitLog, commitMsg, 'Commit message in git log must match expected message');
+
+  // Verify clean working tree doesn't trigger superfluous commit
+  const cleanResult = await deployManager.triggerGitDeploy('chore(deploy): another commit', { cwd: testGitDir, skipPush: true });
+  assert.strictEqual(cleanResult.committed, false, 'Should skip commit when working tree is clean');
+
+  // Clean up
+  fs.rmSync(testGitDir, { recursive: true });
+  console.log('✓ Pass: AUTO_TRIGGER_DEPLOY git add, commit, and push flow verified.\n');
+
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);
 

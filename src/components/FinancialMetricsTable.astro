@@ -30,7 +30,7 @@ const isPositive = metrics.movePercent >= 0;
       <div class="text-lg font-bold text-white mt-1">
         ${(metrics.marketCap / 1e9).toFixed(2)}B
       </div>
-      <div class="text-[10px] text-slate-500 mt-0.5">Consolidated Equity Value</div>
+      <div class="text-[10px] text-slate-400 mt-0.5">Consolidated Equity Value</div>
     </div>
 
     <div class="p-4">
@@ -38,7 +38,7 @@ const isPositive = metrics.movePercent >= 0;
       <div class="text-lg font-bold text-white mt-1">
         {metrics.peRatio ? `${metrics.peRatio.toFixed(1)}x` : 'N/A'}
       </div>
-      <div class="text-[10px] text-slate-500 mt-0.5">Price-to-Earnings (TTM)</div>
+      <div class="text-[10px] text-slate-400 mt-0.5">Price-to-Earnings (TTM)</div>
     </div>
 
     <div class="p-4">
@@ -46,7 +46,7 @@ const isPositive = metrics.movePercent >= 0;
       <div class="text-lg font-bold text-white mt-1">
         {metrics.forwardPE ? `${metrics.forwardPE.toFixed(1)}x` : 'N/A'}
       </div>
-      <div class="text-[10px] text-slate-500 mt-0.5">Next 12M Consensus</div>
+      <div class="text-[10px] text-slate-400 mt-0.5">Next 12M Consensus</div>
     </div>
 
     <div class="p-4">
@@ -54,7 +54,7 @@ const isPositive = metrics.movePercent >= 0;
       <div class="text-lg font-bold text-white mt-1">
         {metrics.dividendYield > 0 ? `${metrics.dividendYield.toFixed(2)}%` : '0.00%'}
       </div>
-      <div class="text-[10px] text-slate-500 mt-0.5">Annualized Distribution</div>
+      <div class="text-[10px] text-slate-400 mt-0.5">Annualized Distribution</div>
     </div>
   </div>
 

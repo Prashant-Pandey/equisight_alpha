@@ -136,7 +136,7 @@ stock-intel-platform/
 │   │   ├── distribution/
 │   │   │   └── socialPublisher.ts # Twitter/X thread, Reddit r/stocks, Telegram alerts
 │   │   └── deploy/
-│   │       └── buildAndDeploy.ts  # Static Astro compilation & deploy webhook caller
+│   │       └── buildAndDeploy.ts  # Static Astro compilation & automated git deployer (add, commit, push)
 │   ├── data/
 │   │   └── coverage-history.json  # Persisted 365-day lockout database
 │   └── logs/

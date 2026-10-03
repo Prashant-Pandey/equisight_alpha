@@ -82,9 +82,9 @@ const pageDescription = `Historical equity research reports, valuation multiples
                 <span class={`font-mono font-bold ${report.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(2)}% Move
                 </span>
-                <span class="text-slate-600">&bull;</span>
+                <span class="text-slate-400">&bull;</span>
                 <span>P/E: <strong class="text-slate-200">{report.data.peRatio ? `${report.data.peRatio.toFixed(1)}x` : 'N/A'}</strong></span>
-                <span class="text-slate-600">&bull;</span>
+                <span class="text-slate-400">&bull;</span>
                 <span>Cap: <strong class="text-slate-200">${(report.data.marketCap / 1e9).toFixed(1)}B</strong></span>
               </div>
               <h3 class="text-base font-bold text-white hover:text-emerald-400 transition-colors">

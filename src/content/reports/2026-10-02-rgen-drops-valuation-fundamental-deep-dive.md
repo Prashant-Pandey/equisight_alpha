@@ -114,7 +114,7 @@ Repligen Corporation (NASDAQ: RGEN) experienced a pronounced pullback during tod
       Claim Free Stocks &rarr;
     </a>
   </div>
-  <div class="flex items-center justify-between text-[10px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2">
+  <div class="flex items-center justify-between text-[10px] text-slate-400 mt-3 border-t border-slate-800/60 pt-2">
     <span>Securities offered through Webull Financial LLC, member FINRA/SIPC.</span>
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
@@ -238,9 +238,9 @@ An objective evaluation of market factors reveals a balanced spectrum of operati
 *This publication is prepared solely for general educational, analytical, and informational purposes in reliance upon the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and the standards of FINRA Rule 2210. Nothing contained herein constitutes personalized investment advice, financial planning, a legal solicitation, or an individualized buy/sell directive. All analytical statements represent objective assessments based exclusively on ingested market and fundamental data as of the session date. Investors must conduct independent due diligence with certified financial professionals before executing transactions.*
 
 <div class="my-10 p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-center flex flex-col items-center justify-center min-h-[250px] overflow-hidden">
-  <span class="text-[10px] uppercase font-mono text-slate-500 mb-2">Advertisement</span>
+  <span class="text-[10px] uppercase font-mono text-slate-400 mb-2">Advertisement</span>
   <div id="ad-content-mid" data-ad-slot="report-mid" class="w-full flex items-center justify-center">
     <!-- Automated Programmatic Ad Unit (Google AdSense / Carbon / NitroPay) -->
-    <div class="text-xs text-slate-500 py-8">Sponsored Market Analytics & Execution Tools</div>
+    <div class="text-xs text-slate-400 py-8">Sponsored Market Analytics & Execution Tools</div>
   </div>
 </div>

@@ -97,7 +97,7 @@ export class ProgrammaticAdInjector {
       ${primaryAffiliate.ctaText} &rarr;
     </a>
   </div>
-  <div class="flex items-center justify-between text-[10px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2">
+  <div class="flex items-center justify-between text-[10px] text-slate-400 mt-3 border-t border-slate-800/60 pt-2">
     <span>${primaryAffiliate.disclosure}</span>
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
@@ -105,10 +105,10 @@ export class ProgrammaticAdInjector {
 
     // 2. Insertion Slot B: Mid-Article Native Display Ad placeholder
     const slotBComponent = `\n\n<div class="my-10 p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-center flex flex-col items-center justify-center min-h-[250px] overflow-hidden">
-  <span class="text-[10px] uppercase font-mono text-slate-500 mb-2">Advertisement</span>
+  <span class="text-[10px] uppercase font-mono text-slate-400 mb-2">Advertisement</span>
   <div id="ad-content-mid" data-ad-slot="report-mid" class="w-full flex items-center justify-center">
     <!-- Automated Programmatic Ad Unit (Google AdSense / Carbon / NitroPay) -->
-    <div class="text-xs text-slate-500 py-8">Sponsored Market Analytics & Execution Tools</div>
+    <div class="text-xs text-slate-400 py-8">Sponsored Market Analytics & Execution Tools</div>
   </div>
 </div>\n\n`;
 

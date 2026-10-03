@@ -122,7 +122,7 @@ From a technical structure perspective, today's price action represents an attem
       Claim Free Stocks &rarr;
     </a>
   </div>
-  <div class="flex items-center justify-between text-[10px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2">
+  <div class="flex items-center justify-between text-[10px] text-slate-400 mt-3 border-t border-slate-800/60 pt-2">
     <span>Securities offered through Webull Financial LLC, member FINRA/SIPC.</span>
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
@@ -220,9 +220,9 @@ To ensure balanced empirical assessment, the structural bull and bear drivers ar
 *This publication is prepared solely for general informational and educational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. Nothing contained herein constitutes personalized financial, legal, or investment advice, nor does it represent a buy, sell, or hold recommendation or price target. All presented metrics are derived from ingested market data. Investors should conduct independent due diligence and consult with a licensed fiduciary professional before committing capital.*
 
 <div class="my-10 p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-center flex flex-col items-center justify-center min-h-[250px] overflow-hidden">
-  <span class="text-[10px] uppercase font-mono text-slate-500 mb-2">Advertisement</span>
+  <span class="text-[10px] uppercase font-mono text-slate-400 mb-2">Advertisement</span>
   <div id="ad-content-mid" data-ad-slot="report-mid" class="w-full flex items-center justify-center">
     <!-- Automated Programmatic Ad Unit (Google AdSense / Carbon / NitroPay) -->
-    <div class="text-xs text-slate-500 py-8">Sponsored Market Analytics & Execution Tools</div>
+    <div class="text-xs text-slate-400 py-8">Sponsored Market Analytics & Execution Tools</div>
   </div>
 </div>

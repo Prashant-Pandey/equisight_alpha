@@ -118,9 +118,11 @@ export class PipelineOrchestrator {
       // 4. Trigger Astro Static Build & Deployment
       if (publishedReports.length > 0) {
         console.log('[PipelineOrchestrator] Triggering static build compilation...');
-        const buildResult = await buildAndDeployManager.executeBuildAndDeploy();
+        const tickers = publishedReports.map((r) => `$${r.ticker}`).join(', ');
+        const commitMsg = `chore(deploy): auto-publish ${publishedReports.length} reports (${tickers}) [${new Date().toISOString().split('T')[0]}]`;
+        const buildResult = await buildAndDeployManager.executeBuildAndDeploy(commitMsg);
         if (buildResult.success) {
-          console.log(`[PipelineOrchestrator] Build succeeded (${buildResult.pagesBuilt} pages). Webhook triggered: ${buildResult.webhookTriggered}`);
+          console.log(`[PipelineOrchestrator] Build succeeded (${buildResult.pagesBuilt} pages). Deploy triggered: ${buildResult.deployTriggered}`);
         } else {
           console.error(`[PipelineOrchestrator] Build failed: ${buildResult.error}`);
         }

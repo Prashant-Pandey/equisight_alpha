@@ -20,7 +20,8 @@ export default defineConfig({
   build: {
     // Configured for high page volumes (5,000+ reports)
     concurrency: 8,
-    format: 'directory'
+    format: 'directory',
+    inlineStylesheets: 'always'
   },
   integrations: [
     tailwind({

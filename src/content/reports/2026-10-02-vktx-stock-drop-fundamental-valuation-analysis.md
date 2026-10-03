@@ -115,7 +115,7 @@ The primary catalyst driving institutional re-pricing was the company's announce
       Claim Free Stocks &rarr;
     </a>
   </div>
-  <div class="flex items-center justify-between text-[10px] text-slate-500 mt-3 border-t border-slate-800/60 pt-2">
+  <div class="flex items-center justify-between text-[10px] text-slate-400 mt-3 border-t border-slate-800/60 pt-2">
     <span>Securities offered through Webull Financial LLC, member FINRA/SIPC.</span>
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
@@ -217,9 +217,9 @@ From a valuation multiple standpoint, the firm's **Trailing P/E of 41.0** and **
 > **Regulatory Disclosure**: This research report is published pursuant to the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and complies with **FINRA Rule 2210**. This analysis is strictly educational and informational in nature and does not constitute personalized investment advice, financial planning, a price target, or an endorsement to buy or sell any security. All figures cited are derived exclusively from ingested financial datasets and public market disclosures. Investors must independently assess their risk tolerance and consult a registered financial advisor before executing financial decisions.
 
 <div class="my-10 p-4 rounded-xl border border-slate-800 bg-slate-900/40 text-center flex flex-col items-center justify-center min-h-[250px] overflow-hidden">
-  <span class="text-[10px] uppercase font-mono text-slate-500 mb-2">Advertisement</span>
+  <span class="text-[10px] uppercase font-mono text-slate-400 mb-2">Advertisement</span>
   <div id="ad-content-mid" data-ad-slot="report-mid" class="w-full flex items-center justify-center">
     <!-- Automated Programmatic Ad Unit (Google AdSense / Carbon / NitroPay) -->
-    <div class="text-xs text-slate-500 py-8">Sponsored Market Analytics & Execution Tools</div>
+    <div class="text-xs text-slate-400 py-8">Sponsored Market Analytics & Execution Tools</div>
   </div>
 </div>
