@@ -7,79 +7,102 @@ export interface Props {
 const props = Astro.props;
 const data = props.report || props.metrics || {};
 
-const marketCap = data.marketCap ?? 0;
+const marketCap = data.marketCap ?? null;
 const currentPrice = data.currentPrice ?? 0;
 const currency = data.currency || 'USD';
 const movePercent = data.movePercent ?? 0;
 const isPositive = movePercent >= 0;
 const peRatio = data.peRatio ?? null;
 const forwardPE = data.forwardPE ?? null;
-const dividendYield = data.dividendYield ?? 0;
+const dividendYield = data.dividendYield ?? null;
 const riskScore = data.riskScore ?? 5;
 const isPennyStock = data.isPennyStock ?? (currentPrice < 5);
 const moneyMarketTradingVenue = data.moneyMarketTradingVenue || (data.exchange ? `${data.exchange} Primary Listed` : 'Nasdaq / NYSE');
 const fundamentalRating = data.fundamentalRating || (riskScore <= 3 ? 'Strong' : riskScore <= 6 ? 'Fairly Valued' : 'Weak');
-const classification = data.classification || (isPennyStock ? 'Speculative Penny Stock' : (peRatio && peRatio > 25 ? 'Growth Stock' : (dividendYield > 2 ? 'Income Stock' : 'Value / Turnaround')));
-const returnOnEquity = data.returnOnEquity ?? (peRatio ? Math.min(32, Math.max(8, Number((24 - riskScore * 1.4).toFixed(1)))) : 12.5);
+const classification = data.classification || (isPennyStock ? 'Speculative Penny Stock' : (peRatio && peRatio > 25 ? 'Growth Stock' : (dividendYield && dividendYield > 2 ? 'Income Stock' : 'Value / Turnaround')));
+const returnOnEquity = data.returnOnEquity ?? null;
 
 // Cash flow
-const operatingCashFlow = data.cashFlow?.operatingCashFlow || data.operatingCashFlow || (marketCap ? Math.round(marketCap * 0.082) : 250000000);
-const freeCashFlow = data.cashFlow?.freeCashFlow || data.freeCashFlow || (marketCap ? Math.round(marketCap * 0.054) : 180000000);
-const cashFlowStatus = data.cashFlow?.status || (freeCashFlow >= 0 ? 'Positive Free Cash Flow' : 'Cash Burn / Capital Intensive');
+const operatingCashFlow = data.cashFlow?.operatingCashFlow ?? data.operatingCashFlow ?? null;
+const freeCashFlow = data.cashFlow?.freeCashFlow ?? data.freeCashFlow ?? null;
+const cashFlowStatus = data.cashFlow?.status || (freeCashFlow !== null && freeCashFlow !== undefined ? (freeCashFlow >= 0 ? 'Positive Free Cash Flow' : 'Cash Burn / Capital Intensive') : 'Not Available');
 
 // Debt Analysis
 const debt = data.debtAnalysis || {};
-const totalDebt = debt.totalDebt || (marketCap ? Math.round(marketCap * 0.28) : 500000000);
-const debtToEquity = debt.debtToEquity || (riskScore > 6 ? 1.65 : riskScore > 4 ? 0.75 : 0.35);
-const shortTermDebt = debt.shortTermDebt || Math.round(totalDebt * 0.22);
-const longTermDebt = debt.longTermDebt || Math.round(totalDebt * 0.78);
-const shortVsLongTermRatio = debt.shortVsLongTermRatio || '22% Short-Term / 78% Long-Term (Balanced)';
-const recentChanges = debt.recentChanges || 'Stable debt levels; no maturity cliffs within the next 24 months';
-const debtRisks = debt.risks || 'Standard refinancing exposure; interest coverage ratio remains sustainable at >4.5x';
-const debtLeverageLabel = debtToEquity > 1.2 ? 'Elevated Leverage' : 'Healthy Leverage';
+const totalDebt = debt.totalDebt ?? null;
+const debtToEquity = debt.debtToEquity ?? null;
+const shortTermDebt = debt.shortTermDebt ?? null;
+const longTermDebt = debt.longTermDebt ?? null;
+const shortVsLongTermRatio = debt.shortVsLongTermRatio || 'Not Available';
+const recentChanges = debt.recentChanges || 'Not Available';
+const debtRisks = debt.risks || 'Not Available';
+const debtLeverageLabel = debtToEquity !== null ? (debtToEquity > 1.2 ? 'Elevated Leverage' : 'Healthy Leverage') : 'N/A';
 
 // Price-to-Book Ratio & Benchmarks
 const pb = data.priceToBookRatio || {};
-const currentPB = pb.current || (currentPrice > 0 ? Number(((currentPrice / 18) * 1.15).toFixed(2)) : 2.45);
-const industryAvgPB = pb.industryAverage || 3.20;
-const hist5YAvgPB = pb.historicalAverage5Y || 2.85;
+const currentPB = pb.current ?? null;
+const industryAvgPB = pb.industryAverage ?? null;
+const hist5YAvgPB = pb.historicalAverage5Y ?? null;
 
 // Price-to-Earnings Ratio & Benchmarks
 const pe = data.priceToEarningsRatio || {};
 const currentPE = pe.current !== undefined && pe.current !== null ? pe.current : peRatio;
-const industryAvgPE = pe.industryAverage || 22.0;
-const hist5YAvgPE = pe.historicalAverage5Y || 19.5;
+const industryAvgPE = pe.industryAverage ?? null;
+const hist5YAvgPE = pe.historicalAverage5Y ?? null;
 
 // EPS & 8-Quarter EPS Trend (Past 2 Years)
 const epsObj = data.earningsPerShare || {};
-const currentTTM = epsObj.currentTTM || (currentPE && currentPrice ? Number((currentPrice / currentPE).toFixed(2)) : (currentPrice > 0 ? Number((currentPrice / 20).toFixed(2)) : 2.40));
+const currentTTM = epsObj.currentTTM ?? (currentPE && currentPrice ? Number((currentPrice / currentPE).toFixed(2)) : null);
 let quarterlyEPS = (epsObj.quarterlyEPSPast2Years && epsObj.quarterlyEPSPast2Years.length > 0)
   ? epsObj.quarterlyEPSPast2Years
-  : [
-      { quarter: "Q3 '24", eps: Number((currentTTM * 0.22).toFixed(2)) },
-      { quarter: "Q4 '24", eps: Number((currentTTM * 0.29).toFixed(2)) },
-      { quarter: "Q1 '25", eps: Number((currentTTM * 0.23).toFixed(2)) },
-      { quarter: "Q2 '25", eps: Number((currentTTM * 0.27).toFixed(2)) },
-      { quarter: "Q3 '25", eps: Number((currentTTM * 0.23).toFixed(2)) },
-      { quarter: "Q4 '25", eps: Number((currentTTM * 0.29).toFixed(2)) },
-      { quarter: "Q1 '26", eps: Number((currentTTM * 0.24).toFixed(2)) },
-      { quarter: "Q2 '26", eps: Number((currentTTM * 0.24).toFixed(2)) }
-    ];
+  : [];
+
+// Helpers
+function formatCurrency(val: number | null | undefined): string {
+  if (val === undefined || val === null || isNaN(val)) return 'N/A';
+  const abs = Math.abs(val);
+  const sign = val < 0 ? '-' : '';
+  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(2)}B`;
+  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`;
+  return `${sign}$${abs.toLocaleString()}`;
+}
+
+function formatEPS(val: number | null | undefined): string {
+  if (val === undefined || val === null || isNaN(val)) return 'N/A';
+  if (val < 0) return `-$${Math.abs(val).toFixed(2)}`;
+  return `$${val.toFixed(2)}`;
+}
+
+// Ensure quarterly EPS is in chronological order (oldest -> newest, left -> right)
+let sortedQuarterlyEPS = [...quarterlyEPS];
+if (sortedQuarterlyEPS.length > 1) {
+  const firstQ = sortedQuarterlyEPS[0].quarter || '';
+  const lastQ = sortedQuarterlyEPS[sortedQuarterlyEPS.length - 1].quarter || '';
+  const firstYearMatch = firstQ.match(/\d{2,4}/);
+  const lastYearMatch = lastQ.match(/\d{2,4}/);
+  if (firstYearMatch && lastYearMatch) {
+    const firstYear = parseInt(firstYearMatch[0], 10);
+    const lastYear = parseInt(lastYearMatch[0], 10);
+    if (firstYear > lastYear) {
+      sortedQuarterlyEPS.reverse();
+    }
+  }
+}
 
 // Volatility Index
 const vol = data.volatilityIndex || {};
-const volValue = vol.value || (riskScore > 6 ? 1.48 : riskScore < 4 ? 0.85 : 1.12);
-const volRating = vol.rating || (volValue > 1.3 ? 'High Volatility' : volValue < 0.9 ? 'Low Volatility' : 'Moderate Volatility');
+const volValue = vol.value ?? null;
+const volRating = vol.rating || (volValue !== null ? (volValue > 1.3 ? 'High Volatility' : volValue < 0.9 ? 'Low Volatility' : 'Moderate Volatility') : 'Not Rated');
 
 // Management Quality
 const mgmt = data.managementQuality || {};
-const mgmtRating = mgmt.rating || (riskScore <= 4 ? 'Top Tier' : riskScore <= 7 ? 'Experienced' : 'Turnaround');
-const trackRecord = mgmt.trackRecord || 'Disciplined capital allocation with consistent return on invested capital and transparent investor disclosures.';
+const mgmtRating = mgmt.rating || 'Not Rated';
+const trackRecord = mgmt.trackRecord || 'Not Available';
 
 // Competitive Moat
 const moat = data.competitiveMoat || {};
-const moatRating = moat.rating || (riskScore <= 4 ? 'Wide Moat' : riskScore <= 7 ? 'Narrow Moat' : 'No Moat');
-const moatSummary = moat.summary || 'Defensible competitive positioning supported by proprietary technology, customer switching friction, and established distribution.';
+const moatRating = moat.rating || 'Not Rated';
+const moatSummary = moat.summary || 'Not Available';
 
 // Risk Factor
 const riskCategory = riskScore <= 3 ? 'Conservative / Low Risk' : riskScore <= 6 ? 'Core / Moderate Risk' : 'High Risk / Speculative';
@@ -88,49 +111,70 @@ const riskCategory = riskScore <= 3 ? 'Conservative / Low Risk' : riskScore <= 6
 const art = data.artificialInflation || {};
 const isInflated = art.isInflated ?? false;
 const inflationRiskLevel = art.riskLevel || (isPennyStock ? 'Moderate' : 'Low');
-const volumeAnomalyRatio = art.volumeAnomalyRatio || (Math.abs(movePercent) > 10 ? 1.85 : 1.08);
-const majorPriceDriver = art.majorPriceDriver || (movePercent >= 0 ? 'Institutional accumulation & earnings performance' : 'Sector pullback & macro multiple adjustment');
-const sentimentScore = art.sentimentScore !== undefined ? art.sentimentScore : (movePercent >= 0 ? 0.74 : 0.42);
-const newsImpact = art.newsImpact || 'Broad financial press coverage with neutral-to-constructive sentiment index';
-const socialMediaImpact = art.socialMediaImpact || 'Organic retail conversation; negligible promotional or bot-driven volume activity';
+const volumeAnomalyRatio = art.volumeAnomalyRatio ?? null;
+const majorPriceDriver = art.majorPriceDriver || 'Not Available';
+const sentimentScore = art.sentimentScore !== undefined ? art.sentimentScore : null;
+const newsImpact = art.newsImpact || 'Not Available';
+const socialMediaImpact = art.socialMediaImpact || 'Not Available';
 
-const volumeStatusLabel = volumeAnomalyRatio > 1.5 ? 'Unusual Volume Spike' : 'Within Normal Range';
-const sentimentLabel = sentimentScore >= 0.6 ? 'Constructive / Bullish' : sentimentScore <= 0.4 ? 'Bearish / Defensive' : 'Neutral Skew';
-
-// Helpers
-function formatCurrency(val: number): string {
-  if (val === undefined || val === null || isNaN(val)) return '$0';
-  const abs = Math.abs(val);
-  const sign = val < 0 ? '-' : '';
-  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(2)}B`;
-  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`;
-  return `${sign}$${abs.toLocaleString()}`;
-}
+const volumeStatusLabel = volumeAnomalyRatio !== null ? (volumeAnomalyRatio > 1.5 ? 'Unusual Volume Spike' : 'Within Normal Range') : 'N/A';
+const sentimentLabel = sentimentScore !== null ? (sentimentScore >= 0.6 ? 'Constructive / Bullish' : sentimentScore <= 0.4 ? 'Bearish / Defensive' : 'Neutral Skew') : 'N/A';
 
 // Chart calculations for P/B
-const maxPB = Math.max(currentPB, industryAvgPB, hist5YAvgPB, 1.0) * 1.25;
-const pbBarWidthCurrent = Math.max(12, Math.min(220, Math.round((currentPB / maxPB) * 220)));
-const pbBarWidthIndustry = Math.max(12, Math.min(220, Math.round((industryAvgPB / maxPB) * 220)));
-const pbBarWidth5Y = Math.max(12, Math.min(220, Math.round((hist5YAvgPB / maxPB) * 220)));
-const pbDiffVal = ((currentPB - industryAvgPB) / industryAvgPB) * 100;
-const pbDiffPercent = pbDiffVal.toFixed(1);
-const isPBDiscount = pbDiffVal <= 0;
+const validPB = currentPB ?? 0;
+const validIndPB = industryAvgPB ?? 0;
+const validHistPB = hist5YAvgPB ?? 0;
+const maxPB = Math.max(validPB, validIndPB, validHistPB, 1.0) * 1.25;
+const pbBarWidthCurrent = currentPB !== null ? Math.max(12, Math.min(220, Math.round((currentPB / maxPB) * 220))) : 0;
+const pbBarWidthIndustry = industryAvgPB !== null ? Math.max(12, Math.min(220, Math.round((industryAvgPB / maxPB) * 220))) : 0;
+const pbBarWidth5Y = hist5YAvgPB !== null ? Math.max(12, Math.min(220, Math.round((hist5YAvgPB / maxPB) * 220))) : 0;
+const pbDiffVal = (currentPB !== null && industryAvgPB) ? (((currentPB - industryAvgPB) / industryAvgPB) * 100) : null;
+const pbDiffPercent = pbDiffVal !== null ? pbDiffVal.toFixed(1) : 'N/A';
+const isPBDiscount = pbDiffVal !== null ? pbDiffVal <= 0 : true;
 
 // Chart calculations for P/E
 const isPEProfitable = currentPE !== null && currentPE > 0;
-const validPE = isPEProfitable ? currentPE : 0;
-const maxPE = Math.max(validPE, industryAvgPE, hist5YAvgPE, 10) * 1.25;
+const validPE = isPEProfitable ? currentPE! : 0;
+const validIndPE = industryAvgPE ?? 0;
+const validHistPE = hist5YAvgPE ?? 0;
+const maxPE = Math.max(validPE, validIndPE, validHistPE, 10) * 1.25;
 const peBarWidthCurrent = isPEProfitable ? Math.max(12, Math.min(220, Math.round((validPE / maxPE) * 220))) : 0;
-const peBarWidthIndustry = Math.max(12, Math.min(220, Math.round((industryAvgPE / maxPE) * 220)));
-const peBarWidth5Y = Math.max(12, Math.min(220, Math.round((hist5YAvgPE / maxPE) * 220)));
-const peDiffVal = isPEProfitable ? (((validPE - industryAvgPE) / industryAvgPE) * 100) : 0;
-const peDiffPercent = peDiffVal.toFixed(1);
-const isPEDiscount = peDiffVal <= 0;
+const peBarWidthIndustry = industryAvgPE !== null ? Math.max(12, Math.min(220, Math.round((industryAvgPE / maxPE) * 220))) : 0;
+const peBarWidth5Y = hist5YAvgPE !== null ? Math.max(12, Math.min(220, Math.round((validHistPE / maxPE) * 220))) : 0;
+const peDiffVal = (isPEProfitable && industryAvgPE) ? (((validPE - industryAvgPE) / industryAvgPE) * 100) : null;
+const peDiffPercent = peDiffVal !== null ? peDiffVal.toFixed(1) : 'N/A';
+const isPEDiscount = peDiffVal !== null ? peDiffVal <= 0 : true;
 
 // Chart calculations for 8-Quarter EPS
-const epsValues = quarterlyEPS.map((q: any) => q.eps);
-const maxEPSVal = Math.max(...epsValues, 0.1);
-const minEPSVal = Math.min(...epsValues, 0);
+const epsValues = sortedQuarterlyEPS.map((q: any) => Number(q.eps) || 0);
+const hasPosEPS = epsValues.some((val: number) => val > 0);
+const hasNegEPS = epsValues.some((val: number) => val < 0);
+const maxAbsEPS = Math.max(...epsValues.map((val: number) => Math.abs(val)), 0.01);
+
+let zeroY = 90;
+let maxBarHeight = 55;
+let svgViewBoxHeight = 190;
+let xAxisLabelY = 172;
+
+if (hasNegEPS && !hasPosEPS) {
+  // All quarters are losses
+  zeroY = 35;
+  maxBarHeight = 90;
+  svgViewBoxHeight = 185;
+  xAxisLabelY = 166;
+} else if (hasPosEPS && !hasNegEPS) {
+  // All quarters are positive
+  zeroY = 140;
+  maxBarHeight = 90;
+  svgViewBoxHeight = 185;
+  xAxisLabelY = 166;
+} else {
+  // Mixed positive and loss quarters
+  zeroY = 90;
+  maxBarHeight = 55;
+  svgViewBoxHeight = 190;
+  xAxisLabelY = 172;
+}
 ---
 
 <div class="my-8 rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-xl space-y-6 p-4 sm:p-6">
@@ -185,62 +229,62 @@ const minEPSVal = Math.min(...epsValues, 0);
     <div class="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider mb-3">
       1. Core Valuation Multiples & Return Metrics
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+    <div class="flex flex-wrap gap-3">
       <!-- Market Cap -->
-      <div class="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400">Market Cap</div>
-        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5">
+      <div class="flex-1 min-w-[160px] max-w-full p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 whitespace-nowrap max-sm:whitespace-normal">Market Cap</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {formatCurrency(marketCap)}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Consolidated Equity</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Consolidated Equity</div>
       </div>
 
       <!-- Trailing P/E -->
-      <div class="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400">Trailing P/E</div>
-        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5">
+      <div class="flex-1 min-w-[160px] max-w-full p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 whitespace-nowrap max-sm:whitespace-normal">Trailing P/E</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {peRatio ? `${peRatio.toFixed(1)}x` : 'N/A (Deficit)'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Price / TTM EPS</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Price / TTM EPS</div>
       </div>
 
       <!-- Forward P/E -->
-      <div class="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400">Forward P/E</div>
-        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5">
+      <div class="flex-1 min-w-[160px] max-w-full p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 whitespace-nowrap max-sm:whitespace-normal">Forward P/E</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {forwardPE ? `${forwardPE.toFixed(1)}x` : 'N/A'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">NTM Consensus</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">NTM Consensus</div>
       </div>
 
       <!-- Return on Equity (ROE) -->
-      <div class="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400">Return on Equity</div>
-        <div class="text-base sm:text-lg font-bold font-mono text-emerald-400 mt-0.5">
-          {returnOnEquity.toFixed(1)}%
+      <div class="flex-1 min-w-[160px] max-w-full p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 whitespace-nowrap max-sm:whitespace-normal">Return on Equity</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-emerald-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
+          {returnOnEquity !== null && returnOnEquity !== undefined ? `${returnOnEquity.toFixed(1)}%` : 'N/A'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Net Income / Equity</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Net Income / Equity</div>
       </div>
 
       <!-- Earnings Per Share (TTM) -->
-      <div class="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400">EPS (TTM)</div>
-        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5">
-          ${currentTTM.toFixed(2)}
+      <div class="flex-1 min-w-[160px] max-w-full p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 whitespace-nowrap max-sm:whitespace-normal">EPS (TTM)</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
+          {currentTTM !== null && currentTTM !== undefined ? formatEPS(currentTTM) : 'N/A'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Trailing 12-Month</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Trailing 12-Month</div>
       </div>
 
       <!-- Volatility Index / Beta -->
-      <div class="p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
-        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400">Volatility (Beta)</div>
-        <div class="text-base sm:text-lg font-bold font-mono text-amber-400 mt-0.5 flex items-center justify-between">
-          <span>{volValue.toFixed(2)}</span>
+      <div class="flex-1 min-w-[180px] max-w-full p-3.5 rounded-xl border border-slate-800/80 bg-slate-950/50">
+        <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400 whitespace-nowrap max-sm:whitespace-normal">Volatility (Beta)</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-amber-400 mt-0.5 flex items-center justify-between gap-2 whitespace-nowrap max-sm:whitespace-normal">
+          <span>{volValue !== null && volValue !== undefined ? volValue.toFixed(2) : 'N/A'}</span>
           <span class="text-[10px] font-normal px-1.5 py-0.2 rounded bg-amber-950/80 border border-amber-800/50 text-amber-300">
             {volRating.replace(' Volatility', '')}
           </span>
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Relative to S&P 500</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Relative to S&P 500</div>
       </div>
     </div>
   </div>
@@ -272,29 +316,29 @@ const minEPSVal = Math.min(...epsValues, 0);
             <text x="5" y="30" fill="#94a3b8" font-size="11" font-family="monospace" font-weight="bold">Current Stock</text>
             <rect x="120" y="16" width={pbBarWidthCurrent} height="18" rx="4" fill="#10b981" />
             <text x={125 + pbBarWidthCurrent} y="30" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
-              {currentPB.toFixed(2)}x
+              {currentPB !== null ? `${currentPB.toFixed(2)}x` : 'N/A'}
             </text>
 
             <!-- Bar 2: Industry Average -->
             <text x="5" y="65" fill="#94a3b8" font-size="11" font-family="monospace">Industry Avg</text>
             <rect x="120" y="51" width={pbBarWidthIndustry} height="18" rx="4" fill="#38bdf8" />
             <text x={125 + pbBarWidthIndustry} y="65" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
-              {industryAvgPB.toFixed(2)}x
+              {industryAvgPB !== null ? `${industryAvgPB.toFixed(2)}x` : 'N/A'}
             </text>
 
             <!-- Bar 3: 5Y Historical Avg -->
             <text x="5" y="100" fill="#94a3b8" font-size="11" font-family="monospace">5Y Hist. Avg</text>
             <rect x="120" y="86" width={pbBarWidth5Y} height="18" rx="4" fill="#a855f7" />
             <text x={125 + pbBarWidth5Y} y="100" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
-              {hist5YAvgPB.toFixed(2)}x
+              {hist5YAvgPB !== null ? `${hist5YAvgPB.toFixed(2)}x` : 'N/A'}
             </text>
           </svg>
         </div>
       </div>
       <div class="text-[10px] text-slate-500 mt-2 flex justify-between">
-        <span>Current: <strong class="text-slate-300 font-mono">{currentPB.toFixed(2)}x</strong></span>
-        <span>Industry: <strong class="text-slate-300 font-mono">{industryAvgPB.toFixed(2)}x</strong></span>
-        <span>5Y Avg: <strong class="text-slate-300 font-mono">{hist5YAvgPB.toFixed(2)}x</strong></span>
+        <span>Current: <strong class="text-slate-300 font-mono">{currentPB !== null ? `${currentPB.toFixed(2)}x` : 'N/A'}</strong></span>
+        <span>Industry: <strong class="text-slate-300 font-mono">{industryAvgPB !== null ? `${industryAvgPB.toFixed(2)}x` : 'N/A'}</strong></span>
+        <span>5Y Avg: <strong class="text-slate-300 font-mono">{hist5YAvgPB !== null ? `${hist5YAvgPB.toFixed(2)}x` : 'N/A'}</strong></span>
       </div>
     </div>
 
@@ -344,22 +388,22 @@ const minEPSVal = Math.min(...epsValues, 0);
             <text x="5" y="65" fill="#94a3b8" font-size="11" font-family="monospace">Industry Avg</text>
             <rect x="120" y="51" width={peBarWidthIndustry} height="18" rx="4" fill="#38bdf8" />
             <text x={125 + peBarWidthIndustry} y="65" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
-              {industryAvgPE.toFixed(1)}x
+              {industryAvgPE !== null ? `${industryAvgPE.toFixed(1)}x` : 'N/A'}
             </text>
 
             <!-- Bar 3: 5Y Historical Avg -->
             <text x="5" y="100" fill="#94a3b8" font-size="11" font-family="monospace">5Y Hist. Avg</text>
             <rect x="120" y="86" width={peBarWidth5Y} height="18" rx="4" fill="#a855f7" />
             <text x={125 + peBarWidth5Y} y="100" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
-              {hist5YAvgPE.toFixed(1)}x
+              {hist5YAvgPE !== null ? `${hist5YAvgPE.toFixed(1)}x` : 'N/A'}
             </text>
           </svg>
         </div>
       </div>
       <div class="text-[10px] text-slate-500 mt-2 flex justify-between">
         <span>Current: <strong class="text-slate-300 font-mono">{isPEProfitable && currentPE ? `${currentPE.toFixed(1)}x` : 'N/A'}</strong></span>
-        <span>Industry: <strong class="text-slate-300 font-mono">{industryAvgPE.toFixed(1)}x</strong></span>
-        <span>5Y Avg: <strong class="text-slate-300 font-mono">{hist5YAvgPE.toFixed(1)}x</strong></span>
+        <span>Industry: <strong class="text-slate-300 font-mono">{industryAvgPE !== null ? `${industryAvgPE.toFixed(1)}x` : 'N/A'}</strong></span>
+        <span>5Y Avg: <strong class="text-slate-300 font-mono">{hist5YAvgPE !== null ? `${hist5YAvgPE.toFixed(1)}x` : 'N/A'}</strong></span>
       </div>
     </div>
   </div>
@@ -383,71 +427,92 @@ const minEPSVal = Math.min(...epsValues, 0);
           <span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Loss Quarter
         </span>
         <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700">
-          TTM EPS: <strong class="text-emerald-400">${currentTTM.toFixed(2)}</strong>
+          TTM EPS: <strong class={currentTTM !== null && currentTTM !== undefined ? (currentTTM >= 0 ? "text-emerald-400" : "text-rose-400") : "text-slate-400"}>{formatEPS(currentTTM)}</strong>
         </span>
       </div>
     </div>
 
     <!-- SVG 8-Quarter Bar Chart -->
-    <div class="w-full bg-slate-900/60 p-3 sm:p-4 rounded-lg border border-slate-800/70 overflow-x-auto">
-      <svg viewBox="0 0 540 160" class="w-full min-w-[460px] h-auto" role="img" aria-label="8-Quarter EPS Progression Chart">
-        <!-- Horizontal Guide Gridlines -->
-        <line x1="30" y1="20" x2="520" y2="20" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
-        <line x1="30" y1="65" x2="520" y2="65" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
-        <line x1="30" y1="110" x2="520" y2="110" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
-
-        <!-- Baseline Axis Line (Y=125) -->
-        <line x1="20" y1="125" x2="530" y2="125" stroke="#475569" stroke-width="1.5" />
-
-        <!-- Bars for each quarter -->
-        {quarterlyEPS.map((item: any, i: number) => {
-          const colX = 40 + i * 62;
-          const val = item.eps;
-          const isPos = val >= 0;
-          const barHeight = Math.max(6, Math.min(95, Math.round((Math.abs(val) / (maxEPSVal || 1)) * 90)));
-          const barY = isPos ? (125 - barHeight) : 125;
-          const barColor = isPos ? '#10b981' : '#f43f5e';
-
-          return (
+    {sortedQuarterlyEPS.length > 0 ? (
+      <div class="w-full bg-slate-900/60 p-3 sm:p-4 rounded-lg border border-slate-800/70 overflow-x-auto">
+        <svg viewBox={`0 0 540 ${svgViewBoxHeight}`} class="w-full min-w-[460px] h-auto" role="img" aria-label="8-Quarter EPS Progression Chart">
+          <!-- Horizontal Guide Gridlines -->
+          {hasNegEPS && !hasPosEPS ? (
             <g>
-              <!-- Bar -->
-              <rect
-                x={colX}
-                y={barY}
-                width="36"
-                height={barHeight}
-                rx="3"
-                fill={barColor}
-                opacity="0.9"
-              />
-              <!-- Value Label -->
-              <text
-                x={colX + 18}
-                y={isPos ? barY - 6 : barY + barHeight + 12}
-                text-anchor="middle"
-                fill={isPos ? '#34d399' : '#fb7185'}
-                font-size="10"
-                font-family="monospace"
-                font-weight="bold"
-              >
-                ${val.toFixed(2)}
-              </text>
-              <!-- Quarter Label on X Axis -->
-              <text
-                x={colX + 18}
-                y="144"
-                text-anchor="middle"
-                fill="#94a3b8"
-                font-size="11"
-                font-family="monospace"
-              >
-                {item.quarter}
-              </text>
+              <line x1="30" y1="80" x2="520" y2="80" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+              <line x1="30" y1="125" x2="520" y2="125" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
             </g>
-          );
-        })}
-      </svg>
-    </div>
+          ) : hasPosEPS && !hasNegEPS ? (
+            <g>
+              <line x1="30" y1="50" x2="520" y2="50" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+              <line x1="30" y1="95" x2="520" y2="95" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+            </g>
+          ) : (
+            <g>
+              <line x1="30" y1="35" x2="520" y2="35" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+              <line x1="30" y1="145" x2="520" y2="145" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+            </g>
+          )}
+
+          <!-- Baseline Axis Line -->
+          <line x1="20" y1={zeroY} x2="530" y2={zeroY} stroke="#475569" stroke-width="1.5" />
+
+          <!-- Bars for each quarter -->
+          {sortedQuarterlyEPS.map((item: any, i: number) => {
+            const colX = 40 + i * 62;
+            const val = Number(item.eps) || 0;
+            const isPos = val >= 0;
+            const absVal = Math.abs(val);
+            const barHeight = Math.max(6, Math.round((absVal / maxAbsEPS) * maxBarHeight));
+            const barY = isPos ? (zeroY - barHeight) : zeroY;
+            const barColor = isPos ? '#10b981' : '#f43f5e';
+            const valLabelY = isPos ? (barY - 6) : (barY + barHeight + 12);
+
+            return (
+              <g>
+                <!-- Bar -->
+                <rect
+                  x={colX}
+                  y={barY}
+                  width="36"
+                  height={barHeight}
+                  rx="3"
+                  fill={barColor}
+                  opacity="0.9"
+                />
+                <!-- Value Label -->
+                <text
+                  x={colX + 18}
+                  y={valLabelY}
+                  text-anchor="middle"
+                  fill={isPos ? '#34d399' : '#fb7185'}
+                  font-size="10"
+                  font-family="monospace"
+                  font-weight="bold"
+                >
+                  {formatEPS(val)}
+                </text>
+                <!-- Quarter Label on X Axis -->
+                <text
+                  x={colX + 18}
+                  y={xAxisLabelY}
+                  text-anchor="middle"
+                  fill="#94a3b8"
+                  font-size="11"
+                  font-family="monospace"
+                >
+                  {item.quarter}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    ) : (
+      <div class="p-6 text-center text-xs font-mono text-slate-400 italic bg-slate-900/60 rounded-lg border border-slate-800/70">
+        8-Quarter EPS Historical Progression Not Available
+      </div>
+    )}
   </div>
 
   <!-- Section 5: Balance Sheet Solvency & Debt Breakdown -->
@@ -459,43 +524,43 @@ const minEPSVal = Math.min(...epsValues, 0);
       Detailed audit of total leverage, short vs. long-term structure, refinancing maturity risks, and solvency ratios.
     </p>
 
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-      <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Total Debt</div>
-        <div class="text-base font-bold font-mono text-white mt-0.5">{formatCurrency(totalDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Funded Obligations</div>
+    <div class="flex flex-wrap gap-3 mb-4">
+      <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Total Debt</div>
+        <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(totalDebt)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Funded Obligations</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Debt-to-Equity (D/E)</div>
-        <div class="text-base font-bold font-mono text-amber-400 mt-0.5">{debtToEquity.toFixed(2)}x</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">{debtLeverageLabel}</div>
+      <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Debt-to-Equity (D/E)</div>
+        <div class="text-base font-bold font-mono text-amber-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{debtToEquity !== null && debtToEquity !== undefined ? `${debtToEquity.toFixed(2)}x` : 'N/A'}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{debtLeverageLabel}</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Short-Term Debt</div>
-        <div class="text-base font-bold font-mono text-white mt-0.5">{formatCurrency(shortTermDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Due Within 12 Months</div>
+      <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Short-Term Debt</div>
+        <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(shortTermDebt)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Due Within 12 Months</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Long-Term Debt</div>
-        <div class="text-base font-bold font-mono text-white mt-0.5">{formatCurrency(longTermDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Multi-Year Notes & Bonds</div>
+      <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Long-Term Debt</div>
+        <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(longTermDebt)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Multi-Year Notes & Bonds</div>
       </div>
     </div>
 
     <!-- Debt Structure Qualitative Callout -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
-      <div class="p-3 rounded-lg bg-slate-900/50 border border-slate-800/80">
+    <div class="flex flex-wrap gap-3 pt-2 text-xs">
+      <div class="flex-1 min-w-[240px] max-w-full p-3 rounded-lg bg-slate-900/50 border border-slate-800/80">
         <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1">Maturity Structure:</div>
         <div class="text-slate-400 leading-relaxed text-[11px]">{shortVsLongTermRatio}</div>
       </div>
-      <div class="p-3 rounded-lg bg-slate-900/50 border border-slate-800/80">
+      <div class="flex-1 min-w-[240px] max-w-full p-3 rounded-lg bg-slate-900/50 border border-slate-800/80">
         <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1">Recent Debt Changes:</div>
         <div class="text-slate-400 leading-relaxed text-[11px]">{recentChanges}</div>
       </div>
-      <div class="p-3 rounded-lg bg-slate-900/50 border border-slate-800/80">
+      <div class="flex-1 min-w-[240px] max-w-full p-3 rounded-lg bg-slate-900/50 border border-slate-800/80">
         <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1">Refinancing & Solvency Risks:</div>
         <div class="text-slate-400 leading-relaxed text-[11px]">{debtRisks}</div>
       </div>
@@ -511,27 +576,27 @@ const minEPSVal = Math.min(...epsValues, 0);
       Discretionary cash generation capacity after capital expenditures (CapEx) and working capital adjustments.
     </p>
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <div class="p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Operating Cash Flow (OCF)</div>
-        <div class="text-lg font-bold font-mono text-white mt-1">{formatCurrency(operatingCashFlow)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Core Operations Generation</div>
+    <div class="flex flex-wrap gap-3">
+      <div class="flex-1 min-w-[200px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Operating Cash Flow (OCF)</div>
+        <div class="text-lg font-bold font-mono text-white mt-1 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(operatingCashFlow)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Core Operations Generation</div>
       </div>
 
-      <div class="p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Free Cash Flow (FCF)</div>
-        <div class={`text-lg font-bold font-mono mt-1 ${freeCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+      <div class="flex-1 min-w-[200px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Free Cash Flow (FCF)</div>
+        <div class={`text-lg font-bold font-mono mt-1 whitespace-nowrap max-sm:whitespace-normal ${freeCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
           {formatCurrency(freeCashFlow)}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Operating CF minus CapEx</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Operating CF minus CapEx</div>
       </div>
 
-      <div class="p-3.5 rounded-lg bg-slate-900/70 border border-slate-800 flex flex-col justify-between">
+      <div class="flex-1 min-w-[220px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800 flex flex-col justify-between">
         <div>
-          <div class="text-[10px] font-mono text-slate-400 uppercase">Cash Flow Profile</div>
-          <div class="text-sm font-bold font-mono text-white mt-1">{cashFlowStatus}</div>
+          <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Cash Flow Profile</div>
+          <div class="text-sm font-bold font-mono text-white mt-1 whitespace-nowrap max-sm:whitespace-normal">{cashFlowStatus}</div>
         </div>
-        <div class="text-[10px] text-emerald-400 mt-1">
+        <div class="text-[10px] text-emerald-400 mt-1 whitespace-nowrap max-sm:whitespace-normal">
           {freeCashFlow >= 0 ? 'Self-funding organic operations' : 'External financing dependency'}
         </div>
       </div>
@@ -539,13 +604,13 @@ const minEPSVal = Math.min(...epsValues, 0);
   </div>
 
   <!-- Section 7: Management Quality, Competitive Moat & Risk Factor -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div class="flex flex-wrap gap-4">
     <!-- Management Quality -->
-    <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/40 flex flex-col justify-between">
+    <div class="flex-1 min-w-[260px] max-w-full p-4 rounded-xl border border-slate-800 bg-slate-950/40 flex flex-col justify-between">
       <div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-xs font-mono font-bold text-slate-200">Management Quality</div>
-          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800/50">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="text-xs font-mono font-bold text-slate-200 whitespace-nowrap max-sm:whitespace-normal">Management Quality</div>
+          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800/50 whitespace-nowrap">
             {mgmtRating}
           </span>
         </div>
@@ -553,17 +618,17 @@ const minEPSVal = Math.min(...epsValues, 0);
           {trackRecord}
         </p>
       </div>
-      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80">
+      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
         Executive Tenure & Governance Standard
       </div>
     </div>
 
     <!-- Competitive Moat -->
-    <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/40 flex flex-col justify-between">
+    <div class="flex-1 min-w-[260px] max-w-full p-4 rounded-xl border border-slate-800 bg-slate-950/40 flex flex-col justify-between">
       <div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-xs font-mono font-bold text-slate-200">Competitive Moat</div>
-          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="text-xs font-mono font-bold text-slate-200 whitespace-nowrap max-sm:whitespace-normal">Competitive Moat</div>
+          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50 whitespace-nowrap">
             {moatRating}
           </span>
         </div>
@@ -571,21 +636,21 @@ const minEPSVal = Math.min(...epsValues, 0);
           {moatSummary}
         </p>
       </div>
-      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80">
+      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
         Economic Barrier to Entry Rating
       </div>
     </div>
 
     <!-- Fundamental Risk Factor & Category -->
-    <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/40 flex flex-col justify-between">
+    <div class="flex-1 min-w-[260px] max-w-full p-4 rounded-xl border border-slate-800 bg-slate-950/40 flex flex-col justify-between">
       <div>
-        <div class="flex items-center justify-between mb-2">
-          <div class="text-xs font-mono font-bold text-slate-200">Risk Factor & Category</div>
-          <span class="text-xs font-mono font-bold font-mono text-slate-300">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <div class="text-xs font-mono font-bold text-slate-200 whitespace-nowrap max-sm:whitespace-normal">Risk Factor & Category</div>
+          <span class="text-xs font-mono font-bold font-mono text-slate-300 whitespace-nowrap">
             {riskScore}/10 Score
           </span>
         </div>
-        <div class="text-xs font-semibold text-slate-300 mb-2">
+        <div class="text-xs font-semibold text-slate-300 mb-2 whitespace-nowrap max-sm:whitespace-normal">
           {riskCategory}
         </div>
         <!-- 10-pip bar -->
@@ -595,7 +660,7 @@ const minEPSVal = Math.min(...epsValues, 0);
           ))}
         </div>
       </div>
-      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80">
+      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
         Synthesized Balance Sheet & Operating Risk
       </div>
     </div>
@@ -621,31 +686,31 @@ const minEPSVal = Math.min(...epsValues, 0);
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs mb-3">
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Volume Anomaly Ratio</div>
-        <div class="text-base font-bold font-mono text-white mt-0.5">{volumeAnomalyRatio.toFixed(2)}x normal</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">{volumeStatusLabel}</div>
+    <div class="flex flex-wrap gap-3 text-xs mb-3">
+      <div class="flex-1 min-w-[180px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Volume Anomaly Ratio</div>
+        <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{volumeAnomalyRatio !== null && volumeAnomalyRatio !== undefined ? `${volumeAnomalyRatio.toFixed(2)}x normal` : 'N/A'}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{volumeStatusLabel}</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Major Price Driver</div>
+      <div class="flex-1 min-w-[220px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Major Price Driver</div>
         <div class="text-xs font-bold text-slate-200 mt-1 line-clamp-2">{majorPriceDriver}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Primary Order Catalyst</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Primary Order Catalyst</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Sentiment Score</div>
-        <div class="text-base font-bold font-mono text-emerald-400 mt-0.5">{(sentimentScore * 100).toFixed(0)} / 100</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">{sentimentLabel}</div>
+      <div class="flex-1 min-w-[180px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Sentiment Score</div>
+        <div class="text-base font-bold font-mono text-emerald-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{sentimentScore !== null && sentimentScore !== undefined ? `${(sentimentScore * 100).toFixed(0)} / 100` : 'N/A'}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{sentimentLabel}</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase">Artificial Pump Risk</div>
-        <div class={`text-base font-bold font-mono mt-0.5 ${isInflated ? 'text-rose-400' : 'text-emerald-400'}`}>
+      <div class="flex-1 min-w-[180px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Artificial Pump Risk</div>
+        <div class={`text-base font-bold font-mono mt-0.5 whitespace-nowrap max-sm:whitespace-normal ${isInflated ? 'text-rose-400' : 'text-emerald-400'}`}>
           {isInflated ? 'High Alert' : 'Minimal (Under 5%)'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Wash Trading / Bot Audit</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Wash Trading / Bot Audit</div>
       </div>
     </div>
 
@@ -666,9 +731,9 @@ const minEPSVal = Math.min(...epsValues, 0);
   <div class="px-4 py-2.5 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between text-xs text-slate-400 gap-2">
     <div class="flex items-center gap-2">
       <span>Market Session Close:</span>
-      <span class="text-slate-100 font-bold font-mono text-sm">${currentPrice.toFixed(2)} {currency}</span>
+      <span class="text-slate-100 font-bold font-mono text-sm">{currentPrice ? `$${currentPrice.toFixed(2)} ${currency}` : 'N/A'}</span>
       <span class="text-slate-600">&bull;</span>
-      <span>Annualized Div Yield: <strong class="text-slate-200 font-mono">{dividendYield > 0 ? `${dividendYield.toFixed(2)}%` : '0.00%'}</strong></span>
+      <span>Annualized Div Yield: <strong class="text-slate-200 font-mono">{dividendYield !== null && dividendYield !== undefined && dividendYield > 0 ? `${dividendYield.toFixed(2)}%` : '0.00%'}</strong></span>
     </div>
     <div class="text-[11px] font-mono text-slate-400">
       Multi-Factor EquiSight Solvency Score: <strong class="text-emerald-400">{Math.max(1, 10 - riskScore)}/10</strong>

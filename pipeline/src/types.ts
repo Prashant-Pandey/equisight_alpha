@@ -195,7 +195,7 @@ export interface ArtificialInflation {
   riskLevel: 'Low' | 'Moderate' | 'High' | 'Severe';
   volumeAnomalyRatio: number;
   majorPriceDriver: string;
-  sentimentScore: number;
+  sentimentScore: number | null;
   newsImpact: string;
   socialMediaImpact: string;
 }
@@ -325,9 +325,11 @@ export interface FactCheckResult {
   auditLog: string[];
 }
 
+export type ThesisSource = string | { name?: string; title?: string; url: string; domain?: string };
+
 export interface ThesisPoint {
   point: string;
-  sources: string[];
+  sources: ThesisSource[];
   deductionChain: string;
 }
 

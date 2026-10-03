@@ -268,5 +268,68 @@
     "category": "loser",
     "movePercent": -6.30624,
     "slug": "alny-drops-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "MXL",
+    "companyName": "MaxLinear, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:40:17.090Z",
+    "category": "gainer",
+    "movePercent": 14.9913,
+    "slug": "mxl-gain-15-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "IMOS",
+    "companyName": "ChipMOS TECHNOLOGIES INC.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:41:58.375Z",
+    "category": "gainer",
+    "movePercent": 14.612,
+    "slug": "imos-gain-15-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SYNA",
+    "companyName": "SYNAPTICS INCORPORATED",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:43:35.658Z",
+    "category": "gainer",
+    "movePercent": 14.0838,
+    "slug": "syna-gain-14-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PENG",
+    "companyName": "PENGUIN SOLUTIONS, INC.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:45:13.414Z",
+    "category": "gainer",
+    "movePercent": 11.6042,
+    "slug": "peng-gain-12-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "VSH",
+    "companyName": "Vishay Intertechnology, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-03T16:46:48.154Z",
+    "category": "gainer",
+    "movePercent": 11.4094,
+    "slug": "vsh-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "WDC",
+    "companyName": "WESTERN DIGITAL CORPORATION",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:48:19.177Z",
+    "category": "loser",
+    "movePercent": -10.2192,
+    "slug": "wdc-drops-10-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "STX",
+    "companyName": "Seagate Technology Holdings plc",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-03T16:49:10.369Z",
+    "category": "loser",
+    "movePercent": -10.2139,
+    "slug": "stx-loss-10-percent-fundamental-analysis"
   }
 ]

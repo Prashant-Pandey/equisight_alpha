@@ -12,14 +12,18 @@ const {
 } = Astro.props;
 ---
 
-<div class="ad-container my-8 w-full overflow-hidden flex flex-col items-center justify-center bg-slate-900/30 border border-slate-800/80 rounded-xl p-4 transition-all" style={`min-height: ${minHeight};`}>
+<div
+  class="ad-container hidden my-8 w-full overflow-hidden flex flex-col items-center justify-center bg-slate-900/30 border border-slate-800/80 rounded-xl p-4 transition-all"
+  style={`min-height: ${minHeight}; display: none;`}
+  data-ad-container={slotId}
+>
   <div class="text-[10px] uppercase font-mono tracking-widest text-slate-400 mb-2 select-none">
     Advertisement &bull; Sponsored Financial Tools
   </div>
   
   <div id={slotId} data-ad-slot={slotId} class="w-full flex items-center justify-center">
     <!-- Dynamic Ad Network Hook (Google AdSense / Carbon Ads / NitroPay / BuySellAds) -->
-    <div class="text-center py-6">
+    <div class="ad-placeholder text-center py-6" data-ad-placeholder>
       <div class="text-xs font-semibold text-slate-400">Institutional Execution & Analytical Screener</div>
       <p class="text-[11px] text-slate-400 mt-1 max-w-md">Compare multi-asset broker liquidity, high-yield cash balances, and Level-2 order flows.</p>
       <div class="mt-3 inline-block px-3 py-1 bg-slate-800 hover:bg-slate-700 text-[11px] font-medium text-emerald-400 rounded transition-colors cursor-pointer">
@@ -28,3 +32,123 @@ const {
     </div>
   </div>
 </div>
+
+<script>
+  function isAdLoaded(container: HTMLElement, slot: HTMLElement | null): boolean {
+    if (!slot) return false;
+
+    // Check explicit attributes on container or slot
+    const containerStatus = container.dataset.adStatus || container.getAttribute('data-ad-status');
+    const containerLoaded = container.dataset.adLoaded || container.getAttribute('data-ad-loaded');
+    const slotStatus = slot.dataset.adStatus || slot.getAttribute('data-ad-status');
+    const slotLoaded = slot.dataset.adLoaded || slot.getAttribute('data-ad-loaded');
+
+    if (containerStatus === 'unfilled' || containerLoaded === 'false' || slotStatus === 'unfilled' || slotLoaded === 'false') {
+      return false;
+    }
+    if (containerStatus === 'filled' || containerLoaded === 'true' || slotStatus === 'filled' || slotLoaded === 'true') {
+      return true;
+    }
+
+    // Check for Google AdSense unfilled status
+    const adsbygoogle = slot.querySelector('.adsbygoogle, ins.adsbygoogle');
+    if (adsbygoogle) {
+      const adsStatus = adsbygoogle.getAttribute('data-ad-status') || adsbygoogle.getAttribute('data-adsbygoogle-status');
+      if (adsStatus === 'unfilled') return false;
+      if (adsStatus === 'filled' || adsStatus === 'done') return true;
+    }
+
+    // Check for active ad elements (iframe with content, carbon ads, custom ad content)
+    const iframes = Array.from(slot.querySelectorAll('iframe'));
+    const hasActiveIframe = iframes.some((iframe) => {
+      return (iframe.offsetWidth > 0 && iframe.offsetHeight > 0) || (Boolean(iframe.src) && iframe.src !== 'about:blank');
+    });
+    if (hasActiveIframe) return true;
+
+    if (slot.querySelector('#carbonads, .carbon-wrap, .bsa_it, .ad-content, [data-ad-content]')) {
+      return true;
+    }
+
+    // Check if placeholder is present vs replaced/removed
+    const placeholder = slot.querySelector('[data-ad-placeholder], .ad-placeholder');
+    if (placeholder) {
+      // If placeholder is present and no extra ad elements have been injected, ad is not loaded
+      const hasOtherElements = Array.from(slot.children).some((child) => child !== placeholder && !child.contains(placeholder));
+      if (!hasOtherElements) {
+        return false;
+      }
+    }
+
+    // If placeholder is gone and slot has non-empty children
+    if (!placeholder && slot.children.length > 0) {
+      return true;
+    }
+
+    return false;
+  }
+
+  let isUpdating = false;
+  let scheduledAnimationFrame: number | null = null;
+
+  function updateAdSlotVisibility(container: HTMLElement) {
+    if (isUpdating) return;
+    const slotId = container.dataset.adContainer || container.getAttribute('data-ad-container');
+    const slot = slotId ? document.getElementById(slotId) || container.querySelector('[data-ad-slot]') as HTMLElement | null : container.querySelector('[data-ad-slot]') as HTMLElement | null;
+
+    const loaded = isAdLoaded(container, slot);
+    const isCurrentlyHidden = container.classList.contains('hidden') || container.style.display === 'none';
+
+    if (loaded && isCurrentlyHidden) {
+      isUpdating = true;
+      container.classList.remove('hidden');
+      container.style.display = '';
+      isUpdating = false;
+    } else if (!loaded && !isCurrentlyHidden) {
+      isUpdating = true;
+      container.classList.add('hidden');
+      container.style.display = 'none';
+      isUpdating = false;
+    }
+  }
+
+  function scheduleAdSlotsUpdate() {
+    if (scheduledAnimationFrame !== null) return;
+    scheduledAnimationFrame = requestAnimationFrame(() => {
+      scheduledAnimationFrame = null;
+      const containers = document.querySelectorAll<HTMLElement>('.ad-container, [data-ad-container]');
+      containers.forEach(updateAdSlotVisibility);
+    });
+  }
+
+  function setupAdSlots() {
+    const containers = document.querySelectorAll<HTMLElement>('.ad-container, [data-ad-container]');
+
+    containers.forEach((container) => {
+      updateAdSlotVisibility(container);
+
+      const slotId = container.dataset.adContainer || container.getAttribute('data-ad-container');
+      const slot = slotId ? document.getElementById(slotId) : container.querySelector('[data-ad-slot]');
+
+      if (slot && !(slot as any)._adObserverAttached) {
+        (slot as any)._adObserverAttached = true;
+        const observer = new MutationObserver(() => {
+          scheduleAdSlotsUpdate();
+        });
+        observer.observe(slot, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-ad-status', 'data-ad-loaded', 'data-adsbygoogle-status', 'class', 'style'] });
+        observer.observe(container, { attributes: true, attributeFilter: ['data-ad-status', 'data-ad-loaded'] });
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupAdSlots);
+  } else {
+    setupAdSlots();
+  }
+
+  window.addEventListener('load', scheduleAdSlotsUpdate);
+  window.addEventListener('ad-loaded', scheduleAdSlotsUpdate);
+  window.addEventListener('ad:loaded', scheduleAdSlotsUpdate);
+  window.addEventListener('adsbygoogle:loaded', scheduleAdSlotsUpdate);
+</script>
+

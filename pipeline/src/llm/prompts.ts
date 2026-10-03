@@ -66,7 +66,7 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
 
 7. Objective Bull & Bear Theses with Cited Sources & Deduction Chains:
    - For every thesis point in BOTH the Bull Case and Bear Case:
-     * Cite specific references and sources (SEC 10-K / 10-Q / 8-K filings, earnings calls, clinical trial data, industry reports, Federal Reserve macro releases).
+     * Cite specific references and sources (SEC 10-K / 10-Q / 8-K filings, earnings calls, clinical trial data, industry reports, Federal Reserve macro releases) along with direct links to the resources.
      * Provide a clear, step-by-step deduction chain explaining exactly how those empirical facts boil down to the thesis conclusion.
 
 8. Social Distribution Hooks & Publisher's Exemption Notice.
@@ -202,10 +202,10 @@ Please format your response strictly as JSON with this schema:
   },
   "theses": {
     "bull": [
-      { "point": "string", "sources": ["string"], "deductionChain": "string" }
+      { "point": "string", "sources": [{ "name": "string", "url": "https://..." }], "deductionChain": "string" }
     ],
     "bear": [
-      { "point": "string", "sources": ["string"], "deductionChain": "string" }
+      { "point": "string", "sources": [{ "name": "string", "url": "https://..." }], "deductionChain": "string" }
     ]
   },
   "socialHooks": {

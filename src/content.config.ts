@@ -77,12 +77,32 @@ const reportsCollection = defineCollection({
     theses: z.object({
       bull: z.array(z.object({
         point: z.string(),
-        sources: z.array(z.string()).default([]),
+        sources: z.array(
+          z.union([
+            z.string(),
+            z.object({
+              name: z.string().optional(),
+              title: z.string().optional(),
+              url: z.string(),
+              domain: z.string().optional()
+            })
+          ])
+        ).default([]),
         deductionChain: z.string()
       })).default([]),
       bear: z.array(z.object({
         point: z.string(),
-        sources: z.array(z.string()).default([]),
+        sources: z.array(
+          z.union([
+            z.string(),
+            z.object({
+              name: z.string().optional(),
+              title: z.string().optional(),
+              url: z.string(),
+              domain: z.string().optional()
+            })
+          ])
+        ).default([]),
         deductionChain: z.string()
       })).default([])
     }).optional().default({ bull: [], bear: [] }),

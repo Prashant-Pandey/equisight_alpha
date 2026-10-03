@@ -29,51 +29,20 @@ export function buildTheses(
   f: FundamentalMetrics,
   analysis: LLMAnalysisOutput
 ): { bull: ThesisPoint[]; bear: ThesisPoint[] } {
-  if (analysis.theses?.bull && analysis.theses.bull.length > 0 && analysis.theses.bear && analysis.theses.bear.length > 0) {
-    return analysis.theses;
-  }
-
-  const cleanTicker = mover.ticker.toUpperCase();
-  const fcfB = (f.freeCashFlowTTM / 1e9).toFixed(2);
-  const consensusTarget = f.valuationModels?.consensusFairValue ?? (mover.category === 'gainer' ? mover.price * 1.15 : mover.price * 1.25);
-  const upside = (((consensusTarget - mover.price) / Math.max(0.01, mover.price)) * 100).toFixed(1);
-
-  const bull: ThesisPoint[] = [
+  const bull = analysis.theses?.bull && analysis.theses.bull.length > 0 ? analysis.theses.bull : [
     {
-      point: `Multi-model consensus valuation upside of ${upside}% against multi-model fair value target of $${consensusTarget.toFixed(2)}.`,
-      sources: ['Consensus 8-Model Valuation Suite', `SEC Form 10-K / 10-Q Item 7 Management Discussion for $${cleanTicker}`],
-      deductionChain: `Discount to intrinsic DCF ($${f.valuationModels?.dcf?.intrinsicValue?.toFixed(2) ?? (mover.price * 1.15).toFixed(2)}) and peer multiples -> Asymmetric margin of safety at current market entry -> Multiple expansion potential upon steady earnings compounding.`
-    },
-    {
-      point: `Operating resilience demonstrated by a ${f.grossMargin.toFixed(1)}% gross margin and $${fcfB}B annual Free Cash Flow conversion.`,
-      sources: ['Consolidated Cash Flow Statement', 'SEC Audited Annual Financial Disclosures'],
-      deductionChain: `Sustained cash conversion -> Zero immediate dependency on punitive debt markets -> Capital allocation headroom for reinvestment or balance sheet de-leveraging.`
-    },
-    {
-      point: `Defensible competitive position certified with a ${f.competitiveMoat?.rating ?? 'Narrow Moat'} rating.`,
-      sources: ['Competitive Moat Analysis', 'Industry Trade & Patent Office Filings'],
-      deductionChain: `${(f.competitiveMoat?.summary ?? 'Proprietary IP and high client retention barriers').slice(0, 110)}... -> High enterprise switching costs -> Long-term return on invested capital retention.`
+      point: `Revenue growth trajectory remains supported by ${f.sector} momentum.`,
+      sources: ['Fundamental Data', 'SEC Filings'],
+      deductionChain: `Operating margins at ${f.operatingMargin}% support ongoing expansion.`
     }
   ];
-
-  const bear: ThesisPoint[] = [
+  const bear = analysis.theses?.bear && analysis.theses.bear.length > 0 ? analysis.theses.bear : [
     {
-      point: 'Macro sovereign yield friction and elevated long-duration capital hurdle.',
-      sources: ['Federal Reserve Rate Policy', 'US 10-Year Treasury Yield Benchmark'],
-      deductionChain: 'Benchmark sovereign yields above 4% -> Elevated weighted average cost of capital (WACC) -> Structural valuation multiple compression across duration assets.'
-    },
-    {
-      point: `Capital structure debt obligations with short-term maturity exposure.`,
-      sources: ['Balance Sheet Liabilities Schedule', 'SEC 10-K Note on Long-Term Debt and Credit Facilities'],
-      deductionChain: `Short-term debt maturity wall -> Refinancing obligations in elevated rate climate -> Potential interest coverage margin compression.`
-    },
-    {
-      point: `Operational and competitive obstacles within the ${f.sector} landscape.`,
-      sources: ['Industry Competitive Landscape', 'Regulatory Survey Disclosures'],
-      deductionChain: `${(f.industryQuestions?.obstaclesAndChallenges ?? 'Competitive rivalry and input cost variations').slice(0, 110)}... -> Heightened execution hurdles -> Asymmetric downside volatility upon quarterly misses.`
+      point: `Macro volatility and valuation multiples create downside risk.`,
+      sources: ['Market Analysis', 'Macro Data'],
+      deductionChain: `Beta of ${f.beta || 1.0} indicates heightened sensitivity to broad market selloffs.`
     }
   ];
-
   return { bull, bear };
 }
 
@@ -105,219 +74,179 @@ export class ProgrammaticAdInjector {
     const isPennyStock = mover.isPennyStock ?? (mover.price < 5.0 || mover.exchange === 'NYSE American' || (mover.exchange as string)?.includes('Capital Market'));
     const moneyMarketTradingVenue = mover.moneyMarketTradingVenue || (
       mover.exchange === 'NASDAQ' ? 'Nasdaq Capital Market' :
-      mover.exchange === 'NYSE' ? 'NYSE American' :
-      mover.exchange
+        mover.exchange === 'NYSE' ? 'NYSE American' :
+          mover.exchange
     );
 
     const defaultRiskLevel: 'Low' | 'Moderate' | 'High' | 'Severe' = isPennyStock && mover.category === 'gainer'
       ? 'Severe'
       : isPennyStock
-      ? 'High'
-      : 'Low';
+        ? 'High'
+        : 'Low';
 
     // 1. Debt Analysis Breakdown
-    const totalDebt = fundamentals.totalDebt ?? 0;
-    const shortTermDebt = fundamentals.shortTermDebt ?? Math.round(totalDebt * 0.35);
-    const longTermDebt = fundamentals.longTermDebt ?? Math.max(0, totalDebt - shortTermDebt);
-    const debtToEquityRatio = fundamentals.debtToEquity ?? (fundamentals.marketCap > 0 ? +(totalDebt / fundamentals.marketCap).toFixed(2) : 0.4);
+    const totalDebt = fundamentals.totalDebt ?? null;
+    const shortTermDebt = fundamentals.shortTermDebt ?? null;
+    const longTermDebt = fundamentals.longTermDebt ?? null;
+    const debtToEquityRatio = fundamentals.debtToEquity ?? (fundamentals.marketCap && totalDebt ? +(totalDebt / fundamentals.marketCap).toFixed(2) : null);
 
     const debtAnalysis = {
-      totalDebt,
+      totalDebt: totalDebt ?? 0,
       debtToEquity: debtToEquityRatio ?? 0,
-      shortTermDebt,
-      longTermDebt,
+      shortTermDebt: shortTermDebt ?? 0,
+      longTermDebt: longTermDebt ?? 0,
       shortVsLongTermRatio: typeof fundamentals.shortVsLongTermRatio === 'string'
         ? fundamentals.shortVsLongTermRatio
-        : `${((shortTermDebt / Math.max(1, totalDebt)) * 100).toFixed(0)}% Short / ${((longTermDebt / Math.max(1, totalDebt)) * 100).toFixed(0)}% Long`,
-      recentChanges: fundamentals.recentChangesInDebt || 'Stable obligations; monitored via trailing 10-Q disclosures',
-      risks: fundamentals.debtRisks || 'Refinancing rate sensitivity under restrictive central bank policies'
+        : (shortTermDebt !== null && longTermDebt !== null && totalDebt ? `${((shortTermDebt / Math.max(1, totalDebt)) * 100).toFixed(0)}% Short / ${((longTermDebt / Math.max(1, totalDebt)) * 100).toFixed(0)}% Long` : 'Not Available'),
+      recentChanges: fundamentals.recentChangesInDebt || 'Not Available',
+      risks: fundamentals.debtRisks || 'Not Available'
     };
 
     // 2. Price to Book Comparison
     const pbCurrent = typeof fundamentals.priceToBook === 'object' && fundamentals.priceToBook !== null
       ? (fundamentals.priceToBook as any).current
       : typeof fundamentals.priceToBook === 'number'
-      ? fundamentals.priceToBook
-      : 1.5;
+        ? fundamentals.priceToBook
+        : null;
 
     const priceToBookRatio = {
-      current: pbCurrent ?? 1.5,
-      industryAverage: (fundamentals as any).priceToBook?.industryAverage ?? (fundamentals as any).priceToBookComparison?.industryAverage ?? 2.4,
-      historicalAverage5Y: (fundamentals as any).priceToBook?.historicalAverage5Y ?? (fundamentals as any).priceToBookComparison?.historicalAverage5Y ?? 2.1,
-      chart: [
-        { label: 'Current P/B', value: pbCurrent ?? 1.5 },
-        { label: 'Industry Avg', value: (fundamentals as any).priceToBook?.industryAverage ?? 2.4 },
-        { label: '5Y Historical Avg', value: (fundamentals as any).priceToBook?.historicalAverage5Y ?? 2.1 }
-      ]
+      current: pbCurrent ?? null,
+      industryAverage: (fundamentals as any).priceToBook?.industryAverage ?? (fundamentals as any).priceToBookComparison?.industryAverage ?? null,
+      historicalAverage5Y: (fundamentals as any).priceToBook?.historicalAverage5Y ?? (fundamentals as any).priceToBookComparison?.historicalAverage5Y ?? null,
+      chart: pbCurrent !== null ? [
+        { label: 'Current P/B', value: pbCurrent },
+        { label: 'Industry Avg', value: (fundamentals as any).priceToBook?.industryAverage ?? null },
+        { label: '5Y Historical Avg', value: (fundamentals as any).priceToBook?.historicalAverage5Y ?? null }
+      ] : []
     };
 
     // 3. Price to Earnings Comparison
     const peCurrent = fundamentals.peRatioTrailing ?? fundamentals.peRatioForward ?? (fundamentals as any).priceToEarnings?.current ?? null;
     const priceToEarningsRatio = {
       current: peCurrent,
-      industryAverage: (fundamentals as any).priceToEarnings?.industryAverage ?? (fundamentals as any).priceToEarningsComparison?.industryAverage ?? 22.0,
-      historicalAverage5Y: (fundamentals as any).priceToEarnings?.historicalAverage5Y ?? (fundamentals as any).priceToEarningsComparison?.historicalAverage5Y ?? 19.5,
-      chart: [
-        { label: 'Current P/E', value: peCurrent ?? 0 },
-        { label: 'Industry Avg', value: (fundamentals as any).priceToEarnings?.industryAverage ?? 22.0 },
-        { label: '5Y Historical Avg', value: (fundamentals as any).priceToEarnings?.historicalAverage5Y ?? 19.5 }
-      ]
+      industryAverage: (fundamentals as any).priceToEarnings?.industryAverage ?? (fundamentals as any).priceToEarningsComparison?.industryAverage ?? null,
+      historicalAverage5Y: (fundamentals as any).priceToEarnings?.historicalAverage5Y ?? (fundamentals as any).priceToEarningsComparison?.historicalAverage5Y ?? null,
+      chart: peCurrent !== null ? [
+        { label: 'Current P/E', value: peCurrent },
+        { label: 'Industry Avg', value: (fundamentals as any).priceToEarnings?.industryAverage ?? null },
+        { label: '5Y Historical Avg', value: (fundamentals as any).priceToEarnings?.historicalAverage5Y ?? null }
+      ] : []
     };
 
     // 4. Artificial Inflation Breakdown
-    const volumeRatio = sentiment?.volumeAnomalyRatio ?? (mover.avgVolume > 0 ? +(mover.volume / mover.avgVolume).toFixed(2) : 1.25);
-    const isInflated = sentiment?.isArtificiallyInflated ?? (volumeRatio > 2.5 && Math.abs(mover.changePercent) > 20);
-    const riskLevel = sentiment?.artificialInflationRisk ?? (isInflated ? 'Severe' : volumeRatio > 1.8 ? 'Moderate' : defaultRiskLevel);
+    const volumeRatio = sentiment?.volumeAnomalyRatio ?? (mover.avgVolume > 0 ? +(mover.volume / mover.avgVolume).toFixed(2) : null);
+    const isInflated = sentiment?.isArtificiallyInflated ?? (volumeRatio !== null && volumeRatio > 2.5 && Math.abs(mover.changePercent) > 20);
+    const riskLevel = sentiment?.artificialInflationRisk ?? (isInflated ? 'Severe' : volumeRatio !== null && volumeRatio > 1.8 ? 'Moderate' : defaultRiskLevel);
 
     const artificialInflation = {
       isInflated,
       riskLevel,
-      volumeAnomalyRatio: volumeRatio,
-      majorPriceDriver: sentiment?.majorPriceDriver ?? (mover.category === 'gainer' ? 'Retail momentum & social media discussion' : 'Market pullback & valuation multiples compression'),
-      sentimentScore: sentiment?.sentimentScore ?? (mover.category === 'gainer' ? 0.72 : 0.38),
-      newsImpact: sentiment?.newsImpact ?? 'Syndicated financial news coverage following session volatility',
-      socialMediaImpact: sentiment?.socialMediaImpact ?? 'Elevated social discussion across retail investing forums'
+      volumeAnomalyRatio: volumeRatio ?? 1.0,
+      majorPriceDriver: sentiment?.majorPriceDriver ?? 'Not Available',
+      sentimentScore: sentiment?.sentimentScore ?? null,
+      newsImpact: sentiment?.newsImpact ?? 'Not Available',
+      socialMediaImpact: sentiment?.socialMediaImpact ?? 'Not Available'
     };
 
     // 5. 4 Company Questions & 3 Industry Questions
     const companyDeepDive = {
-      howCompanyMakesMoney: fundamentals.companyQuestions?.howCompanyMakesMoney ?? (analysis.companyDeepDive?.howCompanyMakesMoney || `${fundamentals.companyName} generates revenue through its core commercial operations and service contracts in the ${fundamentals.sector} sector.`),
-      productsDemandAndWhy: fundamentals.companyQuestions?.productsDemandAndWhy ?? (analysis.companyDeepDive?.productsDemandAndWhy || `Products and solutions serve mission-critical enterprise and consumer requirements with sustained commercial demand.`),
-      pastPerformanceSummary: fundamentals.companyQuestions?.pastPerformanceSummary ?? (analysis.companyDeepDive?.pastPerformanceSummary || `Historical revenue progression illustrates ongoing market positioning across multiple macroeconomic operating cycles.`),
-      growthAndProfitabilityOutlook: fundamentals.companyQuestions?.growthAndProfitabilityOutlook ?? (analysis.companyDeepDive?.growthAndProfitabilityOutlook || `Forward positioning focuses on pipeline scaling, margin optimization, and operational efficiency.`)
+      howCompanyMakesMoney: fundamentals.companyQuestions?.howCompanyMakesMoney ?? (analysis.companyDeepDive?.howCompanyMakesMoney || 'Not Available'),
+      productsDemandAndWhy: fundamentals.companyQuestions?.productsDemandAndWhy ?? (analysis.companyDeepDive?.productsDemandAndWhy || 'Not Available'),
+      pastPerformanceSummary: fundamentals.companyQuestions?.pastPerformanceSummary ?? (analysis.companyDeepDive?.pastPerformanceSummary || 'Not Available'),
+      growthAndProfitabilityOutlook: fundamentals.companyQuestions?.growthAndProfitabilityOutlook ?? (analysis.companyDeepDive?.growthAndProfitabilityOutlook || 'Not Available')
     };
 
     const industryDeepDive = {
-      industryCondition: fundamentals.industryQuestions?.industryCondition ?? (analysis.industryDeepDive?.industryCondition || `The ${fundamentals.sector} and ${fundamentals.industry} space continues structural modernization amidst changing interest rate environments.`),
-      obstaclesAndChallenges: fundamentals.industryQuestions?.obstaclesAndChallenges ?? (analysis.industryDeepDive?.obstaclesAndChallenges || `Industry participants face regulatory oversight, supply chain variables, and competitive price discovery.`),
-      economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? (analysis.industryDeepDive?.economicPoliticalCulturalRisks || `Geopolitical tensions, trade policy shifts, and sovereign yield volatility remain primary macro risks.`)
+      industryCondition: fundamentals.industryQuestions?.industryCondition ?? (analysis.industryDeepDive?.industryCondition || 'Not Available'),
+      obstaclesAndChallenges: fundamentals.industryQuestions?.obstaclesAndChallenges ?? (analysis.industryDeepDive?.obstaclesAndChallenges || 'Not Available'),
+      economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? (analysis.industryDeepDive?.economicPoliticalCulturalRisks || 'Not Available')
     };
 
     // 6. Management Quality & Competitive Moat
     const managementQuality = {
-      rating: (fundamentals.managementQuality?.rating as any) ?? 'Experienced',
-      trackRecord: fundamentals.managementQuality?.trackRecord ?? 'Executive team possesses extensive domain leadership and disciplined capital stewardship.'
+      rating: (fundamentals.managementQuality?.rating as any) ?? 'Not Rated',
+      trackRecord: fundamentals.managementQuality?.trackRecord ?? 'Not Available'
     };
 
     const competitiveMoat = {
-      rating: (fundamentals.competitiveMoat?.rating as any) ?? 'Narrow Moat',
-      summary: fundamentals.competitiveMoat?.summary ?? 'Proprietary technology, intellectual property, and switching barriers provide competitive protection.'
+      rating: (fundamentals.competitiveMoat?.rating as any) ?? 'Not Rated',
+      summary: fundamentals.competitiveMoat?.summary ?? 'Not Available'
     };
 
     // 7. Multi-Model Valuations
     const rawVM: any = analysis.valuationModels || fundamentals.valuationModels || {};
     const valuationModels = {
       dcf: rawVM.dcf ? {
-        intrinsicValue: rawVM.dcf.intrinsicValue ?? rawVM.dcf.fairValue ?? +(mover.price * 1.15).toFixed(2),
-        discountRate: rawVM.dcf.discountRate ?? 9.5,
-        terminalGrowth: rawVM.dcf.terminalGrowth ?? rawVM.dcf.terminalGrowthRate ?? 2.5,
-        upsidePercent: rawVM.dcf.upsidePercent ?? rawVM.dcf.upside ?? 15.0
-      } : {
-        intrinsicValue: +(mover.price * 1.15).toFixed(2),
-        discountRate: 9.5,
-        terminalGrowth: 2.5,
-        upsidePercent: 15.0
-      },
+        intrinsicValue: rawVM.dcf.intrinsicValue ?? rawVM.dcf.fairValue ?? null,
+        discountRate: rawVM.dcf.discountRate ?? rawVM.dcf.wacc ?? null,
+        terminalGrowth: rawVM.dcf.terminalGrowth ?? rawVM.dcf.terminalGrowthRate ?? null,
+        upsidePercent: rawVM.dcf.upsidePercent ?? rawVM.dcf.upside ?? null
+      } : (rawVM.dcf ?? {}),
       ddm: rawVM.ddm ? {
-        intrinsicValue: rawVM.ddm.intrinsicValue ?? rawVM.ddm.fairValue ?? 0,
-        dividendGrowthRate: rawVM.ddm.dividendGrowthRate ?? rawVM.ddm.expectedDividendGrowth ?? 0,
-        costOfEquity: rawVM.ddm.costOfEquity ?? rawVM.ddm.requiredReturn ?? 9.5,
+        intrinsicValue: rawVM.ddm.intrinsicValue ?? rawVM.ddm.fairValue ?? null,
+        dividendGrowthRate: rawVM.ddm.dividendGrowthRate ?? rawVM.ddm.expectedDividendGrowth ?? null,
+        costOfEquity: rawVM.ddm.costOfEquity ?? rawVM.ddm.requiredReturn ?? null,
         applicable: rawVM.ddm.applicable ?? (fundamentals.dividendYield > 0)
-      } : {
-        intrinsicValue: 0,
-        dividendGrowthRate: 0,
-        costOfEquity: 9.5,
-        applicable: false
-      },
+      } : (rawVM.ddm ?? {}),
       relativeValuation: rawVM.relativeValuation ? {
-        intrinsicValue: rawVM.relativeValuation.intrinsicValue ?? rawVM.relativeValuation.fairValue ?? +(mover.price * 1.10).toFixed(2),
-        peerMedianPE: rawVM.relativeValuation.peerMedianPE ?? rawVM.relativeValuation.benchmarkMultiple ?? 18.5,
+        intrinsicValue: rawVM.relativeValuation.intrinsicValue ?? rawVM.relativeValuation.fairValue ?? null,
+        peerMedianPE: rawVM.relativeValuation.peerMedianPE ?? rawVM.relativeValuation.benchmarkMultiple ?? null,
         multipleType: rawVM.relativeValuation.multipleType ?? 'P/E Multiples'
-      } : {
-        intrinsicValue: +(mover.price * 1.10).toFixed(2),
-        peerMedianPE: 18.5,
-        multipleType: 'P/E Multiples'
-      },
+      } : (rawVM.relativeValuation ?? {}),
       rapidStockValuation: rawVM.rapidStockValuation ? {
-        intrinsicValue: rawVM.rapidStockValuation.intrinsicValue ?? rawVM.rapidStockValuation.fairValue ?? +(mover.price * 1.05).toFixed(2),
-        methodology: rawVM.rapidStockValuation.methodology ?? 'Rule of 72 / Quick PEG Multiplier'
-      } : {
-        intrinsicValue: +(mover.price * 1.05).toFixed(2),
-        methodology: 'Rule of 72 / Quick PEG Multiplier'
-      },
+        intrinsicValue: rawVM.rapidStockValuation.intrinsicValue ?? rawVM.rapidStockValuation.fairValue ?? null,
+        methodology: rawVM.rapidStockValuation.methodology ?? 'PEG Multiplier'
+      } : (rawVM.rapidStockValuation ?? {}),
       residualIncomeModel: rawVM.residualIncomeModel ? {
-        intrinsicValue: rawVM.residualIncomeModel.intrinsicValue ?? rawVM.residualIncomeModel.fairValue ?? +(mover.price * 1.08).toFixed(2),
-        equityCharge: rawVM.residualIncomeModel.equityCharge ?? 8.5
-      } : {
-        intrinsicValue: +(mover.price * 1.08).toFixed(2),
-        equityCharge: 8.5
-      },
+        intrinsicValue: rawVM.residualIncomeModel.intrinsicValue ?? rawVM.residualIncomeModel.fairValue ?? null,
+        equityCharge: rawVM.residualIncomeModel.equityCharge ?? null
+      } : (rawVM.residualIncomeModel ?? {}),
       assetBasedValuation: rawVM.assetBasedValuation ? {
-        netAssetValue: rawVM.assetBasedValuation.netAssetValue ?? rawVM.assetBasedValuation.fairValue ?? +(mover.price * 0.85).toFixed(2),
-        liquidationValue: rawVM.assetBasedValuation.liquidationValue ?? +(mover.price * 0.65).toFixed(2)
-      } : {
-        netAssetValue: +(mover.price * 0.85).toFixed(2),
-        liquidationValue: +(mover.price * 0.65).toFixed(2)
-      },
+        netAssetValue: rawVM.assetBasedValuation.netAssetValue ?? rawVM.assetBasedValuation.fairValue ?? null,
+        liquidationValue: rawVM.assetBasedValuation.liquidationValue ?? null
+      } : (rawVM.assetBasedValuation ?? {}),
       excessReturnModel: rawVM.excessReturnModel ? {
-        intrinsicValue: rawVM.excessReturnModel.intrinsicValue ?? rawVM.excessReturnModel.fairValue ?? +(mover.price * 1.12).toFixed(2),
-        excessReturnPercent: rawVM.excessReturnModel.excessReturnPercent ?? rawVM.excessReturnModel.returnSpread ?? 3.5
-      } : {
-        intrinsicValue: +(mover.price * 1.12).toFixed(2),
-        excessReturnPercent: 3.5
-      },
+        intrinsicValue: rawVM.excessReturnModel.intrinsicValue ?? rawVM.excessReturnModel.fairValue ?? null,
+        excessReturnPercent: rawVM.excessReturnModel.excessReturnPercent ?? rawVM.excessReturnModel.returnSpread ?? null
+      } : (rawVM.excessReturnModel ?? {}),
       industrySpecificModel: rawVM.industrySpecificModel ? {
-        name: rawVM.industrySpecificModel.name ?? 'Sector Asset Capacity Model',
-        intrinsicValue: rawVM.industrySpecificModel.intrinsicValue ?? rawVM.industrySpecificModel.fairValue ?? mover.price,
+        name: rawVM.industrySpecificModel.name ?? 'Sector Model',
+        intrinsicValue: rawVM.industrySpecificModel.intrinsicValue ?? rawVM.industrySpecificModel.fairValue ?? null,
         description: rawVM.industrySpecificModel.description ?? rawVM.industrySpecificModel.sectorMetric ?? 'Industry specific valuation'
-      } : {
-        name: 'Sector Asset Capacity Model',
-        intrinsicValue: mover.price,
-        description: 'Industry specific capacity multiple'
-      },
-      consensusFairValue: rawVM.consensusFairValue ?? +(mover.price * 1.10).toFixed(2),
-      verdict: rawVM.verdict ?? (mover.category === 'gainer' ? 'Fairly Valued / Momentum Rebalancing' : 'Undervalued / Asymmetric Upside')
+      } : (rawVM.industrySpecificModel ?? {}),
+      consensusFairValue: rawVM.consensusFairValue ?? 0,
+      verdict: rawVM.verdict ?? 'Fairly Valued'
     };
 
     // 8. 8-Quarter EPS History
     const earningsPerShare = {
-      currentTTM: fundamentals.earningsPerShare?.currentTTM ?? 0,
+      currentTTM: fundamentals.earningsPerShare?.currentTTM ?? null,
       quarterlyEPSPast2Years: fundamentals.earningsPerShare?.quarterlyEPSPast2Years?.map((q) => ({
         quarter: q.quarter,
         eps: q.eps
-      })) ?? [
-        { quarter: 'Q3 2026', eps: 0.12 },
-        { quarter: 'Q2 2026', eps: 0.10 },
-        { quarter: 'Q1 2026', eps: 0.08 },
-        { quarter: 'Q4 2025', eps: 0.07 },
-        { quarter: 'Q3 2025', eps: 0.06 },
-        { quarter: 'Q2 2025', eps: 0.05 },
-        { quarter: 'Q1 2025', eps: 0.04 },
-        { quarter: 'Q4 2024', eps: 0.03 }
-      ]
+      })) ?? []
     };
-
     const volatilityIndex = {
       value: fundamentals.volatilityIndex?.value ?? +(fundamentals.beta ?? 1.15).toFixed(2),
       rating: fundamentals.volatilityIndex?.rating ?? ((fundamentals.beta ?? 1.15) > 1.5 ? 'High Volatility' : 'Moderate Volatility')
     };
 
     const cashFlow = {
-      operatingCashFlow: fundamentals.cashFlow?.operatingCashFlow ?? Math.round(fundamentals.freeCashFlowTTM * 1.2),
-      freeCashFlow: fundamentals.freeCashFlowTTM,
-      status: fundamentals.cashFlow?.status ?? (fundamentals.freeCashFlowTTM >= 0 ? 'Positive Operating Generation' : 'Negative Cash Burn')
+      operatingCashFlow: fundamentals.cashFlow?.operatingCashFlow ?? null,
+      freeCashFlow: fundamentals.freeCashFlowTTM ?? null,
+      status: fundamentals.cashFlow?.status ?? (fundamentals.freeCashFlowTTM !== null && fundamentals.freeCashFlowTTM !== undefined ? (fundamentals.freeCashFlowTTM >= 0 ? 'Positive Operating Generation' : 'Negative Cash Burn') : 'Not Available')
     };
 
     const classification = (fundamentals.classification as any) ?? (
       isPennyStock ? 'Speculative Penny Stock' :
-      fundamentals.dividendYield > 2 ? 'Income Stock' :
-      'Growth Stock'
+        fundamentals.dividendYield > 2 ? 'Income Stock' :
+          'Growth Stock'
     );
 
     const fundamentalRating = (fundamentals.fundamentalRating as any) ?? (
       calculatedRisk > 7 ? 'Weak' :
-      calculatedRisk > 4 ? 'Fairly Valued' :
-      'Strong'
+        calculatedRisk > 4 ? 'Fairly Valued' :
+          'Strong'
     );
 
     const theses = buildTheses(mover, fundamentals, analysis);
