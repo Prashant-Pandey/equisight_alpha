@@ -9,7 +9,10 @@
     "build": "astro build",
     "preview": "astro preview",
     "pipeline:run": "tsx pipeline/src/orchestrator.ts --run-now",
-    "pipeline:cron": "tsx pipeline/src/orchestrator.ts",
+    "pipeline:cron": "tsx pipeline/src/startCron.ts",
+    "pipeline:stop_cron": "tsx pipeline/src/stopCron.ts",
+    "pipeline:stop-cron": "tsx pipeline/src/stopCron.ts",
+    "pipeline:stopcron": "tsx pipeline/src/stopCron.ts",
     "pipeline:distribute": "tsx pipeline/src/distribution/socialPublisher.ts",
     "pipeline:test": "tsx tests/pipeline.test.ts"
   },

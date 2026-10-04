@@ -1,4 +1,6 @@
 import cron from 'node-cron';
+import fs from 'fs';
+import path from 'path';
 import { CONFIG } from './config.js';
 import { marketMoverIngestor } from './ingestion/marketMovers.js';
 import { fundamentalDataIngestor } from './ingestion/fundamentalData.js';
@@ -14,6 +16,7 @@ import type { MarketMover } from './types.js';
 
 export class PipelineOrchestrator {
   private isRunning = false;
+  private cronTasks: cron.ScheduledTask[] = [];
 
   /**
    * Initializes the cron scheduler for twice-daily automated execution.
@@ -28,19 +31,70 @@ export class PipelineOrchestrator {
     console.log(`[Scheduler] Active Locked-out Tickers: ${historyTracker.getLockedCount()}`);
     console.log('================================================================');
 
+    // Register active PID for external daemon stop commands
+    this.writePidFile();
+    this.setupSignalHandlers();
+
     // Morning Pre-Market Execution (07:00 AM EST)
-    cron.schedule(CONFIG.CRON_SCHEDULE_PREMARKET || '0 7 * * 1-5', async () => {
+    const preMarketTask = cron.schedule(CONFIG.CRON_SCHEDULE_PREMARKET || '0 7 * * 1-5', async () => {
       console.log('\n[CRON] Firing Pre-Market Execution Cycle...');
       await this.runExecutionCycle('PRE_MARKET');
     }, { timezone: 'America/New_York' });
+    this.cronTasks.push(preMarketTask);
 
     // Afternoon Post-Market Execution (16:30 PM EST)
-    cron.schedule(CONFIG.CRON_SCHEDULE_POSTMARKET || '30 16 * * 1-5', async () => {
+    const postMarketTask = cron.schedule(CONFIG.CRON_SCHEDULE_POSTMARKET || '30 16 * * 1-5', async () => {
       console.log('\n[CRON] Firing Post-Market Execution Cycle...');
       await this.runExecutionCycle('POST_MARKET');
     }, { timezone: 'America/New_York' });
+    this.cronTasks.push(postMarketTask);
 
-    console.log('[PipelineOrchestrator] Cron daemon active and listening. Press Ctrl+C to stop.');
+    console.log(`[PipelineOrchestrator] Cron daemon active and listening (PID: ${process.pid}). Run "npm run pipeline:stop_cron" or press Ctrl+C to stop.`);
+  }
+
+  /**
+   * Stops active internal cron tasks and cleans up the PID file.
+   */
+  public stopCron(): void {
+    for (const task of this.cronTasks) {
+      task.stop();
+    }
+    this.cronTasks = [];
+    this.removePidFile();
+    console.log('[PipelineOrchestrator] Cron daemon stopped.');
+  }
+
+  private writePidFile(): void {
+    try {
+      const pidDir = path.dirname(CONFIG.CRON_PID_FILE);
+      if (!fs.existsSync(pidDir)) {
+        fs.mkdirSync(pidDir, { recursive: true });
+      }
+      fs.writeFileSync(CONFIG.CRON_PID_FILE, process.pid.toString(), 'utf-8');
+    } catch (err: any) {
+      console.warn(`[PipelineOrchestrator] Warning: Unable to write PID file: ${err.message}`);
+    }
+  }
+
+  private removePidFile(): void {
+    try {
+      if (fs.existsSync(CONFIG.CRON_PID_FILE)) {
+        const savedPid = parseInt(fs.readFileSync(CONFIG.CRON_PID_FILE, 'utf-8').trim(), 10);
+        if (savedPid === process.pid) {
+          fs.unlinkSync(CONFIG.CRON_PID_FILE);
+        }
+      }
+    } catch {}
+  }
+
+  private setupSignalHandlers(): void {
+    const handleShutdown = () => {
+      this.removePidFile();
+      process.exit(0);
+    };
+    process.once('SIGINT', handleShutdown);
+    process.once('SIGTERM', handleShutdown);
+    process.once('exit', () => this.removePidFile());
   }
 
   /**
@@ -146,7 +200,9 @@ export const orchestrator = new PipelineOrchestrator();
 
 // CLI Execution Support:
 // Run with "tsx pipeline/src/orchestrator.ts --run-now" for an immediate one-off cycle.
-// Run with "tsx pipeline/src/orchestrator.ts" to start the continuous cron daemon.
+// Run with "tsx pipeline/src/orchestrator.ts" to start the continuous cron daemon in the background.
+// Run with "tsx pipeline/src/orchestrator.ts --foreground" to run in the foreground.
+// Run with "tsx pipeline/src/orchestrator.ts --stop" to stop running cron daemons.
 if (process.argv.includes('--run-now')) {
   console.log('[CLI] Detected --run-now argument. Executing immediate cycle...');
   orchestrator.runExecutionCycle('CLI_RUN_NOW').then(() => {
@@ -156,6 +212,24 @@ if (process.argv.includes('--run-now')) {
     console.error('[CLI] Unhandled error during CLI execution:', err);
     process.exit(1);
   });
-} else if (process.argv[1]?.includes('orchestrator')) {
+} else if (process.argv.includes('--stop') || process.argv.includes('--stop-cron')) {
+  import('./stopCron.js').then(({ stopRunningCronJobs }) => {
+    stopRunningCronJobs().then((res) => {
+      process.exit(res.success ? 0 : 1);
+    }).catch((err) => {
+      console.error('[CLI] Unhandled error stopping cron daemon:', err);
+      process.exit(1);
+    });
+  });
+} else if (process.argv.includes('--foreground') || process.env.CRON_DAEMON === 'true') {
   orchestrator.startCron();
+} else if (process.argv[1]?.includes('orchestrator')) {
+  import('./startCron.js').then(({ startCronDaemon }) => {
+    startCronDaemon().then((res) => {
+      process.exit(res.success ? 0 : 1);
+    }).catch((err) => {
+      console.error('[CLI] Error starting cron daemon:', err);
+      process.exit(1);
+    });
+  });
 }

@@ -234,6 +234,38 @@ async function runTestSuite() {
   fs.rmSync(testGitDir, { recursive: true, force: true });
   console.log('✓ Pass: AUTO_TRIGGER_DEPLOY git add, commit, and push flow verified.\n');
 
+  // 10. Test Cron Daemon Start and Stop Lifecycle (pipeline:cron and pipeline:stop_cron)
+  console.log('Test 10: Pipeline Cron Daemon Start and Stop Lifecycle (pipeline:cron & pipeline:stop_cron)');
+  const { startCronDaemon } = await import('../pipeline/src/startCron.js');
+  const { stopRunningCronJobs, findRunningOrchestratorCronPids } = await import('../pipeline/src/stopCron.js');
+  const { CONFIG } = await import('../pipeline/src/config.js');
+
+  // Start cron daemon in background
+  const startResult = await startCronDaemon();
+  assert.strictEqual(startResult.success, true, 'startCronDaemon should return success true');
+  assert.ok(startResult.pid > 0, 'startCronDaemon should return active PID');
+  assert.strictEqual(fs.existsSync(CONFIG.CRON_PID_FILE), true, 'Cron daemon should create PID file upon startup');
+
+  // Re-invoking startCronDaemon should detect existing active daemon without duplicating
+  const duplicateStartResult = await startCronDaemon();
+  assert.strictEqual(duplicateStartResult.isExisting, true, 'Should detect existing running daemon');
+  assert.strictEqual(duplicateStartResult.pid, startResult.pid, 'Should report the same active PID');
+
+  const pidsBeforeStop = findRunningOrchestratorCronPids();
+  assert.ok(pidsBeforeStop.length > 0, 'findRunningOrchestratorCronPids should detect active cron process');
+
+  // Execute stop cron
+  const stopResult = await stopRunningCronJobs();
+  assert.strictEqual(stopResult.success, true, 'stopRunningCronJobs should return success true');
+  assert.ok(stopResult.stoppedPids.length > 0, 'Should have stopped at least one PID');
+  assert.strictEqual(fs.existsSync(CONFIG.CRON_PID_FILE), false, 'PID file should be deleted after stopping');
+
+  // Verify idempotency (no active processes)
+  const secondStopResult = await stopRunningCronJobs();
+  assert.strictEqual(secondStopResult.success, true, 'Second call should succeed idempotently');
+  assert.strictEqual(secondStopResult.stoppedPids.length, 0, 'Second call should report 0 PIDs stopped');
+  console.log('✓ Pass: Pipeline cron start and stop daemon lifecycle verified.\n');
+
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);
 

@@ -80,6 +80,8 @@ export const CONFIG = {
   PROJECT_ROOT: defaultProjectRoot,
   REPORTS_DIR: path.resolve(defaultProjectRoot, 'src/content/reports'),
   HISTORY_FILE: path.resolve(defaultProjectRoot, 'pipeline/data/coverage-history.json'),
+  CRON_PID_FILE: path.resolve(defaultProjectRoot, 'pipeline/data/cron.pid'),
+  CRON_LOG_FILE: path.resolve(defaultProjectRoot, 'pipeline/logs/cron.log'),
 
   // Compliance
   PUBLISHER_EXEMPTION_LEGAL_ENTITY: 'EquiSight Analytics Media LLC',

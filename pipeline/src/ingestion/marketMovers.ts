@@ -68,7 +68,19 @@ export const PENNY_STOCK_SEEDS = [
   { symbol: 'GTII', name: 'Global Tech Industries Group, Inc.', exchange: 'OTHER' as const, region: 'US' as const, venue: 'OTC Markets Pink Sheets', basePrice: 0.40 },
   { symbol: 'HCMC', name: 'Healthier Choices Management Corp.', exchange: 'OTHER' as const, region: 'US' as const, venue: 'OTC Markets Pink Sheets', basePrice: 0.0002 },
   { symbol: 'OZSC', name: 'Ozop Energy Solutions, Inc.', exchange: 'OTHER' as const, region: 'US' as const, venue: 'OTC Markets Pink Sheets', basePrice: 0.0035 },
-  { symbol: 'BZX.SPEC', name: 'Cboe BZX Volatility Index Entity', exchange: 'OTHER' as const, region: 'US' as const, venue: 'Cboe BZX', basePrice: 3.20 }
+  { symbol: 'BZX.SPEC', name: 'Cboe BZX Volatility Index Entity', exchange: 'OTHER' as const, region: 'US' as const, venue: 'Cboe BZX', basePrice: 3.20 },
+  { symbol: 'SNDL', name: 'SNDL Inc.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 2.10 },
+  { symbol: 'ZOM', name: 'Zomedica Corp.', exchange: 'NYSE' as const, region: 'US' as const, venue: 'NYSE American', basePrice: 0.15 },
+  { symbol: 'MULN', name: 'Mullen Automotive, Inc.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 0.35 },
+  { symbol: 'IDEX', name: 'Ideanomics, Inc.', exchange: 'OTHER' as const, region: 'US' as const, venue: 'OTC Markets Pink Sheets', basePrice: 0.05 },
+  { symbol: 'WKHS', name: 'Workhorse Group Inc.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 0.85 },
+  { symbol: 'SHIP', name: 'Seanergy Maritime Holdings Corp.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 4.80 },
+  { symbol: 'PED', name: 'Pedevco Corp.', exchange: 'NYSE' as const, region: 'US' as const, venue: 'NYSE American', basePrice: 0.78 },
+  { symbol: 'IMPP', name: 'Imperial Petroleum Inc.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 3.65 },
+  { symbol: 'USEG', name: 'U.S. Energy Corp.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 1.45 },
+  { symbol: 'AETI', name: 'American Electric Technologies, Inc.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 1.90 },
+  { symbol: 'INDO', name: 'Indonesia Energy Corporation Limited', exchange: 'NYSE' as const, region: 'US' as const, venue: 'NYSE American', basePrice: 3.10 },
+  { symbol: 'ANY', name: 'Sphere 3D Corp.', exchange: 'NASDAQ' as const, region: 'US' as const, venue: 'Nasdaq Capital Market', basePrice: 1.25 }
 ] as const;
 
 export function resolveTradingVenue(symbol: string, exchange: string, isPennyStock: boolean): string {
@@ -247,6 +259,59 @@ export class MarketMoverIngestor {
           moneyMarketTradingVenue: seed.venue
         });
         selectedSymbols.add(seed.symbol);
+      }
+    }
+
+    // Emergency backfill if all available seeds are locked out
+    if (selectedGainers.length < 2) {
+      for (const seed of PENNY_STOCK_SEEDS) {
+        if (selectedGainers.length >= 2) break;
+        if (!selectedSymbols.has(seed.symbol)) {
+          selectedGainers.push({
+            ticker: seed.symbol,
+            symbol: seed.symbol,
+            name: seed.name,
+            exchange: seed.exchange as any,
+            region: seed.region,
+            price: seed.basePrice,
+            change: +(seed.basePrice * 0.145).toFixed(4),
+            changePercent: 14.5 + (seed.basePrice * 2) % 15,
+            volume: 5_200_000,
+            avgVolume: 1_800_000,
+            marketCap: 45_000_000,
+            currency: 'USD',
+            category: 'gainer',
+            isPennyStock: true,
+            moneyMarketTradingVenue: seed.venue
+          });
+          selectedSymbols.add(seed.symbol);
+        }
+      }
+    }
+
+    if (selectedLosers.length < 3) {
+      for (const seed of PENNY_STOCK_SEEDS) {
+        if (selectedLosers.length >= 3) break;
+        if (!selectedSymbols.has(seed.symbol)) {
+          selectedLosers.push({
+            ticker: seed.symbol,
+            symbol: seed.symbol,
+            name: seed.name,
+            exchange: seed.exchange as any,
+            region: seed.region,
+            price: seed.basePrice,
+            change: -(seed.basePrice * 0.115).toFixed(4) as any,
+            changePercent: -(11.5 + (seed.basePrice * 3) % 12),
+            volume: 4_100_000,
+            avgVolume: 1_500_000,
+            marketCap: 38_000_000,
+            currency: 'USD',
+            category: 'loser',
+            isPennyStock: true,
+            moneyMarketTradingVenue: seed.venue
+          });
+          selectedSymbols.add(seed.symbol);
+        }
       }
     }
 

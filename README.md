@@ -84,15 +84,22 @@ npm run pipeline:run
 ```
 Fetches movers, ingests financials and macro context, fact-checks and formats 10 reports, writes markdown to `src/content/reports/`, builds the Astro static output to `dist/`, and broadcasts social threads.
 
-### 5. Launch the Continuous Twice-Daily Daemon
+### 5. Launch the Continuous Twice-Daily Daemon (Background)
 ```bash
 npm run pipeline:cron
 ```
-Schedules automated runs at:
+Spawns the automated scheduling engine as a detached background daemon (releasing the terminal immediately).
 * **Pre-Market Cycle:** 07:00 AM EST (`0 7 * * 1-5`)
 * **Post-Market Cycle:** 16:30 PM EST (`30 16 * * 1-5`)
+* **Live Logs:** `tail -f pipeline/logs/cron.log`
 
-### 6. Local Frontend Preview
+### 6. Stop the Continuous Cron Daemon
+```bash
+npm run pipeline:stop_cron
+```
+Terminates all running background orchestrator cron daemon processes, cleans up PID locks, and ensures zero leftover background node processes.
+
+### 7. Local Frontend Preview
 ```bash
 npm run dev
 # Or preview built static edge files:
@@ -116,6 +123,8 @@ stock-intel-platform/
 │   │   ├── config.ts              # Typed configuration with fallback defaults
 │   │   ├── types.ts               # Core domain TypeScript interfaces
 │   │   ├── orchestrator.ts        # Master cron controller & error boundary
+│   │   ├── startCron.ts           # Background daemon launcher & duplicate prevention
+│   │   ├── stopCron.ts            # Cron daemon process discovery & graceful terminator
 │   │   ├── utils/
 │   │   │   └── httpClient.ts      # Resilient HTTP fetcher with jitter & 429 backoff
 │   │   ├── ingestion/
