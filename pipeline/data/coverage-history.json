@@ -403,5 +403,140 @@
     "category": "loser",
     "movePercent": -22.4,
     "slug": "bzx-spec-drops-22-percent-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "IBRX",
+    "companyName": "IBRX",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:12:09.198Z",
+    "category": "gainer",
+    "movePercent": 10.8297,
+    "slug": "ibrx-stock-surges-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "MTRN",
+    "companyName": "MTRN",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-04T19:12:48.497Z",
+    "category": "gainer",
+    "movePercent": 9.47604,
+    "slug": "mtrn-surges-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "RXO",
+    "companyName": "RXO",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-04T19:13:55.575Z",
+    "category": "gainer",
+    "movePercent": 9.45692,
+    "slug": "rxo-stock-surge-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "INIO",
+    "companyName": "INIO",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:14:44.602Z",
+    "category": "gainer",
+    "movePercent": 9.35448,
+    "slug": "inio-nv-surges-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "ALGM",
+    "companyName": "ALGM",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:15:34.903Z",
+    "category": "gainer",
+    "movePercent": 8.6586,
+    "slug": "allegro-microsystems-algm-surge-valuation-analysis"
+  },
+  {
+    "ticker": "AXGN",
+    "companyName": "AXGN",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:17:09.506Z",
+    "category": "loser",
+    "movePercent": -6.337672,
+    "slug": "axgn-loss-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "EPAM",
+    "companyName": "EPAM",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-04T19:18:51.615Z",
+    "category": "loser",
+    "movePercent": -5.29952,
+    "slug": "epam-loss-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "UTHR",
+    "companyName": "UTHR",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:19:34.210Z",
+    "category": "loser",
+    "movePercent": -5.19444,
+    "slug": "uthr-stock-drops-valuation-fundamental-deep-dive"
+  },
+  {
+    "ticker": "TNGX",
+    "companyName": "TNGX",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:20:19.477Z",
+    "category": "loser",
+    "movePercent": -4.9488792,
+    "slug": "tango-therapeutics-tngx-drops-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "QBTS",
+    "companyName": "QBTS",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:21:22.437Z",
+    "category": "loser",
+    "movePercent": -4.7705255,
+    "slug": "qbts-drops-4-77-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "OZSC",
+    "companyName": "OZSC",
+    "exchange": "OTHER",
+    "coveredAt": "2026-10-04T19:22:07.588Z",
+    "category": "gainer",
+    "movePercent": 23.3,
+    "slug": "ozsc-stock-surges-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "PROG",
+    "companyName": "PROG",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:23:38.306Z",
+    "category": "gainer",
+    "movePercent": 22.1,
+    "slug": "prog-gain-22-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "JAGX",
+    "companyName": "JAGX",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-04T19:24:30.887Z",
+    "category": "loser",
+    "movePercent": -21.6,
+    "slug": "jaguar-health-inc-jagx-drops-21-60-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "BBAI",
+    "companyName": "BBAI",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-04T19:25:10.950Z",
+    "category": "loser",
+    "movePercent": -20.8,
+    "slug": "bbai-drops-20-80-percent-fundamental-valuation-deep-dive"
+  },
+  {
+    "ticker": "HCMC",
+    "companyName": "HCMC",
+    "exchange": "OTHER",
+    "coveredAt": "2026-10-04T19:25:56.494Z",
+    "category": "loser",
+    "movePercent": -16.8,
+    "slug": "hcmc-drops-16-8-percent-fundamental-valuation-analysis"
   }
 ]
