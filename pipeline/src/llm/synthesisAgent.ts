@@ -234,7 +234,7 @@ export class LLMSynthesisAgent {
     const priceTimestamp = formatPriceTimestamp(new Date());
 
     // 1. Artificial Inflation Metrics
-    const volumeAnomalyRatio = s.volumeAnomalyRatio ?? (mover.avgVolume > 0 ? +(mover.volume / mover.avgVolume).toFixed(2) : 1.25);
+    const volumeAnomalyRatio = s.volumeAnomalyRatio ?? (mover.avgVolume > 0 ? +(mover.volume / mover.avgVolume).toFixed(2) : 1.0);
     const isInflated = s.isArtificiallyInflated ?? (volumeAnomalyRatio > 2.5 && Math.abs(mover.changePercent) > 20);
     const riskLevel: 'Low' | 'Moderate' | 'High' | 'Severe' = s.artificialInflationRisk ?? (
       isInflated ? 'Severe' :
@@ -242,14 +242,14 @@ export class LLMSynthesisAgent {
       volumeAnomalyRatio > 1.5 ? 'Moderate' :
       'Low'
     );
-    const majorPriceDriver = s.majorPriceDriver ?? (
+    const majorPriceDriver = s.majorPriceDriver || (
       isGainer
-        ? 'Retail momentum, social media discussion volume, and short covering'
-        : 'Broad sector rotation, profit-taking, and macro valuation multiple adjustment'
+        ? 'Trading volume momentum and market order flow'
+        : 'Broad sector rotation and valuation multiple adjustment'
     );
-    const sentimentScore = s.sentimentScore ?? (isGainer ? 0.74 : 0.38);
-    const newsImpact = s.newsImpact ?? 'Financial news outlets highlighting high daily trading volatility and volume expansion.';
-    const socialMediaImpact = s.socialMediaImpact ?? 'Elevated social mention velocity across retail trading forums (StockTwits, Reddit, Twitter/X).';
+    const sentimentScore = s.sentimentScore ?? 0.0;
+    const newsImpact = s.newsImpact || 'No recent significant corporate press releases detected.';
+    const socialMediaImpact = s.socialMediaImpact || 'Social discussion within normal baseline variance.';
 
     const artificialInflation: ArtificialInflation = {
       isInflated,
@@ -261,26 +261,28 @@ export class LLMSynthesisAgent {
       socialMediaImpact
     };
 
-    // 2. Debt Breakdown & Risks
+    // 2. Debt Breakdown & Risks (Factual from ingested filings)
     const totalDebt = f.totalDebt ?? 0;
-    const shortTermDebt = f.shortTermDebt ?? Math.round(totalDebt * 0.35);
-    const longTermDebt = f.longTermDebt ?? Math.max(0, totalDebt - shortTermDebt);
-    const debtToEquityRatio = f.debtToEquity ?? (f.marketCap > 0 ? +(totalDebt / f.marketCap).toFixed(2) : 0.45);
-    const shortVsLongTermRatio = f.shortVsLongTermRatio
-      ? (typeof f.shortVsLongTermRatio === 'string' ? f.shortVsLongTermRatio : `${f.shortVsLongTermRatio}:1`)
-      : `${((shortTermDebt / Math.max(1, totalDebt)) * 100).toFixed(0)}% Short / ${((longTermDebt / Math.max(1, totalDebt)) * 100).toFixed(0)}% Long`;
-    const recentChangesInDebt = f.recentChangesInDebt ?? 'Debt balances managed through periodic operating cash flows with minimal recent secondary note issuances.';
-    const debtRisks = f.debtRisks ?? (
-      f.netDebt > 0
-        ? `Elevated risk-free yields (${macro.us10YearYield.toFixed(2)}%) increase refinancing expense on maturing short-term debt of $${(shortTermDebt / 1e6).toFixed(1)}M.`
-        : 'With a net cash surplus, the company faces negligible debt covenant or near-term insolvency risks.'
+    const shortTermDebt = f.shortTermDebt ?? null;
+    const longTermDebt = f.longTermDebt ?? null;
+    const debtToEquityRatio = f.debtToEquity ?? (f.marketCap > 0 && totalDebt > 0 ? +(totalDebt / f.marketCap).toFixed(2) : null);
+    const shortVsLongTermRatio = f.shortVsLongTermRatio || 'Not Disclosed in Public Summaries';
+    const recentChangesInDebt = f.recentChangesInDebt || (
+      totalDebt > 0
+        ? `Balance sheet reflects $${(totalDebt / 1e6).toFixed(1)}M in funded debt obligations.`
+        : 'Company reports zero funded debt obligations.'
+    );
+    const debtRisks = f.debtRisks || (
+      totalDebt > 0
+        ? 'Debt obligations require periodic operational cash flow generation to service maturities.'
+        : 'Zero funded debt eliminates balance sheet debt refinancing and covenant insolvency risk.'
     );
 
     const debtAnalysis: DebtAnalysis = {
       totalDebt,
-      debtToEquity: debtToEquityRatio,
-      shortTermDebt,
-      longTermDebt,
+      debtToEquity: debtToEquityRatio ?? 0,
+      shortTermDebt: shortTermDebt ?? 0,
+      longTermDebt: longTermDebt ?? 0,
       shortVsLongTermRatio,
       recentChanges: recentChangesInDebt,
       risks: debtRisks
@@ -288,149 +290,85 @@ export class LLMSynthesisAgent {
 
     // 3. Valuation Comparisons (P/B and P/E)
     const currentPBVal = typeof f.priceToBook === 'object' && f.priceToBook !== null
-      ? (f.priceToBook as any).current ?? 1.5
+      ? (f.priceToBook as any).current ?? null
       : typeof f.priceToBook === 'number'
       ? f.priceToBook
-      : 1.5;
-    const industryPB = (f as any).priceToBook?.industryAverage ?? (f as any).priceToBookComparison?.industryAverage ?? 2.8;
-    const hist5YPB = (f as any).priceToBook?.historicalAverage5Y ?? (f as any).priceToBookComparison?.historicalAverage5Y ?? 2.4;
+      : null;
+    const industryPB = (f as any).priceToBook?.industryAverage ?? (f as any).priceToBookComparison?.industryAverage ?? 2.5;
+    const hist5YPB = (f as any).priceToBook?.historicalAverage5Y ?? (f as any).priceToBookComparison?.historicalAverage5Y ?? 2.8;
 
     const priceToBookRatio = {
       current: currentPBVal,
       industryAverage: industryPB,
       historicalAverage5Y: hist5YPB,
-      chart: [
+      chart: currentPBVal !== null ? [
         { label: 'Current P/B', value: currentPBVal },
         { label: 'Industry Avg', value: industryPB },
         { label: '5Y Historical Avg', value: hist5YPB }
-      ]
+      ] : []
     };
 
     const currentPEVal = f.peRatioTrailing ?? f.peRatioForward ?? (f as any).priceToEarnings?.current ?? null;
-    const industryPE = (f as any).priceToEarnings?.industryAverage ?? (f as any).priceToEarningsComparison?.industryAverage ?? 22.5;
-    const hist5YPE = (f as any).priceToEarnings?.historicalAverage5Y ?? (f as any).priceToEarningsComparison?.historicalAverage5Y ?? 19.8;
+    const industryPE = (f as any).priceToEarnings?.industryAverage ?? (f as any).priceToEarningsComparison?.industryAverage ?? 22.0;
+    const hist5YPE = (f as any).priceToEarnings?.historicalAverage5Y ?? (f as any).priceToEarningsComparison?.historicalAverage5Y ?? 24.0;
 
     const priceToEarningsRatio = {
       current: currentPEVal,
       industryAverage: industryPE,
       historicalAverage5Y: hist5YPE,
-      chart: [
-        { label: 'Current P/E', value: currentPEVal ?? 0 },
+      chart: currentPEVal !== null ? [
+        { label: 'Current P/E', value: currentPEVal },
         { label: 'Industry Avg', value: industryPE },
         { label: '5Y Historical Avg', value: hist5YPE }
-      ]
+      ] : []
     };
 
-    // 4. 8-Quarter EPS Trend
-    const quarterlyEPSPast2Years = f.earningsPerShare?.quarterlyEPSPast2Years ?? [
-      { quarter: 'Q3 2026', eps: 0.14 },
-      { quarter: 'Q2 2026', eps: 0.12 },
-      { quarter: 'Q1 2026', eps: 0.10 },
-      { quarter: 'Q4 2025', eps: 0.08 },
-      { quarter: 'Q3 2025', eps: 0.07 },
-      { quarter: 'Q2 2025', eps: 0.06 },
-      { quarter: 'Q1 2025', eps: 0.04 },
-      { quarter: 'Q4 2024', eps: 0.03 }
-    ];
+    // 4. 8-Quarter EPS Trend (Strictly authentic reported data)
+    const quarterlyEPSPast2Years = f.earningsPerShare?.quarterlyEPSPast2Years ?? [];
     const earningsPerShare: EPSHistory = {
-      currentTTM: f.earningsPerShare?.currentTTM ?? (f.netIncomeTTM > 0 && f.marketCap > 0 ? +(f.netIncomeTTM / (f.marketCap / mover.price)).toFixed(2) : 0.35),
+      currentTTM: f.earningsPerShare?.currentTTM ?? 0,
       quarterlyEPSPast2Years
     };
 
     // 5. Governance & Moat
     const managementQuality: ManagementQuality = {
-      rating: (f.managementQuality?.rating as any) ?? 'Experienced',
-      trackRecord: f.managementQuality?.trackRecord ?? 'Executive team exhibits seasoned leadership with demonstrated operating discipline and cost structure governance.'
+      rating: (f.managementQuality?.rating as any) ?? 'Established',
+      trackRecord: f.managementQuality?.trackRecord ?? 'Executive team exhibits operational stewardship.'
     };
 
     const competitiveMoat: CompetitiveMoat = {
       rating: (f.competitiveMoat?.rating as any) ?? 'Narrow Moat',
-      summary: f.competitiveMoat?.summary ?? 'Proprietary domain assets, intellectual property, and established commercial customer relationships furnish defensive durability.'
+      summary: f.competitiveMoat?.summary ?? 'Established commercial footprint and domain competencies provide operational durability.'
     };
 
     // 6. 4 Company Questions
     const companyDeepDive: CompanyQuestions = {
-      howCompanyMakesMoney: f.companyQuestions?.howCompanyMakesMoney ?? `${f.companyName} generates gross revenue through direct product delivery, licensing partnerships, and recurring service contracts in the ${f.sector} industry.`,
-      productsDemandAndWhy: f.companyQuestions?.productsDemandAndWhy ?? `Commercial demand stems from non-discretionary enterprise modernization, specialized clinical or industrial utility, and regulatory compliance standards.`,
-      pastPerformanceSummary: f.companyQuestions?.pastPerformanceSummary ?? `Historical financial performance shows steady market share consolidation, weathering multi-year cyclical headwinds while preserving liquidity.`,
-      growthAndProfitabilityOutlook: f.companyQuestions?.growthAndProfitabilityOutlook ?? `The company is strategically positioned to leverage operating efficiencies, expand commercial capacity, and pursue accretive margin targets.`
+      howCompanyMakesMoney: f.companyQuestions?.howCompanyMakesMoney ?? `${f.companyName} delivers commercial products and services in ${f.sector}.`,
+      productsDemandAndWhy: f.companyQuestions?.productsDemandAndWhy ?? `Customer demand is driven by industry operating requirements within ${f.industry}.`,
+      pastPerformanceSummary: f.companyQuestions?.pastPerformanceSummary ?? `Historical results reflect operating dynamics over recent reporting periods.`,
+      growthAndProfitabilityOutlook: f.companyQuestions?.growthAndProfitabilityOutlook ?? `Outlook depends on ongoing execution, margin management, and commercial demand.`
     };
 
     // 7. 3 Industry Questions
     const industryDeepDive: IndustryQuestions = {
-      industryCondition: f.industryQuestions?.industryCondition ?? `The ${f.sector} sector is characterized by disciplined capital deployment, steady end-market demand, and ongoing secular adoption trends.`,
-      obstaclesAndChallenges: f.industryQuestions?.obstaclesAndChallenges ?? `Primary hurdles include managing raw input inflation, stringent regulatory certification timelines, and aggressive technological competition.`,
-      economicPoliticalCulturalRisks: f.industryQuestions?.economicPoliticalCulturalRisks ?? `Key macro exposures involve interest rate volatility, cross-border supply chain dependencies, and shifting regulatory frameworks.`
+      industryCondition: f.industryQuestions?.industryCondition ?? `The ${f.sector} sector operates within broader macroeconomic and interest rate cycles.`,
+      obstaclesAndChallenges: f.industryQuestions?.obstaclesAndChallenges ?? `Primary hurdles include competitive positioning, input costs, and regulatory compliance.`,
+      economicPoliticalCulturalRisks: f.industryQuestions?.economicPoliticalCulturalRisks ?? `Macro exposures involve monetary policy shifts and economic cycle dynamics.`
     };
 
-    // 8. Multi-Model Valuation Suite (8 Models)
-    const dcfIntrinsic = Math.max(0.20, +(mover.price * (f.operatingMargin > 15 ? 1.22 : f.operatingMargin > 0 ? 1.10 : 0.90)).toFixed(2));
-    const ddmIntrinsic = f.dividendYield > 0 ? Math.max(0.10, +((f.dividendYield * mover.price / 100) / (0.09 - 0.03)).toFixed(2)) : 0;
-    const relIntrinsic = Math.max(0.20, +(mover.price * (isGainer ? 1.08 : 1.18)).toFixed(2));
-    const rapidIntrinsic = Math.max(0.20, +(mover.price * (isGainer ? 1.05 : 1.12)).toFixed(2));
-    const rimIntrinsic = Math.max(0.20, +(mover.price * 1.07).toFixed(2));
-    const navIntrinsic = Math.max(0.15, +(mover.price * 0.82).toFixed(2));
-    const liquidationIntrinsic = Math.max(0.10, +(mover.price * 0.60).toFixed(2));
-    const excessIntrinsic = Math.max(0.20, +(mover.price * 1.12).toFixed(2));
-    const sectorIntrinsic = Math.max(0.20, +(mover.price * 1.05).toFixed(2));
-
-    const positiveModels = [dcfIntrinsic, relIntrinsic, rapidIntrinsic, rimIntrinsic, excessIntrinsic, sectorIntrinsic].filter((v) => v > 0);
-    if (ddmIntrinsic > 0) positiveModels.push(ddmIntrinsic);
-    const consensusFairValue = +(positiveModels.reduce((a, b) => a + b, 0) / positiveModels.length).toFixed(2);
-    const consensusUpside = +(((consensusFairValue - mover.price) / Math.max(0.01, mover.price)) * 100).toFixed(1);
-    const verdict = consensusUpside > 15 ? 'Undervalued / Asymmetric Margin of Safety' : consensusUpside < -10 ? 'Overextended / Multiple De-rating Risk' : 'Fairly Valued';
-
-    const valuationModels: ValuationModels = {
-      dcf: {
-        intrinsicValue: dcfIntrinsic,
-        discountRate: 9.5,
-        terminalGrowth: 2.5,
-        upsidePercent: +(((dcfIntrinsic - mover.price) / mover.price) * 100).toFixed(1)
-      },
-      ddm: {
-        intrinsicValue: ddmIntrinsic,
-        dividendGrowthRate: 3.0,
-        costOfEquity: 9.5,
-        applicable: f.dividendYield > 0
-      },
-      relativeValuation: {
-        intrinsicValue: relIntrinsic,
-        peerMedianPE: industryPE,
-        multipleType: 'Peer EV/EBITDA and P/E Medians',
-        upsidePercent: +(((relIntrinsic - mover.price) / mover.price) * 100).toFixed(1)
-      },
-      rapidStockValuation: {
-        intrinsicValue: rapidIntrinsic,
-        methodology: 'Rule of 72 / Quick PEG Multiplier',
-        upsidePercent: +(((rapidIntrinsic - mover.price) / mover.price) * 100).toFixed(1)
-      },
-      residualIncomeModel: {
-        intrinsicValue: rimIntrinsic,
-        equityCharge: 8.5,
-        costOfEquity: 9.5,
-        upsidePercent: +(((rimIntrinsic - mover.price) / mover.price) * 100).toFixed(1)
-      },
-      assetBasedValuation: {
-        netAssetValue: navIntrinsic,
-        liquidationValue: liquidationIntrinsic,
-        intrinsicValue: navIntrinsic,
-        upsidePercent: +(((navIntrinsic - mover.price) / mover.price) * 100).toFixed(1)
-      },
-      excessReturnModel: {
-        intrinsicValue: excessIntrinsic,
-        excessReturnPercent: 3.8,
-        wacc: 9.2,
-        upsidePercent: +(((excessIntrinsic - mover.price) / mover.price) * 100).toFixed(1)
-      },
-      industrySpecificModel: {
-        name: `${f.sector} Asset Capacity Model`,
-        intrinsicValue: sectorIntrinsic,
-        description: `Normalized asset utilization and production replacement cost analysis for ${f.industry}`,
-        upsidePercent: +(((sectorIntrinsic - mover.price) / mover.price) * 100).toFixed(1)
-      },
-      consensusFairValue,
-      verdict
-    };
+    // 8. Multi-Model Valuation Suite (Inherited directly from verified fundamentals, NO fake multipliers)
+    const valuationModels: ValuationModels = f.valuationModels;
+    const dcfIntrinsic = valuationModels.dcf?.fairValue ?? valuationModels.dcf?.intrinsicValue ?? null;
+    const ddmIntrinsic = valuationModels.ddm?.fairValue ?? valuationModels.ddm?.intrinsicValue ?? null;
+    const relIntrinsic = valuationModels.relativeValuation?.fairValue ?? valuationModels.relativeValuation?.intrinsicValue ?? null;
+    const rapidIntrinsic = valuationModels.rapidStockValuation?.fairValue ?? valuationModels.rapidStockValuation?.intrinsicValue ?? null;
+    const rimIntrinsic = valuationModels.residualIncomeModel?.fairValue ?? valuationModels.residualIncomeModel?.intrinsicValue ?? null;
+    const navIntrinsic = valuationModels.assetBasedValuation?.fairValue ?? valuationModels.assetBasedValuation?.intrinsicValue ?? null;
+    const excessIntrinsic = valuationModels.excessReturnModel?.fairValue ?? valuationModels.excessReturnModel?.intrinsicValue ?? null;
+    const sectorIntrinsic = valuationModels.industrySpecificModel?.fairValue ?? valuationModels.industrySpecificModel?.intrinsicValue ?? null;
+    const consensusFairValue = valuationModels.consensusFairValue;
+    const verdict = valuationModels.verdict || 'Fairly Valued';
+    const consensusUpside = consensusFairValue !== null ? +(((consensusFairValue - mover.price) / Math.max(0.01, mover.price)) * 100).toFixed(1) : null;
 
     const classification = (f.classification as any) ?? (
       isPennyStock ? 'Speculative Penny Stock' :
@@ -438,9 +376,9 @@ export class LLMSynthesisAgent {
       'Growth Stock'
     );
 
-    const fundamentalRating = (f.fundamentalRating as any) ?? (
-      consensusUpside > 15 ? 'Strong' :
-      consensusUpside < -10 ? 'Weak' :
+    const fundamentalRating = f.fundamentalRating ?? (
+      consensusUpside !== null && consensusUpside > 15 ? 'Strong' :
+      consensusUpside !== null && consensusUpside < -10 ? 'Weak' :
       'Fairly Valued'
     );
 
@@ -472,7 +410,7 @@ Social discussion velocity around $${cleanTicker} shifted by **+${s.volumeChange
 | **Market Capitalization** | \`$${(f.marketCap / 1e9).toFixed(2)}B\` | Classification: ${classification} |
 | **Trading Volume** | \`${mover.volume.toLocaleString()}\` | Anomaly Ratio: ${volumeAnomalyRatio}x vs 90d avg |
 | **52-Week Range** | \`$${f.fiftyTwoWeekLow.toFixed(2)} - $${f.fiftyTwoWeekHigh.toFixed(2)}\` | Current: $${mover.price.toFixed(2)} |
-| **Fundamental Rating** | \`${fundamentalRating}\` | Consensus Fair Value: $${consensusFairValue.toFixed(2)} (${consensusUpside > 0 ? '+' : ''}${consensusUpside}%) |
+| **Fundamental Rating** | \`${fundamentalRating}\` | Consensus Fair Value: ${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)} (${consensusUpside !== null && consensusUpside > 0 ? '+' : ''}${consensusUpside}%)` : 'N/A (Standard Models Inapplicable)'} |
 | **Social Sentiment** | \`${s.bullishPercent}% Bull / ${s.bearishPercent}% Bear\` | Major Driver: ${majorPriceDriver} |
 
 ---
@@ -517,9 +455,9 @@ Operational efficiency metrics demonstrate:
 * **Return on Invested Capital (ROIC):** \`${f.roic ? f.roic.toFixed(1) : '12.4'}%\`
 
 ### Trailing 8-Quarter EPS History:
-| Quarter | Diluted EPS | Benchmark Beat/Miss |
+${quarterlyEPSPast2Years.length > 0 ? `| Quarter | Diluted EPS | Benchmark Beat/Miss |
 | :--- | :--- | :--- |
-${quarterlyEPSPast2Years.map((q) => `| **${q.quarter}** | \`$${q.eps.toFixed(2)}\` | ${q.eps > 0.05 ? 'Beat / Growth' : 'Miss / Stabilizing'} |`).join('\n')}
+${quarterlyEPSPast2Years.map((q) => `| **${q.quarter}** | \`$${q.eps.toFixed(2)}\` | ${q.beat ? 'Beat' : 'Miss/In-Line'} |`).join('\n')}` : '*Quarterly EPS progression not reported in available public summaries.*'}
 
 ---
 
@@ -567,20 +505,20 @@ To eliminate single-model bias, ${cleanTicker}'s intrinsic worth is synthesized 
 
 | Valuation Methodology | Calculated Fair Value | Implied Upside | Model Assumptions & Parameters |
 | :--- | :--- | :--- | :--- |
-| **1. Discounted Cash Flow (DCF)** | \`$${dcfIntrinsic.toFixed(2)}\` | \`${(valuationModels.dcf?.upsidePercent ?? valuationModels.dcf?.upside ?? 12) > 0 ? '+' : ''}${valuationModels.dcf?.upsidePercent ?? valuationModels.dcf?.upside ?? 12}%\` | 10Y projection, 9.5% WACC, 2.5% terminal growth |
-| **2. Dividend Discount Model (DDM)** | \`$${ddmIntrinsic.toFixed(2)}\` | \`${ddmIntrinsic > 0 ? (valuationModels.ddm?.applicable ? '+12.4%' : 'N/A') : 'N/A'}\` | ${ddmIntrinsic > 0 ? 'Gordon Growth Model at 3% dividend growth' : 'Inapplicable (Zero dividend distribution)'} |
-| **3. Rapid Stock Valuation (PEG)** | \`$${rapidIntrinsic.toFixed(2)}\` | \`${(valuationModels.rapidStockValuation?.upsidePercent ?? valuationModels.rapidStockValuation?.upside ?? 8) > 0 ? '+' : ''}${valuationModels.rapidStockValuation?.upsidePercent ?? valuationModels.rapidStockValuation?.upside ?? 8}%\` | Rule of 72 / Quick PEG multiple (1.25x peg target) |
-| **4. Relative Peer Multiples** | \`$${relIntrinsic.toFixed(2)}\` | \`${(valuationModels.relativeValuation?.upsidePercent ?? valuationModels.relativeValuation?.upside ?? 10) > 0 ? '+' : ''}${valuationModels.relativeValuation?.upsidePercent ?? valuationModels.relativeValuation?.upside ?? 10}%\` | Peer median P/E (${industryPE}x) and EV/EBITDA |
-| **5. Residual Income Model (RIM)** | \`$${rimIntrinsic.toFixed(2)}\` | \`${(valuationModels.residualIncomeModel?.upsidePercent ?? valuationModels.residualIncomeModel?.upside ?? 9) > 0 ? '+' : ''}${valuationModels.residualIncomeModel?.upsidePercent ?? valuationModels.residualIncomeModel?.upside ?? 9}%\` | Edwards-Bell-Ohlson model at 8.5% equity charge |
-| **6. Asset-Based Valuation** | \`$${navIntrinsic.toFixed(2)}\` | \`${(valuationModels.assetBasedValuation?.upsidePercent ?? valuationModels.assetBasedValuation?.upside ?? -5) > 0 ? '+' : ''}${valuationModels.assetBasedValuation?.upsidePercent ?? valuationModels.assetBasedValuation?.upside ?? -5}%\` | Net Asset Value; liquidation floor: $${liquidationIntrinsic.toFixed(2)} |
-| **7. Sector Asset Capacity Model** | \`$${sectorIntrinsic.toFixed(2)}\` | \`${(valuationModels.industrySpecificModel?.upsidePercent ?? valuationModels.industrySpecificModel?.upside ?? 11) > 0 ? '+' : ''}${valuationModels.industrySpecificModel?.upsidePercent ?? valuationModels.industrySpecificModel?.upside ?? 11}%\` | ${valuationModels.industrySpecificModel?.description ?? 'Industry metric model'} |
-| **8. Excess Return Model (EVA)** | \`$${excessIntrinsic.toFixed(2)}\` | \`${(valuationModels.excessReturnModel?.upsidePercent ?? valuationModels.excessReturnModel?.upside ?? 10) > 0 ? '+' : ''}${valuationModels.excessReturnModel?.upsidePercent ?? valuationModels.excessReturnModel?.upside ?? 10}%\` | Economic Value Added spread (ROIC minus 9.2% WACC) |
-| **Consensus Fair Value Target** | **\`$${consensusFairValue.toFixed(2)}\`** | **\`${consensusUpside > 0 ? '+' : ''}${consensusUpside}%\`** | **Verdict: ${verdict}** |
+| **1. Discounted Cash Flow (DCF)** | ${dcfIntrinsic !== null ? `\`$${dcfIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${dcfIntrinsic !== null && valuationModels.dcf?.upsidePercent !== null ? `\`${valuationModels.dcf?.upsidePercent}% \`` : '\`Inapplicable\`'} | ${valuationModels.dcf?.status || '10Y projection, 9.5% WACC'} |
+| **2. Dividend Discount Model (DDM)** | ${ddmIntrinsic !== null ? `\`$${ddmIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${ddmIntrinsic !== null && valuationModels.ddm?.upsidePercent !== null ? `\`${valuationModels.ddm?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.ddm?.status || (ddmIntrinsic !== null ? 'Gordon Growth Model' : 'Inapplicable (Zero dividend distribution)')} |
+| **3. Rapid Stock Valuation (PEG)** | ${rapidIntrinsic !== null ? `\`$${rapidIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${rapidIntrinsic !== null && valuationModels.rapidStockValuation?.upsidePercent !== null ? `\`${valuationModels.rapidStockValuation?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.rapidStockValuation?.status || 'Rule of 72 / Quick PEG multiple'} |
+| **4. Relative Peer Multiples** | ${relIntrinsic !== null ? `\`$${relIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${relIntrinsic !== null && valuationModels.relativeValuation?.upsidePercent !== null ? `\`${valuationModels.relativeValuation?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.relativeValuation?.status || `Peer median P/E (${industryPE}x)`} |
+| **5. Residual Income Model (RIM)** | ${rimIntrinsic !== null ? `\`$${rimIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${rimIntrinsic !== null && valuationModels.residualIncomeModel?.upsidePercent !== null ? `\`${valuationModels.residualIncomeModel?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.residualIncomeModel?.status || 'Edwards-Bell-Ohlson model'} |
+| **6. Asset-Based Valuation** | ${navIntrinsic !== null ? `\`$${navIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${navIntrinsic !== null && valuationModels.assetBasedValuation?.upsidePercent !== null ? `\`${valuationModels.assetBasedValuation?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.assetBasedValuation?.status || 'Net Asset Value liquidation floor'} |
+| **7. Sector Asset Capacity Model** | ${sectorIntrinsic !== null ? `\`$${sectorIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${sectorIntrinsic !== null && valuationModels.industrySpecificModel?.upsidePercent !== null ? `\`${valuationModels.industrySpecificModel?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.industrySpecificModel?.status || 'Sector asset capacity model'} |
+| **8. Excess Return Model (EVA)** | ${excessIntrinsic !== null ? `\`$${excessIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${excessIntrinsic !== null && valuationModels.excessReturnModel?.upsidePercent !== null ? `\`${valuationModels.excessReturnModel?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.excessReturnModel?.status || 'Economic Value Added spread'} |
+| **Consensus Fair Value Target** | **${consensusFairValue !== null ? `\`$${consensusFairValue.toFixed(2)}\`` : '\`N/A\`'}** | **${consensusUpside !== null ? `\`${consensusUpside > 0 ? '+' : ''}${consensusUpside}%\`` : '\`N/A\`'}** | **Verdict: ${verdict}** |
 
 ### Historical & Industry Benchmark Comparison:
 * **Trailing P/E Ratio:** ${currentPEVal ? `${currentPEVal}x` : 'N/A'} (Industry Average: ${industryPE}x | 5Y Historical Avg: ${hist5YPE}x)
-* **Price-to-Book (P/B):** ${currentPBVal}x (Industry Average: ${industryPB}x | 5Y Historical Avg: ${hist5YPB}x)
-* **EV/EBITDA Multiple:** ${f.evToEbitda ? `${f.evToEbitda.toFixed(1)}x` : '14.5x'}
+* **Price-to-Book (P/B):** ${currentPBVal ? `${currentPBVal}x` : 'N/A'} (Industry Average: ${industryPB}x | 5Y Historical Avg: ${hist5YPB}x)
+* **EV/EBITDA Multiple:** ${f.evToEbitda ? `${f.evToEbitda.toFixed(1)}x` : 'N/A'}
 * **Dividend Yield:** ${f.dividendYield.toFixed(2)}%
 
 ---
@@ -599,8 +537,8 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
 
 ### The Objective Bull Thesis
 1. **Multi-Model Valuation Asymmetry:**
-   * **Cited References:** Consensus 8-Model Valuation Suite ($${consensusFairValue.toFixed(2)} target) and SEC Form 10-K reported balance sheet asset base.
-   * **Deduction Chain:** Market price of $${mover.price.toFixed(2)} trades at a discount to intrinsic DCF ($${dcfIntrinsic.toFixed(2)}) -> Implied margin of safety -> Multiple re-rating potential toward consensus target of $${consensusFairValue.toFixed(2)}.
+   * **Cited References:** Consensus 8-Model Valuation Suite (${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)} target` : 'qualitative fundamental assessment'}) and SEC Form 10-K reported balance sheet asset base.
+   * **Deduction Chain:** Market price of $${mover.price.toFixed(2)} ${dcfIntrinsic !== null ? `trades relative to intrinsic DCF ($${dcfIntrinsic.toFixed(2)})` : 'reflects current risk-adjusted discount'} -> Potential margin of safety -> Multiple stabilization potential.
 2. **Operating Resilience & Margins:**
    * **Cited References:** SEC Form 10-Q Operating Statement showing ${f.grossMargin.toFixed(1)}% gross margin and $${(cashFlow.freeCashFlow / 1e9).toFixed(2)}B Free Cash Flow.
    * **Deduction Chain:** Positive operational cash generation -> Minimal reliance on dilutive capital raises -> Flexibility to fund organic pipeline and service short-term debt obligations.
@@ -613,7 +551,7 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
    * **Cited References:** Federal Reserve policy rate (${macro.fedFundsRate.toFixed(2)}%) and US 10-Year Sovereign Yield (${macro.us10YearYield.toFixed(2)}%).
    * **Deduction Chain:** Risk-free sovereign yields above 4% -> Elevated hurdle rates for long-duration cash flows -> Multiple compression vulnerability if top-line growth decelerates.
 2. **Short-Term Debt Maturity Exposure:**
-   * **Cited References:** Balance sheet liabilities schedule indicating $${(shortTermDebt / 1e6).toFixed(1)}M in short-term debt obligations.
+   * **Cited References:** Balance sheet liabilities schedule indicating ${shortTermDebt !== null ? `$${(shortTermDebt / 1e6).toFixed(1)}M in short-term debt obligations` : 'debt maturities schedule'}.
    * **Deduction Chain:** Short-term maturity schedule -> Requires rollover or refinancing at higher prevailing interest rates -> Heightened annual interest expense burden.
 3. **Execution & Industry Challenges:**
    * **Cited References:** Sector regulatory filing audits and competitive landscape review.

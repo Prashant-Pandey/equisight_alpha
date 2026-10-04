@@ -52,7 +52,7 @@ export class MacroContextIngestor {
     }
 
     // Baseline fallback
-    const fallbackMacro: MacroBackdrop = {
+    const fallbackMacro: MacroBackdrop = this.cachedMacro || {
       us10YearYield: 4.22,
       us2YearYield: 4.38,
       fedFundsRate: 4.75,

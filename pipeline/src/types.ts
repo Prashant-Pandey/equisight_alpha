@@ -71,90 +71,98 @@ export interface IndustryQuestions {
 }
 
 export interface ValuationModelDCF {
-  fairValue?: number;
-  intrinsicValue?: number;
-  discountRate?: number;
-  terminalGrowthRate?: number;
-  terminalGrowth?: number;
-  upside?: number;
-  upsidePercent?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
+  discountRate?: number | null;
+  terminalGrowthRate?: number | null;
+  terminalGrowth?: number | null;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModelDDM {
-  fairValue?: number;
-  intrinsicValue?: number;
-  expectedDividendGrowth?: number;
-  dividendGrowthRate?: number;
-  requiredReturn?: number;
-  costOfEquity?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
+  expectedDividendGrowth?: number | null;
+  dividendGrowthRate?: number | null;
+  requiredReturn?: number | null;
+  costOfEquity?: number | null;
   applicable?: boolean;
-  upside?: number;
-  upsidePercent?: number;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModelRelative {
-  fairValue?: number;
-  intrinsicValue?: number;
-  benchmarkMultiple?: number;
-  peerMedianPE?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
+  benchmarkMultiple?: number | null;
+  peerMedianPE?: number | null;
   multipleType?: string;
-  upside?: number;
-  upsidePercent?: number;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModelRapid {
-  fairValue?: number;
-  intrinsicValue?: number;
-  pegBenchmark?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
+  pegBenchmark?: number | null;
   methodology?: string;
-  upside?: number;
-  upsidePercent?: number;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModelResidualIncome {
-  fairValue?: number;
-  intrinsicValue?: number;
-  costOfEquity?: number;
-  equityCharge?: number;
-  upside?: number;
-  upsidePercent?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
+  costOfEquity?: number | null;
+  equityCharge?: number | null;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModelAssetBased {
-  fairValue?: number;
-  intrinsicValue?: number;
-  liquidationValue?: number;
-  netAssetValue?: number;
-  upside?: number;
-  upsidePercent?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
+  liquidationValue?: number | null;
+  netAssetValue?: number | null;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModelExcessReturn {
-  fairValue?: number;
-  intrinsicValue?: number;
-  returnSpread?: number;
-  excessReturnPercent?: number;
-  wacc?: number;
-  upside?: number;
-  upsidePercent?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
+  returnSpread?: number | null;
+  excessReturnPercent?: number | null;
+  wacc?: number | null;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModelIndustrySpecific {
-  fairValue?: number;
-  intrinsicValue?: number;
+  fairValue?: number | null;
+  intrinsicValue?: number | null;
   sectorMetric?: string;
   name?: string;
   description?: string;
-  upside?: number;
-  upsidePercent?: number;
+  upside?: number | null;
+  upsidePercent?: number | null;
   modelName?: string;
+  status?: string;
 }
 
 export interface ValuationModels {
@@ -166,16 +174,16 @@ export interface ValuationModels {
   assetBasedValuation: ValuationModelAssetBased;
   excessReturnModel: ValuationModelExcessReturn;
   industrySpecificModel: ValuationModelIndustrySpecific;
-  consensusFairValue: number;
+  consensusFairValue: number | null;
   verdict: string;
 }
 
 export interface DebtBreakdown {
   totalDebt: number;
   debtToEquity: number | null;
-  shortTermDebt: number;
-  longTermDebt: number;
-  shortVsLongTermRatio: number;
+  shortTermDebt: number | null;
+  longTermDebt: number | null;
+  shortVsLongTermRatio: number | string;
   recentChangesInDebt: string;
   debtRisks: string;
 }
@@ -230,9 +238,9 @@ export interface FundamentalMetrics {
   // Debt breakdown
   totalDebt: number;
   debtToEquity: number | null;
-  shortTermDebt: number;
-  longTermDebt: number;
-  shortVsLongTermRatio: number;
+  shortTermDebt: number | null;
+  longTermDebt: number | null;
+  shortVsLongTermRatio: number | string;
   recentChangesInDebt: string;
   debtRisks: string;
 
@@ -433,9 +441,9 @@ export interface FinalReportFrontmatter {
   // Debt breakdown
   totalDebt: number;
   debtToEquity: number | null;
-  shortTermDebt: number;
-  longTermDebt: number;
-  shortVsLongTermRatio: number;
+  shortTermDebt: number | null;
+  longTermDebt: number | null;
+  shortVsLongTermRatio: number | string;
   recentChangesInDebt: string;
   debtRisks: string;
   debtAnalysis?: DebtAnalysis;

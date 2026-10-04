@@ -20,6 +20,13 @@ export interface SecFinancialDisclosures {
   entityName: string;
   latestRevenueTTM?: number;
   latestNetIncomeTTM?: number;
+  latestOperatingIncomeTTM?: number;
+  latestOperatingCashFlowTTM?: number;
+  totalAssets?: number;
+  totalLiabilities?: number;
+  totalDebt?: number;
+  cashAndEquivalents?: number;
+  stockholdersEquity?: number;
   latest10KFilingDate?: string;
   fiscalYear?: number;
 }
@@ -161,8 +168,8 @@ export class WebScraper {
       if (!secTickerCache) {
         secTickerCache = new Map();
         const dirRes = await fetchWithRetry('https://www.sec.gov/files/company_tickers.json', {
-          retries: 1,
-          timeoutMs: 6000,
+          retries: 2,
+          timeoutMs: 10000,
           headers: { 'User-Agent': userAgent }
         });
         if (dirRes.ok) {
@@ -199,31 +206,68 @@ export class WebScraper {
 
       let latestRevenue: number | undefined;
       let latestNetIncome: number | undefined;
+      let latestOperatingIncome: number | undefined;
+      let latestOperatingCashFlow: number | undefined;
+      let totalAssets: number | undefined;
+      let totalLiabilities: number | undefined;
+      let totalDebt: number | undefined;
+      let cashAndEquivalents: number | undefined;
+      let stockholdersEquity: number | undefined;
       let latest10KDate: string | undefined;
       let fiscalYear: number | undefined;
+
+      const getLatestVal = (obj: any): number | undefined => {
+        if (!obj?.units?.USD || !Array.isArray(obj.units.USD)) return undefined;
+        const relevantUnits = obj.units.USD.filter((u: any) => u.form === '10-K' || u.form === '10-Q');
+        if (relevantUnits.length === 0) return undefined;
+        return relevantUnits[relevantUnits.length - 1]?.val;
+      };
 
       if (usGaap) {
         // Extract revenue from 10-K units
         const revObj = usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax || usGaap.SalesRevenueNet;
         if (revObj?.units?.USD) {
           const tenKUnits = revObj.units.USD.filter((u: any) => u.form === '10-K');
-          const latest = tenKUnits.pop();
+          const latest = tenKUnits[tenKUnits.length - 1];
           if (latest) {
             latestRevenue = latest.val;
             latest10KDate = latest.filed;
             fiscalYear = latest.fy;
           }
         }
+        if (!latestRevenue) latestRevenue = getLatestVal(revObj);
 
         // Extract net income
         const incObj = usGaap.NetIncomeLoss || usGaap.ProfitLoss;
-        if (incObj?.units?.USD) {
-          const tenKUnits = incObj.units.USD.filter((u: any) => u.form === '10-K');
-          const latest = tenKUnits.pop();
-          if (latest) {
-            latestNetIncome = latest.val;
-          }
-        }
+        latestNetIncome = getLatestVal(incObj);
+
+        // Operating income
+        const opIncObj = usGaap.OperatingIncomeLoss;
+        latestOperatingIncome = getLatestVal(opIncObj);
+
+        // Operating cash flow
+        const ocfObj = usGaap.NetCashProvidedByUsedInOperatingActivities;
+        latestOperatingCashFlow = getLatestVal(ocfObj);
+
+        // Assets
+        const assetsObj = usGaap.Assets || usGaap.AssetsCurrent;
+        totalAssets = getLatestVal(assetsObj);
+
+        // Liabilities
+        const liabObj = usGaap.Liabilities || usGaap.LiabilitiesCurrent;
+        totalLiabilities = getLatestVal(liabObj);
+
+        // Debt
+        const debtObj = usGaap.LongTermDebtNoncurrent || usGaap.LongTermDebt || usGaap.DebtCurrent;
+        totalDebt = getLatestVal(debtObj);
+
+        // Cash
+        const cashObj = usGaap.CashAndCashEquivalentsAtCarryingValue || usGaap.CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents;
+        cashAndEquivalents = getLatestVal(cashObj);
+
+        // Equity
+        const eqObj = usGaap.StockholdersEquity || usGaap.CommonStockholdersEquity;
+        stockholdersEquity = getLatestVal(eqObj);
       }
 
       return {
@@ -231,6 +275,13 @@ export class WebScraper {
         entityName,
         latestRevenueTTM: latestRevenue,
         latestNetIncomeTTM: latestNetIncome,
+        latestOperatingIncomeTTM: latestOperatingIncome,
+        latestOperatingCashFlowTTM: latestOperatingCashFlow,
+        totalAssets,
+        totalLiabilities,
+        totalDebt,
+        cashAndEquivalents,
+        stockholdersEquity,
         latest10KFilingDate: latest10KDate,
         fiscalYear
       };

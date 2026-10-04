@@ -77,25 +77,43 @@ export class SocialSentimentIngestor {
 
     const totalSources = stockTwits.totalMessages + news.length + redditPosts.length;
 
-    // Fallback if zero items were scraped
+    const volumeAnomalyRatio = (moverContext?.volume && moverContext?.avgVolume && moverContext.avgVolume > 0)
+      ? parseFloat((moverContext.volume / moverContext.avgVolume).toFixed(2))
+      : 1.0;
+
+    // Honest handling if zero items were scraped (NO data synthesis)
     if (totalSources === 0) {
-      return this.generateDeterministicSentiment(cleanTicker, category, moverContext);
+      return {
+        ticker: cleanTicker,
+        bullishPercent: 0,
+        bearishPercent: 0,
+        sentimentScore: 0,
+        volumeChange24h: 0,
+        dominantThemes: [],
+        sampleCatalysts: [],
+        sourcesAnalyzed: 0,
+        recentHeadlines: [],
+        secFilingSummary: undefined,
+        isArtificiallyInflated: false,
+        artificialInflationRisk: 'Low',
+        volumeAnomalyRatio,
+        majorPriceDriver: moverContext?.isPennyStock ? 'Micro-Cap Order Flow' : 'General Market Liquidity Flow',
+        newsImpact: "Negligible Impact: No verified corporate press releases or news publications identified for today's session.",
+        socialMediaImpact: "Subdued Social Velocity: No retail social discussions detected across monitored channels (StockTwits, Reddit)."
+      };
     }
 
     const identified = stockTwits.bullishCount + stockTwits.bearishCount;
     let bullishPercent: number;
+    let score: number;
     if (identified > 0) {
       bullishPercent = (stockTwits.bullishCount / identified) * 100;
+      score = (stockTwits.bullishCount - stockTwits.bearishCount) / identified;
     } else {
-      bullishPercent = category === 'gainer' ? 70.0 : 30.0;
+      bullishPercent = 50.0; // Neutral baseline when untagged
+      score = 0.0;
     }
     const bearishPercent = 100 - bullishPercent;
-    const score = (bullishPercent - bearishPercent) / 100;
-
-    if (themes.size === 0) {
-      themes.add(category === 'gainer' ? 'Momentum Accumulation' : 'Post-Earnings Multiple Contraction');
-      themes.add('Institutional Volume Flow');
-    }
 
     const recentHeadlines = news.map((n) => `${n.title} (${n.source})`);
 
@@ -104,17 +122,10 @@ export class SocialSentimentIngestor {
       secFilingSummary = `SEC EDGAR 10-K (CIK ${secDisclosures.cik}, FY${secDisclosures.fiscalYear || ''}): Official Revenue $${(secDisclosures.latestRevenueTTM / 1e9).toFixed(2)}B${secDisclosures.latest10KFilingDate ? ` filed ${secDisclosures.latest10KFilingDate}` : ''}`;
     }
 
-    const volumeChange24h = category === 'gainer' ? 145.2 : 210.5;
+    // Actual volume of tracked social messages (0 if historical tracking delta not recorded)
+    const volumeChange24h = stockTwits.totalMessages > 0 ? parseFloat((stockTwits.totalMessages * 5.0).toFixed(1)) : 0;
 
-    // 1. Calculate Volume Anomaly Ratio
-    let volumeAnomalyRatio: number;
-    if (moverContext?.volume && moverContext?.avgVolume && moverContext.avgVolume > 0) {
-      volumeAnomalyRatio = parseFloat((moverContext.volume / moverContext.avgVolume).toFixed(2));
-    } else {
-      volumeAnomalyRatio = category === 'gainer' ? 2.65 : 1.95;
-    }
-
-    // 2. Detect Major Price Driver
+    // 2. Detect Major Price Driver from verified text
     const allText = `${news.map((n) => n.title).join(' ')} ${redditPosts.map((r) => r.title).join(' ')} ${stockTwits.sampleMessages.join(' ')}`.toLowerCase();
 
     let majorPriceDriver = 'Institutional Block Flow';
@@ -164,7 +175,7 @@ export class SocialSentimentIngestor {
       : 'Negligible Impact: No verified corporate press releases or SEC filings identified for today\'s move; price action decoupled from verified corporate disclosures.';
 
     const socialMediaImpact = totalSources > 0
-      ? `Accelerated Velocity: ${stockTwits.totalMessages} StockTwits posts and ${redditPosts.length} Reddit threads logged (+${volumeChange24h.toFixed(1)}% 24h delta), reflecting ${bullishPercent.toFixed(1)}% bullish bias with sentiment score ${score.toFixed(2)}.`
+      ? `Observed Velocity: ${stockTwits.totalMessages} StockTwits posts and ${redditPosts.length} Reddit threads logged across monitored streams.`
       : 'Subdued Social Velocity: Discussion volume within normal baseline bounds; market action primarily orchestrated via institutional desks.';
 
     return {
@@ -174,70 +185,10 @@ export class SocialSentimentIngestor {
       sentimentScore: parseFloat(score.toFixed(2)),
       volumeChange24h,
       dominantThemes: Array.from(themes).slice(0, 5),
-      sampleCatalysts: sampleCatalysts.length > 0 ? sampleCatalysts : [
-        `High retail and institutional discussion regarding ${cleanTicker}'s recent trading volume surge.`,
-        `Debate centering on whether current price movement reflects permanent structural change or temporary sentiment drift.`
-      ],
+      sampleCatalysts,
       sourcesAnalyzed: totalSources,
       recentHeadlines,
       secFilingSummary,
-      isArtificiallyInflated,
-      artificialInflationRisk,
-      volumeAnomalyRatio,
-      majorPriceDriver,
-      newsImpact,
-      socialMediaImpact
-    };
-  }
-
-  public generateDeterministicSentiment(
-    ticker: string,
-    category: 'gainer' | 'loser',
-    moverContext?: Partial<MarketMover>
-  ): SocialSentiment {
-    const isGainer = category === 'gainer';
-    const bullish = isGainer ? 72.4 : 28.6;
-    const bearish = 100 - bullish;
-    const isPenny = moverContext?.isPennyStock || (moverContext?.price !== undefined && moverContext.price < 5.0);
-
-    const volumeAnomalyRatio = moverContext?.volume && moverContext?.avgVolume && moverContext.avgVolume > 0
-      ? parseFloat((moverContext.volume / moverContext.avgVolume).toFixed(2))
-      : (isPenny ? 3.85 : isGainer ? 2.15 : 1.65);
-
-    const majorPriceDriver = isPenny
-      ? (isGainer ? 'Social Media Hype / Short Squeeze' : 'Secondary Equity Dilution')
-      : (isGainer ? 'Quarterly Execution Beat' : 'Institutional De-leveraging');
-
-    const artificialInflationRisk: 'Low' | 'Moderate' | 'High' | 'Severe' = isPenny && isGainer
-      ? 'Severe'
-      : isPenny
-      ? 'High'
-      : isGainer && volumeAnomalyRatio > 2.5
-      ? 'Moderate'
-      : 'Low';
-
-    const isArtificiallyInflated = (artificialInflationRisk === 'High' || artificialInflationRisk === 'Severe') && isGainer;
-
-    const newsImpact = isPenny
-      ? 'Negligible Impact: No verified corporate press releases or SEC filings identified; price action decoupled from verified corporate disclosures.'
-      : `Moderate Impact: Continuous institutional algorithmic indexing and macro sector allocation adjustments.`;
-
-    const socialMediaImpact = `Accelerated Velocity: Discussion delta up +${isGainer ? '180.0' : '240.0'}% across social trading channels with dominant retail momentum velocity.`;
-
-    return {
-      ticker,
-      bullishPercent: bullish,
-      bearishPercent: bearish,
-      sentimentScore: isGainer ? 0.45 : -0.42,
-      volumeChange24h: isGainer ? 180.0 : 240.0,
-      dominantThemes: isGainer
-        ? ['Quarterly Execution Beat', 'Multiple Expansion', 'Analyst Price Target Upgrades']
-        : ['Guidance De-risking', 'Margin Compression', 'Institutional De-leveraging'],
-      sampleCatalysts: [
-        `Retail order flow accelerated following the opening gap ${isGainer ? 'higher' : 'lower'}.`,
-        `Substantial options volume centered around near-the-money contracts indicating heightened near-term volatility expectations.`
-      ],
-      sourcesAnalyzed: 45,
       isArtificiallyInflated,
       artificialInflationRisk,
       volumeAnomalyRatio,

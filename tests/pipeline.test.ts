@@ -56,12 +56,89 @@ async function runTestSuite() {
     moneyMarketTradingVenue: 'Nasdaq Global Select Market'
   };
 
-  const usFundamentals: FundamentalMetrics = fundamentalDataIngestor.generateBaselineFundamentals('NVDA', 'NVIDIA Corporation');
-  usFundamentals.sector = 'Technology';
-  usFundamentals.beta = 1.65;
-  usFundamentals.peRatioTrailing = 45.2;
-  usFundamentals.revenueTTM = 96e9;
-  usFundamentals.netDebt = -20e9;
+  const usFundamentals: FundamentalMetrics = {
+    ticker: 'NVDA',
+    companyName: 'NVIDIA Corporation',
+    sector: 'Technology',
+    industry: 'Semiconductors',
+    description: 'NVIDIA Corporation designs graphics processing units and accelerated compute solutions.',
+    marketCap: 3000e9,
+    peRatioTrailing: 45.2,
+    peRatioForward: 35.0,
+    pegRatio: 1.2,
+    evToEbitda: 32.0,
+    dividendYield: 0.02,
+    revenueTTM: 96e9,
+    netIncomeTTM: 53e9,
+    grossMargin: 75.0,
+    operatingMargin: 62.0,
+    freeCashFlowTTM: 39e9,
+    cashAndEquivalents: 30e9,
+    netDebt: -20e9,
+    currentRatio: 3.5,
+    roic: 42.0,
+    beta: 1.65,
+    fiftyTwoWeekHigh: 140.0,
+    fiftyTwoWeekLow: 45.0,
+    totalDebt: 10e9,
+    debtToEquity: 0.15,
+    shortTermDebt: 2e9,
+    longTermDebt: 8e9,
+    shortVsLongTermRatio: 0.25,
+    recentChangesInDebt: 'Maintained low leverage with cash exceeding debt obligations.',
+    debtRisks: 'Negligible default risk given liquid cash reserves.',
+    priceToBook: {
+      current: 38.0,
+      industryAverage: 5.2,
+      historicalAverage5Y: 28.0,
+      chartData: []
+    },
+    priceToEarnings: {
+      current: 45.2,
+      industryAverage: 22.0,
+      historicalAverage5Y: 40.0,
+      chartData: []
+    },
+    returnOnEquity: 85.0,
+    earningsPerShare: {
+      currentTTM: 2.75,
+      quarterlyEPSPast2Years: [
+        { quarter: 'Q1-24', eps: 0.45 },
+        { quarter: 'Q2-24', eps: 0.55 },
+        { quarter: 'Q3-24', eps: 0.65 },
+        { quarter: 'Q4-24', eps: 0.78 }
+      ]
+    },
+    volatilityIndex: { value: 36.3, rating: 'High' },
+    cashFlow: { operatingCashFlow: 45e9, freeCashFlow: 39e9, status: 'Positive Operating Free Cash Flow' },
+    managementQuality: { rating: 'Tier-1', trackRecord: 'Executive team leading accelerated compute adoption.' },
+    competitiveMoat: { rating: 'Wide Moat', summary: 'Proprietary CUDA software architecture and high switching costs.' },
+    companyQuestions: {
+      howCompanyMakesMoney: 'GPU and accelerated compute systems sales to data centers.',
+      productsDemandAndWhy: 'Enterprise AI workloads require accelerated parallel processing.',
+      pastPerformanceSummary: 'Strong compounding revenue driven by data center transitions.',
+      growthAndProfitabilityOutlook: 'Expanding hardware and software services.'
+    },
+    industryQuestions: {
+      industryCondition: 'Rapid secular expansion in AI infrastructure.',
+      obstaclesAndChallenges: 'Export restrictions and supply chain capacity limits.',
+      economicPoliticalCulturalRisks: 'Geopolitical chip manufacturing concentration.'
+    },
+    valuationModels: {
+      dcf: { fairValue: 130, intrinsicValue: 130, status: 'Calculated' },
+      ddm: { fairValue: null, intrinsicValue: null, status: 'Inapplicable: Zero or negligible dividend yield' },
+      relativeValuation: { fairValue: 120, intrinsicValue: 120, status: 'Calculated' },
+      rapidStockValuation: { fairValue: 125, intrinsicValue: 125, status: 'Calculated' },
+      residualIncomeModel: { fairValue: 122, intrinsicValue: 122, status: 'Calculated' },
+      assetBasedValuation: { fairValue: 110, intrinsicValue: 110, status: 'Calculated' },
+      excessReturnModel: { fairValue: 128, intrinsicValue: 128, status: 'Calculated' },
+      industrySpecificModel: { fairValue: 135, intrinsicValue: 135, status: 'Calculated' },
+      consensusFairValue: 122.9,
+      verdict: 'Fairly Valued'
+    },
+    fundamentalRating: 'Strong',
+    classification: 'Growth Stock'
+  };
 
   const usAffiliates = affiliateEngine.getContextualAffiliates(usMover, usFundamentals);
   assert.strictEqual(usAffiliates[0].id, 'webull-us', 'US stock should map to Webull');
@@ -166,19 +243,19 @@ async function runTestSuite() {
 
   // Debt breakdown checks
   assert.ok(typeof pennyFundamentals.totalDebt === 'number', 'totalDebt must be number');
-  assert.ok(typeof pennyFundamentals.shortTermDebt === 'number', 'shortTermDebt must be number');
-  assert.ok(typeof pennyFundamentals.longTermDebt === 'number', 'longTermDebt must be number');
-  assert.ok(typeof pennyFundamentals.shortVsLongTermRatio === 'number', 'shortVsLongTermRatio must be number');
+  assert.ok(pennyFundamentals.shortTermDebt === null || typeof pennyFundamentals.shortTermDebt === 'number', 'shortTermDebt must be number or null');
+  assert.ok(pennyFundamentals.longTermDebt === null || typeof pennyFundamentals.longTermDebt === 'number', 'longTermDebt must be number or null');
+  assert.ok(typeof pennyFundamentals.shortVsLongTermRatio === 'string' || typeof pennyFundamentals.shortVsLongTermRatio === 'number', 'shortVsLongTermRatio must be string or number');
   assert.ok(typeof pennyFundamentals.recentChangesInDebt === 'string' && pennyFundamentals.recentChangesInDebt.length > 0, 'recentChangesInDebt must be string');
   assert.ok(typeof pennyFundamentals.debtRisks === 'string' && pennyFundamentals.debtRisks.length > 0, 'debtRisks must be string');
 
-  // Valuation comparisons
-  assert.strictEqual(pennyFundamentals.priceToBook.chartData?.length, 5, 'P/B chart data must have 5 years');
-  assert.strictEqual(pennyFundamentals.priceToEarnings.chartData?.length, 5, 'P/E chart data must have 5 years');
+  // Valuation comparisons (must be arrays, no fake synthesized data)
+  assert.ok(Array.isArray(pennyFundamentals.priceToBook.chartData), 'P/B chart data must be array');
+  assert.ok(Array.isArray(pennyFundamentals.priceToEarnings.chartData), 'P/E chart data must be array');
   assert.ok(typeof pennyFundamentals.returnOnEquity === 'number', 'returnOnEquity must be number');
 
-  // 8 Quarters EPS
-  assert.strictEqual(pennyFundamentals.earningsPerShare.quarterlyEPSPast2Years.length, 8, 'quarterlyEPSPast2Years must contain exactly 8 quarters');
+  // Earnings Per Share (EPS): authentic reported quarters only
+  assert.ok(Array.isArray(pennyFundamentals.earningsPerShare.quarterlyEPSPast2Years), 'quarterlyEPSPast2Years must be array of authentic reported quarters');
 
   // Qualitative Analysis
   assert.ok(pennyFundamentals.volatilityIndex.rating.length > 0, 'volatility rating must be present');
@@ -188,21 +265,29 @@ async function runTestSuite() {
   assert.ok(pennyFundamentals.companyQuestions.howCompanyMakesMoney.length > 0, 'howCompanyMakesMoney must be present');
   assert.ok(pennyFundamentals.industryQuestions.industryCondition.length > 0, 'industryCondition must be present');
 
-  // Multi-Model Valuation Suite (DCF, DDM, Relative, Rapid, Residual Income, Asset-Based, Excess Return, Industry-Specific)
+  // Multi-Model Valuation Suite (Authentic Financial Mathematics: Valid positive value OR explicit null with explanatory status)
   const models = pennyFundamentals.valuationModels;
-  assert.ok((models.dcf.fairValue ?? models.dcf.intrinsicValue ?? 0) > 0, 'DCF must calculate fair value');
-  assert.ok((models.ddm.fairValue ?? models.ddm.intrinsicValue ?? 0) > 0, 'DDM must calculate fair value');
-  assert.ok((models.relativeValuation.fairValue ?? models.relativeValuation.intrinsicValue ?? 0) > 0, 'Relative valuation must calculate fair value');
-  assert.ok((models.rapidStockValuation.fairValue ?? models.rapidStockValuation.intrinsicValue ?? 0) > 0, 'Rapid stock valuation must calculate fair value');
-  assert.ok((models.residualIncomeModel.fairValue ?? models.residualIncomeModel.intrinsicValue ?? 0) > 0, 'Residual income model must calculate fair value');
-  assert.ok((models.assetBasedValuation.fairValue ?? models.assetBasedValuation.intrinsicValue ?? 0) > 0, 'Asset-based valuation must calculate fair value');
-  assert.ok((models.excessReturnModel.fairValue ?? models.excessReturnModel.intrinsicValue ?? 0) > 0, 'Excess return model must calculate fair value');
-  assert.ok((models.industrySpecificModel.fairValue ?? models.industrySpecificModel.intrinsicValue ?? 0) > 0, 'Industry specific model must calculate fair value');
-  assert.ok((models.consensusFairValue ?? 0) > 0, 'Consensus fair value must be positive');
+  const valuationChecklist = [
+    { name: 'DCF', model: models.dcf },
+    { name: 'DDM', model: models.ddm },
+    { name: 'Relative', model: models.relativeValuation },
+    { name: 'Rapid PEG', model: models.rapidStockValuation },
+    { name: 'Residual Income', model: models.residualIncomeModel },
+    { name: 'Asset-Based', model: models.assetBasedValuation },
+    { name: 'Excess Return', model: models.excessReturnModel },
+    { name: 'Industry-Specific', model: models.industrySpecificModel }
+  ];
+
+  for (const { name, model } of valuationChecklist) {
+    assert.ok(model.fairValue === null || (typeof model.fairValue === 'number' && model.fairValue > 0), `${name} fairValue must be positive number or null`);
+    assert.ok(typeof model.status === 'string' && model.status.length > 0, `${name} must include explanatory status`);
+  }
+
+  assert.ok(models.consensusFairValue === null || (typeof models.consensusFairValue === 'number' && models.consensusFairValue > 0), 'Consensus fair value must be positive number or null');
   assert.ok(typeof models.verdict === 'string', 'Verdict must be present');
   assert.ok(['Strong', 'Fairly Valued', 'Weak'].includes(pennyFundamentals.fundamentalRating), 'fundamentalRating must be valid');
   assert.ok(['Growth Stock', 'Income Stock', 'Value / Turnaround', 'Speculative Penny Stock'].includes(pennyFundamentals.classification), 'classification must be valid');
-  console.log(`✓ Pass: Ingested all fundamental fields, 8-quarter EPS history, and 8 valuation models (Consensus: $${models.consensusFairValue}, Verdict: ${models.verdict})\n`);
+  console.log(`✓ Pass: Authentic fundamental data verified without synthesis (Consensus: ${models.consensusFairValue !== null ? `$${models.consensusFairValue}` : 'N/A'}, Verdict: ${models.verdict})\n`);
 
   // 9. Test Automated Git Deployment (git add, git commit, git push)
   console.log('Test 9: Automated Git Deployment (git add, git commit, git push)');
@@ -264,7 +349,71 @@ async function runTestSuite() {
   const secondStopResult = await stopRunningCronJobs();
   assert.strictEqual(secondStopResult.success, true, 'Second call should succeed idempotently');
   assert.strictEqual(secondStopResult.stoppedPids.length, 0, 'Second call should report 0 PIDs stopped');
-  console.log('✓ Pass: Pipeline cron start and stop daemon lifecycle verified.\n');
+  // 11. Test Strict Anti-Synthesis Guardrails (Zero Synthetic Data Generation)
+  console.log('Test 11: Strict Anti-Synthesis Guardrails (Zero Synthetic Data Generation)');
+  assert.strictEqual(
+    (fundamentalDataIngestor as any).generateBaselineFundamentals,
+    undefined,
+    'generateBaselineFundamentals must be permanently eliminated'
+  );
+  assert.strictEqual(
+    (marketMoverIngestor as any).generateSyntheticMovers,
+    undefined,
+    'generateSyntheticMovers must be permanently eliminated'
+  );
+  assert.strictEqual(
+    (marketMoverIngestor as any).generateSyntheticPennyMovers,
+    undefined,
+    'generateSyntheticPennyMovers must be permanently eliminated'
+  );
+  assert.strictEqual(
+    (socialSentimentIngestor as any).generateDeterministicSentiment,
+    undefined,
+    'generateDeterministicSentiment must be permanently eliminated'
+  );
+
+  // Non-existent ticker must reject honestly rather than generating synthesized placeholder numbers
+  let synthesisRejectionError: Error | null = null;
+  try {
+    await fundamentalDataIngestor.getFundamentals('NONEXISTENT_FAKE_TICKER_9999', 'Fake Nonexistent Corp');
+  } catch (err: any) {
+    synthesisRejectionError = err;
+  }
+  assert.ok(synthesisRejectionError !== null, 'Fetching fundamentals for non-existent ticker must reject with error');
+  assert.ok(
+    synthesisRejectionError!.message.includes('Data synthesis is disallowed'),
+    `Error message must declare data synthesis is disallowed. Got: ${synthesisRejectionError!.message}`
+  );
+
+  // Social sentiment on empty sources must return 0 sentiment and 0 sources without fabricating chatter
+  const emptySentiment = await socialSentimentIngestor.getSentiment(
+    'NONEXISTENT_XYZ',
+    'gainer',
+    'Nonexistent Corp',
+    {
+      ticker: 'NONEXISTENT_XYZ',
+      symbol: 'NONEXISTENT_XYZ',
+      name: 'Nonexistent Corp',
+      exchange: 'OTC',
+      region: 'US',
+      price: 1.0,
+      change: 0.1,
+      changePercent: 10,
+      volume: 100,
+      avgVolume: 1000,
+      marketCap: 100000,
+      currency: 'USD',
+      category: 'gainer',
+      isPennyStock: true,
+      moneyMarketTradingVenue: 'OTC Markets'
+    }
+  );
+  assert.strictEqual(emptySentiment.sourcesAnalyzed, 0, 'Empty sentiment must report 0 sources analyzed');
+  assert.strictEqual(emptySentiment.sentimentScore, 0, 'Empty sentiment must report 0 score');
+  assert.strictEqual(emptySentiment.bullishPercent, 0, 'Empty bullish percent must be 0');
+  assert.strictEqual(emptySentiment.bearishPercent, 0, 'Empty bearish percent must be 0');
+  assert.strictEqual(emptySentiment.dominantThemes.length, 0, 'Empty dominant themes must be empty array');
+  console.log('✓ Pass: Anti-synthesis guardrails verified (all synthetic generators deleted, non-existent tickers fail honestly).\n');
 
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);
