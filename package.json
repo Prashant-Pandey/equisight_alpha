@@ -9,6 +9,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "pipeline:run": "tsx pipeline/src/orchestrator.ts --run-now",
+    "pipeline:run:tickers": "tsx pipeline/src/orchestrator.ts --tickers",
     "pipeline:cron": "tsx pipeline/src/startCron.ts",
     "pipeline:stop_cron": "tsx pipeline/src/stopCron.ts",
     "pipeline:stop-cron": "tsx pipeline/src/stopCron.ts",

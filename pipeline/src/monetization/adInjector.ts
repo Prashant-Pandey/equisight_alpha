@@ -138,6 +138,9 @@ export class ProgrammaticAdInjector {
     const isInflated = sentiment?.isArtificiallyInflated ?? (volumeRatio !== null && volumeRatio > 2.5 && Math.abs(mover.changePercent) > 20);
     const riskLevel = sentiment?.artificialInflationRisk ?? (isInflated ? 'Severe' : volumeRatio !== null && volumeRatio > 1.8 ? 'Moderate' : defaultRiskLevel);
 
+    const optionGammaImbalance = sentiment?.optionGammaImbalance || analysis?.optionGammaImbalance || analysis?.artificialInflation?.optionGammaImbalance;
+    const freeFloatConcentration = sentiment?.freeFloatConcentration || analysis?.freeFloatConcentration || analysis?.artificialInflation?.freeFloatConcentration;
+
     const artificialInflation = {
       isInflated,
       riskLevel,
@@ -145,7 +148,9 @@ export class ProgrammaticAdInjector {
       majorPriceDriver: sentiment?.majorPriceDriver ?? 'Not Available',
       sentimentScore: sentiment?.sentimentScore ?? null,
       newsImpact: sentiment?.newsImpact ?? 'Not Available',
-      socialMediaImpact: sentiment?.socialMediaImpact ?? 'Not Available'
+      socialMediaImpact: sentiment?.socialMediaImpact ?? 'Not Available',
+      optionGammaImbalance,
+      freeFloatConcentration
     };
 
     // 5. 4 Company Questions & 3 Industry Questions
@@ -342,6 +347,8 @@ export class ProgrammaticAdInjector {
       majorPriceDriver: artificialInflation.majorPriceDriver,
       newsImpact: artificialInflation.newsImpact,
       socialMediaImpact: artificialInflation.socialMediaImpact,
+      optionGammaImbalance,
+      freeFloatConcentration,
       artificialInflation,
 
       // Theses

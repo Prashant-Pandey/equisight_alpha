@@ -24,6 +24,8 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
 
 2. Trading Activity, Catalyst-Price Alignment & Artificial Inflation Analysis:
    - Analyze whether the equity is being artificially inflated by inspecting trading volume anomalies, relative volume (RVOL) vs 90-day averages, and social flow velocity.
+   - Audit Option Gamma Imbalance: inspect call vs. put open interest and volume skew, assessing dealer short-gamma exposure, positive feedback loops, and vulnerability to reflexive gamma squeezes.
+   - Audit Free Float Concentration: analyze the proportion of freely tradable public float vs insider/institutional holdings, and evaluate session float turnover velocity to identify cornering risks and supply-side liquidity vacuums.
    - Explicitly evaluate Catalyst-Price Divergence: assess whether the price action is ALIGNED with the news catalyst, or whether it exhibits DIVERGENT_SELL_THE_NEWS (priced to perfection, guidance fade), DIVERGENT_RELIEF_RALLY (cleared uncertainty, low bar exceeded), MACRO_DOMINATED (rates/sector contagion), or NOISE_SPECULATION (retail flow).
    - Synthesize the expectations vs. reality gap: explain why the market reacted this way relative to prior positioning and financial metrics.
    - Identify the major driver of the recent price action (e.g., retail social momentum, coordinated message-board hype, short-squeeze mechanics, algorithmic liquidity hunt, warrant hedging, clinical trial readout, or authentic institutional accumulation).
@@ -118,23 +120,32 @@ TTM Free Cash Flow: $${(fundamentals.freeCashFlowTTM / 1e9).toFixed(2)}B (Status
 
 === DEBT STRUCTURE BREAKDOWN ===
 Total Debt: $${(fundamentals.totalDebt / 1e9).toFixed(2)}B
-Short-Term Debt: $${(fundamentals.shortTermDebt / 1e9).toFixed(2)}B
-Long-Term Debt: $${(fundamentals.longTermDebt / 1e9).toFixed(2)}B
+Short-Term Debt: ${fundamentals.shortTermDebt !== null && fundamentals.shortTermDebt !== undefined ? `$${(fundamentals.shortTermDebt / 1e9).toFixed(2)}B` : 'Not Disclosed in SEC Filings'}
+Long-Term Debt: ${fundamentals.longTermDebt !== null && fundamentals.longTermDebt !== undefined ? `$${(fundamentals.longTermDebt / 1e9).toFixed(2)}B` : 'Not Disclosed in SEC Filings'}
 Short vs Long-Term Debt Ratio: ${fundamentals.shortVsLongTermRatio}
 Recent Debt Changes: ${fundamentals.recentChangesInDebt}
 Debt Risks: ${fundamentals.debtRisks}
 Cash & Equivalents: $${(fundamentals.cashAndEquivalents / 1e9).toFixed(2)}B
 Net Debt: $${(fundamentals.netDebt / 1e9).toFixed(2)}B
-Debt to Equity: ${fundamentals.debtToEquity ?? 'N/A'}
-Current Ratio: ${fundamentals.currentRatio ?? 'N/A'}
-ROIC: ${fundamentals.roic ?? 'N/A'}%
+Debt to Equity: ${fundamentals.debtToEquity !== null && fundamentals.debtToEquity !== undefined ? `${fundamentals.debtToEquity.toFixed(2)}x` : 'N/A'}
+Current Ratio: ${fundamentals.currentRatio !== null && fundamentals.currentRatio !== undefined ? `${fundamentals.currentRatio.toFixed(2)}x` : 'N/A'}
+ROIC: ${fundamentals.roic !== null && fundamentals.roic !== undefined ? `${fundamentals.roic.toFixed(1)}%` : 'N/A'}
 Beta: ${fundamentals.beta ?? 1.0}
 52-Week Range: $${fundamentals.fiftyTwoWeekLow.toFixed(2)} - $${fundamentals.fiftyTwoWeekHigh.toFixed(2)}
 
 === 8-QUARTER EPS PROGRESSION ===
 Current TTM EPS: $${fundamentals.earningsPerShare.currentTTM.toFixed(2)}
 Quarters History:
-${fundamentals.earningsPerShare.quarterlyEPSPast2Years.map((q) => `- ${q.quarter}: $${q.eps.toFixed(2)} (${q.beat ? 'Beat' : 'Miss/In-Line'})`).join('\n')}
+${fundamentals.earningsPerShare.quarterlyEPSPast2Years && fundamentals.earningsPerShare.quarterlyEPSPast2Years.length > 0
+  ? fundamentals.earningsPerShare.quarterlyEPSPast2Years.map((q) => {
+      const yoy = q.yoyChangePercent !== null && q.yoyChangePercent !== undefined
+        ? ` (${q.yoyChangePercent >= 0 ? '+' : ''}${q.yoyChangePercent.toFixed(1)}% YoY)`
+        : '';
+      const beat = q.beat !== undefined ? ` [${q.beat ? 'Beat' : 'Miss/In-Line'}]` : '';
+      return `- ${q.quarter}: $${q.eps.toFixed(2)}${yoy}${beat}`;
+    }).join('\n')
+  : '- Historical quarterly EPS not reported in available SEC disclosures'
+}
 
 === QUALITATIVE MOAT & MANAGEMENT ===
 Management Quality Rating: ${fundamentals.managementQuality.rating}
@@ -150,7 +161,7 @@ Obstacles & Challenges: ${fundamentals.industryQuestions.obstaclesAndChallenges}
 Macro/Political/Cultural Risks: ${fundamentals.industryQuestions.economicPoliticalCulturalRisks}
 
 === MULTI-MODEL VALUATIONS ===
-Consensus Fair Value: $${fundamentals.valuationModels.consensusFairValue.toFixed(2)} (Verdict: ${fundamentals.valuationModels.verdict})
+Consensus Fair Value: $${(fundamentals.valuationModels.consensusFairValue ?? 0).toFixed(2)} (Verdict: ${fundamentals.valuationModels.verdict})
 - DCF (10Y Cash Flow): $${(fundamentals.valuationModels.dcf.fairValue ?? fundamentals.valuationModels.dcf.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.dcf.upside ?? fundamentals.valuationModels.dcf.upsidePercent ?? 0}%)
 - Dividend Discount Model (DDM): $${(fundamentals.valuationModels.ddm.fairValue ?? fundamentals.valuationModels.ddm.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.ddm.upside ?? fundamentals.valuationModels.ddm.upsidePercent ?? 0}%)
 - Relative Multiples Valuation: $${(fundamentals.valuationModels.relativeValuation.fairValue ?? fundamentals.valuationModels.relativeValuation.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.relativeValuation.upside ?? fundamentals.valuationModels.relativeValuation.upsidePercent ?? 0}%)
@@ -175,6 +186,8 @@ Bearish Sentiment: ${sentiment.bearishPercent}%
 Volume Anomaly Ratio: ${sentiment.volumeAnomalyRatio}x (vs 90d average)
 Artificial Inflation Risk: ${sentiment.artificialInflationRisk} (Artificially Inflated: ${sentiment.isArtificiallyInflated})
 Major Price Driver: ${sentiment.majorPriceDriver}
+Option Gamma Imbalance: ${sentiment.optionGammaImbalance ? `${sentiment.optionGammaImbalance.riskLevel} (${sentiment.optionGammaImbalance.netGammaExposure}${sentiment.optionGammaImbalance.imbalanceRatio !== null ? `, Ratio: ${sentiment.optionGammaImbalance.imbalanceRatio}x` : ''}) - ${sentiment.optionGammaImbalance.status}` : 'No Listed Options Chain'}
+Free Float Concentration: ${sentiment.freeFloatConcentration ? `${sentiment.freeFloatConcentration.concentrationLevel} (${sentiment.freeFloatConcentration.freeFloatPercent !== null ? `${sentiment.freeFloatConcentration.freeFloatPercent}% float` : 'N/A'}${sentiment.freeFloatConcentration.floatTurnoverRatio !== null ? `, ${(sentiment.freeFloatConcentration.floatTurnoverRatio * 100).toFixed(1)}% session float turnover` : ''}) - ${sentiment.freeFloatConcentration.status}` : 'Standard Public Float'}
 News Impact: ${sentiment.newsImpact}
 Social Media Impact: ${sentiment.socialMediaImpact}
 24h Discussion Delta: +${sentiment.volumeChange24h}%

@@ -107,7 +107,10 @@ export class PipelineOrchestrator {
    * 6. Trigger static build & deploy
    * 7. Distribute to social channels
    */
-  public async runExecutionCycle(cycleName = 'MANUAL_TRIGGER'): Promise<void> {
+  public async runExecutionCycle(
+    cycleName = 'MANUAL_TRIGGER',
+    options: { specificTickers?: string[] } = {}
+  ): Promise<void> {
     if (this.isRunning) {
       console.warn(`[PipelineOrchestrator] Cycle ${cycleName} skipped: Previous cycle is still actively processing.`);
       return;
@@ -121,15 +124,39 @@ export class PipelineOrchestrator {
     const publishedReports: { ticker: string; slug: string; path: string }[] = [];
 
     try {
-      // 1. Ingest Market Movers and Penny Stocks, applying 12-Month Lockout Filter
-      const { gainers, losers, pennyStocks } = await marketMoverIngestor.getEligibleMovers({ includePennyStocks: true });
-      const targetMovers: MarketMover[] = [
-        ...gainers,
-        ...losers,
-        ...(pennyStocks ? [...pennyStocks.gainers, ...pennyStocks.losers] : [])
-      ];
+      let targetMovers: MarketMover[] = [];
 
-      console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} equities (${gainers.length} gainers, ${losers.length} losers${pennyStocks ? `, ${pennyStocks.gainers.length + pennyStocks.losers.length} penny stocks` : ''})`);
+      if (options.specificTickers && options.specificTickers.length > 0) {
+        console.log(`[PipelineOrchestrator] Targeted ticker execution mode: [${options.specificTickers.join(', ')}]`);
+        for (const rawTicker of options.specificTickers) {
+          try {
+            const mover = await marketMoverIngestor.getMoverForTicker(rawTicker);
+            if (!historyTracker.isEligible(mover.ticker)) {
+              console.log(`[PipelineOrchestrator] Notice: $${mover.ticker} was covered within trailing 12-month lockout. Processing explicitly requested ticker.`);
+            }
+            targetMovers.push(mover);
+          } catch (fetchErr: any) {
+            console.error(`✗ [PipelineOrchestrator] Could not load ticker $${rawTicker}: ${fetchErr.message}`);
+          }
+        }
+
+        if (targetMovers.length === 0) {
+          console.error('[PipelineOrchestrator] No valid tickers available to process. Aborting cycle.');
+          return;
+        }
+
+        console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} targeted equities (${targetMovers.map(m => `$${m.ticker}`).join(', ')})`);
+      } else {
+        // 1. Ingest Market Movers and Penny Stocks, applying 12-Month Lockout Filter
+        const { gainers, losers, pennyStocks } = await marketMoverIngestor.getEligibleMovers({ includePennyStocks: true });
+        targetMovers = [
+          ...gainers,
+          ...losers,
+          ...(pennyStocks ? [...pennyStocks.gainers, ...pennyStocks.losers] : [])
+        ];
+
+        console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} equities (${gainers.length} gainers, ${losers.length} losers${pennyStocks ? `, ${pennyStocks.gainers.length + pennyStocks.losers.length} penny stocks` : ''})`);
+      }
 
       // 2. Ingest Global Macro Context
       const macroBackdrop = await macroContextIngestor.getMacroBackdrop();
@@ -141,10 +168,10 @@ export class PipelineOrchestrator {
 
         try {
           // A. Ingest Fundamentals
-          const fundamentals = await fundamentalDataIngestor.getFundamentals(mover.ticker, mover.name);
+          const fundamentals = await fundamentalDataIngestor.getFundamentals(mover.ticker, mover.name, macroBackdrop);
 
-          // B. Ingest Social Sentiment & Web Intelligence with Artificial Inflation Analysis
-          const sentiment = await socialSentimentIngestor.getSentiment(mover.ticker, mover.category, mover.name, mover);
+          // B. Ingest Social Sentiment & Web Intelligence with Artificial Inflation Analysis (Gamma & Float)
+          const sentiment = await socialSentimentIngestor.getSentiment(mover.ticker, mover.category, mover.name, mover, fundamentals);
 
           // C. LLM Multi-Agent Synthesis & Anti-Hallucination Fact-Checking
           const analysis = await synthesisAgent.generateReport(mover, fundamentals, macroBackdrop, sentiment);
@@ -198,12 +225,80 @@ export class PipelineOrchestrator {
 
 export const orchestrator = new PipelineOrchestrator();
 
+/**
+ * Parses ticker symbols from command-line arguments.
+ * Supports:
+ *   --tickers AAPL MSFT NVDA
+ *   --tickers [AAPL, MSFT]
+ *   --tickers "[AAPL, MSFT]"
+ *   --tickers AAPL,MSFT
+ *   --tickers=AAPL,MSFT
+ *   --ticker AAPL
+ */
+export function parseTickersFromArgv(argv: string[]): string[] {
+  const tickers: string[] = [];
+
+  // Check for inline assignment: --tickers=... or --ticker=...
+  const inlineMatch = argv.find((a) => a.startsWith('--tickers=') || a.startsWith('--ticker='));
+  if (inlineMatch) {
+    const val = inlineMatch.split('=').slice(1).join('=');
+    const cleaned = val.replace(/[\[\]"',]/g, ' ').split(/\s+/);
+    for (const token of cleaned) {
+      const sym = token.trim().toUpperCase();
+      if (sym && !sym.startsWith('-')) tickers.push(sym);
+    }
+    return [...new Set(tickers)];
+  }
+
+  // Check for flag followed by arguments: --tickers <sym1> <sym2> ...
+  const tickerFlagIdx = argv.findIndex((a) => a === '--tickers' || a === '--ticker');
+  const rawArgs = tickerFlagIdx !== -1 ? argv.slice(tickerFlagIdx + 1) : [];
+
+  for (const raw of rawArgs) {
+    if (raw.startsWith('--')) break; // Stop if another option flag is reached
+    const cleaned = raw.replace(/[\[\]"',]/g, ' ').split(/\s+/);
+    for (const token of cleaned) {
+      const sym = token.trim().toUpperCase();
+      if (sym && !sym.startsWith('-')) {
+        tickers.push(sym);
+      }
+    }
+  }
+
+  return [...new Set(tickers)];
+}
+
 // CLI Execution Support:
+// Run with "tsx pipeline/src/orchestrator.ts --tickers <SYMBOL1> <SYMBOL2>" for targeted equities.
 // Run with "tsx pipeline/src/orchestrator.ts --run-now" for an immediate one-off cycle.
 // Run with "tsx pipeline/src/orchestrator.ts" to start the continuous cron daemon in the background.
 // Run with "tsx pipeline/src/orchestrator.ts --foreground" to run in the foreground.
 // Run with "tsx pipeline/src/orchestrator.ts --stop" to stop running cron daemons.
-if (process.argv.includes('--run-now')) {
+const hasTickersFlag = process.argv.includes('--tickers') ||
+  process.argv.includes('--ticker') ||
+  process.argv.some((a) => a.startsWith('--tickers=') || a.startsWith('--ticker='));
+
+if (hasTickersFlag) {
+  const tickers = parseTickersFromArgv(process.argv);
+  if (tickers.length === 0) {
+    console.error('\n[CLI] Error: No ticker symbols provided for targeted run.');
+    console.error('Usage: npm run pipeline:run:tickers <SYMBOL1> <SYMBOL2> ...');
+    console.error('Examples:');
+    console.error('  npm run pipeline:run:tickers AAPL MSFT');
+    console.error('  npm run pipeline:run:tickers "[AAPL, MSFT]"');
+    console.error('  npm run pipeline:run:tickers AAPL,MSFT');
+    process.exit(1);
+  }
+
+  console.log(`[CLI] Detected targeted ticker run for symbols: [${tickers.join(', ')}]. Executing targeted cycle...`);
+  orchestrator.runExecutionCycle('CLI_TARGETED_TICKERS', { specificTickers: tickers }).then(() => {
+    console.log('[CLI] Targeted execution cycle finished.');
+    process.exit(0);
+  }).catch((err) => {
+    console.error('[CLI] Unhandled error during targeted CLI execution:', err);
+    process.exit(1);
+  });
+} else if (process.argv.includes('--run-now')) {
   console.log('[CLI] Detected --run-now argument. Executing immediate cycle...');
   orchestrator.runExecutionCycle('CLI_RUN_NOW').then(() => {
     console.log('[CLI] Execution cycle finished.');

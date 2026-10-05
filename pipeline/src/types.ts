@@ -14,6 +14,8 @@ export interface MarketMover {
   category: 'gainer' | 'loser';
   isPennyStock: boolean;
   moneyMarketTradingVenue: string;
+  sharesOutstanding?: number;
+  floatShares?: number;
 }
 
 export interface ValuationMetricComparison {
@@ -29,6 +31,8 @@ export interface QuarterlyEPS {
   eps: number;
   date?: string;
   beat?: boolean;
+  yoyChangePercent?: number | null;
+  derived?: boolean;
 }
 
 export interface EPSHistory {
@@ -198,6 +202,25 @@ export interface DebtAnalysis {
   risks: string;
 }
 
+export interface OptionGammaImbalance {
+  imbalanceRatio: number | null; // Call gamma / put gamma or call OI / put OI ratio
+  netGammaExposure: string; // e.g. "Dealer Short Gamma (High Squeeze Sensitivity)", "Moderate Call Gamma Skew", "Dealer Long Gamma / Put Skew", "Balanced", "No Listed Options Chain"
+  callVolume?: number | null;
+  putVolume?: number | null;
+  callOpenInterest?: number | null;
+  putOpenInterest?: number | null;
+  riskLevel: 'Low' | 'Moderate' | 'High' | 'Severe';
+  status: string;
+}
+
+export interface FreeFloatConcentration {
+  freeFloatShares: number | null;
+  freeFloatPercent: number | null; // e.g. float / sharesOutstanding * 100
+  floatTurnoverRatio: number | null; // session volume / freeFloatShares
+  concentrationLevel: 'Low' | 'Moderate' | 'High' | 'Extreme';
+  status: string;
+}
+
 export interface ArtificialInflation {
   isInflated: boolean;
   riskLevel: 'Low' | 'Moderate' | 'High' | 'Severe';
@@ -206,6 +229,8 @@ export interface ArtificialInflation {
   sentimentScore: number | null;
   newsImpact: string;
   socialMediaImpact: string;
+  optionGammaImbalance?: OptionGammaImbalance;
+  freeFloatConcentration?: FreeFloatConcentration;
 }
 
 export interface FundamentalMetrics {
@@ -303,6 +328,8 @@ export interface SocialSentiment {
   majorPriceDriver: string;
   newsImpact: string;
   socialMediaImpact: string;
+  optionGammaImbalance?: OptionGammaImbalance;
+  freeFloatConcentration?: FreeFloatConcentration;
 
   // Two-Tiered News Catalyst & Sentiment Pipeline
   catalystAlignment?: CatalystAlignment;
@@ -402,6 +429,8 @@ export interface LLMAnalysisOutput {
   companyDeepDive?: CompanyQuestions;
   industryDeepDive?: IndustryQuestions;
   valuationModels?: ValuationModels;
+  optionGammaImbalance?: OptionGammaImbalance;
+  freeFloatConcentration?: FreeFloatConcentration;
   catalystAlignment?: CatalystAlignment;
   catalystSynthesis?: string;
   filteredHeadlines?: FilteredHeadline[];
@@ -501,6 +530,8 @@ export interface FinalReportFrontmatter {
   majorPriceDriver: string;
   newsImpact: string;
   socialMediaImpact: string;
+  optionGammaImbalance?: OptionGammaImbalance;
+  freeFloatConcentration?: FreeFloatConcentration;
   artificialInflation?: ArtificialInflation;
 
   // Thesis breakdown

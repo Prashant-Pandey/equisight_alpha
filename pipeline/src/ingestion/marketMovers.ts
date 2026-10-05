@@ -1,6 +1,7 @@
 import { fetchWithRetry } from '../utils/httpClient.js';
 import { historyTracker } from '../storage/historyTracker.js';
 import { CONFIG } from '../config.js';
+import { webScraper } from './webScraper.js';
 import type { MarketMover } from '../types.js';
 
 export function resolveTradingVenue(symbol: string, exchange: string, isPennyStock: boolean): string {
@@ -28,6 +29,108 @@ export class MarketMoverIngestor {
    */
   public getCachedQuote(symbol: string): any {
     return this.rawQuoteCache.get(symbol.toUpperCase());
+  }
+
+  /**
+   * Fetches live market data and constructs a verified MarketMover object for a specific target ticker.
+   */
+  public async getMoverForTicker(ticker: string): Promise<MarketMover> {
+    const cleanTicker = ticker.trim().toUpperCase();
+    if (!cleanTicker) {
+      throw new Error('[MarketMoverIngestor] Invalid empty ticker provided.');
+    }
+
+    console.log(`[MarketMoverIngestor] Fetching live market data for target ticker $${cleanTicker}...`);
+
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(cleanTicker)}?interval=1d&range=5d`;
+    const res = await fetchWithRetry(url, { retries: 2, timeoutMs: 8000 });
+    if (!res.ok) {
+      throw new Error(`[MarketMoverIngestor] Failed to fetch market data for ${cleanTicker}: HTTP ${res.status} ${res.statusText}`);
+    }
+
+    const data = await res.json();
+    const result = data?.chart?.result?.[0];
+    const meta = result?.meta;
+    if (!meta || typeof meta.regularMarketPrice !== 'number') {
+      throw new Error(`[MarketMoverIngestor] No valid quote data found for ticker "${cleanTicker}". Please verify the symbol.`);
+    }
+
+    const symbol = meta.symbol || cleanTicker;
+    const price = meta.regularMarketPrice;
+    const prevClose = meta.chartPreviousClose ?? price;
+    const change = price - prevClose;
+    const changePercent = prevClose > 0 ? ((price - prevClose) / prevClose) * 100 : 0;
+    const isPenny = price < 5.0;
+
+    const isEU = symbol.endsWith('.L') || symbol.endsWith('.PA') || symbol.endsWith('.DE') || symbol.endsWith('.AS');
+    const exName = (meta.exchangeName || '').toUpperCase();
+    let exchange: MarketMover['exchange'] = 'NASDAQ';
+    if (symbol.endsWith('.L')) exchange = 'LSE';
+    else if (symbol.endsWith('.PA')) exchange = 'EURONEXT';
+    else if (symbol.endsWith('.DE')) exchange = 'DAX';
+    else if (exName.includes('NYQ') || exName.includes('NYSE')) exchange = 'NYSE';
+    else if (exName.includes('ASE')) exchange = 'NYSE';
+    else if (exName.includes('NMS') || exName.includes('NASDAQ')) exchange = 'NASDAQ';
+
+    const venue = resolveTradingVenue(symbol, exchange, isPenny);
+
+    // Compute average volume from 5-day quote volume indicators if available
+    let avgVolume = meta.regularMarketVolume || 0;
+    const volumes: number[] = result?.indicators?.quote?.[0]?.volume?.filter((v: any) => typeof v === 'number' && v > 0) || [];
+    if (volumes.length > 0) {
+      avgVolume = Math.round(volumes.reduce((a: number, b: number) => a + b, 0) / volumes.length);
+    }
+
+    // Try fetching share statistics (shares outstanding, float)
+    let shareStats: any = null;
+    try {
+      shareStats = await webScraper.fetchShareStatistics(cleanTicker);
+    } catch {}
+
+    const sharesOutstanding = shareStats?.sharesOutstanding;
+    const floatShares = shareStats?.floatShares;
+    const marketCap = (sharesOutstanding ? Math.round(sharesOutstanding * price) : 0) || meta.marketCap || 0;
+
+    const name = meta.longName || meta.shortName || symbol;
+    const category: MarketMover['category'] = changePercent >= 0 ? 'gainer' : 'loser';
+
+    const mover: MarketMover = {
+      ticker: symbol,
+      symbol,
+      name,
+      exchange,
+      region: isEU ? 'EU' : 'US',
+      price,
+      change: parseFloat(change.toFixed(2)),
+      changePercent: parseFloat(changePercent.toFixed(2)),
+      volume: meta.regularMarketVolume || 0,
+      avgVolume,
+      marketCap,
+      currency: meta.currency || (isEU ? 'EUR' : 'USD'),
+      category,
+      isPennyStock: isPenny,
+      moneyMarketTradingVenue: venue,
+      sharesOutstanding,
+      floatShares
+    };
+
+    // Cache quote in rawQuoteCache for fundamentalDataIngestor
+    this.rawQuoteCache.set(symbol.toUpperCase(), {
+      symbol,
+      regularMarketPrice: price,
+      regularMarketChange: change,
+      regularMarketChangePercent: changePercent,
+      regularMarketVolume: mover.volume,
+      averageDailyVolume3Month: mover.avgVolume,
+      marketCap: mover.marketCap,
+      sharesOutstanding: mover.sharesOutstanding,
+      longName: mover.name,
+      shortName: mover.name,
+      exchange: mover.exchange,
+      currency: mover.currency
+    });
+
+    return mover;
   }
 
   /**

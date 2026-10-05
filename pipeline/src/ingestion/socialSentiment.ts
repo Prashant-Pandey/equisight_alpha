@@ -1,7 +1,7 @@
 import { execFile } from 'child_process';
-import { webScraper } from './webScraper.js';
+import { webScraper, type StockIntelligenceScrapeResult } from './webScraper.js';
 import { CONFIG } from '../config.js';
-import type { SocialSentiment, MarketMover, CatalystAlignment, FilteredHeadline } from '../types.js';
+import type { SocialSentiment, MarketMover, CatalystAlignment, FilteredHeadline, OptionGammaImbalance, FreeFloatConcentration, FundamentalMetrics } from '../types.js';
 
 export interface Tier1CatalystAnalysis {
   relevantHeadlines: FilteredHeadline[];
@@ -22,7 +22,7 @@ export class SocialSentimentIngestor {
   public async classifyCatalystsWithAgy(
     ticker: string,
     priceMove: number,
-    headlines: Array<{ title: string; source: string; [key: string]: any }>
+    headlines: Array<{ title: string; source: string;[key: string]: any }>
   ): Promise<Tier1CatalystAnalysis | null> {
     if (!headlines || headlines.length === 0) {
       return null;
@@ -162,8 +162,195 @@ Return STRICT JSON ONLY:
   }
 
   /**
+   * Evaluates Option Gamma Imbalance across calls and puts using Black-Scholes contract gamma.
+   * Assesses dealer short-gamma exposure and vulnerability to reflexive gamma squeezes.
+   */
+  public computeOptionGammaImbalance(
+    calls?: any[],
+    puts?: any[],
+    spotPrice?: number,
+    expirationDate?: number
+  ): OptionGammaImbalance {
+    if (!calls?.length && !puts?.length) {
+      return {
+        imbalanceRatio: null,
+        netGammaExposure: 'No Listed Options Chain',
+        callVolume: 0,
+        putVolume: 0,
+        callOpenInterest: 0,
+        putOpenInterest: 0,
+        riskLevel: 'Low',
+        status: 'No active exchange-traded options contracts identified; gamma squeeze risk is negligible.'
+      };
+    }
+
+    const spot = spotPrice && spotPrice > 0 ? spotPrice : 100;
+    const nowSec = Date.now() / 1000;
+    const exp = expirationDate && expirationDate > nowSec ? expirationDate : nowSec + 7 * 86400;
+    const T = Math.max(1 / 365, (exp - nowSec) / (365 * 86400));
+    const r = 0.045; // 4.5% baseline short-term rate
+
+    const callVol = (calls || []).reduce((sum: number, c: any) => sum + (c.volume || 0), 0);
+    const putVol = (puts || []).reduce((sum: number, p: any) => sum + (p.volume || 0), 0);
+    const callOI = (calls || []).reduce((sum: number, c: any) => sum + (c.openInterest || 0), 0);
+    const putOI = (puts || []).reduce((sum: number, p: any) => sum + (p.openInterest || 0), 0);
+
+    const calcGamma = (strike: number, iv: number) => {
+      if (!strike || !iv || iv <= 0 || !spot || spot <= 0 || T <= 0) return 0;
+      const d1 = (Math.log(spot / strike) + (r + 0.5 * iv * iv) * T) / (iv * Math.sqrt(T));
+      const pdf = Math.exp(-0.5 * d1 * d1) / Math.sqrt(2 * Math.PI);
+      return pdf / (spot * iv * Math.sqrt(T));
+    };
+
+    let totalCallGamma = 0;
+    let totalPutGamma = 0;
+
+    for (const c of (calls || [])) {
+      const weight = (c.openInterest || 0) > 0 ? c.openInterest : (c.volume || 0);
+      const g = calcGamma(c.strike, c.impliedVolatility || 0.45);
+      totalCallGamma += g * weight * 100;
+    }
+
+    for (const p of (puts || [])) {
+      const weight = (p.openInterest || 0) > 0 ? p.openInterest : (p.volume || 0);
+      const g = calcGamma(p.strike, p.impliedVolatility || 0.45);
+      totalPutGamma += g * weight * 100;
+    }
+
+    let imbalanceRatio: number | null = null;
+    if (totalPutGamma > 0) {
+      imbalanceRatio = parseFloat((totalCallGamma / totalPutGamma).toFixed(2));
+    } else if (totalCallGamma > 0) {
+      imbalanceRatio = 3.5;
+    } else if (callOI > 0 || putOI > 0) {
+      imbalanceRatio = putOI > 0 ? parseFloat((callOI / putOI).toFixed(2)) : 3.0;
+    } else {
+      imbalanceRatio = 1.0;
+    }
+
+    let riskLevel: 'Low' | 'Moderate' | 'High' | 'Severe' = 'Low';
+    let netGammaExposure = 'Balanced Call/Put Gamma Distribution';
+    let status = '';
+
+    if (imbalanceRatio >= 3.0) {
+      riskLevel = 'Severe';
+      netGammaExposure = 'Dealer Short Gamma (High Squeeze Sensitivity)';
+      status = `Extreme call open interest and gamma concentration (${imbalanceRatio.toFixed(2)}x call/put ratio) exposes market makers to reflexive upside delta-hedging acceleration.`;
+    } else if (imbalanceRatio >= 1.8) {
+      riskLevel = 'High';
+      netGammaExposure = 'Dealer Short Gamma (Asymmetric Upside Skew)';
+      status = `Elevated call open interest relative to puts (${imbalanceRatio.toFixed(2)}x ratio) creates asymmetric dealer hedging vulnerability on upward price momentum.`;
+    } else if (imbalanceRatio >= 1.25) {
+      riskLevel = 'Moderate';
+      netGammaExposure = 'Moderate Call Gamma Skew';
+      status = `Moderate call options skew (${imbalanceRatio.toFixed(2)}x ratio) reflects retail bullish speculation without systemic dealer positioning imbalance.`;
+    } else if (imbalanceRatio <= 0.7) {
+      riskLevel = 'Low';
+      netGammaExposure = 'Dealer Long Gamma / Put Skew';
+      status = `Defensive put option concentration (${imbalanceRatio.toFixed(2)}x ratio); dealer long gamma buffers intraday volatility and limits reflexive pump dynamics.`;
+    } else {
+      riskLevel = 'Low';
+      netGammaExposure = 'Balanced Call/Put Gamma Distribution';
+      status = `Orderly two-way options flow (${imbalanceRatio.toFixed(2)}x ratio); neutral dealer gamma profiles mitigate non-linear order book dislocation.`;
+    }
+
+    return {
+      imbalanceRatio,
+      netGammaExposure,
+      callVolume: callVol,
+      putVolume: putVol,
+      callOpenInterest: callOI,
+      putOpenInterest: putOI,
+      riskLevel,
+      status
+    };
+  }
+
+  /**
+   * Evaluates Free Float Concentration and session float turnover.
+   * Assesses structural susceptibility to float cornering and supply illiquidity vacuums.
+   */
+  public computeFreeFloatConcentration(
+    stats?: {
+      floatShares?: number;
+      sharesOutstanding?: number;
+      heldPercentInsiders?: number;
+      heldPercentInstitutions?: number;
+    } | null,
+    moverContext?: Partial<MarketMover> & {
+      floatShares?: number;
+      sharesOutstanding?: number;
+      heldPercentInsiders?: number;
+    },
+    fundamentalsContext?: Partial<FundamentalMetrics>
+  ): FreeFloatConcentration {
+    const sharesOutstanding = stats?.sharesOutstanding
+      ?? moverContext?.sharesOutstanding
+      ?? (fundamentalsContext?.marketCap && moverContext?.price && moverContext.price > 0
+        ? Math.round(fundamentalsContext.marketCap / moverContext.price)
+        : null);
+
+    const rawFloatShares = stats?.floatShares
+      ?? moverContext?.floatShares
+      ?? (sharesOutstanding && stats?.heldPercentInsiders !== undefined
+        ? Math.round(sharesOutstanding * (1 - stats.heldPercentInsiders))
+        : null);
+
+    const heldInsiders = stats?.heldPercentInsiders ?? moverContext?.heldPercentInsiders;
+
+    let freeFloatPercent: number | null = null;
+    if (rawFloatShares && sharesOutstanding && sharesOutstanding > 0) {
+      freeFloatPercent = parseFloat(Math.min(100, Math.max(1, (rawFloatShares / sharesOutstanding) * 100)).toFixed(1));
+    } else if (heldInsiders !== undefined && heldInsiders !== null) {
+      freeFloatPercent = parseFloat(Math.min(100, Math.max(1, (1 - heldInsiders) * 100)).toFixed(1));
+    }
+
+    let floatTurnoverRatio: number | null = null;
+    const sessionVolume = moverContext?.volume;
+    if (sessionVolume && sessionVolume > 0) {
+      if (rawFloatShares && rawFloatShares > 0) {
+        floatTurnoverRatio = parseFloat((sessionVolume / rawFloatShares).toFixed(3));
+      } else if (sharesOutstanding && sharesOutstanding > 0) {
+        floatTurnoverRatio = parseFloat((sessionVolume / sharesOutstanding).toFixed(3));
+      }
+    }
+
+    let concentrationLevel: 'Low' | 'Moderate' | 'High' | 'Extreme' = 'Low';
+    let status = '';
+
+    const isTightFloat = freeFloatPercent !== null && freeFloatPercent <= 20;
+    const isUltraTightFloat = freeFloatPercent !== null && freeFloatPercent <= 10;
+    const isExtremeTurnover = floatTurnoverRatio !== null && floatTurnoverRatio >= 0.70;
+    const isHighTurnover = floatTurnoverRatio !== null && floatTurnoverRatio >= 0.30;
+    const isModerateTurnover = floatTurnoverRatio !== null && floatTurnoverRatio >= 0.15;
+
+    if (isUltraTightFloat || isExtremeTurnover) {
+      concentrationLevel = 'Extreme';
+      status = `Critical float restriction (${freeFloatPercent !== null ? `${freeFloatPercent}% public float` : 'severely restricted float'}, ${floatTurnoverRatio !== null ? `${(floatTurnoverRatio * 100).toFixed(1)}% session float turnover` : 'high float velocity'}); high structural vulnerability to cornering, pump-and-dump mechanics, and liquidity vacuums.`;
+    } else if (isTightFloat || isHighTurnover) {
+      concentrationLevel = 'High';
+      status = `Constrained tradable float (${freeFloatPercent !== null ? `${freeFloatPercent}% float` : 'tight float'}, ${floatTurnoverRatio !== null ? `${(floatTurnoverRatio * 100).toFixed(1)}% session float turnover` : 'elevated turnover'}); order imbalances trigger magnified price swings decoupled from fundamental value.`;
+    } else if ((freeFloatPercent !== null && freeFloatPercent <= 45) || isModerateTurnover) {
+      concentrationLevel = 'Moderate';
+      status = `Moderate float concentration (${freeFloatPercent !== null ? `${freeFloatPercent}% float` : 'standard capitalization'}, ${floatTurnoverRatio !== null ? `${(floatTurnoverRatio * 100).toFixed(1)}% session turnover` : 'moderate turnover'}); adequate secondary liquidity buffer under ordinary trading conditions.`;
+    } else {
+      concentrationLevel = 'Low';
+      status = `Liquid public float structure (${freeFloatPercent !== null ? `${freeFloatPercent}% public float` : 'broad float distribution'}); broad institutional distribution insulates equity from artificial supply-side squeezes.`;
+    }
+
+    return {
+      freeFloatShares: rawFloatShares ?? null,
+      freeFloatPercent,
+      floatTurnoverRatio,
+      concentrationLevel,
+      status
+    };
+  }
+
+  /**
    * Gathers multi-source web and social intelligence from StockTwits, Google News, and Reddit.
    * Computes artificial inflation metrics, primary price drivers, and institutional vs retail flows.
+   * Incorporates Option Gamma Imbalance and Free Float Concentration factors.
    * Applies Tier 1 LLM news catalyst extraction with deterministic regex fallback.
    * 100% free, 0 paid APIs.
    */
@@ -171,12 +358,19 @@ Return STRICT JSON ONLY:
     ticker: string,
     category: 'gainer' | 'loser',
     companyName?: string,
-    moverContext?: Partial<MarketMover>
+    moverContext?: Partial<MarketMover> & {
+      floatShares?: number;
+      sharesOutstanding?: number;
+      heldPercentInsiders?: number;
+      optionGammaImbalance?: Partial<OptionGammaImbalance>;
+      freeFloatConcentration?: Partial<FreeFloatConcentration>;
+    },
+    fundamentalsContext?: Partial<FundamentalMetrics>
   ): Promise<SocialSentiment> {
     const cleanTicker = ticker.split('.')[0].toUpperCase();
     console.log(`[SocialSentimentIngestor] Aggregating web and social intelligence for $${cleanTicker}...`);
 
-    let scrapeResult;
+    let scrapeResult: StockIntelligenceScrapeResult | undefined;
     try {
       scrapeResult = await webScraper.scrapeStockIntelligence(cleanTicker, companyName);
     } catch (err: any) {
@@ -241,35 +435,13 @@ Return STRICT JSON ONLY:
       ? parseFloat((moverContext.volume / moverContext.avgVolume).toFixed(2))
       : 1.0;
 
-    // Honest handling if zero items were scraped (NO data synthesis)
-    if (totalSources === 0) {
-      return {
-        ticker: cleanTicker,
-        bullishPercent: 0,
-        bearishPercent: 0,
-        sentimentScore: 0,
-        volumeChange24h: 0,
-        dominantThemes: [],
-        sampleCatalysts: [],
-        sourcesAnalyzed: 0,
-        recentHeadlines: [],
-        secFilingSummary: undefined,
-        isArtificiallyInflated: false,
-        artificialInflationRisk: 'Low',
-        volumeAnomalyRatio,
-        majorPriceDriver: moverContext?.isPennyStock ? 'Micro-Cap Order Flow' : 'General Market Liquidity Flow',
-        newsImpact: "Negligible Impact: No verified corporate press releases or news publications identified for today's session.",
-        socialMediaImpact: "Subdued Social Velocity: No retail social discussions detected across monitored channels (StockTwits, Reddit).",
-        catalystAlignment: 'ALIGNED',
-        catalystSynthesis: undefined,
-        filteredHeadlines: []
-      };
-    }
-
     const identified = stockTwits.bullishCount + stockTwits.bearishCount;
     let bullishPercent: number;
     let score: number;
-    if (identified > 0) {
+    if (totalSources === 0) {
+      bullishPercent = 0;
+      score = 0;
+    } else if (identified > 0) {
       bullishPercent = (stockTwits.bullishCount / identified) * 100;
       score = (stockTwits.bullishCount - stockTwits.bearishCount) / identified;
     } else {
@@ -279,7 +451,9 @@ Return STRICT JSON ONLY:
 
     // Deterministic Price Driver baseline
     const allText = `${news.map((n) => n.title).join(' ')} ${redditPosts.map((r) => r.title).join(' ')} ${stockTwits.sampleMessages.join(' ')}`.toLowerCase();
-    let majorPriceDriver = 'Institutional Block Flow';
+    let majorPriceDriver = totalSources === 0
+      ? (moverContext?.isPennyStock ? 'Micro-Cap Order Flow' : 'General Market Liquidity Flow')
+      : 'Institutional Block Flow';
     if (allText.includes('fda') || allText.includes('phase') || allText.includes('clinical') || allText.includes('trial') || allText.includes('patent') || allText.includes('clearance')) {
       majorPriceDriver = 'Regulatory / FDA Catalyst';
     } else if (allText.includes('offering') || allText.includes('dilution') || allText.includes('convertible') || allText.includes('warrant') || allText.includes('secondary')) {
@@ -326,7 +500,7 @@ Return STRICT JSON ONLY:
       }
     }
 
-    const bearishPercent = 100 - bullishPercent;
+    const bearishPercent = totalSources === 0 ? 0 : 100 - bullishPercent;
 
     // Use filtered headlines (relevance >= 6) if Tier 1 identified them, otherwise preserve raw headlines
     const recentHeadlines = (filteredHeadlines && filteredHeadlines.length > 0)
@@ -340,6 +514,20 @@ Return STRICT JSON ONLY:
 
     // Actual volume of tracked social messages (0 if historical tracking delta not recorded)
     const volumeChange24h = stockTwits.totalMessages > 0 ? parseFloat((stockTwits.totalMessages * 5.0).toFixed(1)) : 0;
+
+    // Option Gamma Imbalance & Free Float Concentration factors
+    const optionGammaImbalance: OptionGammaImbalance = moverContext?.optionGammaImbalance
+      ? { ...this.computeOptionGammaImbalance(), ...moverContext.optionGammaImbalance }
+      : this.computeOptionGammaImbalance(
+        scrapeResult?.optionChain?.calls,
+        scrapeResult?.optionChain?.puts,
+        moverContext?.price ?? scrapeResult?.optionChain?.spotPrice,
+        scrapeResult?.optionChain?.expirationDate
+      );
+
+    const freeFloatConcentration: FreeFloatConcentration = moverContext?.freeFloatConcentration
+      ? { ...this.computeFreeFloatConcentration(scrapeResult?.shareStats, moverContext, fundamentalsContext), ...moverContext.freeFloatConcentration }
+      : this.computeFreeFloatConcentration(scrapeResult?.shareStats, moverContext, fundamentalsContext);
 
     // Artificial Inflation Risk Assessment
     let inflationScore = 0;
@@ -359,8 +547,26 @@ Return STRICT JSON ONLY:
     else if (driverLower.includes('retail momentum')) inflationScore += 15;
     else if (driverLower.includes('dilution') || driverLower.includes('offering')) inflationScore += 20;
 
+    // Option Gamma Imbalance Factor
+    if (optionGammaImbalance.riskLevel === 'Severe') inflationScore += 25;
+    else if (optionGammaImbalance.riskLevel === 'High') inflationScore += 15;
+    else if (optionGammaImbalance.riskLevel === 'Moderate') inflationScore += 8;
+
+    // Free Float Concentration Factor
+    if (freeFloatConcentration.concentrationLevel === 'Extreme') inflationScore += 25;
+    else if (freeFloatConcentration.concentrationLevel === 'High') inflationScore += 15;
+    else if (freeFloatConcentration.concentrationLevel === 'Moderate') inflationScore += 8;
+    else if (freeFloatConcentration.concentrationLevel === 'Low' && freeFloatConcentration.freeFloatPercent && freeFloatConcentration.freeFloatPercent > 65) {
+      inflationScore = Math.max(5, inflationScore - 5);
+    }
+
     if ((filteredHeadlines && filteredHeadlines.length >= 2) || news.length >= 3 || secDisclosures?.latestRevenueTTM) {
       inflationScore = Math.max(5, inflationScore - 25); // Documented news dampens artificial inflation suspicion
+    }
+
+    // Baseline dampening: when zero chatter, low volume anomaly, and low structural risks are present
+    if (totalSources === 0 && volumeAnomalyRatio < 1.8 && optionGammaImbalance.riskLevel === 'Low' && freeFloatConcentration.concentrationLevel === 'Low') {
+      inflationScore = Math.min(15, inflationScore);
     }
 
     let artificialInflationRisk: 'Low' | 'Moderate' | 'High' | 'Severe' = 'Low';
@@ -399,6 +605,8 @@ Return STRICT JSON ONLY:
       majorPriceDriver,
       newsImpact,
       socialMediaImpact,
+      optionGammaImbalance,
+      freeFloatConcentration,
       catalystAlignment,
       catalystSynthesis,
       filteredHeadlines
@@ -411,7 +619,7 @@ export const socialSentimentIngestor = new SocialSentimentIngestor();
 export async function classifyCatalystsWithAgy(
   ticker: string,
   priceMove: number,
-  headlines: Array<{ title: string; source: string; [key: string]: any }>
+  headlines: Array<{ title: string; source: string;[key: string]: any }>
 ): Promise<Tier1CatalystAnalysis | null> {
   return socialSentimentIngestor.classifyCatalystsWithAgy(ticker, priceMove, headlines);
 }

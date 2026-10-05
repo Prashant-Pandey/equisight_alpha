@@ -274,6 +274,25 @@ export class LLMSynthesisAgent {
               : `${cleanTicker}'s price action closely tracked reported operational news catalysts and fundamental financial disclosures.`
     );
 
+    const optionGammaImbalance = s.optionGammaImbalance || {
+      imbalanceRatio: null,
+      netGammaExposure: 'No Listed Options Chain',
+      callVolume: 0,
+      putVolume: 0,
+      callOpenInterest: 0,
+      putOpenInterest: 0,
+      riskLevel: 'Low',
+      status: 'No active exchange-traded options contracts identified; gamma squeeze risk is negligible.'
+    };
+
+    const freeFloatConcentration = s.freeFloatConcentration || {
+      freeFloatShares: null,
+      freeFloatPercent: null,
+      floatTurnoverRatio: null,
+      concentrationLevel: 'Low',
+      status: 'Public float concentration metrics within standard operational limits.'
+    };
+
     const artificialInflation: ArtificialInflation = {
       isInflated,
       riskLevel,
@@ -281,7 +300,9 @@ export class LLMSynthesisAgent {
       majorPriceDriver,
       sentimentScore,
       newsImpact,
-      socialMediaImpact
+      socialMediaImpact,
+      optionGammaImbalance,
+      freeFloatConcentration
     };
 
     // 2. Debt Breakdown & Risks (Factual from ingested filings)
@@ -443,6 +464,8 @@ Social discussion velocity around $${cleanTicker} shifted by **+${s.volumeChange
 An empirical audit of recent order book dynamics and social media chatter reveals important structural characteristics regarding today's move:
 
 * **Volume Anomaly Ratio:** Today's volume of ${mover.volume.toLocaleString()} represents **${volumeAnomalyRatio}x** normal trading activity. ${volumeAnomalyRatio > 2.0 ? 'This heavy volume expansion indicates aggressive speculative participation or institutional liquidity repositioning.' : 'Trading volume remains within anticipated statistical variance.'}
+* **Option Gamma Imbalance:** \`${optionGammaImbalance.riskLevel}\` (${optionGammaImbalance.netGammaExposure}${optionGammaImbalance.imbalanceRatio !== null ? `, Imbalance Ratio: ${optionGammaImbalance.imbalanceRatio.toFixed(2)}x` : ''}). ${optionGammaImbalance.status}
+* **Free Float Concentration:** \`${freeFloatConcentration.concentrationLevel}\` (${freeFloatConcentration.freeFloatPercent !== null ? `${freeFloatConcentration.freeFloatPercent.toFixed(1)}% Public Float` : 'Restricted Public Float'}${freeFloatConcentration.floatTurnoverRatio !== null ? `, Turnover Ratio: ${(freeFloatConcentration.floatTurnoverRatio * 100).toFixed(1)}% of Float` : ''}). ${freeFloatConcentration.status}
 * **Major Price Driver:** The session's primary catalyst is **${majorPriceDriver}**.
 * **Catalyst-Price Alignment:** \`${alignment}\`
 * **Expectations vs. Reality Gap:** ${catalystSynthesis}
@@ -628,6 +651,8 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
       companyDeepDive,
       industryDeepDive,
       valuationModels,
+      optionGammaImbalance,
+      freeFloatConcentration,
       catalystAlignment: alignment,
       catalystSynthesis,
       filteredHeadlines: s.filteredHeadlines,

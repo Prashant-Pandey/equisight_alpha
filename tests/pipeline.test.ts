@@ -237,11 +237,15 @@ async function runTestSuite() {
   assert.ok(typeof sentiment.majorPriceDriver === 'string' && sentiment.majorPriceDriver.length > 0, 'Major price driver must be identified');
   assert.ok(sentiment.newsImpact.length > 0, 'newsImpact must be present');
   assert.ok(sentiment.socialMediaImpact.length > 0, 'socialMediaImpact must be present');
-  console.log(`✓ Pass: Artificial inflation evaluated for $${pennyMover.ticker}: Risk=${sentiment.artificialInflationRisk}, Driver=${sentiment.majorPriceDriver}, Anomaly=${sentiment.volumeAnomalyRatio}x\n`);
+  assert.ok(sentiment.optionGammaImbalance !== undefined, 'optionGammaImbalance must be defined');
+  assert.ok(['Low', 'Moderate', 'High', 'Severe'].includes(sentiment.optionGammaImbalance.riskLevel), 'optionGammaImbalance riskLevel must be valid');
+  assert.ok(sentiment.freeFloatConcentration !== undefined, 'freeFloatConcentration must be defined');
+  assert.ok(['Low', 'Moderate', 'High', 'Extreme'].includes(sentiment.freeFloatConcentration.concentrationLevel), 'freeFloatConcentration concentrationLevel must be valid');
+  console.log(`✓ Pass: Artificial inflation evaluated for $${pennyMover.ticker}: Risk=${sentiment.artificialInflationRisk}, GammaRisk=${sentiment.optionGammaImbalance.riskLevel}, FloatConcentration=${sentiment.freeFloatConcentration.concentrationLevel}, Driver=${sentiment.majorPriceDriver}, Anomaly=${sentiment.volumeAnomalyRatio}x\n`);
 
   // 8. Test Comprehensive Fundamental Metrics (Debt Breakdown, Comparisons, 8-Quarter EPS, 8 Valuation Models)
   console.log('Test 8: Comprehensive Fundamental Data & 8 Valuation Models');
-  const pennyFundamentals = await fundamentalDataIngestor.getFundamentals(pennyMover.ticker, pennyMover.name);
+  const pennyFundamentals = await fundamentalDataIngestor.getFundamentals(pennyMover.ticker, pennyMover.name, macro);
 
   // Debt breakdown checks
   assert.ok(typeof pennyFundamentals.totalDebt === 'number', 'totalDebt must be number');
@@ -472,6 +476,23 @@ async function runTestSuite() {
     majorPriceDriver: 'Record Data Center GPU Demand',
     newsImpact: 'High Impact',
     socialMediaImpact: 'Moderate',
+    optionGammaImbalance: {
+      imbalanceRatio: 1.15,
+      netGammaExposure: 'Balanced Call/Put Gamma Distribution',
+      callVolume: 120000,
+      putVolume: 110000,
+      callOpenInterest: 500000,
+      putOpenInterest: 480000,
+      riskLevel: 'Low',
+      status: 'Orderly options order book with balanced gamma distribution.'
+    },
+    freeFloatConcentration: {
+      freeFloatShares: 2400000000,
+      freeFloatPercent: 98.2,
+      floatTurnoverRatio: 0.021,
+      concentrationLevel: 'Low',
+      status: 'Liquid public float structure buffers against artificial supply corners.'
+    },
     catalystAlignment: 'ALIGNED',
     catalystSynthesis: 'Earnings beat aligned with institutional order flow.',
     filteredHeadlines: [{
@@ -489,15 +510,134 @@ async function runTestSuite() {
   );
   assert.ok(userPromptText.includes('Catalyst-Price Alignment: ALIGNED'), 'Prompt must include catalyst alignment');
   assert.ok(userPromptText.includes('Earnings beat aligned with institutional order flow.'), 'Prompt must include catalyst synthesis');
+  assert.ok(userPromptText.includes('Option Gamma Imbalance:'), 'Prompt must include Option Gamma Imbalance');
+  assert.ok(userPromptText.includes('Free Float Concentration:'), 'Prompt must include Free Float Concentration');
 
   const deterministicReport = synthesisAgent.generateDeterministicReport(usMover, usFundamentals, macro, mockSentiment);
   assert.strictEqual(deterministicReport.catalystAlignment, 'ALIGNED', 'Deterministic report must inherit catalystAlignment');
   assert.ok(deterministicReport.markdownBody.includes('Catalyst-Price Alignment:'), 'Markdown must include catalyst alignment');
+  assert.ok(deterministicReport.markdownBody.includes('Option Gamma Imbalance:'), 'Markdown must include Option Gamma Imbalance');
+  assert.ok(deterministicReport.markdownBody.includes('Free Float Concentration:'), 'Markdown must include Free Float Concentration');
 
   const adInjection = adInjector.injectMonetization(usMover, usFundamentals, deterministicReport, mockSentiment);
   assert.strictEqual(adInjection.frontmatter.catalystAlignment, 'ALIGNED', 'Frontmatter must retain catalystAlignment');
   assert.ok(adInjection.frontmatter.filteredHeadlines!.length > 0, 'Frontmatter must retain filteredHeadlines');
+  assert.ok(adInjection.frontmatter.optionGammaImbalance !== undefined, 'Frontmatter must retain optionGammaImbalance');
+  assert.ok(adInjection.frontmatter.freeFloatConcentration !== undefined, 'Frontmatter must retain freeFloatConcentration');
+  assert.ok(adInjection.frontmatter.artificialInflation?.optionGammaImbalance !== undefined, 'Frontmatter artificialInflation must contain optionGammaImbalance');
+  assert.ok(adInjection.frontmatter.artificialInflation?.freeFloatConcentration !== undefined, 'Frontmatter artificialInflation must contain freeFloatConcentration');
   console.log('✓ Pass: Two-Tiered News Catalyst & Sentiment Pipeline verified with full divergence detection, filtering, and synthesis integration.\n');
+
+  // 13. Test Option Gamma Imbalance & Free Float Concentration Factors in Artificial Inflation Scoring
+  console.log('Test 13: Option Gamma Imbalance & Free Float Concentration in Artificial Inflation Scoring');
+
+  // 13.1 Test Option Gamma Imbalance computation
+  const severeGamma = socialSentimentIngestor.computeOptionGammaImbalance(
+    [{ strike: 105, openInterest: 85000, volume: 45000, impliedVolatility: 0.85 }],
+    [{ strike: 95, openInterest: 4000, volume: 2000, impliedVolatility: 0.85 }],
+    100
+  );
+  assert.strictEqual(severeGamma.riskLevel, 'Severe', 'Call-heavy open interest skew must yield Severe gamma risk');
+  assert.ok(severeGamma.imbalanceRatio! >= 3.0, 'Imbalance ratio must be >= 3.0 for severe call dominance');
+  assert.ok(severeGamma.netGammaExposure.includes('Short Gamma'), 'Exposure must declare Dealer Short Gamma');
+
+  const balancedGamma = socialSentimentIngestor.computeOptionGammaImbalance(
+    [{ strike: 105, openInterest: 10000, volume: 5000, impliedVolatility: 0.45 }],
+    [{ strike: 95, openInterest: 10000, volume: 5000, impliedVolatility: 0.45 }],
+    100
+  );
+  assert.strictEqual(balancedGamma.riskLevel, 'Low', 'Balanced call/put open interest must yield Low gamma risk');
+
+  const noOptionsGamma = socialSentimentIngestor.computeOptionGammaImbalance([], [], 100);
+  assert.strictEqual(noOptionsGamma.riskLevel, 'Low', 'No listed options must yield Low risk');
+  assert.strictEqual(noOptionsGamma.imbalanceRatio, null, 'No listed options must report null ratio');
+  assert.strictEqual(noOptionsGamma.netGammaExposure, 'No Listed Options Chain', 'Must declare No Listed Options Chain');
+
+  // 13.2 Test Free Float Concentration computation
+  const tightFloat = socialSentimentIngestor.computeFreeFloatConcentration(
+    { floatShares: 10_000_000, sharesOutstanding: 100_000_000, heldPercentInsiders: 0.85 },
+    { volume: 8_500_000 }
+  );
+  assert.strictEqual(tightFloat.concentrationLevel, 'Extreme', '10% public float with 85% turnover must yield Extreme concentration');
+  assert.strictEqual(tightFloat.freeFloatPercent, 10.0, 'Float percent must be 10.0%');
+  assert.strictEqual(tightFloat.floatTurnoverRatio, 0.85, 'Float turnover must be 0.85');
+
+  const liquidFloat = socialSentimentIngestor.computeFreeFloatConcentration(
+    { floatShares: 90_000_000, sharesOutstanding: 100_000_000, heldPercentInsiders: 0.05 },
+    { volume: 2_000_000 }
+  );
+  assert.strictEqual(liquidFloat.concentrationLevel, 'Low', '90% float with 2% turnover must yield Low concentration');
+
+  // 13.3 Test Artificial Inflation Risk Scoring escalation under Gamma & Float factors
+  const squeezeScenario = await socialSentimentIngestor.getSentiment(
+    'SQUEEZE_TICKER',
+    'gainer',
+    'Squeeze Corp',
+    {
+      ticker: 'SQUEEZE_TICKER',
+      price: 3.5,
+      isPennyStock: true,
+      volume: 12_000_000,
+      avgVolume: 3_000_000, // 4.0x volume anomaly (+40)
+      optionGammaImbalance: severeGamma, // Severe (+25)
+      freeFloatConcentration: tightFloat // Extreme (+25)
+    }
+  );
+  assert.strictEqual(squeezeScenario.artificialInflationRisk, 'Severe', 'Penny stock with 4x anomaly, severe gamma and tight float must be Severe risk');
+  assert.strictEqual(squeezeScenario.isArtificiallyInflated, true, 'Gainer with Severe risk must have isArtificiallyInflated true');
+  assert.strictEqual(squeezeScenario.optionGammaImbalance?.riskLevel, 'Severe', 'Preserves optionGammaImbalance');
+  assert.strictEqual(squeezeScenario.freeFloatConcentration?.concentrationLevel, 'Extreme', 'Preserves freeFloatConcentration');
+
+  // 14. Test Targeted Ticker Pipeline Execution (pipeline:run:tickers)
+  console.log('Test 14: Targeted Multi-Ticker Parsing & Ingestion (pipeline:run:tickers)');
+  const { parseTickersFromArgv } = await import('../pipeline/src/orchestrator.js');
+
+  // Test argument parsing formats
+  assert.deepStrictEqual(
+    parseTickersFromArgv(['node', 'script.js', '--tickers', 'AAPL', 'MSFT', 'NVDA']),
+    ['AAPL', 'MSFT', 'NVDA'],
+    'Should parse space-separated tickers'
+  );
+  assert.deepStrictEqual(
+    parseTickersFromArgv(['node', 'script.js', '--tickers', '[AAPL,', 'MSFT]']),
+    ['AAPL', 'MSFT'],
+    'Should parse bracketed and comma-separated tokens'
+  );
+  assert.deepStrictEqual(
+    parseTickersFromArgv(['node', 'script.js', '--tickers', 'AAPL,MSFT,GOOG']),
+    ['AAPL', 'MSFT', 'GOOG'],
+    'Should parse comma-separated tickers'
+  );
+  assert.deepStrictEqual(
+    parseTickersFromArgv(['node', 'script.js', '--tickers=[AAPL, MSFT]']),
+    ['AAPL', 'MSFT'],
+    'Should parse inline --tickers= assignment'
+  );
+  assert.deepStrictEqual(
+    parseTickersFromArgv(['node', 'script.js', '--tickers']),
+    [],
+    'Empty tickers should return empty array'
+  );
+
+  // Test targeted mover resolution
+  const aaplMover = await marketMoverIngestor.getMoverForTicker('AAPL');
+  assert.strictEqual(aaplMover.ticker, 'AAPL', 'Ticker must match AAPL');
+  assert.ok(aaplMover.price > 0, 'AAPL price must be positive');
+  assert.ok(aaplMover.volume >= 0, 'AAPL volume must be non-negative');
+  assert.ok(aaplMover.moneyMarketTradingVenue.length > 0, 'Venue must be resolved');
+  assert.ok(['gainer', 'loser'].includes(aaplMover.category), 'Category must be gainer or loser');
+  assert.ok(marketMoverIngestor.getCachedQuote('AAPL') !== undefined, 'Quote must be cached in rawQuoteCache');
+
+  // Test invalid ticker rejection
+  let invalidTickerErr: Error | null = null;
+  try {
+    await marketMoverIngestor.getMoverForTicker('');
+  } catch (err: any) {
+    invalidTickerErr = err;
+  }
+  assert.ok(invalidTickerErr !== null, 'Empty ticker must throw error');
+
+  console.log(`✓ Pass: Targeted Multi-Ticker Pipeline parsing & ingestion verified ($${aaplMover.ticker} @ $${aaplMover.price.toFixed(2)} on ${aaplMover.exchange}).\n`);
 
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);

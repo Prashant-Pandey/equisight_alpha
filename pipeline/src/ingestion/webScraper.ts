@@ -1,5 +1,18 @@
 import { fetchWithRetry } from '../utils/httpClient.js';
 import { CONFIG } from '../config.js';
+import {
+  pickDurationFacts,
+  instantAt,
+  latestInstantDate,
+  trailingTwelveMonths,
+  discreteQuarters,
+  lastTwoAnnuals,
+  fiscalQuarterLabel,
+  getFacts,
+  toMs,
+  DAY_MS,
+  type FlowMethod
+} from './secXbrl.js';
 
 export interface ScrapedNewsArticle {
   title: string;
@@ -15,20 +28,57 @@ export interface ScrapedRedditPost {
   link?: string;
 }
 
+export interface SecQuarterlyEPS {
+  quarter: string;
+  eps: number;
+  /** Period end date (ISO). */
+  date: string;
+  /** Change vs the same fiscal quarter one year earlier, in percent. */
+  yoyChangePercent?: number | null;
+  /** True when derived by differencing cumulative periods (e.g. Q4 = FY − 9M YTD). */
+  derived?: boolean;
+}
+
 export interface SecFinancialDisclosures {
   cik: string;
   entityName: string;
+  /** SEC Standard Industrial Classification code and description (from submissions API). */
+  sic?: string;
+  sicDescription?: string;
+
+  // Flow items — always trailing-twelve-month, never a lone 10-Q quarter/YTD value
   latestRevenueTTM?: number;
   latestNetIncomeTTM?: number;
   latestOperatingIncomeTTM?: number;
   latestOperatingCashFlowTTM?: number;
+  capitalExpendituresTTM?: number;
+  depreciationAmortizationTTM?: number;
+  /** Period end and derivation method of the TTM flow figures. */
+  ttmPeriodEnd?: string;
+  ttmMethod?: FlowMethod;
+  /** YoY growth of the last full fiscal year's revenue vs the prior fiscal year, in percent. */
+  revenueGrowthYoY?: number;
+
+  // Point-in-time balance-sheet items — all aligned to `balanceSheetDate`
+  balanceSheetDate?: string;
   totalAssets?: number;
   totalLiabilities?: number;
   totalDebt?: number;
+  /** Debt due within 12 months (short-term borrowings + current maturities of long-term debt). */
+  shortTermDebt?: number;
+  /** Non-current portion of long-term debt. */
+  longTermDebt?: number;
+  /** Total debt one year before `balanceSheetDate`, for YoY change. */
+  priorYearTotalDebt?: number;
   cashAndEquivalents?: number;
   stockholdersEquity?: number;
+
+  /** Up to 8 most recent discrete fiscal quarters of diluted (else basic) EPS, oldest → newest. */
+  quarterlyEPS?: SecQuarterlyEPS[];
+
   latest10KFilingDate?: string;
   fiscalYear?: number;
+  fiscalYearEnd?: string;
 }
 
 export interface StockIntelligenceScrapeResult {
@@ -43,10 +93,66 @@ export interface StockIntelligenceScrapeResult {
   };
   redditPosts: ScrapedRedditPost[];
   secDisclosures?: SecFinancialDisclosures | null;
+  optionChain?: {
+    calls: any[];
+    puts: any[];
+    spotPrice?: number;
+    expirationDate?: number;
+  } | null;
+  shareStats?: {
+    floatShares?: number;
+    sharesOutstanding?: number;
+    heldPercentInsiders?: number;
+    heldPercentInstitutions?: number;
+    sharesShort?: number;
+    shortPercentOfFloat?: number;
+  } | null;
 }
 
 // In-memory cache for SEC company ticker to CIK mapping
 let secTickerCache: Map<string, string> | null = null;
+// In-memory per-ticker cache of parsed SEC disclosures (in-flight promises are shared)
+const secDisclosureCache = new Map<string, Promise<SecFinancialDisclosures | null>>();
+
+// In-memory cache for Yahoo Finance crumb and session cookie
+let cachedYahooAuth: { cookie: string; crumb: string; timestamp: number } | null = null;
+
+async function getYahooAuth(): Promise<{ cookie: string; crumb: string } | null> {
+  const now = Date.now();
+  if (cachedYahooAuth && (now - cachedYahooAuth.timestamp < 1000 * 60 * 45)) {
+    return cachedYahooAuth;
+  }
+
+  try {
+    const cookieRes = await fetchWithRetry('https://fc.yahoo.com', {
+      timeoutMs: 4000,
+      retries: 1,
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)' }
+    }).catch(() => null);
+
+    const rawCookie = cookieRes?.headers.get('set-cookie');
+    const cookie = rawCookie ? rawCookie.split(';')[0] : '';
+    if (!cookie) return null;
+
+    const crumbRes = await fetchWithRetry('https://query2.finance.yahoo.com/v1/test/getcrumb', {
+      timeoutMs: 4000,
+      retries: 1,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+        'Cookie': cookie
+      }
+    });
+
+    if (!crumbRes.ok) return null;
+    const crumb = (await crumbRes.text()).trim();
+    if (!crumb || crumb.includes('html') || crumb.includes('Error')) return null;
+
+    cachedYahooAuth = { cookie, crumb, timestamp: now };
+    return cachedYahooAuth;
+  } catch {
+    return null;
+  }
+}
 
 export class WebScraper {
   /**
@@ -158,9 +264,22 @@ export class WebScraper {
   /**
    * Scrapes SEC EDGAR XBRL company facts for verified financial statements.
    * Free official US Government API, no paid keys needed.
+   *
+   * Results are cached per ticker for the process lifetime: both the fundamentals and
+   * the sentiment ingestors request the same multi-megabyte companyfacts payload.
    */
   public async fetchSecDisclosures(ticker: string): Promise<SecFinancialDisclosures | null> {
     const cleanTicker = ticker.split('.')[0].toUpperCase();
+    let pending = secDisclosureCache.get(cleanTicker);
+    if (!pending) {
+      pending = this.loadSecDisclosures(cleanTicker);
+      secDisclosureCache.set(cleanTicker, pending);
+    }
+    return pending;
+  }
+
+  private async loadSecDisclosures(cleanTicker: string): Promise<SecFinancialDisclosures | null> {
+    const ticker = cleanTicker;
     const userAgent = CONFIG.SEC_EDGAR_USER_AGENT || 'EquiSightResearch admin@equisight-alpha.com';
 
     try {
@@ -188,102 +307,176 @@ export class WebScraper {
         return null;
       }
 
-      // 2. Fetch XBRL company facts
+      // 2. Fetch XBRL company facts (+ submissions metadata for the SIC industry code)
       const factsUrl = `https://data.sec.gov/api/xbrl/companyfacts/CIK${cik}.json`;
-      const factsRes = await fetchWithRetry(factsUrl, {
-        retries: 1,
-        timeoutMs: 8000,
-        headers: { 'User-Agent': userAgent }
-      });
+      const submissionsUrl = `https://data.sec.gov/submissions/CIK${cik}.json`;
+      const [factsResult, submissionsResult] = await Promise.allSettled([
+        fetchWithRetry(factsUrl, { retries: 1, timeoutMs: 8000, headers: { 'User-Agent': userAgent } }),
+        fetchWithRetry(submissionsUrl, { retries: 1, timeoutMs: 6000, headers: { 'User-Agent': userAgent } })
+      ]);
 
-      if (!factsRes.ok) {
+      if (factsResult.status !== 'fulfilled' || !factsResult.value.ok) {
         return null;
       }
 
-      const facts = await factsRes.json();
+      let sic: string | undefined;
+      let sicDescription: string | undefined;
+      if (submissionsResult.status === 'fulfilled' && submissionsResult.value.ok) {
+        try {
+          const sub = await submissionsResult.value.json();
+          sic = sub?.sic ? String(sub.sic) : undefined;
+          sicDescription = sub?.sicDescription || undefined;
+        } catch {
+          // SIC is optional enrichment; ignore parse failures
+        }
+      }
+
+      const facts = await factsResult.value.json();
       const entityName = facts?.entityName || cleanTicker;
       const usGaap = facts?.facts?.['us-gaap'];
 
-      let latestRevenue: number | undefined;
-      let latestNetIncome: number | undefined;
-      let latestOperatingIncome: number | undefined;
-      let latestOperatingCashFlow: number | undefined;
-      let totalAssets: number | undefined;
-      let totalLiabilities: number | undefined;
-      let totalDebt: number | undefined;
-      let cashAndEquivalents: number | undefined;
-      let stockholdersEquity: number | undefined;
-      let latest10KDate: string | undefined;
-      let fiscalYear: number | undefined;
+      if (!usGaap) {
+        return { cik, entityName, sic, sicDescription };
+      }
 
-      const getLatestVal = (obj: any): number | undefined => {
-        if (!obj?.units?.USD || !Array.isArray(obj.units.USD)) return undefined;
-        const relevantUnits = obj.units.USD.filter((u: any) => u.form === '10-K' || u.form === '10-Q');
-        if (relevantUnits.length === 0) return undefined;
-        return relevantUnits[relevantUnits.length - 1]?.val;
+      // ---- Flow items: trailing-twelve-month (never a lone 10-Q quarter / YTD value) ----
+      const revenueFacts = pickDurationFacts(usGaap, [
+        'Revenues',
+        'RevenueFromContractWithCustomerExcludingAssessedTax',
+        'RevenueFromContractWithCustomerIncludingAssessedTax',
+        'SalesRevenueNet',
+        'SalesRevenueGoodsNet'
+      ]);
+      const ttm = (concepts: string[]) => trailingTwelveMonths(pickDurationFacts(usGaap, concepts));
+
+      const revenueTTM = trailingTwelveMonths(revenueFacts);
+      const netIncomeTTM = ttm(['NetIncomeLoss', 'ProfitLoss', 'NetIncomeLossAvailableToCommonStockholdersBasic']);
+      const operatingIncomeTTM = ttm(['OperatingIncomeLoss']);
+      const operatingCashFlowTTM = ttm([
+        'NetCashProvidedByUsedInOperatingActivities',
+        'NetCashProvidedByUsedInOperatingActivitiesContinuingOperations'
+      ]);
+      const capexTTM = ttm([
+        'PaymentsToAcquirePropertyPlantAndEquipment',
+        'PaymentsToAcquireProductiveAssets',
+        'PaymentsForCapitalImprovements'
+      ]);
+      const depreciationTTM = ttm([
+        'DepreciationDepletionAndAmortization',
+        'DepreciationAndAmortization',
+        'DepreciationAmortizationAndAccretionNet',
+        'Depreciation'
+      ]);
+
+      const { latest: latestAnnualRevenue, prior: priorAnnualRevenue } = lastTwoAnnuals(revenueFacts);
+      const revenueGrowthYoY = latestAnnualRevenue && priorAnnualRevenue && priorAnnualRevenue.val > 0
+        ? parseFloat((((latestAnnualRevenue.val - priorAnnualRevenue.val) / priorAnnualRevenue.val) * 100).toFixed(1))
+        : undefined;
+
+      // ---- Point-in-time items: all aligned to the latest balance-sheet date ----
+      const balanceSheetDate = latestInstantDate(usGaap, ['Assets']) ?? latestInstantDate(usGaap, ['StockholdersEquity', 'Liabilities']);
+      const bs = (concepts: string[], asOf = balanceSheetDate) => instantAt(usGaap, concepts, asOf)?.value;
+
+      const debtAt = (asOf?: string) => {
+        const debtCurrent = bs(['DebtCurrent'], asOf);
+        const currentMaturities = bs(['LongTermDebtCurrent', 'LongTermDebtAndCapitalLeaseObligationsCurrent'], asOf);
+        const shortTermBorrowings = bs(['ShortTermBorrowings', 'CommercialPaper', 'OtherShortTermBorrowings'], asOf);
+        const shortTerm = debtCurrent ?? (
+          currentMaturities !== undefined || shortTermBorrowings !== undefined
+            ? (currentMaturities ?? 0) + (shortTermBorrowings ?? 0)
+            : undefined
+        );
+
+        const longTotalInclCurrent = bs(['LongTermDebt'], asOf);
+        const longTerm = bs(['LongTermDebtNoncurrent', 'LongTermDebtAndCapitalLeaseObligations'], asOf) ?? (
+          longTotalInclCurrent !== undefined ? Math.max(0, longTotalInclCurrent - (currentMaturities ?? 0)) : undefined
+        );
+
+        const total = shortTerm !== undefined || longTerm !== undefined
+          ? (shortTerm ?? 0) + (longTerm ?? 0)
+          : longTotalInclCurrent;
+        return { shortTerm, longTerm, total };
       };
 
-      if (usGaap) {
-        // Extract revenue from 10-K units
-        const revObj = usGaap.Revenues || usGaap.RevenueFromContractWithCustomerExcludingAssessedTax || usGaap.SalesRevenueNet;
-        if (revObj?.units?.USD) {
-          const tenKUnits = revObj.units.USD.filter((u: any) => u.form === '10-K');
-          const latest = tenKUnits[tenKUnits.length - 1];
-          if (latest) {
-            latestRevenue = latest.val;
-            latest10KDate = latest.filed;
-            fiscalYear = latest.fy;
-          }
-        }
-        if (!latestRevenue) latestRevenue = getLatestVal(revObj);
+      const debtNow = debtAt(balanceSheetDate);
+      const priorYearDate = balanceSheetDate
+        ? new Date(toMs(balanceSheetDate) - 365 * DAY_MS).toISOString().slice(0, 10)
+        : undefined;
+      const debtPriorYear = priorYearDate ? debtAt(priorYearDate) : undefined;
 
-        // Extract net income
-        const incObj = usGaap.NetIncomeLoss || usGaap.ProfitLoss;
-        latestNetIncome = getLatestVal(incObj);
-
-        // Operating income
-        const opIncObj = usGaap.OperatingIncomeLoss;
-        latestOperatingIncome = getLatestVal(opIncObj);
-
-        // Operating cash flow
-        const ocfObj = usGaap.NetCashProvidedByUsedInOperatingActivities;
-        latestOperatingCashFlow = getLatestVal(ocfObj);
-
-        // Assets
-        const assetsObj = usGaap.Assets || usGaap.AssetsCurrent;
-        totalAssets = getLatestVal(assetsObj);
-
-        // Liabilities
-        const liabObj = usGaap.Liabilities || usGaap.LiabilitiesCurrent;
-        totalLiabilities = getLatestVal(liabObj);
-
-        // Debt
-        const debtObj = usGaap.LongTermDebtNoncurrent || usGaap.LongTermDebt || usGaap.DebtCurrent;
-        totalDebt = getLatestVal(debtObj);
-
-        // Cash
-        const cashObj = usGaap.CashAndCashEquivalentsAtCarryingValue || usGaap.CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents;
-        cashAndEquivalents = getLatestVal(cashObj);
-
-        // Equity
-        const eqObj = usGaap.StockholdersEquity || usGaap.CommonStockholdersEquity;
-        stockholdersEquity = getLatestVal(eqObj);
+      const totalAssets = bs(['Assets']);
+      const stockholdersEquity = bs([
+        'StockholdersEquity',
+        'StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest',
+        'CommonStockholdersEquity'
+      ]);
+      let totalLiabilities = bs(['Liabilities']);
+      if (totalLiabilities === undefined) {
+        const liabAndEquity = bs(['LiabilitiesAndStockholdersEquity']);
+        const equityInclNci = bs(['StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest', 'StockholdersEquity']);
+        if (liabAndEquity !== undefined && equityInclNci !== undefined) totalLiabilities = liabAndEquity - equityInclNci;
       }
+      const cashAndEquivalents = bs([
+        'CashAndCashEquivalentsAtCarryingValue',
+        'CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents',
+        'Cash'
+      ]);
+
+      // ---- 8-quarter EPS progression (diluted preferred, basic fallback) ----
+      const epsFacts = pickDurationFacts(
+        usGaap,
+        ['EarningsPerShareDiluted', 'EarningsPerShareBasicAndDiluted', 'EarningsPerShareBasic'],
+        'USD/shares'
+      );
+      const fiscalYearEnd = latestAnnualRevenue?.end ?? lastTwoAnnuals(epsFacts).latest?.end;
+      const recentQuarters = discreteQuarters(epsFacts).slice(-12);
+      const quarterlyEPS: SecQuarterlyEPS[] = recentQuarters
+        .map((q) => {
+          const yearAgoMs = toMs(q.end) - 365 * DAY_MS;
+          const yearAgo = recentQuarters.find((p) => Math.abs(toMs(p.end) - yearAgoMs) <= 10 * DAY_MS);
+          const yoyChangePercent = yearAgo && yearAgo.val !== 0
+            ? parseFloat((((q.val - yearAgo.val) / Math.abs(yearAgo.val)) * 100).toFixed(1))
+            : null;
+          return {
+            quarter: fiscalQuarterLabel(q.end, fiscalYearEnd),
+            eps: parseFloat(q.val.toFixed(2)),
+            date: q.end,
+            yoyChangePercent,
+            derived: q.derived
+          };
+        })
+        .slice(-8);
+
+      // Latest 10-K filing metadata
+      const latest10K = latestAnnualRevenue ?? lastTwoAnnuals(pickDurationFacts(usGaap, ['NetIncomeLoss', 'ProfitLoss'])).latest;
 
       return {
         cik,
         entityName,
-        latestRevenueTTM: latestRevenue,
-        latestNetIncomeTTM: latestNetIncome,
-        latestOperatingIncomeTTM: latestOperatingIncome,
-        latestOperatingCashFlowTTM: latestOperatingCashFlow,
+        sic,
+        sicDescription,
+        latestRevenueTTM: revenueTTM?.value,
+        latestNetIncomeTTM: netIncomeTTM?.value,
+        latestOperatingIncomeTTM: operatingIncomeTTM?.value,
+        latestOperatingCashFlowTTM: operatingCashFlowTTM?.value,
+        capitalExpendituresTTM: capexTTM?.value,
+        depreciationAmortizationTTM: depreciationTTM?.value,
+        ttmPeriodEnd: revenueTTM?.periodEnd ?? netIncomeTTM?.periodEnd,
+        ttmMethod: revenueTTM?.method ?? netIncomeTTM?.method,
+        revenueGrowthYoY,
+        balanceSheetDate,
         totalAssets,
         totalLiabilities,
-        totalDebt,
+        totalDebt: debtNow.total,
+        shortTermDebt: debtNow.shortTerm,
+        longTermDebt: debtNow.longTerm,
+        priorYearTotalDebt: debtPriorYear?.total,
         cashAndEquivalents,
         stockholdersEquity,
-        latest10KFilingDate: latest10KDate,
-        fiscalYear
+        quarterlyEPS,
+        latest10KFilingDate: latest10K?.filed,
+        fiscalYear: latest10K?.fy,
+        fiscalYearEnd
       };
     } catch (err: any) {
       console.warn(`[WebScraper] SEC EDGAR lookup failed for ${ticker}: ${err.message}`);
@@ -334,17 +527,109 @@ export class WebScraper {
   }
 
   /**
+   * Fetches exchange-traded options chain contracts (calls & puts) with open interest, volume, and IV.
+   * Completely open, 0 paid API keys.
+   */
+  public async fetchOptionsChain(ticker: string): Promise<{ calls: any[]; puts: any[]; spotPrice?: number; expirationDate?: number } | null> {
+    const cleanTicker = ticker.split('.')[0].toUpperCase();
+    try {
+      const auth = await getYahooAuth();
+      if (!auth) return null;
+
+      const url = `https://query2.finance.yahoo.com/v7/finance/options/${encodeURIComponent(cleanTicker)}?crumb=${encodeURIComponent(auth.crumb)}`;
+      const res = await fetchWithRetry(url, {
+        timeoutMs: 5000,
+        retries: 1,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          'Cookie': auth.cookie
+        }
+      });
+
+      if (!res.ok) return null;
+      const data = await res.json();
+      const result = data?.optionChain?.result?.[0];
+      if (!result) return null;
+
+      const spotPrice = result.quote?.regularMarketPrice;
+      const opt = result.options?.[0];
+      return {
+        calls: opt?.calls || [],
+        puts: opt?.puts || [],
+        spotPrice: typeof spotPrice === 'number' ? spotPrice : undefined,
+        expirationDate: opt?.expirationDate
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Fetches authentic float, shares outstanding, and insider/institutional ownership stats.
+   * Completely open, 0 paid API keys.
+   */
+  public async fetchShareStatistics(ticker: string): Promise<{
+    floatShares?: number;
+    sharesOutstanding?: number;
+    heldPercentInsiders?: number;
+    heldPercentInstitutions?: number;
+    sharesShort?: number;
+    shortPercentOfFloat?: number;
+  } | null> {
+    const cleanTicker = ticker.split('.')[0].toUpperCase();
+    try {
+      const auth = await getYahooAuth();
+      if (!auth) return null;
+
+      const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(cleanTicker)}?crumb=${encodeURIComponent(auth.crumb)}&modules=defaultKeyStatistics,majorHoldersBreakdown`;
+      const res = await fetchWithRetry(url, {
+        timeoutMs: 5000,
+        retries: 1,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          'Cookie': auth.cookie
+        }
+      });
+
+      if (!res.ok) return null;
+      const data = await res.json();
+      const stats = data?.quoteSummary?.result?.[0]?.defaultKeyStatistics;
+      const holders = data?.quoteSummary?.result?.[0]?.majorHoldersBreakdown;
+
+      const floatShares = stats?.floatShares?.raw || stats?.floatShares;
+      const sharesOutstanding = stats?.sharesOutstanding?.raw || stats?.sharesOutstanding;
+      const heldPercentInsiders = stats?.heldPercentInsiders?.raw ?? stats?.heldPercentInsiders ?? holders?.insidersPercentHeld?.raw;
+      const heldPercentInstitutions = stats?.heldPercentInstitutions?.raw ?? stats?.heldPercentInstitutions ?? holders?.institutionsPercentHeld?.raw;
+      const sharesShort = stats?.sharesShort?.raw || stats?.sharesShort;
+      const shortPercentOfFloat = stats?.shortPercentOfFloat?.raw || stats?.shortPercentOfFloat;
+
+      return {
+        floatShares: typeof floatShares === 'number' ? floatShares : undefined,
+        sharesOutstanding: typeof sharesOutstanding === 'number' ? sharesOutstanding : undefined,
+        heldPercentInsiders: typeof heldPercentInsiders === 'number' ? heldPercentInsiders : undefined,
+        heldPercentInstitutions: typeof heldPercentInstitutions === 'number' ? heldPercentInstitutions : undefined,
+        sharesShort: typeof sharesShort === 'number' ? sharesShort : undefined,
+        shortPercentOfFloat: typeof shortPercentOfFloat === 'number' ? shortPercentOfFloat : undefined
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Unified comprehensive stock intelligence scraping engine.
    * Runs all free zero-touch scrapers concurrently.
    */
   public async scrapeStockIntelligence(ticker: string, companyName?: string): Promise<StockIntelligenceScrapeResult> {
     console.log(`[WebScraper] Executing multi-source web & social scrape for $${ticker}...`);
 
-    const [newsResult, stockTwitsResult, secResult, redditResult] = await Promise.allSettled([
+    const [newsResult, stockTwitsResult, secResult, redditResult, optionResult, shareStatsResult] = await Promise.allSettled([
       this.fetchGoogleNews(ticker, companyName),
       this.fetchStockTwitsSentiment(ticker),
       this.fetchSecDisclosures(ticker),
-      this.fetchRedditDiscussions(ticker)
+      this.fetchRedditDiscussions(ticker),
+      this.fetchOptionsChain(ticker),
+      this.fetchShareStatistics(ticker)
     ]);
 
     const news = newsResult.status === 'fulfilled' ? newsResult.value : [];
@@ -357,15 +642,19 @@ export class WebScraper {
     };
     const secDisclosures = secResult.status === 'fulfilled' ? secResult.value : null;
     const redditPosts = redditResult.status === 'fulfilled' ? redditResult.value : [];
+    const optionChain = optionResult.status === 'fulfilled' ? optionResult.value : null;
+    const shareStats = shareStatsResult.status === 'fulfilled' ? shareStatsResult.value : null;
 
-    console.log(`[WebScraper] Scraped for $${ticker}: ${news.length} news articles, ${stockTwits.totalMessages} StockTwits messages, ${redditPosts.length} Reddit discussions, SEC CIK: ${secDisclosures?.cik || 'N/A'}`);
+    console.log(`[WebScraper] Scraped for $${ticker}: ${news.length} news articles, ${stockTwits.totalMessages} StockTwits messages, ${redditPosts.length} Reddit discussions, SEC CIK: ${secDisclosures?.cik || 'N/A'}, Options contracts: ${(optionChain?.calls?.length || 0) + (optionChain?.puts?.length || 0)}, Float: ${shareStats?.floatShares ? `${(shareStats.floatShares / 1e6).toFixed(1)}M` : 'N/A'}`);
 
     return {
       ticker: ticker.toUpperCase(),
       news,
       stockTwits,
       redditPosts,
-      secDisclosures
+      secDisclosures,
+      optionChain,
+      shareStats
     };
   }
 }

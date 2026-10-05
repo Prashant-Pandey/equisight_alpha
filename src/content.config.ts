@@ -72,6 +72,24 @@ const reportsCollection = defineCollection({
     majorPriceDriver: z.string().optional().default('Market Flow'),
     newsImpact: z.string().optional().default(''),
     socialMediaImpact: z.string().optional().default(''),
+    optionGammaImbalance: z.object({
+      imbalanceRatio: z.number().nullable().optional(),
+      netGammaExposure: z.string().optional().default('Balanced'),
+      callVolume: z.number().nullable().optional(),
+      putVolume: z.number().nullable().optional(),
+      callOpenInterest: z.number().nullable().optional(),
+      putOpenInterest: z.number().nullable().optional(),
+      riskLevel: z.enum(['Low', 'Moderate', 'High', 'Severe']).optional().default('Low'),
+      status: z.string().optional().default('')
+    }).optional(),
+    freeFloatConcentration: z.object({
+      freeFloatShares: z.number().nullable().optional(),
+      freeFloatPercent: z.number().nullable().optional(),
+      floatTurnoverRatio: z.number().nullable().optional(),
+      concentrationLevel: z.enum(['Low', 'Moderate', 'High', 'Extreme']).optional().default('Low'),
+      status: z.string().optional().default('')
+    }).optional(),
+    artificialInflation: z.any().optional(),
 
     // Two-Tiered News Catalyst & Sentiment Pipeline
     catalystAlignment: z.enum(['ALIGNED', 'DIVERGENT_SELL_THE_NEWS', 'DIVERGENT_RELIEF_RALLY', 'MACRO_DOMINATED', 'NOISE_SPECULATION']).optional(),
