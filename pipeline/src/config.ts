@@ -30,6 +30,8 @@ export const CONFIG = {
   AGY_PATH: process.env.AGY_PATH || 'agy',
   AGY_MODEL: process.env.AGY_MODEL || 'gemini-3.8-flash-high',
   AGY_TIMEOUT_MS: parseInt(process.env.AGY_TIMEOUT_MS || '90000', 10),
+  TIER1_LLM_MODEL: process.env.TIER1_LLM_MODEL || 'gemini-3.6-flash-low',
+  TIER1_TIMEOUT_MS: parseInt(process.env.TIER1_TIMEOUT_MS || '15000', 10),
   OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
   OPENAI_MODEL: process.env.OPENAI_MODEL || 'gpt-4o',
   ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || '',

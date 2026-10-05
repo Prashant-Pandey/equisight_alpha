@@ -22,8 +22,10 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
    - Specify the precise Money Market Trading Venue (e.g. Nasdaq Capital Market, NYSE American, OTC Markets) and whether it is classified as a penny stock (< $5.00).
    - Executive summary explaining the catalyst, price movement, and volume divergence.
 
-2. Trading Activity & Artificial Inflation Analysis:
+2. Trading Activity, Catalyst-Price Alignment & Artificial Inflation Analysis:
    - Analyze whether the equity is being artificially inflated by inspecting trading volume anomalies, relative volume (RVOL) vs 90-day averages, and social flow velocity.
+   - Explicitly evaluate Catalyst-Price Divergence: assess whether the price action is ALIGNED with the news catalyst, or whether it exhibits DIVERGENT_SELL_THE_NEWS (priced to perfection, guidance fade), DIVERGENT_RELIEF_RALLY (cleared uncertainty, low bar exceeded), MACRO_DOMINATED (rates/sector contagion), or NOISE_SPECULATION (retail flow).
+   - Synthesize the expectations vs. reality gap: explain why the market reacted this way relative to prior positioning and financial metrics.
    - Identify the major driver of the recent price action (e.g., retail social momentum, coordinated message-board hype, short-squeeze mechanics, algorithmic liquidity hunt, warrant hedging, clinical trial readout, or authentic institutional accumulation).
    - Provide a quantitative sentiment score (-1.0 to 1.0 or 0 to 100) and evaluate the real-world impact of financial news headlines and social media discussions (Twitter/X, StockTwits, Reddit) on the stock's order flow.
 
@@ -178,6 +180,11 @@ Social Media Impact: ${sentiment.socialMediaImpact}
 24h Discussion Delta: +${sentiment.volumeChange24h}%
 Key Themes: ${sentiment.dominantThemes.join(', ')}
 
+=== CATALYST DYNAMICS & EXPECTATIONS DIVERGENCE (TIER 1 INTELLIGENCE) ===
+Catalyst-Price Alignment: ${sentiment.catalystAlignment || 'ALIGNED'}
+${sentiment.catalystSynthesis ? `Expectations vs Reality Gap: ${sentiment.catalystSynthesis}` : ''}
+${sentiment.filteredHeadlines && sentiment.filteredHeadlines.length > 0 ? `Verified Entity-Relevant Headlines (Relevance >= 6/10):\n${sentiment.filteredHeadlines.map((h) => `- [${h.source}] (${h.headlineSentiment}, Relevance: ${h.relevance}/10) ${h.title}`).join('\n')}` : ''}
+
 === WEB & COMMUNITY SCRAPED CATALYSTS ===
 ${sentiment.recentHeadlines && sentiment.recentHeadlines.length > 0 ? `Latest Financial News Headlines:\n${sentiment.recentHeadlines.map((h) => `- ${h}`).join('\n')}` : 'Latest Financial News: Standard market flow'}
 ${sentiment.sampleCatalysts && sentiment.sampleCatalysts.length > 0 ? `Community Discussion Samples:\n${sentiment.sampleCatalysts.map((c) => `- ${c}`).join('\n')}` : ''}
@@ -191,6 +198,8 @@ Please format your response strictly as JSON with this schema:
   "primaryKeywords": ["keyword 1", "keyword 2", "keyword 3"],
   "secondaryKeywords": ["keyword 4", "keyword 5"],
   "catalystSummary": "string (concise 2-sentence summary of why it moved)",
+  "catalystAlignment": "${sentiment.catalystAlignment || 'ALIGNED'}",
+  "catalystSynthesis": "string (explicitly discuss market expectations vs. reality and catalyst divergence)",
   "markdownBody": "string (the complete markdown report with headings ##, markdown tables, and evidence)",
   "extractedFigures": {
     "peRatio": ${fundamentals.peRatioTrailing ?? fundamentals.peRatioForward ?? 0},

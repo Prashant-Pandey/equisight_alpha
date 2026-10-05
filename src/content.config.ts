@@ -73,6 +73,16 @@ const reportsCollection = defineCollection({
     newsImpact: z.string().optional().default(''),
     socialMediaImpact: z.string().optional().default(''),
 
+    // Two-Tiered News Catalyst & Sentiment Pipeline
+    catalystAlignment: z.enum(['ALIGNED', 'DIVERGENT_SELL_THE_NEWS', 'DIVERGENT_RELIEF_RALLY', 'MACRO_DOMINATED', 'NOISE_SPECULATION']).optional(),
+    catalystSynthesis: z.string().optional(),
+    filteredHeadlines: z.array(z.object({
+      title: z.string(),
+      source: z.string(),
+      relevance: z.number(),
+      headlineSentiment: z.enum(['Bullish', 'Bearish', 'Neutral'])
+    })).optional(),
+
     // Theses
     theses: z.object({
       bull: z.array(z.object({

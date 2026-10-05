@@ -345,7 +345,12 @@ export class ProgrammaticAdInjector {
       artificialInflation,
 
       // Theses
-      theses
+      theses,
+
+      // Two-Tiered News Catalyst & Sentiment Pipeline
+      catalystAlignment: sentiment?.catalystAlignment || analysis?.catalystAlignment || 'ALIGNED',
+      catalystSynthesis: sentiment?.catalystSynthesis || analysis?.catalystSynthesis,
+      filteredHeadlines: sentiment?.filteredHeadlines || analysis?.filteredHeadlines
     };
 
     // Inject contextual monetization units into Markdown body

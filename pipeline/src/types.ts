@@ -303,6 +303,20 @@ export interface SocialSentiment {
   majorPriceDriver: string;
   newsImpact: string;
   socialMediaImpact: string;
+
+  // Two-Tiered News Catalyst & Sentiment Pipeline
+  catalystAlignment?: CatalystAlignment;
+  catalystSynthesis?: string;
+  filteredHeadlines?: FilteredHeadline[];
+}
+
+export type CatalystAlignment = 'ALIGNED' | 'DIVERGENT_SELL_THE_NEWS' | 'DIVERGENT_RELIEF_RALLY' | 'MACRO_DOMINATED' | 'NOISE_SPECULATION';
+
+export interface FilteredHeadline {
+  title: string;
+  source: string;
+  relevance: number;
+  headlineSentiment: 'Bullish' | 'Bearish' | 'Neutral';
 }
 
 export interface AffiliateLink {
@@ -388,6 +402,9 @@ export interface LLMAnalysisOutput {
   companyDeepDive?: CompanyQuestions;
   industryDeepDive?: IndustryQuestions;
   valuationModels?: ValuationModels;
+  catalystAlignment?: CatalystAlignment;
+  catalystSynthesis?: string;
+  filteredHeadlines?: FilteredHeadline[];
 }
 
 export interface CoverageRecord {
@@ -491,4 +508,9 @@ export interface FinalReportFrontmatter {
     bull: ThesisPoint[];
     bear: ThesisPoint[];
   };
+
+  // Two-Tiered News Catalyst & Sentiment Pipeline
+  catalystAlignment?: CatalystAlignment;
+  catalystSynthesis?: string;
+  filteredHeadlines?: FilteredHeadline[];
 }

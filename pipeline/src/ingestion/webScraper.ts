@@ -300,7 +300,7 @@ export class WebScraper {
 
     try {
       const res = await fetchWithRetry(url, {
-        retries: 0,
+        retries: 1,
         timeoutMs: 4000,
         headers: { 'User-Agent': 'EquiSightBot/1.0 by equisight' }
       });

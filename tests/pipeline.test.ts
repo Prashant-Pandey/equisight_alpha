@@ -6,8 +6,10 @@ import { factChecker } from '../pipeline/src/llm/factChecker.js';
 import { marketMoverIngestor } from '../pipeline/src/ingestion/marketMovers.js';
 import { fundamentalDataIngestor } from '../pipeline/src/ingestion/fundamentalData.js';
 import { macroContextIngestor } from '../pipeline/src/ingestion/macroContext.js';
-import { socialSentimentIngestor } from '../pipeline/src/ingestion/socialSentiment.js';
-import type { MarketMover, FundamentalMetrics, LLMAnalysisOutput } from '../pipeline/src/types.js';
+import { socialSentimentIngestor, classifyCatalystsWithAgy } from '../pipeline/src/ingestion/socialSentiment.js';
+import { synthesisAgent } from '../pipeline/src/llm/synthesisAgent.js';
+import { buildUserPrompt } from '../pipeline/src/llm/prompts.js';
+import type { MarketMover, FundamentalMetrics, LLMAnalysisOutput, SocialSentiment } from '../pipeline/src/types.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -413,7 +415,89 @@ async function runTestSuite() {
   assert.strictEqual(emptySentiment.bullishPercent, 0, 'Empty bullish percent must be 0');
   assert.strictEqual(emptySentiment.bearishPercent, 0, 'Empty bearish percent must be 0');
   assert.strictEqual(emptySentiment.dominantThemes.length, 0, 'Empty dominant themes must be empty array');
-  console.log('✓ Pass: Anti-synthesis guardrails verified (all synthetic generators deleted, non-existent tickers fail honestly).\n');
+  // 12. Test Two-Tiered News Catalyst & Sentiment Pipeline (Tier 1 Extraction & Divergence Detection)
+  console.log('Test 12: Two-Tiered News Catalyst & Sentiment Pipeline (Tier 1 Fast Extraction)');
+
+  // 12.1 Divergence Detection & Relevance Filtering (Sell-the-News scenario)
+  const sellTheNewsHeadlines = [
+    { title: 'TechCorp Reports Record All-Time High Q3 Profit and 30% Revenue Growth', source: 'Bloomberg' },
+    { title: 'TechCorp Announces $500M Accelerated Share Repurchase Program', source: 'PR Newswire' },
+    { title: 'Top 10 High-Yield Dividend Stocks for Retirees', source: 'SpamNews' }
+  ];
+
+  const tier1Analysis = await classifyCatalystsWithAgy('TCORP', -8.5, sellTheNewsHeadlines);
+  assert.ok(tier1Analysis !== null, 'Tier 1 analysis should succeed');
+  assert.strictEqual(tier1Analysis!.alignment, 'DIVERGENT_SELL_THE_NEWS', `Expected DIVERGENT_SELL_THE_NEWS, got ${tier1Analysis!.alignment}`);
+  assert.ok(tier1Analysis!.catalystSynthesis.length > 0, 'catalystSynthesis must be non-empty');
+  assert.ok(tier1Analysis!.dominantThemes.length > 0, 'dominantThemes must be populated');
+  assert.ok(
+    tier1Analysis!.relevantHeadlines.every((h) => !h.title.includes('Top 10 High-Yield')),
+    'Listicle spam must be filtered out by relevance rating'
+  );
+  assert.ok(
+    tier1Analysis!.relevantHeadlines.some((h) => h.title.includes('Record All-Time High')),
+    'Legitimate company headlines must be preserved regardless of price drop'
+  );
+
+  // 12.2 Aligned Positive Catalyst scenario
+  const alignedHeadlines = [
+    { title: 'BioPharma Secures Major FDA Fast Track Approval for Lead Compound', source: 'PR Newswire' }
+  ];
+  const alignedAnalysis = await classifyCatalystsWithAgy('BIOP', 34.2, alignedHeadlines);
+  assert.ok(alignedAnalysis !== null, 'Tier 1 analysis should succeed for aligned catalyst');
+  assert.strictEqual(alignedAnalysis!.alignment, 'ALIGNED', 'FDA approval with +34% move must be ALIGNED');
+  assert.ok(
+    alignedAnalysis!.dominantThemes.includes('Biopharma & Regulatory Catalysts') || alignedAnalysis!.majorPriceDriver.toLowerCase().includes('fda'),
+    'FDA catalyst should be reflected in dominantThemes or majorPriceDriver'
+  );
+
+  // 12.3 Fallback and Resilience (Empty headlines)
+  const emptyAnalysis = await classifyCatalystsWithAgy('EMPTY', 0, []);
+  assert.strictEqual(emptyAnalysis, null, 'Empty headlines must return null without invoking agy');
+
+  // 12.4 Integration with SocialSentiment, buildUserPrompt, synthesisAgent, and adInjector
+  const mockSentiment: SocialSentiment = {
+    ticker: 'NVDA',
+    bullishPercent: 75,
+    bearishPercent: 25,
+    sentimentScore: 0.5,
+    volumeChange24h: 120,
+    dominantThemes: ['Financial Disclosures', 'Wall Street Revisions'],
+    sampleCatalysts: ['Q3 beat'],
+    sourcesAnalyzed: 5,
+    recentHeadlines: ['NVDA Beats Estimates (Bloomberg)'],
+    isArtificiallyInflated: false,
+    artificialInflationRisk: 'Low',
+    volumeAnomalyRatio: 1.2,
+    majorPriceDriver: 'Record Data Center GPU Demand',
+    newsImpact: 'High Impact',
+    socialMediaImpact: 'Moderate',
+    catalystAlignment: 'ALIGNED',
+    catalystSynthesis: 'Earnings beat aligned with institutional order flow.',
+    filteredHeadlines: [{
+      title: 'NVDA Beats Estimates',
+      source: 'Bloomberg',
+      relevance: 10,
+      headlineSentiment: 'Bullish'
+    }]
+  };
+
+  const userPromptText = buildUserPrompt(usMover, usFundamentals, macro, mockSentiment);
+  assert.ok(
+    userPromptText.includes('=== CATALYST DYNAMICS & EXPECTATIONS DIVERGENCE (TIER 1 INTELLIGENCE) ==='),
+    'Prompt must include Tier 1 Catalyst Dynamics section'
+  );
+  assert.ok(userPromptText.includes('Catalyst-Price Alignment: ALIGNED'), 'Prompt must include catalyst alignment');
+  assert.ok(userPromptText.includes('Earnings beat aligned with institutional order flow.'), 'Prompt must include catalyst synthesis');
+
+  const deterministicReport = synthesisAgent.generateDeterministicReport(usMover, usFundamentals, macro, mockSentiment);
+  assert.strictEqual(deterministicReport.catalystAlignment, 'ALIGNED', 'Deterministic report must inherit catalystAlignment');
+  assert.ok(deterministicReport.markdownBody.includes('Catalyst-Price Alignment:'), 'Markdown must include catalyst alignment');
+
+  const adInjection = adInjector.injectMonetization(usMover, usFundamentals, deterministicReport, mockSentiment);
+  assert.strictEqual(adInjection.frontmatter.catalystAlignment, 'ALIGNED', 'Frontmatter must retain catalystAlignment');
+  assert.ok(adInjection.frontmatter.filteredHeadlines!.length > 0, 'Frontmatter must retain filteredHeadlines');
+  console.log('✓ Pass: Two-Tiered News Catalyst & Sentiment Pipeline verified with full divergence detection, filtering, and synthesis integration.\n');
 
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);

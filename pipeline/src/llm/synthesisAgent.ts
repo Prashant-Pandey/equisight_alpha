@@ -69,6 +69,16 @@ export class LLMSynthesisAgent {
     if (!rawOutput) {
       console.log(`[LLMSynthesisAgent] Using built-in deterministic synthesis engine for ${mover.ticker}...`);
       rawOutput = this.generateDeterministicReport(mover, fundamentals, macro, sentiment);
+    } else {
+      if (!rawOutput.catalystAlignment && sentiment.catalystAlignment) {
+        rawOutput.catalystAlignment = sentiment.catalystAlignment;
+      }
+      if (!rawOutput.catalystSynthesis && sentiment.catalystSynthesis) {
+        rawOutput.catalystSynthesis = sentiment.catalystSynthesis;
+      }
+      if (!rawOutput.filteredHeadlines && sentiment.filteredHeadlines) {
+        rawOutput.filteredHeadlines = sentiment.filteredHeadlines;
+      }
     }
 
     // Run Anti-Hallucination & Compliance Verification
@@ -251,6 +261,19 @@ export class LLMSynthesisAgent {
     const newsImpact = s.newsImpact || 'No recent significant corporate press releases detected.';
     const socialMediaImpact = s.socialMediaImpact || 'Social discussion within normal baseline variance.';
 
+    const alignment = s.catalystAlignment || 'ALIGNED';
+    const catalystSynthesis = s.catalystSynthesis || (
+      alignment === 'DIVERGENT_SELL_THE_NEWS'
+        ? `Despite ostensibly positive headline catalysts, market participants engaged in a sell-the-news rotation for ${cleanTicker}, driven by multiple compression and conservative forward guidance.`
+        : alignment === 'DIVERGENT_RELIEF_RALLY'
+          ? `Although headlines appeared challenging, ${cleanTicker} exhibited a relief rally as regulatory or litigation overhangs cleared and low market expectations were decisively exceeded.`
+          : alignment === 'MACRO_DOMINATED'
+            ? `Price action in ${cleanTicker} was predominantly dictated by macroeconomic rate movements and sector contagion rather than company-specific micro catalysts.`
+            : alignment === 'NOISE_SPECULATION'
+              ? `Trading momentum in ${cleanTicker} decoupled from verified corporate disclosures, driven primarily by retail speculative order flow.`
+              : `${cleanTicker}'s price action closely tracked reported operational news catalysts and fundamental financial disclosures.`
+    );
+
     const artificialInflation: ArtificialInflation = {
       isInflated,
       riskLevel,
@@ -421,6 +444,8 @@ An empirical audit of recent order book dynamics and social media chatter reveal
 
 * **Volume Anomaly Ratio:** Today's volume of ${mover.volume.toLocaleString()} represents **${volumeAnomalyRatio}x** normal trading activity. ${volumeAnomalyRatio > 2.0 ? 'This heavy volume expansion indicates aggressive speculative participation or institutional liquidity repositioning.' : 'Trading volume remains within anticipated statistical variance.'}
 * **Major Price Driver:** The session's primary catalyst is **${majorPriceDriver}**.
+* **Catalyst-Price Alignment:** \`${alignment}\`
+* **Expectations vs. Reality Gap:** ${catalystSynthesis}
 * **Quantitative Sentiment Index:** Aggregated retail and financial market sentiment scores **${(sentimentScore * 100).toFixed(0)} / 100**, reflecting ${sentimentScore > 0.6 ? 'broad optimism' : sentimentScore < 0.4 ? 'cautious defensiveness' : 'balanced two-way market expectations'}.
 * **News & Social Media Footprint:** ${newsImpact} Concurrently, ${socialMediaImpact}
 
@@ -603,6 +628,9 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
       companyDeepDive,
       industryDeepDive,
       valuationModels,
+      catalystAlignment: alignment,
+      catalystSynthesis,
+      filteredHeadlines: s.filteredHeadlines,
       socialHooks: {
         twitterThread: [
           `1/3 📊 $${cleanTicker} closed ${moveStr} at $${mover.price.toFixed(2)} on ${venue} (Vol: ${(mover.volume / 1e6).toFixed(1)}M). Fundamental breakdown: 🧵👇`,
