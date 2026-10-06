@@ -538,5 +538,14 @@
     "category": "loser",
     "movePercent": -16.8,
     "slug": "hcmc-drops-16-8-percent-fundamental-valuation-analysis"
+  },
+  {
+    "ticker": "OPCH",
+    "companyName": "Option Care Health, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-06T14:56:59.935Z",
+    "category": "gainer",
+    "movePercent": 35.97,
+    "slug": "opch-gain-36-percent-fundamental-analysis"
   }
 ]

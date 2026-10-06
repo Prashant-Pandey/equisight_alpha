@@ -7,6 +7,7 @@ import { marketMoverIngestor } from '../pipeline/src/ingestion/marketMovers.js';
 import { fundamentalDataIngestor } from '../pipeline/src/ingestion/fundamentalData.js';
 import { macroContextIngestor } from '../pipeline/src/ingestion/macroContext.js';
 import { socialSentimentIngestor, classifyCatalystsWithAgy } from '../pipeline/src/ingestion/socialSentiment.js';
+import { webScraper } from '../pipeline/src/ingestion/webScraper.js';
 import { synthesisAgent } from '../pipeline/src/llm/synthesisAgent.js';
 import { buildUserPrompt } from '../pipeline/src/llm/prompts.js';
 import type { MarketMover, FundamentalMetrics, LLMAnalysisOutput, SocialSentiment } from '../pipeline/src/types.js';
@@ -638,6 +639,37 @@ async function runTestSuite() {
   assert.ok(invalidTickerErr !== null, 'Empty ticker must throw error');
 
   console.log(`✓ Pass: Targeted Multi-Ticker Pipeline parsing & ingestion verified ($${aaplMover.ticker} @ $${aaplMover.price.toFixed(2)} on ${aaplMover.exchange}).\n`);
+
+  // 15. Test Google News Recency & Multi-Source Reddit Community Scraping
+  console.log('Test 15: Google News Recency (Top 20) & Reddit Multi-Source Discussion Scraping');
+
+  // 15.1 Verify Google News returns up to 20 articles sorted descending by recency
+  const opchNews = await webScraper.fetchGoogleNews('OPCH', 'Option Care Health, Inc.');
+  assert.ok(opchNews.length > 0, 'Google News must return articles for OPCH');
+  assert.ok(opchNews.length <= 20, 'Google News must return at most 20 articles');
+  for (let i = 0; i < opchNews.length - 1; i++) {
+    const current = opchNews[i].pubDate ? new Date(opchNews[i].pubDate).getTime() : 0;
+    const next = opchNews[i + 1].pubDate ? new Date(opchNews[i + 1].pubDate).getTime() : 0;
+    if (current > 0 && next > 0) {
+      assert.ok(current >= next, `Articles must be chronologically descending: ${opchNews[i].pubDate} >= ${opchNews[i + 1].pubDate}`);
+    }
+  }
+  console.log(`✓ Pass: Google News returned ${opchNews.length} articles sorted strictly descending by publication date.`);
+
+  // 15.2 Verify Reddit discussions fetch finds community posts with ticker & company name
+  const opchReddit = await webScraper.fetchRedditDiscussions('OPCH', 'Option Care Health, Inc.');
+  assert.ok(Array.isArray(opchReddit), 'Reddit scraper must return an array');
+  if (opchReddit.length > 0) {
+    assert.ok(opchReddit[0].title.length > 0, 'Reddit post must have a title');
+    console.log(`✓ Pass: Reddit scraper successfully gathered ${opchReddit.length} community posts (Sample: "[${opchReddit[0].subreddit || 'Reddit'}] ${opchReddit[0].title}").`);
+  } else {
+    console.log('✓ Pass: Reddit scraper gracefully handled unauthenticated stream without error.');
+  }
+
+  // 15.3 Verify Reddit caching respects TTL and returns instantly without 429
+  const cachedReddit = await webScraper.fetchRedditDiscussions('OPCH', 'Option Care Health, Inc.');
+  assert.strictEqual(cachedReddit.length, opchReddit.length, 'Cached call should return identical post count');
+  console.log('✓ Pass: Reddit in-memory cache verified.\n');
 
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);

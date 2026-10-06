@@ -41,20 +41,22 @@ export async function fetchWithRetry(url: string, options: RequestOptions = {}):
 
       // Check for Rate Limit (429)
       if (response.status === 429) {
-        const retryAfterHeader = response.headers.get('Retry-After');
-        let delayMs = baseDelayMs * Math.pow(2, attempt) + Math.random() * 500;
-
-        if (retryAfterHeader) {
-          const parsed = parseInt(retryAfterHeader, 10);
-          if (!isNaN(parsed)) {
-            delayMs = parsed * 1000;
-          }
-        }
-
-        console.warn(`[HTTP] Rate limited (429) on ${url}. Retrying attempt ${attempt}/${retries} in ${Math.round(delayMs)}ms...`);
         if (attempt <= retries) {
+          const retryAfterHeader = response.headers.get('Retry-After');
+          let delayMs = baseDelayMs * Math.pow(2, attempt) + Math.random() * 500;
+
+          if (retryAfterHeader) {
+            const parsed = parseInt(retryAfterHeader, 10);
+            if (!isNaN(parsed)) {
+              delayMs = parsed * 1000;
+            }
+          }
+
+          console.warn(`[HTTP] Rate limited (429) on ${url}. Retrying attempt ${attempt}/${retries} in ${Math.round(delayMs)}ms...`);
           await new Promise((res) => setTimeout(res, delayMs));
           continue;
+        } else {
+          console.warn(`[HTTP] Rate limited (429) on ${url}. Retries exhausted (${attempt - 1}/${retries}).`);
         }
       }
 

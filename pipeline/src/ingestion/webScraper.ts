@@ -26,6 +26,7 @@ export interface ScrapedRedditPost {
   author?: string;
   pubDate?: string;
   link?: string;
+  subreddit?: string;
 }
 
 export interface SecQuarterlyEPS {
@@ -154,33 +155,35 @@ async function getYahooAuth(): Promise<{ cookie: string; crumb: string } | null>
   }
 }
 
+// In-memory cache for scraped Reddit discussions to respect Snooserv rate limits
+const redditCache = new Map<string, { timestamp: number; posts: ScrapedRedditPost[] }>();
+const REDDIT_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
 export class WebScraper {
   /**
    * Scrapes live financial news headlines from Google News RSS.
    * Completely open, 0 accounts or paid API keys required.
+   * Parses all feed items and returns the top 20 most recent news articles sorted by publication date descending.
    */
   public async fetchGoogleNews(ticker: string, companyName?: string): Promise<ScrapedNewsArticle[]> {
-    const query = companyName ? `${companyName} ${ticker} stock` : `${ticker} stock`;
+    const cleanTicker = ticker.split('.')[0].toUpperCase();
+    const cleanCompany = companyName
+      ? companyName
+          .replace(/,\s*(Inc\.|Corp\.|Ltd\.|LLC|Co\.|PLC|SA|NV)\.?$/i, '')
+          .replace(/\s+(Inc\.|Corp\.|Corporation|Holdings|Limited|Ltd\.|LLC|Co\.|PLC)\.?$/i, '')
+          .trim()
+      : '';
+    const query = cleanCompany && cleanCompany.toLowerCase() !== cleanTicker.toLowerCase()
+      ? `${cleanCompany} ${cleanTicker} stock`
+      : `${cleanTicker} stock`;
     const url = `https://news.google.com/rss/search?q=${encodeURIComponent(query)}&hl=en-US&gl=US&ceid=US:en`;
 
-    try {
-      const res = await fetchWithRetry(url, {
-        retries: 1,
-        timeoutMs: 6000,
-        headers: {
-          'Accept': 'application/rss+xml, text/xml, */*'
-        }
-      });
-
-      if (!res.ok) {
-        return [];
-      }
-
-      const xml = await res.text();
+    const parseArticles = (xml: string): ScrapedNewsArticle[] => {
       const articles: ScrapedNewsArticle[] = [];
       const itemBlocks = xml.match(/<item>[\s\S]*?<\/item>/g) || [];
+      const seenTitles = new Set<string>();
 
-      for (const block of itemBlocks.slice(0, 6)) {
+      for (const block of itemBlocks) {
         const titleMatch = block.match(/<title>([\s\S]*?)<\/title>/);
         const linkMatch = block.match(/<link>([\s\S]*?)<\/link>/);
         const pubDateMatch = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/);
@@ -192,7 +195,13 @@ export class WebScraper {
             .replace(/&quot;/g, '"')
             .replace(/&amp;/g, '&')
             .replace(/&#39;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
             .trim();
+
+          const normalizedKey = rawTitle.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (seenTitles.has(normalizedKey)) continue;
+          seenTitles.add(normalizedKey);
 
           articles.push({
             title: rawTitle,
@@ -202,8 +211,62 @@ export class WebScraper {
           });
         }
       }
-
       return articles;
+    };
+
+    try {
+      const res = await fetchWithRetry(url, {
+        retries: 1,
+        timeoutMs: 8000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Accept': 'application/rss+xml, application/atom+xml, text/xml, */*'
+        }
+      });
+
+      if (!res.ok) {
+        return [];
+      }
+
+      const xml = await res.text();
+      let articles = parseArticles(xml);
+
+      // If fewer than 20 articles found and cleanCompany was provided, supplement with pure ticker search
+      if (articles.length < 20 && cleanCompany) {
+        try {
+          const fallbackUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(`${cleanTicker} stock`)}&hl=en-US&gl=US&ceid=US:en`;
+          const fbRes = await fetchWithRetry(fallbackUrl, {
+            retries: 1,
+            timeoutMs: 6000,
+            headers: {
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+              'Accept': 'application/rss+xml, text/xml, */*'
+            }
+          });
+          if (fbRes.ok) {
+            const fbXml = await fbRes.text();
+            const existingKeys = new Set(articles.map((a) => a.title.toLowerCase().replace(/[^a-z0-9]/g, '')));
+            for (const item of parseArticles(fbXml)) {
+              const key = item.title.toLowerCase().replace(/[^a-z0-9]/g, '');
+              if (!existingKeys.has(key)) {
+                existingKeys.add(key);
+                articles.push(item);
+              }
+            }
+          }
+        } catch {
+          // Non-critical fallback
+        }
+      }
+
+      // Sort strictly descending by publication date to return the most recent news articles
+      articles.sort((a, b) => {
+        const timeA = a.pubDate ? new Date(a.pubDate).getTime() : 0;
+        const timeB = b.pubDate ? new Date(b.pubDate).getTime() : 0;
+        return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
+      });
+
+      return articles.slice(0, 20);
     } catch (err: any) {
       console.warn(`[WebScraper] Google News scraping failed for ${ticker}: ${err.message}`);
       return [];
@@ -486,44 +549,155 @@ export class WebScraper {
 
   /**
    * Scrapes Reddit public search feed for community discussion.
+   * Searches globally across all financial and investing communities using ticker and company name.
    */
-  public async fetchRedditDiscussions(ticker: string): Promise<ScrapedRedditPost[]> {
+  public async fetchRedditDiscussions(ticker: string, companyName?: string): Promise<ScrapedRedditPost[]> {
     const cleanTicker = ticker.split('.')[0].toUpperCase();
-    const url = `https://www.reddit.com/r/stocks/search.rss?q=${encodeURIComponent(cleanTicker)}&restrict_sr=1&sort=new`;
+    const cleanCompany = companyName
+      ? companyName
+          .replace(/,\s*(Inc\.|Corp\.|Ltd\.|LLC|Co\.|PLC|SA|NV)\.?$/i, '')
+          .replace(/\s+(Inc\.|Corp\.|Corporation|Holdings|Limited|Ltd\.|LLC|Co\.|PLC)\.?$/i, '')
+          .trim()
+      : '';
 
-    try {
-      const res = await fetchWithRetry(url, {
-        retries: 1,
-        timeoutMs: 4000,
-        headers: { 'User-Agent': 'EquiSightBot/1.0 by equisight' }
-      });
+    const isMultiWordCompany = cleanCompany.split(/\s+/).length > 1;
+    const query = isMultiWordCompany && cleanCompany.toLowerCase() !== cleanTicker.toLowerCase()
+      ? `${cleanTicker} OR "${cleanCompany}"`
+      : cleanTicker;
 
-      if (!res.ok) {
-        return [];
+    const cacheKey = `${cleanTicker}::${cleanCompany.toLowerCase()}`;
+    const now = Date.now();
+    const cached = redditCache.get(cacheKey) || redditCache.get(`${cleanTicker}::`);
+    if (cached && now - cached.timestamp < REDDIT_CACHE_TTL_MS && cached.posts.length > 0) {
+      return cached.posts;
+    }
+
+    const isPostRelevant = (title: string): boolean => {
+      // Must contain ticker as whole word or cashtag (e.g. OPCH or $OPCH)
+      const tickerRegex = new RegExp(`(^|[^a-zA-Z0-9])\\$?${cleanTicker}([^a-zA-Z0-9]|$)`, 'i');
+      if (tickerRegex.test(title)) return true;
+
+      // Or multi-word company name (e.g. "Option Care Health")
+      if (isMultiWordCompany && cleanCompany.length >= 4) {
+        const escaped = cleanCompany.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const companyRegex = new RegExp(`\\b${escaped}\\b`, 'i');
+        if (companyRegex.test(title)) return true;
       }
+      return false;
+    };
 
-      const xml = await res.text();
+    const parseEntries = (xml: string): ScrapedRedditPost[] => {
       const posts: ScrapedRedditPost[] = [];
       const entryMatches = xml.match(/<entry>[\s\S]*?<\/entry>/g) || [];
+      const seen = new Set<string>();
 
-      for (const entry of entryMatches.slice(0, 3)) {
+      for (const entry of entryMatches) {
         const titleMatch = entry.match(/<title>([\s\S]*?)<\/title>/);
         const authorMatch = entry.match(/<name>([\s\S]*?)<\/name>/);
         const linkMatch = entry.match(/<link[^>]*href="([\s\S]*?)"/);
+        const publishedMatch = entry.match(/<published>([\s\S]*?)<\/published>/) || entry.match(/<updated>([\s\S]*?)<\/updated>/);
+        const categoryMatch = entry.match(/<category[^>]*term="([\s\S]*?)"/);
 
         if (titleMatch) {
+          const rawTitle = titleMatch[1]
+            .replace(/<!\[CDATA\[|\]\]>/g, '')
+            .replace(/&quot;/g, '"')
+            .replace(/&amp;/g, '&')
+            .replace(/&#39;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .trim();
+
+          if (!isPostRelevant(rawTitle)) continue;
+
+          const link = linkMatch ? linkMatch[1].trim() : undefined;
+          const dedupKey = link || rawTitle.toLowerCase();
+          if (seen.has(dedupKey)) continue;
+          seen.add(dedupKey);
+
+          let subreddit: string | undefined;
+          if (categoryMatch) {
+            const rawCat = categoryMatch[1].trim();
+            subreddit = rawCat.startsWith('r/') ? rawCat : `r/${rawCat}`;
+          } else if (link) {
+            const subMatch = link.match(/\/r\/([a-zA-Z0-9_]+)\//);
+            if (subMatch) subreddit = `r/${subMatch[1]}`;
+          }
+
           posts.push({
-            title: titleMatch[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&'),
-            author: authorMatch ? authorMatch[1] : undefined,
-            link: linkMatch ? linkMatch[1] : undefined
+            title: rawTitle,
+            author: authorMatch ? authorMatch[1].trim() : undefined,
+            link,
+            pubDate: publishedMatch ? publishedMatch[1].trim() : undefined,
+            subreddit
           });
         }
       }
-
       return posts;
-    } catch {
-      return [];
+    };
+
+    const headers = {
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept': 'application/rss+xml, application/atom+xml, text/xml, */*',
+      'Accept-Language': 'en-US,en;q=0.9'
+    };
+
+    // Primary: Global Reddit search RSS (captures all subreddits including r/ValueInvesting, r/stocks, etc.)
+    const primaryUrl = `https://www.reddit.com/search.rss?q=${encodeURIComponent(query)}`;
+
+    let isRateLimited = false;
+    try {
+      const res = await fetchWithRetry(primaryUrl, {
+        retries: 0,
+        timeoutMs: 7000,
+        headers
+      });
+
+      if (res.status === 429) {
+        isRateLimited = true;
+      } else if (res.ok) {
+        const xml = await res.text();
+        const posts = parseEntries(xml);
+        if (posts.length > 0) {
+          const sliced = posts.slice(0, 15);
+          redditCache.set(cacheKey, { timestamp: now, posts: sliced });
+          return sliced;
+        }
+      }
+    } catch (err: any) {
+      console.warn(`[WebScraper] Primary Reddit search failed for ${ticker}: ${err.message}`);
     }
+
+    // Fallback 1: Multi-subreddit financial search (only if not rate limited by Reddit)
+    if (!isRateLimited) {
+      try {
+        const fallbackUrl = `https://www.reddit.com/r/stocks+investing+ValueInvesting+wallstreetbets+SecurityAnalysis+options+SmallCaps/search.rss?q=${encodeURIComponent(cleanTicker)}&restrict_sr=1`;
+        const res = await fetchWithRetry(fallbackUrl, {
+          retries: 0,
+          timeoutMs: 6000,
+          headers
+        });
+
+        if (res.ok) {
+          const xml = await res.text();
+          const posts = parseEntries(xml);
+          if (posts.length > 0) {
+            const sliced = posts.slice(0, 15);
+            redditCache.set(cacheKey, { timestamp: now, posts: sliced });
+            return sliced;
+          }
+        }
+      } catch (err: any) {
+        console.warn(`[WebScraper] Fallback Reddit multi-sub search failed for ${ticker}: ${err.message}`);
+      }
+    }
+
+    // Graceful fallback to existing cached posts if network failed
+    if (cached && cached.posts.length > 0) {
+      return cached.posts;
+    }
+
+    return [];
   }
 
   /**
@@ -627,7 +801,7 @@ export class WebScraper {
       this.fetchGoogleNews(ticker, companyName),
       this.fetchStockTwitsSentiment(ticker),
       this.fetchSecDisclosures(ticker),
-      this.fetchRedditDiscussions(ticker),
+      this.fetchRedditDiscussions(ticker, companyName),
       this.fetchOptionsChain(ticker),
       this.fetchShareStatistics(ticker)
     ]);

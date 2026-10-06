@@ -423,8 +423,9 @@ Return STRICT JSON ONLY:
 
     // Ingest Reddit posts
     for (const post of redditPosts) {
-      if (sampleCatalysts.length < 6) {
-        sampleCatalysts.push(`[Reddit] ${post.title}`);
+      if (sampleCatalysts.length < 10) {
+        const subredditTag = post.subreddit || 'Reddit';
+        sampleCatalysts.push(`[${subredditTag}] ${post.title}`);
       }
       themes.add('Retail Community Flow');
     }
