@@ -32,8 +32,11 @@ export class ReportFileGenerator {
 
     console.log(`[ReportFileGenerator] Writing Astro content file: ${fileName}...`);
 
+    // Clean undefined fields to prevent YAML dump errors
+    const sanitizedFrontmatter = JSON.parse(JSON.stringify(frontmatter));
+
     // Serialize frontmatter and body with gray-matter
-    const fileContent = matter.stringify(content.trim() + '\n', frontmatter);
+    const fileContent = matter.stringify(content.trim() + '\n', sanitizedFrontmatter);
 
     // Write file to disk
     await fs.promises.writeFile(targetPath, fileContent, 'utf-8');

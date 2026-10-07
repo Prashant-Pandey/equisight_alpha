@@ -396,20 +396,20 @@ Return STRICT JSON ONLY:
       if (sampleCatalysts.length < 3) {
         sampleCatalysts.push(`[${article.source}] ${article.title}`);
       }
-      const titleLower = article.title.toLowerCase();
-      if (titleLower.includes('earnings') || titleLower.includes('quarter') || titleLower.includes('revenue')) {
+      const combinedLower = `${article.title} ${article.description || ''}`.toLowerCase();
+      if (combinedLower.includes('earnings') || combinedLower.includes('quarter') || combinedLower.includes('revenue')) {
         themes.add('Financial Disclosures');
       }
-      if (titleLower.includes('upgrade') || titleLower.includes('downgrade') || titleLower.includes('target')) {
+      if (combinedLower.includes('upgrade') || combinedLower.includes('downgrade') || combinedLower.includes('target')) {
         themes.add('Wall Street Revisions');
       }
-      if (titleLower.includes('buyback') || titleLower.includes('dividend') || titleLower.includes('capital')) {
+      if (combinedLower.includes('buyback') || combinedLower.includes('dividend') || combinedLower.includes('capital')) {
         themes.add('Capital Allocation');
       }
-      if (titleLower.includes('fda') || titleLower.includes('trial') || titleLower.includes('phase')) {
+      if (combinedLower.includes('fda') || combinedLower.includes('trial') || combinedLower.includes('phase')) {
         themes.add('Biopharma & Regulatory Catalysts');
       }
-      if (titleLower.includes('offering') || titleLower.includes('dilution') || titleLower.includes('warrant')) {
+      if (combinedLower.includes('offering') || combinedLower.includes('dilution') || combinedLower.includes('warrant')) {
         themes.add('Capital Structure Dilution');
       }
     }
@@ -451,7 +451,7 @@ Return STRICT JSON ONLY:
     }
 
     // Deterministic Price Driver baseline
-    const allText = `${news.map((n) => n.title).join(' ')} ${redditPosts.map((r) => r.title).join(' ')} ${stockTwits.sampleMessages.join(' ')}`.toLowerCase();
+    const allText = `${news.map((n) => `${n.title} ${n.description || ''}`).join(' ')} ${redditPosts.map((r) => r.title).join(' ')} ${stockTwits.sampleMessages.join(' ')}`.toLowerCase();
     let majorPriceDriver = totalSources === 0
       ? (moverContext?.isPennyStock ? 'Micro-Cap Order Flow' : 'General Market Liquidity Flow')
       : 'Institutional Block Flow';
@@ -472,7 +472,11 @@ Return STRICT JSON ONLY:
     let catalystSynthesis: string | undefined;
     let filteredHeadlines: FilteredHeadline[] | undefined;
 
-    const headlinesToAnalyze = news.map((n) => ({ title: n.title, source: n.source }));
+    const headlinesToAnalyze = news.map((n) => ({
+      title: n.title,
+      source: n.source,
+      description: n.description
+    }));
     if (headlinesToAnalyze.length > 0) {
       const priceMove = moverContext?.changePercent ?? 0;
       try {

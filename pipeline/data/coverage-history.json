@@ -547,5 +547,50 @@
     "category": "gainer",
     "movePercent": 35.97,
     "slug": "opch-gain-36-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CEG",
+    "companyName": "Constellation Energy Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-07T04:08:35.895Z",
+    "category": "gainer",
+    "movePercent": 13.54,
+    "slug": "ceg-gain-14-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TLN",
+    "companyName": "Talen Energy Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-06T17:28:10.040Z",
+    "category": "gainer",
+    "movePercent": 13.38673,
+    "slug": "tln-gain-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SYRE",
+    "companyName": "Spyre Therapeutics, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-07T02:43:48.365Z",
+    "category": "loser",
+    "movePercent": -13.373599,
+    "slug": "syre-loss-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "STDN",
+    "companyName": "Standard Nuclear, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-07T02:46:21.987Z",
+    "category": "gainer",
+    "movePercent": 16.7563,
+    "slug": "stdn-gain-17-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "VST",
+    "companyName": "Vistra Corp.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-07T02:47:59.933Z",
+    "category": "gainer",
+    "movePercent": 10.7737,
+    "slug": "vst-gain-11-percent-fundamental-analysis"
   }
 ]

@@ -56,9 +56,59 @@ export interface ManagementQuality {
   trackRecord: string;
 }
 
+export type MoatPillarRating = 'Wide' | 'Narrow' | 'None';
+export type MoatTrend = 'Positive' | 'Stable' | 'Negative';
+export type EconomicMoatRating = 'Wide' | 'Narrow' | 'None';
+
+export interface MoatPillar {
+  rating: MoatPillarRating;
+  substantiation: string;
+}
+
+export interface MoatSources {
+  intangibleAssets: MoatPillar;
+  switchingCosts: MoatPillar;
+  networkEffect: MoatPillar;
+  costAdvantage: MoatPillar;
+  efficientScale: MoatPillar;
+}
+
 export interface CompetitiveMoat {
   rating: string;
+  trend?: MoatTrend;
   summary: string;
+  sources?: MoatSources;
+}
+
+export interface PeerComparisonRow {
+  ticker: string;
+  name: string;
+  marketCap: number;
+  peRatio: number | null;
+  evToEbitda: number | null;
+  moat: string;
+  roic: number | null;
+}
+
+export interface CompetitorBenchmarkingMatrix {
+  peers: PeerComparisonRow[];
+  commentary?: string;
+}
+
+export type UncertaintyRating = 'Low' | 'Medium' | 'High' | 'Very High' | 'Extreme';
+export type StarRating = 1 | 2 | 3 | 4 | 5;
+
+export interface MorningstarStarRatingAnalysis {
+  starRating: StarRating;
+  starRatingString: '★' | '★★' | '★★★' | '★★★★' | '★★★★★';
+  uncertaintyRating: UncertaintyRating;
+  fairValueEstimate: number;
+  currentPrice: number;
+  priceToFairValue: number;
+  fiveStarPrice: number;
+  oneStarPrice: number;
+  requiredMarginOfSafety: number;
+  overvaluationHurdle: number;
 }
 
 export interface CompanyQuestions {
@@ -74,6 +124,13 @@ export interface IndustryQuestions {
   economicPoliticalCulturalRisks: string;
 }
 
+export interface SegmentBreakdownItem {
+  segment: string;
+  revenue?: number;
+  percentage?: number;
+  description?: string;
+}
+
 export interface ValuationModelDCF {
   fairValue?: number | null;
   intrinsicValue?: number | null;
@@ -84,6 +141,16 @@ export interface ValuationModelDCF {
   upsidePercent?: number | null;
   modelName?: string;
   status?: string;
+
+  // Explicit 3-Stage Moat Fade Engine details
+  normalizedFcf?: number;
+  stage1Pv?: number;
+  stage2Pv?: number;
+  stage3Pv?: number;
+  enterpriseValue?: number;
+  equityValue?: number;
+  fadeYears?: number;
+  stage1GrowthRate?: number;
 }
 
 export interface ValuationModelDDM {
@@ -290,6 +357,23 @@ export interface FundamentalMetrics {
   industryQuestions: IndustryQuestions;
   companyDeepDive?: CompanyQuestions;
   industryDeepDive?: IndustryQuestions;
+  businessSummary?: string;
+  segmentRevenueBreakdown?: SegmentBreakdownItem[];
+  sectorDynamics?: {
+    industryCondition: string;
+    obstaclesAndChallenges: string;
+    economicPoliticalCulturalRisks: string;
+  };
+
+  // Competitor Benchmarking & Morningstar Rating Engine
+  competitorBenchmarking?: CompetitorBenchmarkingMatrix;
+  morningstarRating?: MorningstarStarRatingAnalysis;
+  starRating?: StarRating;
+  starRatingString?: string;
+  uncertaintyRating?: UncertaintyRating;
+  fiveStarPrice?: number;
+  oneStarPrice?: number;
+  priceToFairValue?: number;
 
   // Multi-model Valuations
   valuationModels: ValuationModels;
@@ -434,6 +518,23 @@ export interface LLMAnalysisOutput {
   catalystAlignment?: CatalystAlignment;
   catalystSynthesis?: string;
   filteredHeadlines?: FilteredHeadline[];
+  competitorBenchmarking?: CompetitorBenchmarkingMatrix;
+  morningstarRating?: MorningstarStarRatingAnalysis;
+  starRating?: StarRating;
+  starRatingString?: string;
+  uncertaintyRating?: UncertaintyRating;
+  fiveStarPrice?: number;
+  oneStarPrice?: number;
+  priceToFairValue?: number;
+  moatTrend?: MoatTrend;
+  moatSources?: MoatSources;
+  businessSummary?: string;
+  segmentRevenueBreakdown?: SegmentBreakdownItem[];
+  sectorDynamics?: {
+    industryCondition: string;
+    obstaclesAndChallenges: string;
+    economicPoliticalCulturalRisks: string;
+  };
 }
 
 export interface CoverageRecord {
@@ -544,4 +645,23 @@ export interface FinalReportFrontmatter {
   catalystAlignment?: CatalystAlignment;
   catalystSynthesis?: string;
   filteredHeadlines?: FilteredHeadline[];
+
+  // Competitor Benchmarking & Morningstar Rating Engine
+  competitorBenchmarking?: CompetitorBenchmarkingMatrix;
+  morningstarRating?: MorningstarStarRatingAnalysis;
+  starRating?: StarRating;
+  starRatingString?: string;
+  uncertaintyRating?: UncertaintyRating;
+  fiveStarPrice?: number;
+  oneStarPrice?: number;
+  priceToFairValue?: number;
+  moatTrend?: MoatTrend;
+  moatSources?: MoatSources;
+  businessSummary?: string;
+  segmentRevenueBreakdown?: SegmentBreakdownItem[];
+  sectorDynamics?: {
+    industryCondition: string;
+    obstaclesAndChallenges: string;
+    economicPoliticalCulturalRisks: string;
+  };
 }

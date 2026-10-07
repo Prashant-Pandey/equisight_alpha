@@ -16,6 +16,7 @@ import {
 
 export interface ScrapedNewsArticle {
   title: string;
+  description: string;
   source: string;
   pubDate: string;
   link: string;
@@ -80,6 +81,17 @@ export interface SecFinancialDisclosures {
   latest10KFilingDate?: string;
   fiscalYear?: number;
   fiscalYearEnd?: string;
+  businessSummary?: string;
+}
+
+export interface CompanyProfile {
+  businessSummary?: string;
+  sector?: string;
+  industry?: string;
+  fullTimeEmployees?: number;
+  city?: string;
+  state?: string;
+  country?: string;
 }
 
 export interface StockIntelligenceScrapeResult {
@@ -108,12 +120,15 @@ export interface StockIntelligenceScrapeResult {
     sharesShort?: number;
     shortPercentOfFloat?: number;
   } | null;
+  companyProfile?: CompanyProfile | null;
 }
 
 // In-memory cache for SEC company ticker to CIK mapping
 let secTickerCache: Map<string, string> | null = null;
 // In-memory per-ticker cache of parsed SEC disclosures (in-flight promises are shared)
 const secDisclosureCache = new Map<string, Promise<SecFinancialDisclosures | null>>();
+// In-memory per-ticker cache of asset profiles
+const companyProfileCache = new Map<string, CompanyProfile>();
 
 // In-memory cache for Yahoo Finance crumb and session cookie
 let cachedYahooAuth: { cookie: string; crumb: string; timestamp: number } | null = null;
@@ -159,6 +174,34 @@ async function getYahooAuth(): Promise<{ cookie: string; crumb: string } | null>
 const redditCache = new Map<string, { timestamp: number; posts: ScrapedRedditPost[] }>();
 const REDDIT_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes
 
+/**
+ * Strips HTML tags, unwraps CDATA, decodes HTML entities, and normalizes whitespace
+ * to extract pure plain text from RSS descriptions or HTML snippets.
+ */
+export function extractTextFromHtml(raw: string): string {
+  if (!raw) return '';
+  let text = raw.replace(/<!\[CDATA\[|\]\]>/g, '');
+  const decodeEntities = (s: string) =>
+    s
+      .replace(/&quot;/gi, '"')
+      .replace(/&apos;/gi, "'")
+      .replace(/&#39;/gi, "'")
+      .replace(/&#x27;/gi, "'")
+      .replace(/&nbsp;/gi, ' ')
+      .replace(/&#160;/gi, ' ')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&amp;/gi, '&')
+      .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)))
+      .replace(/&#x([0-9a-fA-F]+);/g, (_, h) => String.fromCharCode(parseInt(h, 16)));
+
+  text = decodeEntities(text);
+  text = decodeEntities(text);
+  text = text.replace(/<[^>]*>/g, ' ');
+  text = decodeEntities(text);
+  return text.replace(/\s+/g, ' ').trim();
+}
+
 export class WebScraper {
   /**
    * Scrapes live financial news headlines from Google News RSS.
@@ -185,6 +228,7 @@ export class WebScraper {
 
       for (const block of itemBlocks) {
         const titleMatch = block.match(/<title>([\s\S]*?)<\/title>/);
+        const descMatch = block.match(/<description>([\s\S]*?)<\/description>/);
         const linkMatch = block.match(/<link>([\s\S]*?)<\/link>/);
         const pubDateMatch = block.match(/<pubDate>([\s\S]*?)<\/pubDate>/);
         const sourceMatch = block.match(/<source[^>]*>([\s\S]*?)<\/source>/);
@@ -203,8 +247,12 @@ export class WebScraper {
           if (seenTitles.has(normalizedKey)) continue;
           seenTitles.add(normalizedKey);
 
+          const rawDesc = descMatch ? descMatch[1] : '';
+          const cleanDesc = extractTextFromHtml(rawDesc);
+
           articles.push({
             title: rawTitle,
+            description: cleanDesc,
             source: sourceMatch ? sourceMatch[1].trim() : 'Financial Press',
             pubDate: pubDateMatch ? pubDateMatch[1].trim() : '',
             link: linkMatch ? linkMatch[1].trim() : ''
@@ -539,7 +587,8 @@ export class WebScraper {
         quarterlyEPS,
         latest10KFilingDate: latest10K?.filed,
         fiscalYear: latest10K?.fy,
-        fiscalYearEnd
+        fiscalYearEnd,
+        businessSummary: companyProfileCache.get(cleanTicker)?.businessSummary
       };
     } catch (err: any) {
       console.warn(`[WebScraper] SEC EDGAR lookup failed for ${ticker}: ${err.message}`);
@@ -739,8 +788,8 @@ export class WebScraper {
   }
 
   /**
-   * Fetches authentic float, shares outstanding, and insider/institutional ownership stats.
-   * Completely open, 0 paid API keys.
+   * Fetches share float and insider/institutional ownership metrics from Yahoo quoteSummary.
+   * Also captures full company assetProfile (business summary, sector, employees).
    */
   public async fetchShareStatistics(ticker: string): Promise<{
     floatShares?: number;
@@ -755,7 +804,7 @@ export class WebScraper {
       const auth = await getYahooAuth();
       if (!auth) return null;
 
-      const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(cleanTicker)}?crumb=${encodeURIComponent(auth.crumb)}&modules=defaultKeyStatistics,majorHoldersBreakdown`;
+      const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(cleanTicker)}?crumb=${encodeURIComponent(auth.crumb)}&modules=defaultKeyStatistics,majorHoldersBreakdown,assetProfile`;
       const res = await fetchWithRetry(url, {
         timeoutMs: 5000,
         retries: 1,
@@ -769,6 +818,19 @@ export class WebScraper {
       const data = await res.json();
       const stats = data?.quoteSummary?.result?.[0]?.defaultKeyStatistics;
       const holders = data?.quoteSummary?.result?.[0]?.majorHoldersBreakdown;
+      const profile = data?.quoteSummary?.result?.[0]?.assetProfile;
+
+      if (profile?.longBusinessSummary) {
+        companyProfileCache.set(cleanTicker, {
+          businessSummary: profile.longBusinessSummary,
+          sector: profile.sector,
+          industry: profile.industry,
+          fullTimeEmployees: profile.fullTimeEmployees,
+          city: profile.city,
+          state: profile.state,
+          country: profile.country
+        });
+      }
 
       const floatShares = stats?.floatShares?.raw || stats?.floatShares;
       const sharesOutstanding = stats?.sharesOutstanding?.raw || stats?.sharesOutstanding;
@@ -788,6 +850,85 @@ export class WebScraper {
     } catch {
       return null;
     }
+  }
+
+  public getCachedCompanyProfile(ticker: string): CompanyProfile | undefined {
+    return companyProfileCache.get(ticker.split('.')[0].toUpperCase());
+  }
+
+  public async fetchCompanyProfile(ticker: string): Promise<CompanyProfile | null> {
+    const cleanTicker = ticker.split('.')[0].toUpperCase();
+    if (companyProfileCache.has(cleanTicker)) {
+      return companyProfileCache.get(cleanTicker)!;
+    }
+    try {
+      const auth = await getYahooAuth();
+      if (!auth) return null;
+      const url = `https://query2.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(cleanTicker)}?crumb=${encodeURIComponent(auth.crumb)}&modules=assetProfile`;
+      const res = await fetchWithRetry(url, {
+        timeoutMs: 5000,
+        retries: 1,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          'Cookie': auth.cookie
+        }
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      const profile = data?.quoteSummary?.result?.[0]?.assetProfile;
+      if (profile?.longBusinessSummary) {
+        const compProf: CompanyProfile = {
+          businessSummary: profile.longBusinessSummary,
+          sector: profile.sector,
+          industry: profile.industry,
+          fullTimeEmployees: profile.fullTimeEmployees,
+          city: profile.city,
+          state: profile.state,
+          country: profile.country
+        };
+        companyProfileCache.set(cleanTicker, compProf);
+        return compProf;
+      }
+    } catch {}
+    return null;
+  }
+
+  /**
+   * Fetches real-time price and valuation metrics for peer equities.
+   */
+  public async fetchPeerQuotes(symbols: string[]): Promise<Record<string, { price: number; trailingPE?: number; forwardPE?: number; marketCap?: number }>> {
+    const result: Record<string, { price: number; trailingPE?: number; forwardPE?: number; marketCap?: number }> = {};
+    if (!symbols.length) return result;
+    try {
+      const auth = await getYahooAuth();
+      const cleanSymbols = symbols.map(s => s.trim().toUpperCase()).join(',');
+      const url = auth
+        ? `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(cleanSymbols)}&crumb=${encodeURIComponent(auth.crumb)}`
+        : `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(cleanSymbols)}`;
+      const res = await fetchWithRetry(url, {
+        timeoutMs: 5000,
+        retries: 1,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          ...(auth?.cookie ? { 'Cookie': auth.cookie } : {})
+        }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const list = data?.quoteResponse?.result || [];
+        for (const item of list) {
+          if (item.symbol) {
+            result[item.symbol.toUpperCase()] = {
+              price: item.regularMarketPrice ?? 0,
+              trailingPE: item.trailingPE ? parseFloat(item.trailingPE.toFixed(1)) : undefined,
+              forwardPE: item.forwardPE ? parseFloat(item.forwardPE.toFixed(1)) : undefined,
+              marketCap: item.marketCap ?? 0
+            };
+          }
+        }
+      }
+    } catch {}
+    return result;
   }
 
   /**
@@ -818,6 +959,7 @@ export class WebScraper {
     const redditPosts = redditResult.status === 'fulfilled' ? redditResult.value : [];
     const optionChain = optionResult.status === 'fulfilled' ? optionResult.value : null;
     const shareStats = shareStatsResult.status === 'fulfilled' ? shareStatsResult.value : null;
+    const companyProfile = this.getCachedCompanyProfile(ticker) || null;
 
     console.log(`[WebScraper] Scraped for $${ticker}: ${news.length} news articles, ${stockTwits.totalMessages} StockTwits messages, ${redditPosts.length} Reddit discussions, SEC CIK: ${secDisclosures?.cik || 'N/A'}, Options contracts: ${(optionChain?.calls?.length || 0) + (optionChain?.puts?.length || 0)}, Float: ${shareStats?.floatShares ? `${(shareStats.floatShares / 1e6).toFixed(1)}M` : 'N/A'}`);
 
@@ -828,7 +970,8 @@ export class WebScraper {
       redditPosts,
       secDisclosures,
       optionChain,
-      shareStats
+      shareStats,
+      companyProfile
     };
   }
 }

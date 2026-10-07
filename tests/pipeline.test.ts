@@ -7,7 +7,7 @@ import { marketMoverIngestor } from '../pipeline/src/ingestion/marketMovers.js';
 import { fundamentalDataIngestor } from '../pipeline/src/ingestion/fundamentalData.js';
 import { macroContextIngestor } from '../pipeline/src/ingestion/macroContext.js';
 import { socialSentimentIngestor, classifyCatalystsWithAgy } from '../pipeline/src/ingestion/socialSentiment.js';
-import { webScraper } from '../pipeline/src/ingestion/webScraper.js';
+import { webScraper, extractTextFromHtml } from '../pipeline/src/ingestion/webScraper.js';
 import { synthesisAgent } from '../pipeline/src/llm/synthesisAgent.js';
 import { buildUserPrompt } from '../pipeline/src/llm/prompts.js';
 import type { MarketMover, FundamentalMetrics, LLMAnalysisOutput, SocialSentiment } from '../pipeline/src/types.js';
@@ -643,10 +643,13 @@ async function runTestSuite() {
   // 15. Test Google News Recency & Multi-Source Reddit Community Scraping
   console.log('Test 15: Google News Recency (Top 20) & Reddit Multi-Source Discussion Scraping');
 
-  // 15.1 Verify Google News returns up to 20 articles sorted descending by recency
+  // 15.1 Verify Google News returns up to 20 articles sorted descending by recency with plain-text descriptions
   const opchNews = await webScraper.fetchGoogleNews('OPCH', 'Option Care Health, Inc.');
   assert.ok(opchNews.length > 0, 'Google News must return articles for OPCH');
   assert.ok(opchNews.length <= 20, 'Google News must return at most 20 articles');
+  assert.ok(opchNews.every((a) => typeof a.description === 'string'), 'All Google News articles must have a description string');
+  assert.ok(opchNews.some((a) => a.description.length > 0), 'At least one Google News article must have a non-empty description');
+  assert.ok(opchNews.every((a) => !/<[^>]+>/.test(a.description)), 'Google News descriptions must be stripped of all HTML tags');
   for (let i = 0; i < opchNews.length - 1; i++) {
     const current = opchNews[i].pubDate ? new Date(opchNews[i].pubDate).getTime() : 0;
     const next = opchNews[i + 1].pubDate ? new Date(opchNews[i + 1].pubDate).getTime() : 0;
@@ -654,7 +657,14 @@ async function runTestSuite() {
       assert.ok(current >= next, `Articles must be chronologically descending: ${opchNews[i].pubDate} >= ${opchNews[i + 1].pubDate}`);
     }
   }
-  console.log(`✓ Pass: Google News returned ${opchNews.length} articles sorted strictly descending by publication date.`);
+  console.log(`✓ Pass: Google News returned ${opchNews.length} articles with plain-text descriptions sorted strictly descending by publication date.`);
+
+  // 15.1b Verify extractTextFromHtml extracts only plain text from markup/entities
+  const sampleMarkup = '<description>&lt;a href="https://example.com" target="_blank"&gt;Acme Corp Q3 Earnings Beat &amp; Guidance Raised&lt;/a&gt;&amp;nbsp;&amp;nbsp;&lt;font color="#6f6f6f"&gt;Financial Times&lt;/font&gt;</description>';
+  const extractedText = extractTextFromHtml(sampleMarkup);
+  assert.strictEqual(extractedText, 'Acme Corp Q3 Earnings Beat & Guidance Raised Financial Times');
+  assert.ok(!/<[^>]+>/.test(extractedText), 'Extracted description must not contain HTML tags');
+  console.log(`✓ Pass: extractTextFromHtml successfully extracted pure text without HTML markup.`);
 
   // 15.2 Verify Reddit discussions fetch finds community posts with ticker & company name
   const opchReddit = await webScraper.fetchRedditDiscussions('OPCH', 'Option Care Health, Inc.');
@@ -670,6 +680,86 @@ async function runTestSuite() {
   const cachedReddit = await webScraper.fetchRedditDiscussions('OPCH', 'Option Care Health, Inc.');
   assert.strictEqual(cachedReddit.length, opchReddit.length, 'Cached call should return identical post count');
   console.log('✓ Pass: Reddit in-memory cache verified.\n');
+
+  // 16. Test Morningstar Institutional Equity Research Framework
+  console.log('Test 16: Morningstar Institutional Equity Research Framework Verification');
+
+  // 16.1 Test 5 Moat Pillars & Moat Trend classification
+  console.log('Test 16.1: 5 Economic Moat Pillars & Moat Trend');
+  const enrichedUtilities = fundamentalDataIngestor.enrichFundamentalMetrics({
+    ticker: 'CEG',
+    companyName: 'Constellation Energy Corporation',
+    sector: 'Utilities',
+    industry: 'Independent Power Producers',
+    description: 'Constellation Energy generates clean baseload nuclear and renewable power.',
+    marketCap: 108_000_000_000,
+    peRatioTrailing: 35.5,
+    peRatioForward: 28.0,
+    pegRatio: 2.1,
+    rawPB: 4.8,
+    evToEbitda: 18.2,
+    dividendYield: 0.45,
+    revenueTTM: 24_000_000_000,
+    netIncomeTTM: 2_600_000_000,
+    grossMargin: 32.5,
+    operatingMargin: 19.5,
+    operatingCashFlow: 4_200_000_000,
+    freeCashFlowTTM: 309_000_000, // Lumpy CapEx year ($3.9B CapEx)
+    totalDebt: 24_000_000_000,
+    cashAndEquivalents: 400_000_000,
+    netDebt: 23_600_000_000,
+    debtToEquity: 0.22,
+    currentRatio: 1.15,
+    roic: 11.8,
+    beta: 0.85,
+    fiftyTwoWeekHigh: 320.0,
+    fiftyTwoWeekLow: 115.0,
+    price: 307.32,
+    sharesOutstanding: 354_000_000,
+    revenueGrowthYoY: 12.5
+  });
+
+  assert.ok(enrichedUtilities.competitiveMoat, 'Competitive moat must be present');
+  assert.ok(enrichedUtilities.competitiveMoat.sources, 'Moat sources (5 pillars) must be present');
+  assert.strictEqual(enrichedUtilities.competitiveMoat.sources.intangibleAssets.rating, 'Wide', 'Utilities clean power generation rights should be Wide moat');
+  assert.strictEqual(enrichedUtilities.competitiveMoat.sources.efficientScale.rating, 'Wide', 'Capital-intensive generation fleet should be Wide efficient scale');
+  assert.strictEqual(enrichedUtilities.competitiveMoat.trend, 'Positive', 'Strong YoY revenue growth + high ROIC should classify as Positive trend');
+  assert.strictEqual(enrichedUtilities.competitiveMoat.rating, 'Wide Moat', 'Overall rating should be Wide Moat');
+  console.log('✓ Pass: 5 Moat Pillars & Moat Trend correctly classified (Wide Moat, Positive Trend).');
+
+  // 16.2 Test Competitor Benchmarking Matrix
+  console.log('Test 16.2: Competitor Benchmarking Matrix');
+  assert.ok(enrichedUtilities.competitorBenchmarking, 'Competitor benchmarking matrix must be generated');
+  assert.ok(enrichedUtilities.competitorBenchmarking.peers.length >= 3, 'Must include focal stock + at least 2 peers');
+  const focalRow = enrichedUtilities.competitorBenchmarking.peers[0];
+  assert.strictEqual(focalRow.ticker, 'CEG', 'First row must be focal stock');
+  assert.strictEqual(focalRow.moat, 'Wide Moat', 'Focal row moat rating must match Wide Moat');
+  const peerTickers = enrichedUtilities.competitorBenchmarking.peers.map(p => p.ticker);
+  assert.ok(peerTickers.includes('VST'), 'VST should be in peer universe for CEG');
+  assert.ok(peerTickers.includes('NRG'), 'NRG should be in peer universe for CEG');
+  console.log(`✓ Pass: Competitor Benchmarking Matrix assembled (${peerTickers.join(', ')}).`);
+
+  // 16.3 Test 3-Stage DCF with Moat Fade (Resolution of CEG $4.25 anomaly)
+  console.log('Test 16.3: Refined 3-Stage DCF with Moat Fade');
+  const dcfModel = enrichedUtilities.valuationModels.dcf;
+  assert.ok(dcfModel, 'DCF model must exist');
+  assert.strictEqual(dcfModel.fadeYears, 15, 'Wide Moat should have a 15-year fade horizon');
+  assert.ok(dcfModel.normalizedFcf! > 1e9, 'Normalized FCFF must be smoothed above $1B despite $3.9B lumpy CapEx');
+  assert.ok(dcfModel.stage1Pv! > 0, 'Stage 1 PV must be positive');
+  assert.ok(dcfModel.stage2Pv! > 0, 'Stage 2 PV must be positive');
+  assert.ok(dcfModel.stage3Pv! > 0, 'Stage 3 PV must be positive');
+  assert.ok(dcfModel.enterpriseValue! > 50e9, 'Enterprise value must reflect realistic scale (> $50B)');
+  assert.ok(dcfModel.fairValue! > 100, `DCF Fair Value ($${dcfModel.fairValue}) must NOT collapse to anomalous $4.25`);
+  console.log(`✓ Pass: 3-Stage DCF engine verified (Normalized FCFF: $${(dcfModel.normalizedFcf! / 1e9).toFixed(2)}B, Fade: ${dcfModel.fadeYears}Y, Implied Fair Value: $${dcfModel.fairValue}/share vs $307.32 price).`);
+
+  // 16.4 Test Dynamic Uncertainty & Morningstar Star Rating translation
+  console.log('Test 16.4: Dynamic Uncertainty & Star Rating Translation');
+  assert.strictEqual(enrichedUtilities.uncertaintyRating, 'Low', 'Regulated utility with low beta and low debt/equity should have Low uncertainty');
+  assert.ok(enrichedUtilities.starRating! >= 1 && enrichedUtilities.starRating! <= 5, 'Star rating must be 1 to 5');
+  assert.ok(enrichedUtilities.fiveStarPrice! > 0, '5-Star price hurdle must be positive');
+  assert.ok(enrichedUtilities.oneStarPrice! > enrichedUtilities.fiveStarPrice!, '1-Star price hurdle must be greater than 5-Star price hurdle');
+  assert.ok(enrichedUtilities.morningstarRating, 'Full morningstarRating object must exist');
+  console.log(`✓ Pass: Morningstar Star Rating (${enrichedUtilities.starRatingString}, ${enrichedUtilities.uncertaintyRating} Uncertainty) with 5-Star hurdle $${enrichedUtilities.fiveStarPrice} and 1-Star hurdle $${enrichedUtilities.oneStarPrice} verified.\n`);
 
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);

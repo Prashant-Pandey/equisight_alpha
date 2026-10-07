@@ -237,8 +237,8 @@ export class LLMSynthesisAgent {
     const isPennyStock = mover.isPennyStock ?? (mover.price < 5.0 || mover.exchange === 'NYSE American' || (mover.exchange as string)?.includes('Capital Market'));
     const venue = mover.moneyMarketTradingVenue || (
       mover.exchange === 'NASDAQ' ? 'Nasdaq Capital Market' :
-      mover.exchange === 'NYSE' ? 'NYSE American' :
-      mover.exchange
+        mover.exchange === 'NYSE' ? 'NYSE American' :
+          mover.exchange
     );
 
     const priceTimestamp = formatPriceTimestamp(new Date());
@@ -248,9 +248,9 @@ export class LLMSynthesisAgent {
     const isInflated = s.isArtificiallyInflated ?? (volumeAnomalyRatio > 2.5 && Math.abs(mover.changePercent) > 20);
     const riskLevel: 'Low' | 'Moderate' | 'High' | 'Severe' = s.artificialInflationRisk ?? (
       isInflated ? 'Severe' :
-      volumeAnomalyRatio > 2.0 ? 'High' :
-      volumeAnomalyRatio > 1.5 ? 'Moderate' :
-      'Low'
+        volumeAnomalyRatio > 2.0 ? 'High' :
+          volumeAnomalyRatio > 1.5 ? 'Moderate' :
+            'Low'
     );
     const majorPriceDriver = s.majorPriceDriver || (
       isGainer
@@ -336,8 +336,8 @@ export class LLMSynthesisAgent {
     const currentPBVal = typeof f.priceToBook === 'object' && f.priceToBook !== null
       ? (f.priceToBook as any).current ?? null
       : typeof f.priceToBook === 'number'
-      ? f.priceToBook
-      : null;
+        ? f.priceToBook
+        : null;
     const industryPB = (f as any).priceToBook?.industryAverage ?? (f as any).priceToBookComparison?.industryAverage ?? 2.5;
     const hist5YPB = (f as any).priceToBook?.historicalAverage5Y ?? (f as any).priceToBookComparison?.historicalAverage5Y ?? 2.8;
 
@@ -382,7 +382,9 @@ export class LLMSynthesisAgent {
 
     const competitiveMoat: CompetitiveMoat = {
       rating: (f.competitiveMoat?.rating as any) ?? 'Narrow Moat',
-      summary: f.competitiveMoat?.summary ?? 'Established commercial footprint and domain competencies provide operational durability.'
+      trend: f.competitiveMoat?.trend ?? 'Stable',
+      summary: f.competitiveMoat?.summary ?? 'Established commercial footprint and domain competencies provide operational durability.',
+      sources: f.competitiveMoat?.sources
     };
 
     // 6. 4 Company Questions
@@ -416,14 +418,14 @@ export class LLMSynthesisAgent {
 
     const classification = (f.classification as any) ?? (
       isPennyStock ? 'Speculative Penny Stock' :
-      f.dividendYield > 2 ? 'Income Stock' :
-      'Growth Stock'
+        f.dividendYield > 2 ? 'Income Stock' :
+          'Growth Stock'
     );
 
     const fundamentalRating = f.fundamentalRating ?? (
       consensusUpside !== null && consensusUpside > 15 ? 'Strong' :
-      consensusUpside !== null && consensusUpside < -10 ? 'Weak' :
-      'Fairly Valued'
+        consensusUpside !== null && consensusUpside < -10 ? 'Weak' :
+          'Fairly Valued'
     );
 
     const volatilityIndex = {
@@ -451,10 +453,12 @@ Social discussion velocity around $${cleanTicker} shifted by **+${s.volumeChange
 | :--- | :--- | :--- |
 | **Trading Venue** | \`${venue}\` | ${isPennyStock ? 'Penny Stock (< $5.00 Micro-Cap Tier)' : 'Standard Exchange Listing'} |
 | **Session Movement** | \`${moveStr}\` | Daily volatility threshold |
+| **Morningstar Star Rating** | **${f.starRatingString || '★★★☆☆'}** | **${f.starRating || 3} Stars** (Uncertainty: **${f.uncertaintyRating || 'Medium'}**) |
+| **Consensus Fair Value** | **$${(consensusFairValue ?? 0).toFixed(2)}** | Price / Fair Value: \`${f.priceToFairValue ? f.priceToFairValue.toFixed(2) : '1.00'}x\` (**${verdict}**) |
+| **Economic Moat** | **${competitiveMoat.rating}** | Moat Trend: **${competitiveMoat.trend || 'Stable'}** |
 | **Market Capitalization** | \`$${(f.marketCap / 1e9).toFixed(2)}B\` | Classification: ${classification} |
 | **Trading Volume** | \`${mover.volume.toLocaleString()}\` | Anomaly Ratio: ${volumeAnomalyRatio}x vs 90d avg |
 | **52-Week Range** | \`$${f.fiftyTwoWeekLow.toFixed(2)} - $${f.fiftyTwoWeekHigh.toFixed(2)}\` | Current: $${mover.price.toFixed(2)} |
-| **Fundamental Rating** | \`${fundamentalRating}\` | Consensus Fair Value: ${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)} (${consensusUpside !== null && consensusUpside > 0 ? '+' : ''}${consensusUpside}%)` : 'N/A (Standard Models Inapplicable)'} |
 | **Social Sentiment** | \`${s.bullishPercent}% Bull / ${s.bearishPercent}% Bear\` | Major Driver: ${majorPriceDriver} |
 
 ---
@@ -480,8 +484,8 @@ An evidence-based assessment of ${cleanTicker}'s capital structure reveals an en
 
 ### Debt Structure Breakdown:
 * **Total Debt Load:** $${(totalDebt / 1e6).toFixed(1)} million
-* **Short-Term Debt Obligations:** $${(shortTermDebt / 1e6).toFixed(1)} million (Current liabilities & near-term notes)
-* **Long-Term Debt Obligations:** $${(longTermDebt / 1e6).toFixed(1)} million (Senior notes & extended facilities)
+* **Short-Term Debt Obligations:** $${((shortTermDebt ?? 0) / 1e6).toFixed(1)} million (Current liabilities & near-term notes)
+* **Long-Term Debt Obligations:** $${((longTermDebt ?? 0) / 1e6).toFixed(1)} million (Senior notes & extended facilities)
 * **Short vs Long-Term Debt Ratio:** \`${shortVsLongTermRatio}\`
 * **Recent Changes in Debt:** ${recentChangesInDebt}
 * **Solvency & Credit Risk Audit:** ${debtRisks}
@@ -490,9 +494,9 @@ An evidence-based assessment of ${cleanTicker}'s capital structure reveals an en
 
 ---
 
-## 3. Profitability, Cash Flow & 8-Quarter EPS Trend
+## 3. Profitability, Operating Health & Segment Dynamics
 
-Top-line revenue across the trailing twelve months stands at **$${(f.revenueTTM / 1e9).toFixed(2)} billion**, yielding a consolidated net income of **$${(f.netIncomeTTM / 1e9).toFixed(2)} billion**.
+${f.businessSummary ? `### Business Overview:\n${f.businessSummary}\n` : ''}${f.segmentRevenueBreakdown && f.segmentRevenueBreakdown.length > 0 ? `### 10-K Segment Revenue Breakdown:\n${f.segmentRevenueBreakdown.map(s => `* **${s.segment}**${s.revenue ? `: \`$${(s.revenue / 1e9).toFixed(2)} billion\`` : ''}`).join('\n')}\n` : ''}Top-line revenue across the trailing twelve months stands at **$${(f.revenueTTM / 1e9).toFixed(2)} billion**, yielding a consolidated net income of **$${(f.netIncomeTTM / 1e9).toFixed(2)} billion**.
 
 Operational efficiency metrics demonstrate:
 * **Gross Profit Margin:** \`${f.grossMargin.toFixed(1)}%\`
@@ -525,8 +529,9 @@ ${companyDeepDive.growthAndProfitabilityOutlook}
 
 ---
 
-## 5. Industry Deep Dive: 3 Key Industry Questions
+## 5. Industry Deep Dive & Sector Dynamics
 
+${f.sectorDynamics ? `* **Macro Sector Backdrop:** ${f.sectorDynamics.industryCondition}\n* **Industry Obstacles:** ${f.sectorDynamics.obstaclesAndChallenges}\n* **Regulatory & Policy Risks:** ${f.sectorDynamics.economicPoliticalCulturalRisks}\n` : ''}
 ### Q1: How is the company's industry doing as a whole?
 ${industryDeepDive.industryCondition}
 
@@ -538,22 +543,47 @@ ${industryDeepDive.economicPoliticalCulturalRisks}
 
 ---
 
-## 6. Management Quality & Competitive Moat
+## 6. Management Quality, 5 Moat Pillars & Competitor Benchmarking
 
 * **Management Quality Rating:** **${managementQuality.rating}**
 * **Executive Track Record:** ${managementQuality.trackRecord}
-* **Competitive Moat Rating:** **${competitiveMoat.rating}**
+* **Economic Moat Rating:** **${competitiveMoat.rating}** (Moat Trend: **${competitiveMoat.trend || 'Stable'}**)
 * **Moat Durability Synthesis:** ${competitiveMoat.summary}
+
+### Deconstruction of Economic Moat (5 Morningstar Pillars):
+
+| Moat Pillar | Assessment | Analytical Substantiation |
+| :--- | :--- | :--- |
+| **Intangible Assets** | \`${competitiveMoat.sources?.intangibleAssets.rating || 'None'}\` | ${competitiveMoat.sources?.intangibleAssets.substantiation || 'No material pricing power derived from proprietary patents or regulatory brand equity.'} |
+| **Switching Costs** | \`${competitiveMoat.sources?.switchingCosts.rating || 'None'}\` | ${competitiveMoat.sources?.switchingCosts.substantiation || 'Low operational migration friction for customers switching to substitute providers.'} |
+| **Network Effect** | \`${competitiveMoat.sources?.networkEffect.rating || 'None'}\` | ${competitiveMoat.sources?.networkEffect.substantiation || 'Product value is not fundamentally augmented by the size of the user network.'} |
+| **Cost Advantage** | \`${competitiveMoat.sources?.costAdvantage.rating || 'None'}\` | ${competitiveMoat.sources?.costAdvantage.substantiation || 'Unit production costs remain in line with industry average competitors.'} |
+| **Efficient Scale** | \`${competitiveMoat.sources?.efficientScale.rating || 'None'}\` | ${competitiveMoat.sources?.efficientScale.substantiation || 'Market dynamics allow competitive capacity additions without economic penalty.'} |
+
+### Competitor Benchmarking Matrix:
+
+| Company | Ticker | Market Cap | Trailing P/E | EV/EBITDA | Economic Moat | ROIC |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+${(f.competitorBenchmarking?.peers || []).map(p => `| **${p.name}** | \`${p.ticker}\` | $${(p.marketCap / 1e9).toFixed(1)}B | ${p.peRatio !== null ? `${p.peRatio}x` : 'N/A'} | ${p.evToEbitda !== null ? `${p.evToEbitda}x` : 'N/A'} | ${p.moat} | ${p.roic !== null ? `${p.roic}%` : 'N/A'} |`).join('\n')}
+
+*Peer Benchmark Synthesis:* ${f.competitorBenchmarking?.commentary || 'Relative valuation and competitive positioning evaluated against sector peers.'}
 
 ---
 
-## 7. Multi-Model Valuation Suite (8 Independent Models)
+## 7. Multi-Model Valuation Suite (Refined 3-Stage DCF & Morningstar Star Rating)
+
+### Institutional Morningstar Rating:
+* **Star Rating:** **${f.starRatingString || '★★★☆☆'}** (${f.starRating || 3} Stars)
+* **Uncertainty Rating:** **${f.uncertaintyRating || 'Medium'}**
+* **Price / Fair Value:** \`${f.priceToFairValue ? f.priceToFairValue.toFixed(2) : '1.00'}x\` (Current: $${mover.price.toFixed(2)} vs Fair Value: $${(consensusFairValue ?? 0).toFixed(2)})
+* **5-Star Price Hurdle (Significantly Undervalued):** \`$${f.fiveStarPrice ? f.fiveStarPrice.toFixed(2) : 'N/A'}\`
+* **1-Star Price Hurdle (Significantly Overvalued):** \`$${f.oneStarPrice ? f.oneStarPrice.toFixed(2) : 'N/A'}\`
 
 To eliminate single-model bias, ${cleanTicker}'s intrinsic worth is synthesized across eight independent asset, income, and market valuation methodologies:
 
 | Valuation Methodology | Calculated Fair Value | Implied Upside | Model Assumptions & Parameters |
 | :--- | :--- | :--- | :--- |
-| **1. Discounted Cash Flow (DCF)** | ${dcfIntrinsic !== null ? `\`$${dcfIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${dcfIntrinsic !== null && valuationModels.dcf?.upsidePercent !== null ? `\`${valuationModels.dcf?.upsidePercent}% \`` : '\`Inapplicable\`'} | ${valuationModels.dcf?.status || '10Y projection, 9.5% WACC'} |
+| **1. 3-Stage DCF (Moat Fade)** | ${dcfIntrinsic !== null ? `\`$${dcfIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${dcfIntrinsic !== null && valuationModels.dcf?.upsidePercent !== null ? `\`${valuationModels.dcf?.upsidePercent}% \`` : '\`Inapplicable\`'} | ${valuationModels.dcf?.modelName || '3-stage fade model'} |
 | **2. Dividend Discount Model (DDM)** | ${ddmIntrinsic !== null ? `\`$${ddmIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${ddmIntrinsic !== null && valuationModels.ddm?.upsidePercent !== null ? `\`${valuationModels.ddm?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.ddm?.status || (ddmIntrinsic !== null ? 'Gordon Growth Model' : 'Inapplicable (Zero dividend distribution)')} |
 | **3. Rapid Stock Valuation (PEG)** | ${rapidIntrinsic !== null ? `\`$${rapidIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${rapidIntrinsic !== null && valuationModels.rapidStockValuation?.upsidePercent !== null ? `\`${valuationModels.rapidStockValuation?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.rapidStockValuation?.status || 'Rule of 72 / Quick PEG multiple'} |
 | **4. Relative Peer Multiples** | ${relIntrinsic !== null ? `\`$${relIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${relIntrinsic !== null && valuationModels.relativeValuation?.upsidePercent !== null ? `\`${valuationModels.relativeValuation?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.relativeValuation?.status || `Peer median P/E (${industryPE}x)`} |
@@ -562,6 +592,8 @@ To eliminate single-model bias, ${cleanTicker}'s intrinsic worth is synthesized 
 | **7. Sector Asset Capacity Model** | ${sectorIntrinsic !== null ? `\`$${sectorIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${sectorIntrinsic !== null && valuationModels.industrySpecificModel?.upsidePercent !== null ? `\`${valuationModels.industrySpecificModel?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.industrySpecificModel?.status || 'Sector asset capacity model'} |
 | **8. Excess Return Model (EVA)** | ${excessIntrinsic !== null ? `\`$${excessIntrinsic.toFixed(2)}\`` : '\`N/A\`'} | ${excessIntrinsic !== null && valuationModels.excessReturnModel?.upsidePercent !== null ? `\`${valuationModels.excessReturnModel?.upsidePercent}%\`` : '\`Inapplicable\`'} | ${valuationModels.excessReturnModel?.status || 'Economic Value Added spread'} |
 | **Consensus Fair Value Target** | **${consensusFairValue !== null ? `\`$${consensusFairValue.toFixed(2)}\`` : '\`N/A\`'}** | **${consensusUpside !== null ? `\`${consensusUpside > 0 ? '+' : ''}${consensusUpside}%\`` : '\`N/A\`'}** | **Verdict: ${verdict}** |
+
+*3-Stage DCF Parameters:* Normalized FCFF: \`$${valuationModels.dcf?.normalizedFcf ? (valuationModels.dcf.normalizedFcf / 1e9).toFixed(2) + 'B' : 'N/A'}\` | Moat Fade Duration: \`${valuationModels.dcf?.fadeYears ?? 10} Years\` | Implied Enterprise Value: \`$${valuationModels.dcf?.enterpriseValue ? (valuationModels.dcf.enterpriseValue / 1e9).toFixed(2) + 'B' : 'N/A'}\` | Implied Equity Value: \`$${valuationModels.dcf?.equityValue ? (valuationModels.dcf.equityValue / 1e9).toFixed(2) + 'B' : 'N/A'}\`.
 
 ### Historical & Industry Benchmark Comparison:
 * **Trailing P/E Ratio:** ${currentPEVal ? `${currentPEVal}x` : 'N/A'} (Industry Average: ${industryPE}x | 5Y Historical Avg: ${hist5YPE}x)
@@ -656,18 +688,31 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
       catalystAlignment: alignment,
       catalystSynthesis,
       filteredHeadlines: s.filteredHeadlines,
+      starRating: f.starRating,
+      starRatingString: f.starRatingString,
+      uncertaintyRating: f.uncertaintyRating,
+      fiveStarPrice: f.fiveStarPrice,
+      oneStarPrice: f.oneStarPrice,
+      priceToFairValue: f.priceToFairValue,
+      morningstarRating: f.morningstarRating,
+      competitorBenchmarking: f.competitorBenchmarking,
+      segmentRevenueBreakdown: f.segmentRevenueBreakdown,
+      businessSummary: f.businessSummary,
+      sectorDynamics: f.sectorDynamics,
+      moatSources: f.competitiveMoat?.sources,
+      moatTrend: f.competitiveMoat?.trend,
       socialHooks: {
         twitterThread: [
           `1/3 📊 $${cleanTicker} closed ${moveStr} at $${mover.price.toFixed(2)} on ${venue} (Vol: ${(mover.volume / 1e6).toFixed(1)}M). Fundamental breakdown: 🧵👇`,
-          `2/3 🔍 Multi-model valuation target stands at $${consensusFairValue.toFixed(2)} (${verdict}). TTM Revenue: $${(f.revenueTTM / 1e9).toFixed(1)}B with ${f.operatingMargin.toFixed(1)}% operating margin and $${(f.freeCashFlowTTM / 1e9).toFixed(1)}B FCF.`,
-          `3/3 ⚖️ Balance sheet carries $${(shortTermDebt / 1e6).toFixed(0)}M in short-term debt vs $${(f.cashAndEquivalents / 1e9).toFixed(1)}B cash. Read the full deep dive: ${CONFIG.SITE_URL}/reports/${slug}`
+          `2/3 🔍 Multi-model valuation target stands at $${(consensusFairValue ?? 0).toFixed(2)} (${verdict}). TTM Revenue: $${(f.revenueTTM / 1e9).toFixed(1)}B with ${f.operatingMargin.toFixed(1)}% operating margin and $${(f.freeCashFlowTTM / 1e9).toFixed(1)}B FCF.`,
+          `3/3 ⚖️ Balance sheet carries $${(((shortTermDebt ?? 0) / 1e6)).toFixed(0)}M in short-term debt vs $${(f.cashAndEquivalents / 1e9).toFixed(1)}B cash. Read the full deep dive: ${CONFIG.SITE_URL}/reports/${slug}`
         ],
         redditPost: {
           title: `[Deep Dive] $${cleanTicker}: Fundamental & Balance Sheet Breakdown Following Today's ${moveStr} Move`,
-          bodyMarkdown: `Hey r/stocks,\n\nFollowing today's ${moveStr} move in **${f.companyName} ($${cleanTicker})** on ${venue}, here is an evidence-based fundamental review:\n\n### Key Metrics\n- **Market Cap:** $${(f.marketCap / 1e9).toFixed(2)}B\n- **Classification:** ${classification}\n- **Consensus Fair Value:** $${consensusFairValue.toFixed(2)} (${verdict})\n- **Trailing P/E:** ${currentPEVal ? `${currentPEVal}x` : 'N/A'}\n- **TTM Revenue:** $${(f.revenueTTM / 1e9).toFixed(2)}B\n- **Operating Margin:** ${f.operatingMargin.toFixed(1)}%\n- **TTM Free Cash Flow:** $${(f.freeCashFlowTTM / 1e9).toFixed(2)}B\n- **Total Debt:** $${(totalDebt / 1e9).toFixed(2)}B (Short-Term: $${(shortTermDebt / 1e6).toFixed(1)}M)\n\nFull deep dive: ${CONFIG.SITE_URL}/reports/${slug}\n\n*Educational research only. Not financial advice.*`,
+          bodyMarkdown: `Hey r/stocks,\n\nFollowing today's ${moveStr} move in **${f.companyName} ($${cleanTicker})** on ${venue}, here is an evidence-based fundamental review:\n\n### Key Metrics\n- **Market Cap:** $${(f.marketCap / 1e9).toFixed(2)}B\n- **Classification:** ${classification}\n- **Consensus Fair Value:** $${(consensusFairValue ?? 0).toFixed(2)} (${verdict})\n- **Trailing P/E:** ${currentPEVal ? `${currentPEVal}x` : 'N/A'}\n- **TTM Revenue:** $${(f.revenueTTM / 1e9).toFixed(2)}B\n- **Operating Margin:** ${f.operatingMargin.toFixed(1)}%\n- **TTM Free Cash Flow:** $${(f.freeCashFlowTTM / 1e9).toFixed(2)}B\n- **Total Debt:** $${(totalDebt / 1e9).toFixed(2)}B (Short-Term: $${(((shortTermDebt ?? 0) / 1e6)).toFixed(1)}M)\n\nFull deep dive: ${CONFIG.SITE_URL}/reports/${slug}\n\n*Educational research only. Not financial advice.*`,
           flair: 'DD'
         },
-        telegramAlert: `🚨 **$${cleanTicker} Session Analysis**: ${f.companyName} shifted ${moveStr} to $${mover.price.toFixed(2)} on ${venue}. Consensus Fair Value: $${consensusFairValue.toFixed(2)} (${verdict}). Read report: ${CONFIG.SITE_URL}/reports/${slug}`
+        telegramAlert: `🚨 **$${cleanTicker} Session Analysis**: ${f.companyName} shifted ${moveStr} to $${mover.price.toFixed(2)} on ${venue}. Consensus Fair Value: $${(consensusFairValue ?? 0).toFixed(2)} (${verdict}). Read report: ${CONFIG.SITE_URL}/reports/${slug}`
       }
     };
 

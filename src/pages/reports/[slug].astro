@@ -1,12 +1,5 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import FinancialMetricsTable from '../../components/FinancialMetricsTable.astro';
-import ComplianceDisclaimer from '../../components/ComplianceDisclaimer.astro';
-import AffiliateBanner from '../../components/AffiliateBanner.astro';
-import AdSlot from '../../components/AdSlot.astro';
 import { getCollection, render } from 'astro:content';
-import { path } from '../../utils/paths';
-import { resolveThesisSource } from '../../utils/thesisSource';
 
 export async function getStaticPaths() {
   const reports = await getCollection('reports');
@@ -15,6 +8,14 @@ export async function getStaticPaths() {
     props: { entry }
   }));
 }
+
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FinancialMetricsTable from '../../components/FinancialMetricsTable.astro';
+import ComplianceDisclaimer from '../../components/ComplianceDisclaimer.astro';
+import AffiliateBanner from '../../components/AffiliateBanner.astro';
+import AdSlot from '../../components/AdSlot.astro';
+import { path } from '../../utils/paths';
+import { resolveThesisSource } from '../../utils/thesisSource';
 
 const { entry } = Astro.props;
 
@@ -155,10 +156,18 @@ if (!consensusVerdict) {
   }
 }
 
+const starRating = report.starRating || report.morningstarRating?.starRating || null;
+const starRatingString = report.starRatingString || report.morningstarRating?.starRatingString || (starRating ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating) : null);
+const uncertaintyRating = report.uncertaintyRating || report.morningstarRating?.uncertaintyRating || 'Medium';
+const fiveStarPrice = report.fiveStarPrice || report.morningstarRating?.fiveStarPrice || null;
+const oneStarPrice = report.oneStarPrice || report.morningstarRating?.oneStarPrice || null;
+
 const valuationRows = [
   {
-    name: 'Discounted Cash Flow (DCF)',
-    assumptions: 'WACC 9.2%, Terminal Growth 2.5%, 5Y Free Cash Flow Projections',
+    name: '3-Stage Discounted Cash Flow (Moat Fade)',
+    assumptions: report.valuationModels?.dcf?.fadeYears
+      ? `3-Stage Fade (${report.valuationModels.dcf.fadeYears}Y), Stage 1 Growth ${report.valuationModels.dcf.stage1GrowthRate ?? 5}%, Ke/WACC ${report.valuationModels.dcf.discountRate ?? 8}%, Normalized FCFF $${report.valuationModels.dcf.normalizedFcf ? (report.valuationModels.dcf.normalizedFcf / 1e9).toFixed(2) + 'B' : 'N/A'}`
+      : 'WACC 9.2%, Terminal Growth 2.5%, 5Y Free Cash Flow Projections',
     intrinsicValue: dcf.val !== null ? `$${dcf.val.toFixed(2)}` : 'N/A',
     upside: dcf.upside !== null ? `${dcf.upside >= 0 ? '+' : ''}${dcf.upside}%` : 'N/A',
     isPositive: dcf.isPositive,
@@ -539,14 +548,31 @@ const valuationRows = [
           </p>
         </div>
 
-        <!-- Consensus Target Callout -->
-        <div class="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
-          <div>
-            <div class="text-[10px] font-mono text-slate-400 uppercase">Consensus Fair Value</div>
-            <div class="text-base font-bold font-mono text-white">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</div>
-          </div>
-          <div class={`text-right font-mono font-bold text-xs px-2 py-1 rounded ${isConsensusPositive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60' : 'bg-rose-950 text-rose-400 border border-rose-800/60'}`}>
-            {consensusUpside !== null ? `${isConsensusPositive ? '+' : ''}${consensusUpside}% Spread` : 'N/A'}
+        <!-- Morningstar Star Rating & Consensus Target Callout -->
+        <div class="flex flex-wrap items-center gap-3">
+          {starRatingString && (
+            <div class="px-4 py-2 rounded-xl bg-amber-950/70 border border-amber-500/40 flex items-center gap-3">
+              <div>
+                <div class="text-[10px] font-mono text-amber-400 uppercase tracking-wider">Morningstar Rating</div>
+                <div class="text-base font-bold font-mono text-amber-300">{starRatingString} <span class="text-xs font-normal text-amber-200">({uncertaintyRating})</span></div>
+              </div>
+              {fiveStarPrice && (
+                <div class="text-[11px] font-mono text-slate-300 border-l border-amber-700/60 pl-3">
+                  <div>5★ Buy: <strong class="text-emerald-400">${fiveStarPrice.toFixed(2)}</strong></div>
+                  {oneStarPrice && <div>1★ Sell: <strong class="text-rose-400">${oneStarPrice.toFixed(2)}</strong></div>}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div class="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+            <div>
+              <div class="text-[10px] font-mono text-slate-400 uppercase">Consensus Fair Value</div>
+              <div class="text-base font-bold font-mono text-white">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</div>
+            </div>
+            <div class={`text-right font-mono font-bold text-xs px-2 py-1 rounded ${isConsensusPositive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60' : 'bg-rose-950 text-rose-400 border border-rose-800/60'}`}>
+              {consensusUpside !== null ? `${isConsensusPositive ? '+' : ''}${consensusUpside}% Spread` : 'N/A'}
+            </div>
           </div>
         </div>
       </div>

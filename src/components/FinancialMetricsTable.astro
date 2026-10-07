@@ -99,10 +99,23 @@ const mgmt = data.managementQuality || {};
 const mgmtRating = mgmt.rating || 'Not Rated';
 const trackRecord = mgmt.trackRecord || 'Not Available';
 
-// Competitive Moat
+// Competitive Moat & Morningstar Framework
 const moat = data.competitiveMoat || {};
 const moatRating = moat.rating || 'Not Rated';
 const moatSummary = moat.summary || 'Not Available';
+const moatTrend = data.moatTrend || moat.trend || 'Stable';
+const moatSources = data.moatSources || moat.sources || null;
+
+// Morningstar Star Rating & Uncertainty
+const starRating = data.starRating || data.morningstarRating?.starRating || null;
+const starRatingString = data.starRatingString || data.morningstarRating?.starRatingString || (starRating ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating) : null);
+const uncertaintyRating = data.uncertaintyRating || data.morningstarRating?.uncertaintyRating || 'Medium';
+const fiveStarPrice = data.fiveStarPrice || data.morningstarRating?.fiveStarPrice || null;
+const oneStarPrice = data.oneStarPrice || data.morningstarRating?.oneStarPrice || null;
+const priceToFairValue = data.priceToFairValue || data.morningstarRating?.priceToFairValue || null;
+
+// Competitor Benchmarking Matrix
+const competitorBenchmarking = data.competitorBenchmarking || null;
 
 // Risk Factor
 const riskCategory = riskScore <= 3 ? 'Conservative / Low Risk' : riskScore <= 6 ? 'Core / Moderate Risk' : 'High Risk / Speculative';
@@ -205,6 +218,15 @@ if (hasNegEPS && !hasPosEPS) {
 
     <!-- Rating Badges -->
     <div class="flex flex-wrap items-center gap-2">
+      <!-- Morningstar Star Rating Badge -->
+      {starRatingString && (
+        <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold font-mono bg-amber-950/80 border-amber-500/40 text-amber-300">
+          <span class="text-[10px] uppercase font-sans text-amber-400/80">Rating:</span>
+          <span>{starRatingString}</span>
+          <span class="text-[10px] px-1 rounded bg-amber-900/60 text-amber-200">({uncertaintyRating})</span>
+        </div>
+      )}
+
       <!-- Fundamental Rating Badge -->
       <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold font-mono"
         class:list={[
@@ -632,13 +654,48 @@ if (hasNegEPS && !hasPosEPS) {
       <div>
         <div class="flex items-center justify-between gap-2 mb-2">
           <div class="text-xs font-mono font-bold text-slate-200 whitespace-nowrap max-sm:whitespace-normal">Competitive Moat</div>
-          <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50 whitespace-nowrap">
-            {moatRating}
-          </span>
+          <div class="flex items-center gap-1.5">
+            <span class={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+              moatTrend === 'Positive' ? 'bg-emerald-950 text-emerald-400 border-emerald-800/60' :
+              moatTrend === 'Negative' ? 'bg-rose-950 text-rose-400 border-rose-800/60' :
+              'bg-slate-800 text-slate-300 border-slate-700'
+            }`}>Trend: {moatTrend}</span>
+            <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/50 whitespace-nowrap">
+              {moatRating}
+            </span>
+          </div>
         </div>
-        <p class="text-xs text-slate-400 leading-relaxed mt-2">
+        <p class="text-xs text-slate-400 leading-relaxed mt-2 mb-3">
           {moatSummary}
         </p>
+
+        {moatSources && (
+          <div class="space-y-1.5 pt-2 border-t border-slate-800/80">
+            <div class="text-[10px] font-mono uppercase tracking-wider text-slate-400">5 Moat Sources:</div>
+            <div class="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
+              <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
+                <span class="text-slate-400 text-[10px]">Intangibles:</span>
+                <span class={`font-bold ${moatSources.intangibleAssets?.rating === 'Wide' ? 'text-emerald-400' : moatSources.intangibleAssets?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.intangibleAssets?.rating || 'None'}</span>
+              </div>
+              <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
+                <span class="text-slate-400 text-[10px]">Switching Costs:</span>
+                <span class={`font-bold ${moatSources.switchingCosts?.rating === 'Wide' ? 'text-emerald-400' : moatSources.switchingCosts?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.switchingCosts?.rating || 'None'}</span>
+              </div>
+              <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
+                <span class="text-slate-400 text-[10px]">Network Effect:</span>
+                <span class={`font-bold ${moatSources.networkEffect?.rating === 'Wide' ? 'text-emerald-400' : moatSources.networkEffect?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.networkEffect?.rating || 'None'}</span>
+              </div>
+              <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
+                <span class="text-slate-400 text-[10px]">Cost Advantage:</span>
+                <span class={`font-bold ${moatSources.costAdvantage?.rating === 'Wide' ? 'text-emerald-400' : moatSources.costAdvantage?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.costAdvantage?.rating || 'None'}</span>
+              </div>
+              <div class="col-span-2 flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
+                <span class="text-slate-400 text-[10px]">Efficient Scale:</span>
+                <span class={`font-bold ${moatSources.efficientScale?.rating === 'Wide' ? 'text-emerald-400' : moatSources.efficientScale?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.efficientScale?.rating || 'None'}</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
         Economic Barrier to Entry Rating
@@ -669,6 +726,73 @@ if (hasNegEPS && !hasPosEPS) {
       </div>
     </div>
   </div>
+
+  <!-- Section 7B: Competitor Benchmarking Matrix -->
+  {competitorBenchmarking && competitorBenchmarking.peers && competitorBenchmarking.peers.length > 0 && (
+    <div class="p-4 sm:p-5 rounded-xl border border-slate-800 bg-slate-950/40">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800/80">
+        <div>
+          <div class="text-xs font-mono font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <span>Competitor Benchmarking Matrix</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/60">
+              Sector Peer Universe
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-0.5">
+            Cross-sectional comparison of valuation multiples, competitive economic moat, and capital efficiency.
+          </p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead>
+            <tr class="border-b border-slate-800 text-slate-400">
+              <th class="py-2 px-3">Company</th>
+              <th class="py-2 px-3">Ticker</th>
+              <th class="py-2 px-3">Market Cap</th>
+              <th class="py-2 px-3">Trailing P/E</th>
+              <th class="py-2 px-3">EV / EBITDA</th>
+              <th class="py-2 px-3">Moat Rating</th>
+              <th class="py-2 px-3">ROIC</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 text-slate-200">
+            {competitorBenchmarking.peers.map((peer: any, idx: number) => (
+              <tr class={idx === 0 ? "bg-indigo-950/30 font-semibold" : "hover:bg-slate-900/40"}>
+                <td class="py-2.5 px-3 flex items-center gap-1.5">
+                  {idx === 0 && <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>}
+                  <span>{peer.name}</span>
+                </td>
+                <td class="py-2.5 px-3 text-indigo-400 font-bold">{peer.ticker}</td>
+                <td class="py-2.5 px-3">{formatCurrency(peer.marketCap)}</td>
+                <td class="py-2.5 px-3">{peer.peRatio !== null && peer.peRatio !== undefined ? `${Number(peer.peRatio).toFixed(1)}x` : 'N/A'}</td>
+                <td class="py-2.5 px-3">{peer.evToEbitda !== null && peer.evToEbitda !== undefined ? `${Number(peer.evToEbitda).toFixed(1)}x` : 'N/A'}</td>
+                <td class="py-2.5 px-3">
+                  <span class={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                    peer.moat === 'Wide Moat' || peer.moat === 'Wide' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' :
+                    peer.moat === 'Narrow Moat' || peer.moat === 'Narrow' ? 'bg-sky-950 text-sky-400 border border-sky-800/50' :
+                    'bg-slate-800 text-slate-400 border border-slate-700'
+                  }`}>
+                    {peer.moat}
+                  </span>
+                </td>
+                <td class="py-2.5 px-3 font-semibold text-slate-300">
+                  {peer.roic !== null && peer.roic !== undefined ? `${Number(peer.roic).toFixed(1)}%` : 'N/A'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {competitorBenchmarking.commentary && (
+        <div class="mt-3 text-[11px] text-slate-400 bg-slate-900/60 p-2.5 rounded border border-slate-800">
+          <strong class="text-slate-300 font-mono">Peer Synthesis:</strong> {competitorBenchmarking.commentary}
+        </div>
+      )}
+    </div>
+  )}
 
   <!-- Section 8: Artificial Inflation Analysis & Volume Integrity Audit -->
   <div class="p-4 sm:p-5 rounded-xl border border-slate-800 bg-slate-950/40">

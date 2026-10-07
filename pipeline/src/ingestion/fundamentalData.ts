@@ -7,7 +7,13 @@ import {
   CAPITAL_MARKET,
   normalizeSector,
   sectorFromSic,
-  rateAdjustmentFactor
+  rateAdjustmentFactor,
+  getSectorDynamics,
+  getPeersForTicker,
+  calculateMorningstarRating,
+  determineUncertaintyRating,
+  type SectorDynamics,
+  type PeerProfile
 } from './valuationBenchmarks.js';
 import type {
   FundamentalMetrics,
@@ -18,14 +24,60 @@ import type {
   CashFlowBreakdown,
   ManagementQuality,
   CompetitiveMoat,
+  MoatSources,
+  MoatPillar,
+  MoatPillarRating,
+  MoatTrend,
   CompanyQuestions,
   IndustryQuestions,
   ValuationModels,
-  MacroBackdrop
+  MacroBackdrop,
+  CompetitorBenchmarkingMatrix,
+  PeerComparisonRow,
+  MorningstarStarRatingAnalysis,
+  SegmentBreakdownItem,
+  StarRating,
+  UncertaintyRating
 } from '../types.js';
 
 const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
 const pctOf = (part: number, whole: number): number => Math.round((part / whole) * 100);
+
+export function extractSegmentBreakdown(text?: string, revenueTTM?: number): SegmentBreakdownItem[] {
+  if (!text) return [];
+  const segments: SegmentBreakdownItem[] = [];
+
+  // Pattern 1: "operates through [X] segments: [A], [B], and [C]"
+  const segMatch = text.match(/(?:operates through|consists of|organized into|divided into)\s+(?:two|three|four|five|six|seven|\d+)?\s*segments?:\s*([^.]+)/i);
+  if (segMatch && segMatch[1]) {
+    const rawSegs = segMatch[1]
+      .split(/,\s*|\s+and\s+/i)
+      .map(s => s.trim().replace(/^and\s+/i, ''))
+      .filter(s => s.length > 2 && s.length < 50);
+
+    for (const seg of rawSegs) {
+      segments.push({ segment: seg });
+    }
+  }
+
+  // Pattern 2: "offers [A], [B], and [C]"
+  if (segments.length === 0) {
+    const offerMatch = text.match(/(?:offers|products include|portfolio includes)\s+([^.]+)/i);
+    if (offerMatch && offerMatch[1]) {
+      const items = offerMatch[1]
+        .split(/,\s*|\s+and\s+/i)
+        .map(s => s.trim().replace(/^and\s+/i, ''))
+        .filter(s => s.length > 2 && s.length < 50)
+        .slice(0, 5);
+
+      for (const it of items) {
+        segments.push({ segment: it });
+      }
+    }
+  }
+
+  return segments;
+}
 
 export class FundamentalDataIngestor {
   /**
@@ -145,12 +197,33 @@ export class FundamentalDataIngestor {
     const sector = screenerQuote?.sector || (secData?.sic ? sectorFromSic(secData.sic) : 'General Equities');
     const industry = screenerQuote?.industry || secData?.sicDescription || 'Public Equities';
 
+    // Ingest authentic company business description from Yahoo assetProfile or SEC disclosures
+    let profile = webScraper.getCachedCompanyProfile(cleanTicker);
+    if (!profile) {
+      try {
+        profile = await webScraper.fetchCompanyProfile(cleanTicker) || undefined;
+      } catch {}
+    }
+    const businessSummary = profile?.businessSummary || secData?.businessSummary;
+    const description = businessSummary || `${name} is an equity security publicly traded on major financial markets operating in the ${sector} sector (${industry}).`;
+    const segmentRevenueBreakdown = extractSegmentBreakdown(businessSummary, revenueTTM);
+
+    // Fetch peer live metrics for competitor benchmarking matrix
+    const peerTickers = getPeersForTicker(cleanTicker, sector).map(p => p.ticker);
+    let peerData: Record<string, any> = {};
+    try {
+      peerData = await webScraper.fetchPeerQuotes(peerTickers);
+    } catch {}
+
     return this.enrichFundamentalMetrics({
       ticker: cleanTicker,
       companyName: name,
       sector,
       industry,
-      description: `${name} is an equity security publicly traded on major financial markets.`,
+      description,
+      businessSummary,
+      segmentRevenueBreakdown,
+      peerData,
       marketCap,
       peRatioTrailing,
       peRatioForward,
@@ -202,6 +275,9 @@ export class FundamentalDataIngestor {
     sector: string;
     industry: string;
     description: string;
+    businessSummary?: string;
+    segmentRevenueBreakdown?: SegmentBreakdownItem[];
+    peerData?: Record<string, any>;
     marketCap: number;
     peRatioTrailing: number | null;
     peRatioForward: number | null;
@@ -374,7 +450,7 @@ export class FundamentalDataIngestor {
       status: cashFlowStatus
     };
 
-    // 7. Management Quality & Competitive Moat
+    // 7. Management Quality & Competitive Moat (Deconstructed into 5 Morningstar Pillars + Trend)
     const managementQuality: ManagementQuality = {
       rating: isPenny ? 'Speculative' : 'Established',
       trackRecord: isPenny
@@ -382,47 +458,209 @@ export class FundamentalDataIngestor {
         : 'Management team with operational track record navigating sector cycles.'
     };
 
-    const competitiveMoat: CompetitiveMoat = {
-      rating: isPenny ? 'None' : 'Narrow Moat',
-      summary: isPenny
-        ? 'Limited enterprise switching barriers; operations exposed to commodity pricing or commercial adoption velocity.'
-        : 'Established customer relationships and domain expertise provide baseline commercial continuity.'
+    const normSector = normalizeSector(raw.sector);
+    let moatTrend: MoatTrend = 'Stable';
+    if (raw.revenueGrowthYoY !== null && raw.revenueGrowthYoY !== undefined) {
+      if (raw.revenueGrowthYoY > 8 && (computedRoic === null || computedRoic > 10)) {
+        moatTrend = 'Positive';
+      } else if (raw.revenueGrowthYoY < -5 || (computedRoic !== null && computedRoic < 4)) {
+        moatTrend = 'Negative';
+      }
+    }
+
+    let intangiblesRating: MoatPillarRating = 'None';
+    let intangiblesDesc = 'No material pricing power derived from proprietary patents or regulatory brand equity.';
+    let switchingRating: MoatPillarRating = 'None';
+    let switchingDesc = 'Low operational migration friction for customers switching to substitute providers.';
+    let networkRating: MoatPillarRating = 'None';
+    let networkDesc = 'Product value is not fundamentally augmented by the size of the user network.';
+    let costAdvantageRating: MoatPillarRating = 'None';
+    let costAdvantageDesc = 'Unit production costs remain in line with industry average competitors.';
+    let efficientScaleRating: MoatPillarRating = 'None';
+    let efficientScaleDesc = 'Market dynamics allow competitive capacity additions without economic penalty.';
+
+    if (!isPenny) {
+      // 1. Intangible Assets: Patents, brands, regulatory licenses
+      if (['Technology', 'Healthcare', 'Consumer Defensive'].includes(normSector)) {
+        if (raw.grossMargin > 55 || (computedRoic && computedRoic > 15)) {
+          intangiblesRating = 'Wide';
+          intangiblesDesc = `Proprietary intellectual property, protected clinical pipelines, or brand equity enabling sustained premium pricing (Gross Margin: ${raw.grossMargin}%).`;
+        } else if (raw.grossMargin > 40) {
+          intangiblesRating = 'Narrow';
+          intangiblesDesc = 'Recognized commercial brand or defensible specialized domain know-how providing steady market share.';
+        }
+      } else if (normSector === 'Utilities') {
+        intangiblesRating = 'Wide';
+        intangiblesDesc = 'Exclusive long-term regulatory operating licenses, clean energy generation rights, and multi-decade commercial PPA agreements.';
+      } else if (normSector === 'Financial Services') {
+        intangiblesRating = 'Narrow';
+        intangiblesDesc = 'Chartered institutional licenses, trust brand, and embedded fiduciary customer relationships.';
+      }
+
+      // 2. Switching Costs
+      if (['Technology', 'Financial Services', 'Healthcare'].includes(normSector)) {
+        if (raw.operatingMargin > 20 || (computedRoic && computedRoic > 12)) {
+          switchingRating = 'Wide';
+          switchingDesc = 'High enterprise integration friction, mission-critical operational workflows, and severe data migration failure risks.';
+        } else {
+          switchingRating = 'Narrow';
+          switchingDesc = 'Contractual commitments and client operational onboarding create moderate frictional switching hurdles.';
+        }
+      } else if (normSector === 'Industrials') {
+        if (raw.operatingMargin > 12) {
+          switchingRating = 'Narrow';
+          switchingDesc = 'Specialized machinery, parts supply contracts, and proprietary servicing ecosystems deter provider switching.';
+        }
+      }
+
+      // 3. Network Effect
+      if (['Communication Services', 'Technology', 'Financial Services'].includes(normSector)) {
+        if (raw.operatingMargin > 25 && raw.marketCap > 50_000_000_000) {
+          networkRating = 'Wide';
+          networkDesc = 'Robust two-sided market dynamics where aggregate platform utility expands exponentially with user base.';
+        } else if (raw.operatingMargin > 15 && raw.marketCap > 10_000_000_000) {
+          networkRating = 'Narrow';
+          networkDesc = 'Platform connectivity drives measurable user lock-in and localized liquidity advantages.';
+        }
+      }
+
+      // 4. Cost Advantage
+      if (['Energy', 'Utilities', 'Basic Materials', 'Consumer Defensive', 'Industrials'].includes(normSector)) {
+        if (raw.operatingMargin > 18 || (raw.revenueTTM > 10_000_000_000 && raw.grossMargin > 30)) {
+          costAdvantageRating = 'Wide';
+          costAdvantageDesc = 'Structural unit cost leadership via favorable baseload asset location, proprietary resource access, or massive scale.';
+        } else if (raw.operatingMargin > 10) {
+          costAdvantageRating = 'Narrow';
+          costAdvantageDesc = 'Scale efficiencies and optimized supply-chain logistics provide baseline unit cost advantages over sub-scale peers.';
+        }
+      }
+
+      // 5. Efficient Scale
+      if (['Utilities', 'Energy', 'Real Estate', 'Industrials'].includes(normSector)) {
+        if (normSector === 'Utilities' || (normSector === 'Energy' && raw.industry.toLowerCase().includes('pipeline'))) {
+          efficientScaleRating = 'Wide';
+          efficientScaleDesc = 'Natural regional oligopoly / geographic monopoly where capital intensity renders duplicate competitive infrastructure economically unviable.';
+        } else if (raw.marketCap > 15_000_000_000) {
+          efficientScaleRating = 'Narrow';
+          efficientScaleDesc = 'Capital-intensive asset base and localized capacity limits deter new market entrants from diluting returns.';
+        }
+      }
+    }
+
+    const moatSources: MoatSources = {
+      intangibleAssets: { rating: intangiblesRating, substantiation: intangiblesDesc },
+      switchingCosts: { rating: switchingRating, substantiation: switchingDesc },
+      networkEffect: { rating: networkRating, substantiation: networkDesc },
+      costAdvantage: { rating: costAdvantageRating, substantiation: costAdvantageDesc },
+      efficientScale: { rating: efficientScaleRating, substantiation: efficientScaleDesc }
     };
 
-    // 8. Key Company & Industry Questions
+    const wideCount = [intangiblesRating, switchingRating, networkRating, costAdvantageRating, efficientScaleRating].filter(r => r === 'Wide').length;
+    const narrowCount = [intangiblesRating, switchingRating, networkRating, costAdvantageRating, efficientScaleRating].filter(r => r === 'Narrow').length;
+
+    let overallMoatRating = 'None';
+    if (!isPenny) {
+      if (wideCount >= 1 || (narrowCount >= 2 && (computedRoic ?? 10) > 8)) {
+        overallMoatRating = 'Wide Moat';
+      } else if (narrowCount >= 1 || (computedRoic !== null && computedRoic > 9)) {
+        overallMoatRating = 'Narrow Moat';
+      }
+    }
+
+    const competitiveMoat: CompetitiveMoat = {
+      rating: overallMoatRating,
+      trend: moatTrend,
+      summary: isPenny
+        ? 'Limited enterprise switching barriers; operations exposed to commodity pricing or commercial adoption velocity.'
+        : overallMoatRating === 'Wide Moat'
+          ? `Structural competitive advantages driven by ${wideCount >= 1 ? 'durable economic moat pillars' : 'high barrier to entry'} and defensible market position.`
+          : overallMoatRating === 'Narrow Moat'
+            ? 'Established customer relationships, localized scale, and specialized operations provide baseline commercial protection.'
+            : 'Minimal competitive barriers; subject to industry cyclicality and pricing pressures.',
+      sources: moatSources
+    };
+
+    // 8. Key Company & Industry Questions (Enriched with business description, segment breakdown, and sector dynamics)
+    const sectorDynamicsInfo = getSectorDynamics(raw.sector);
+    const sectorDynamics = {
+      industryCondition: sectorDynamicsInfo.industryCondition,
+      obstaclesAndChallenges: sectorDynamicsInfo.obstaclesAndChallenges,
+      economicPoliticalCulturalRisks: sectorDynamicsInfo.economicPoliticalCulturalRisks
+    };
+
+    const segmentText = (raw.segmentRevenueBreakdown && raw.segmentRevenueBreakdown.length > 0)
+      ? ` Core reporting segments include: ${raw.segmentRevenueBreakdown.map(s => s.segment).join(', ')}.`
+      : '';
+
     const companyQuestions: CompanyQuestions = {
-      howCompanyMakesMoney: `${raw.companyName} provides products and services in the ${raw.sector} sector.`,
-      productsDemandAndWhy: `Customer demand is driven by commercial operational requirements within ${raw.industry}.`,
-      pastPerformanceSummary: `Historical performance reflects operating conditions across recent fiscal reporting periods.`,
-      growthAndProfitabilityOutlook: `Future trajectory is tied to commercial execution, cost control, and market demand.`
+      howCompanyMakesMoney: raw.businessSummary
+        ? `${raw.businessSummary.slice(0, 320)}...${segmentText}`
+        : `${raw.companyName} generates commercial revenue within the ${raw.sector} sector (${raw.industry}).${segmentText}`,
+      productsDemandAndWhy: `Demand for ${raw.companyName}'s offerings is anchored in enterprise and consumer utilization across ${raw.industry}. Sustainable demand relies on ${wideCount > 0 ? 'durable structural moat advantages' : 'operational execution and competitive market positioning'}.`,
+      pastPerformanceSummary: `Reported TTM Revenue of $${(raw.revenueTTM / 1e9).toFixed(2)}B with Operating Margin of ${raw.operatingMargin}% and ROIC of ${roic !== null ? roic + '%' : 'N/A'}. Debt-to-Equity stands at ${raw.debtToEquity ?? 'N/A'}x.`,
+      growthAndProfitabilityOutlook: `Forward performance hinges on sector tailwinds in ${raw.industry}, management capital allocation discipline, and maintaining return spreads above the estimated WACC of ${pct1(wacc)}%.`
     };
 
     const industryQuestions: IndustryQuestions = {
-      industryCondition: `The ${raw.industry} sector operates under prevailing monetary policy and macroeconomic demand trends.`,
-      obstaclesAndChallenges: `Key sector obstacles include interest rate sensitivity, competitive pricing, and regulatory compliance.`,
-      economicPoliticalCulturalRisks: `Exposures include broader economic growth cycles and monetary policy decisions.`
+      industryCondition: sectorDynamicsInfo.industryCondition,
+      obstaclesAndChallenges: sectorDynamicsInfo.obstaclesAndChallenges,
+      economicPoliticalCulturalRisks: sectorDynamicsInfo.economicPoliticalCulturalRisks
     };
 
     // 9. Multi-Model Valuation Suite (Strict Financial Formulas, Macro-linked & Sector-tailored)
     const baseVal = Math.max(0.01, estPrice);
 
-    // DCF: Dynamic discount rate (R_f + β × ERP) and revenue-growth linked cash flow projections
+    // Refined 3-Stage DCF Model with Morningstar Moat Fade:
+    // Stage I (Explicit 5Y Forecast): Uses normalized FCFF and explicit growth.
+    // Stage II (Moat Fade Period): Fades growth towards terminal levels (Wide: 15Y, Narrow: 10Y, None: 5Y).
+    // Stage III (Perpetuity): Terminal value discounted to Year 0.
+    // Enterprise Value = Stage I PV + Stage II PV + Stage III PV. Equity Value = EV - Net Debt.
     let dcfFair: number | null = null;
     let dcfUpside: number | null = null;
-    const dcfDiscountRate = costOfEquity;
-    const projGrowth = raw.revenueGrowthYoY !== null && raw.revenueGrowthYoY !== undefined && raw.revenueGrowthYoY > 0
-      ? clamp(raw.revenueGrowthYoY / 100, 0.02, 0.15)
-      : 0.04;
+    let stage1Pv = 0;
+    let stage2Pv = 0;
+    let stage3Pv = 0;
+    let enterpriseValue = 0;
+    let equityValue = 0;
+    const fadeYears = overallMoatRating === 'Wide Moat' ? 15 : overallMoatRating === 'Narrow Moat' ? 10 : 5;
+    const dcfDiscountRate = Math.max(terminalGrowth + 0.02, wacc);
+    const stage1GrowthRate = raw.revenueGrowthYoY !== null && raw.revenueGrowthYoY !== undefined && raw.revenueGrowthYoY > 0
+      ? clamp(raw.revenueGrowthYoY / 100, 0.03, 0.14)
+      : 0.05;
 
-    if (freeCashFlow > 0 && shares > 0 && dcfDiscountRate > terminalGrowth) {
-      let pv = 0;
-      let projFCF = freeCashFlow;
+    // Normalize FCFF to prevent one-off CapEx lumpiness from distorting fair value
+    const normalizedFcf = operatingCashFlow > 0
+      ? Math.max(
+          raw.freeCashFlowTTM > 0 ? raw.freeCashFlowTTM : operatingCashFlow * 0.35,
+          operatingCashFlow * 0.35,
+          (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0)
+        )
+      : (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0);
+
+    if (normalizedFcf > 0 && shares > 0 && dcfDiscountRate > terminalGrowth) {
+      // Stage 1: Explicit 5-year forecast
+      let currentFcf = normalizedFcf;
       for (let t = 1; t <= 5; t++) {
-        projFCF *= (1 + projGrowth);
-        pv += projFCF / Math.pow(1 + dcfDiscountRate, t);
+        currentFcf *= (1 + stage1GrowthRate);
+        stage1Pv += currentFcf / Math.pow(1 + dcfDiscountRate, t);
       }
-      const tv = (projFCF * (1 + terminalGrowth)) / (dcfDiscountRate - terminalGrowth);
-      const val = parseFloat((pv / shares).toFixed(2));
+
+      // Stage 2: Fade Period (fade from stage1GrowthRate to terminalGrowth)
+      for (let f = 1; f <= fadeYears; f++) {
+        const t = 5 + f;
+        const fadeWeight = f / (fadeYears + 1);
+        const fadedGrowth = stage1GrowthRate * (1 - fadeWeight) + terminalGrowth * fadeWeight;
+        currentFcf *= (1 + fadedGrowth);
+        stage2Pv += currentFcf / Math.pow(1 + dcfDiscountRate, t);
+      }
+
+      // Stage 3: Terminal Value in Perpetuity
+      const tv = (currentFcf * (1 + terminalGrowth)) / (dcfDiscountRate - terminalGrowth);
+      stage3Pv = tv / Math.pow(1 + dcfDiscountRate, 5 + fadeYears);
+
+      enterpriseValue = stage1Pv + stage2Pv + stage3Pv;
+      equityValue = Math.max(shares * 1.0, enterpriseValue - raw.netDebt);
+      const val = parseFloat((equityValue / shares).toFixed(2));
       if (val > 0) {
         dcfFair = val;
         dcfUpside = parseFloat((((dcfFair - baseVal) / baseVal) * 100).toFixed(1));
@@ -597,6 +835,42 @@ export class FundamentalDataIngestor {
       verdict = isPenny ? 'Speculative Penny Stock / Fundamentals Inapplicable' : 'Inconclusive / Data Limited';
     }
 
+    // Competitor Benchmarking Matrix (Focal stock + 2-3 sector peers)
+    const peerProfiles = getPeersForTicker(raw.ticker, raw.sector);
+    const peerRows: PeerComparisonRow[] = [
+      {
+        ticker: raw.ticker,
+        name: raw.companyName,
+        marketCap: raw.marketCap,
+        peRatio: currentPE,
+        evToEbitda: raw.evToEbitda,
+        moat: competitiveMoat.rating,
+        roic: roic
+      }
+    ];
+
+    for (const p of peerProfiles) {
+      const liveP = raw.peerData?.[p.ticker];
+      peerRows.push({
+        ticker: p.ticker,
+        name: p.name,
+        marketCap: liveP?.marketCap ?? p.defaultMarketCap,
+        peRatio: liveP?.peTrailing ?? p.defaultPe,
+        evToEbitda: liveP?.evToEbitda ?? p.defaultEvEbitda,
+        moat: p.moatRating,
+        roic: liveP?.roic ?? p.defaultRoic
+      });
+    }
+
+    const competitorBenchmarking: CompetitorBenchmarkingMatrix = {
+      peers: peerRows,
+      commentary: `${raw.companyName} trades at ${currentPE ? currentPE + 'x P/E' : 'unreported P/E'} against peer group medians, supported by a ${competitiveMoat.rating} classification.`
+    };
+
+    // Morningstar Star Rating & Uncertainty Analysis
+    const uncertaintyRating = determineUncertaintyRating(raw.sector, raw.beta, raw.debtToEquity, isPenny);
+    const morningstarRating = calculateMorningstarRating(baseVal, consensusFairValue, uncertaintyRating);
+
     const valuationModels: ValuationModels = {
       dcf: {
         fairValue: dcfFair,
@@ -606,8 +880,16 @@ export class FundamentalDataIngestor {
         terminalGrowth: pct1(terminalGrowth),
         upside: dcfUpside,
         upsidePercent: dcfUpside,
-        modelName: `Discounted Free Cash Flow (10Y Horizon, Ke: ${pct1(dcfDiscountRate)}%)`,
-        status: dcfFair !== null ? 'Calculated' : 'Inapplicable: Non-positive free cash flow'
+        modelName: `3-Stage Discounted Cash Flow (Moat Fade: ${fadeYears}Y, Ke/WACC: ${pct1(dcfDiscountRate)}%)`,
+        status: dcfFair !== null ? 'Calculated' : 'Inapplicable: Non-positive normalized free cash flow',
+        normalizedFcf: normalizedFcf > 0 ? parseFloat(normalizedFcf.toFixed(2)) : undefined,
+        stage1Pv: stage1Pv > 0 ? parseFloat(stage1Pv.toFixed(2)) : undefined,
+        stage2Pv: stage2Pv > 0 ? parseFloat(stage2Pv.toFixed(2)) : undefined,
+        stage3Pv: stage3Pv > 0 ? parseFloat(stage3Pv.toFixed(2)) : undefined,
+        enterpriseValue: enterpriseValue > 0 ? parseFloat(enterpriseValue.toFixed(2)) : undefined,
+        equityValue: equityValue > 0 ? parseFloat(equityValue.toFixed(2)) : undefined,
+        fadeYears,
+        stage1GrowthRate: parseFloat((stage1GrowthRate * 100).toFixed(1))
       },
       ddm: {
         fairValue: ddmFair,
@@ -711,6 +993,17 @@ export class FundamentalDataIngestor {
       sector: raw.sector,
       industry: raw.industry,
       description: raw.description,
+      businessSummary: raw.businessSummary,
+      segmentRevenueBreakdown: raw.segmentRevenueBreakdown,
+      sectorDynamics,
+      competitorBenchmarking,
+      morningstarRating,
+      starRating: morningstarRating.starRating,
+      starRatingString: morningstarRating.starRatingString,
+      uncertaintyRating: morningstarRating.uncertaintyRating,
+      fiveStarPrice: morningstarRating.fiveStarPrice,
+      oneStarPrice: morningstarRating.oneStarPrice,
+      priceToFairValue: morningstarRating.priceToFairValue,
       marketCap: raw.marketCap,
       peRatioTrailing: raw.peRatioTrailing,
       peRatioForward: raw.peRatioForward,

@@ -20,6 +20,8 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
 1. Title & Executive Summary:
    - SEO-optimized title adhering to format: "[Company Name] ([Ticker]) [Surges|Drops] [X]%: Fundamental & Valuation Deep Dive"
    - Specify the precise Money Market Trading Venue (e.g. Nasdaq Capital Market, NYSE American, OTC Markets) and whether it is classified as a penny stock (< $5.00).
+   - Display Morningstar-style Star Rating (1 to 5 Stars: ★★★★★) and Uncertainty Rating (Low, Medium, High, Very High, Extreme).
+   - Detail the Fair Value estimate, Price-to-Fair-Value ratio, 5-Star margin-of-safety buy price, and 1-Star overvaluation sell threshold.
    - Executive summary explaining the catalyst, price movement, and volume divergence.
 
 2. Trading Activity, Catalyst-Price Alignment & Artificial Inflation Analysis:
@@ -37,36 +39,43 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
    - Recent changes in debt obligations (new debt facilities, convertible notes, ATM dilution offerings, principal repayments).
    - Specific risks associated with the debt profile (refinancing costs in a high risk-free rate regime, restrictive covenants, insolvency or dilution risks).
 
-4. Profitability, Operating Health & Historical Benchmarks:
+4. Profitability, Operating Health & Segment Dynamics:
+   - Ingest authentic company business description and 10-K segment revenue breakdown.
    - Gross Margin, Operating Margin (EBIT), Return on Equity (ROE), Operating Cash Flow, and Free Cash Flow status.
    - Price-to-Book (P/B) ratio compared with industry average and 5-year historical median.
    - Price-to-Earnings (P/E) ratio compared with industry average and 5-year historical median.
    - 8-Quarter EPS progression: Review quarterly EPS over the past 2 years (8 quarters) to evaluate operational consistency and earnings surprises.
+   - Macro sector dynamics: Analyze industry conditions, secular drivers, regulatory hurdles, and supply-chain pressures.
 
-5. Management Quality, Competitive Moat & Core Qualitative Deep Dive:
-   - Evaluate Management Quality & Track Record: Are experienced, proven managers in charge? Review their capital allocation discipline and historical execution.
-   - Evaluate Competitive Moat: Moat rating (Wide, Narrow, None, Under Pressure) and durability (patents/IP, regulatory barriers, switching costs, cost advantages).
-   - Thoroughly answer the 4 Key Company Questions:
-     Q1: How does the company make money?
-     Q2: Are its products or services in demand, and why?
-     Q3: How has the company performed in the past?
-     Q4: Is the company positioned for growth and profitability?
-   - Thoroughly answer the 3 Key Industry Questions:
-     Q1: How is the company's industry doing as a whole?
-     Q2: What are the obstacles and challenges the company faces?
-     Q3: Does the company face any economic, political, or cultural risks?
+5. Management Quality, 5 Moat Pillars & Competitor Benchmarking Matrix:
+   - Evaluate Management Quality & Track Record: capital allocation discipline, balance sheet stewardship, and execution track record.
+   - Deconstruct Economic Moat into the 5 Morningstar Pillars:
+     * Intangible Assets (patents, regulatory licenses, brand pricing power)
+     * Switching Costs (enterprise migration friction, mission-critical lock-in)
+     * Network Effect (two-sided market value scaling with user density)
+     * Cost Advantage (structural low-cost baseload assets, scale purchasing, logistical superiority)
+     * Efficient Scale (natural oligopoly / geographic monopoly where capacity expansion is economically irrational for entrants)
+   - Assign Moat Trend: Positive, Stable, or Negative with analytical justification.
+   - Competitor Benchmarking Matrix:
+     * Present a structured comparison table benchmarking the focal company against 2–3 sector peers across Market Cap, P/E, EV/EBITDA, Moat Rating, and ROIC.
+     * Provide institutional commentary explaining relative valuation discounts/premiums and competitive positioning.
+   - Thoroughly answer the 4 Key Company Questions & 3 Key Industry Questions grounded in operational facts.
 
-6. Multi-Model Valuation Engine:
+6. Multi-Model Valuation Engine (Refined 3-Stage DCF with Moat Fade):
    Evaluate the security across 8 recognized valuation methodologies:
-   - Discounted Cash Flow (DCF): 10-year projected cash flows with explicit WACC and terminal growth rate.
-   - Dividend Discount Model (DDM): Gordon Growth Model (or note why inapplicable for non-dividend payers).
-   - Rapid Stock Valuation: Quick multiplier model (Rule of 72, Graham Number, or PEG benchmark).
-   - Relative Valuation: Enterprise and equity multiples vs peer group medians (P/E, EV/EBITDA, P/S).
-   - Residual Income Model (RIM): Book value plus discounted future residual earnings over the cost of equity.
-   - Asset-Based Valuation: Net Asset Value (NAV) and liquidation floor assuming distressed asset haircuts.
-   - Sector-Specific / Fleet / Asset Capacity Model: Sector tailored model (e.g. mining reserve NAV, airline available seat mile capacity, defense pipeline multiple).
-   - Excess Return Model: Economic Value Added (EVA) spread (ROIC minus WACC multiplied by invested capital).
-   - Synthesize a Consensus Fair Value and clear valuation verdict.
+   - Refined 3-Stage Discounted Cash Flow (DCF):
+     * Stage I: 5-year explicit forecast using normalized FCFF (smoothing out lumpy single-year CapEx cycles).
+     * Stage II: Moat-dependent fade period (Wide Moat: 15Y fade, Narrow Moat: 10Y fade, None: 5Y fade) fading return spreads down to cost of capital.
+     * Stage III: Perpetuity terminal value discounted to present value.
+     * Enterprise Value to Equity Value bridge deducting net debt to prevent capital structure distortions.
+   - Dividend Discount Model (DDM): Gordon Growth Model.
+   - Rapid Stock Valuation: PEG benchmark multiplier.
+   - Relative Valuation: Sector-adjusted peer multiples (P/E, EV/EBITDA, EV/Sales).
+   - Residual Income Model (RIM): Edwards-Bell-Ohlson model over cost of equity.
+   - Asset-Based Valuation: NAV liquidation floor with asset haircuts.
+   - Industry-Specific Model: Tailored sector metric (EV/Sales, Justified P/B, P/FFO, EV/EBITDA).
+   - Excess Return Model: EVA spread (ROIC minus WACC).
+   - Synthesize a Consensus Fair Value, Morningstar Star Rating (1–5 Stars), and Margin-of-Safety hurdle price levels.
 
 7. Objective Bull & Bear Theses with Cited Sources & Deduction Chains:
    - For every thesis point in BOTH the Bull Case and Bear Case:
@@ -147,22 +156,47 @@ ${fundamentals.earningsPerShare.quarterlyEPSPast2Years && fundamentals.earningsP
   : '- Historical quarterly EPS not reported in available SEC disclosures'
 }
 
-=== QUALITATIVE MOAT & MANAGEMENT ===
+=== COMPANY PROFILE & SEGMENT BREAKDOWN ===
+Description: ${fundamentals.businessSummary || fundamentals.description}
+${fundamentals.segmentRevenueBreakdown && fundamentals.segmentRevenueBreakdown.length > 0 ? `Reporting Segments (10-K):\n${fundamentals.segmentRevenueBreakdown.map(s => `- ${s.segment}${s.revenue ? `: $${(s.revenue / 1e9).toFixed(2)}B` : ''}`).join('\n')}` : 'Reporting Segments: Disclosed under consolidated operating entity'}
+
+=== SECTOR DYNAMICS ===
+Sector Backdrop: ${fundamentals.sectorDynamics?.industryCondition || fundamentals.industryQuestions.industryCondition}
+Key Sector Obstacles: ${fundamentals.sectorDynamics?.obstaclesAndChallenges || fundamentals.industryQuestions.obstaclesAndChallenges}
+Macro/Regulatory Risks: ${fundamentals.sectorDynamics?.economicPoliticalCulturalRisks || fundamentals.industryQuestions.economicPoliticalCulturalRisks}
+
+=== QUALITATIVE MOAT (5 MORNINGSTAR PILLARS) & MANAGEMENT ===
 Management Quality Rating: ${fundamentals.managementQuality.rating}
 Management Track Record: ${fundamentals.managementQuality.trackRecord}
-Competitive Moat: ${fundamentals.competitiveMoat.rating}
+Economic Moat Rating: ${fundamentals.competitiveMoat.rating} (Moat Trend: ${fundamentals.competitiveMoat.trend || 'Stable'})
 Moat Summary: ${fundamentals.competitiveMoat.summary}
+${fundamentals.competitiveMoat.sources ? `5 Moat Pillars:
+- Intangible Assets: [${fundamentals.competitiveMoat.sources.intangibleAssets.rating}] ${fundamentals.competitiveMoat.sources.intangibleAssets.substantiation}
+- Switching Costs: [${fundamentals.competitiveMoat.sources.switchingCosts.rating}] ${fundamentals.competitiveMoat.sources.switchingCosts.substantiation}
+- Network Effect: [${fundamentals.competitiveMoat.sources.networkEffect.rating}] ${fundamentals.competitiveMoat.sources.networkEffect.substantiation}
+- Cost Advantage: [${fundamentals.competitiveMoat.sources.costAdvantage.rating}] ${fundamentals.competitiveMoat.sources.costAdvantage.substantiation}
+- Efficient Scale: [${fundamentals.competitiveMoat.sources.efficientScale.rating}] ${fundamentals.competitiveMoat.sources.efficientScale.substantiation}` : ''}
+
+=== COMPETITOR BENCHMARKING MATRIX ===
+${fundamentals.competitorBenchmarking && fundamentals.competitorBenchmarking.peers.length > 0 ? `Peer Benchmark Group:
+${fundamentals.competitorBenchmarking.peers.map(p => `- ${p.ticker} (${p.name}): Market Cap $${(p.marketCap / 1e9).toFixed(1)}B | P/E: ${p.peRatio !== null ? p.peRatio + 'x' : 'N/A'} | EV/EBITDA: ${p.evToEbitda !== null ? p.evToEbitda + 'x' : 'N/A'} | Moat: ${p.moat} | ROIC: ${p.roic !== null ? p.roic + '%' : 'N/A'}`).join('\n')}
+Peer Group Synthesis: ${fundamentals.competitorBenchmarking.commentary || 'Relative valuation and competitive positioning evaluated against sector peers.'}` : 'Peer Benchmarking: Analyzed against broader sector medians'}
+
 Company Revenue Model: ${fundamentals.companyQuestions.howCompanyMakesMoney}
 Product Demand Driver: ${fundamentals.companyQuestions.productsDemandAndWhy}
 Past Performance: ${fundamentals.companyQuestions.pastPerformanceSummary}
 Growth & Profitability Outlook: ${fundamentals.companyQuestions.growthAndProfitabilityOutlook}
-Industry Condition: ${fundamentals.industryQuestions.industryCondition}
-Obstacles & Challenges: ${fundamentals.industryQuestions.obstaclesAndChallenges}
-Macro/Political/Cultural Risks: ${fundamentals.industryQuestions.economicPoliticalCulturalRisks}
 
-=== MULTI-MODEL VALUATIONS ===
+=== MULTI-MODEL VALUATIONS & MORNINGSTAR STAR RATING ===
 Consensus Fair Value: $${(fundamentals.valuationModels.consensusFairValue ?? 0).toFixed(2)} (Verdict: ${fundamentals.valuationModels.verdict})
-- DCF (10Y Cash Flow): $${(fundamentals.valuationModels.dcf.fairValue ?? fundamentals.valuationModels.dcf.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.dcf.upside ?? fundamentals.valuationModels.dcf.upsidePercent ?? 0}%)
+Morningstar Rating: ${fundamentals.starRatingString || '★★★☆☆'} (${fundamentals.starRating || 3} Stars)
+Uncertainty Rating: ${fundamentals.uncertaintyRating || 'Medium'} (Price/Fair Value: ${fundamentals.priceToFairValue?.toFixed(2) || '1.00'}x)
+5-Star Price (Undervalued / Buy Hurdle): $${fundamentals.fiveStarPrice?.toFixed(2) || 'N/A'}
+1-Star Price (Overvalued / Sell Hurdle): $${fundamentals.oneStarPrice?.toFixed(2) || 'N/A'}
+
+Valuation Models Breakdown:
+- 3-Stage DCF (Moat Fade: ${fundamentals.valuationModels.dcf.fadeYears ?? 10}Y, Stage 1 Growth: ${fundamentals.valuationModels.dcf.stage1GrowthRate ?? 5}%, Ke/WACC: ${fundamentals.valuationModels.dcf.discountRate ?? 8}%): $${(fundamentals.valuationModels.dcf.fairValue ?? fundamentals.valuationModels.dcf.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.dcf.upside ?? fundamentals.valuationModels.dcf.upsidePercent ?? 0}%)
+  [Normalized FCFF: $${fundamentals.valuationModels.dcf.normalizedFcf ? (fundamentals.valuationModels.dcf.normalizedFcf / 1e9).toFixed(2) + 'B' : 'N/A'} | Stage 1 PV: $${fundamentals.valuationModels.dcf.stage1Pv ? (fundamentals.valuationModels.dcf.stage1Pv / 1e9).toFixed(2) + 'B' : 'N/A'} | Stage 2 PV: $${fundamentals.valuationModels.dcf.stage2Pv ? (fundamentals.valuationModels.dcf.stage2Pv / 1e9).toFixed(2) + 'B' : 'N/A'} | Stage 3 PV: $${fundamentals.valuationModels.dcf.stage3Pv ? (fundamentals.valuationModels.dcf.stage3Pv / 1e9).toFixed(2) + 'B' : 'N/A'} | Implied EV: $${fundamentals.valuationModels.dcf.enterpriseValue ? (fundamentals.valuationModels.dcf.enterpriseValue / 1e9).toFixed(2) + 'B' : 'N/A'}]
 - Dividend Discount Model (DDM): $${(fundamentals.valuationModels.ddm.fairValue ?? fundamentals.valuationModels.ddm.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.ddm.upside ?? fundamentals.valuationModels.ddm.upsidePercent ?? 0}%)
 - Relative Multiples Valuation: $${(fundamentals.valuationModels.relativeValuation.fairValue ?? fundamentals.valuationModels.relativeValuation.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.relativeValuation.upside ?? fundamentals.valuationModels.relativeValuation.upsidePercent ?? 0}%)
 - Rapid PEG Model: $${(fundamentals.valuationModels.rapidStockValuation.fairValue ?? fundamentals.valuationModels.rapidStockValuation.intrinsicValue ?? 0).toFixed(2)} (${fundamentals.valuationModels.rapidStockValuation.upside ?? fundamentals.valuationModels.rapidStockValuation.upsidePercent ?? 0}%)

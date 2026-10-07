@@ -175,7 +175,9 @@ export class ProgrammaticAdInjector {
 
     const competitiveMoat = {
       rating: (fundamentals.competitiveMoat?.rating as any) ?? 'Not Rated',
-      summary: fundamentals.competitiveMoat?.summary ?? 'Not Available'
+      trend: fundamentals.competitiveMoat?.trend ?? analysis.moatTrend ?? 'Stable',
+      summary: fundamentals.competitiveMoat?.summary ?? 'Not Available',
+      sources: fundamentals.competitiveMoat?.sources ?? analysis.moatSources
     };
 
     // 7. Multi-Model Valuations
@@ -357,7 +359,22 @@ export class ProgrammaticAdInjector {
       // Two-Tiered News Catalyst & Sentiment Pipeline
       catalystAlignment: sentiment?.catalystAlignment || analysis?.catalystAlignment || 'ALIGNED',
       catalystSynthesis: sentiment?.catalystSynthesis || analysis?.catalystSynthesis,
-      filteredHeadlines: sentiment?.filteredHeadlines || analysis?.filteredHeadlines
+      filteredHeadlines: sentiment?.filteredHeadlines || analysis?.filteredHeadlines,
+
+      // Morningstar Framework & Institutional Rigor
+      morningstarRating: fundamentals.morningstarRating ?? analysis.morningstarRating,
+      starRating: fundamentals.starRating ?? analysis.starRating,
+      starRatingString: fundamentals.starRatingString ?? analysis.starRatingString,
+      uncertaintyRating: fundamentals.uncertaintyRating ?? analysis.uncertaintyRating,
+      fiveStarPrice: fundamentals.fiveStarPrice ?? analysis.fiveStarPrice,
+      oneStarPrice: fundamentals.oneStarPrice ?? analysis.oneStarPrice,
+      priceToFairValue: fundamentals.priceToFairValue ?? analysis.priceToFairValue,
+      moatTrend: fundamentals.competitiveMoat?.trend ?? analysis.moatTrend,
+      moatSources: fundamentals.competitiveMoat?.sources ?? analysis.moatSources,
+      competitorBenchmarking: fundamentals.competitorBenchmarking ?? analysis.competitorBenchmarking,
+      businessSummary: fundamentals.businessSummary ?? analysis.businessSummary,
+      segmentRevenueBreakdown: fundamentals.segmentRevenueBreakdown ?? analysis.segmentRevenueBreakdown,
+      sectorDynamics: fundamentals.sectorDynamics ?? analysis.sectorDynamics
     };
 
     // Inject contextual monetization units into Markdown body

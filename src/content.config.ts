@@ -30,13 +30,13 @@ const reportsCollection = defineCollection({
     priceTimestamp: z.string().optional(),
 
     // Debt Breakdown
-    totalDebt: z.number().optional().default(0),
+    totalDebt: z.number().nullable().optional().default(0),
     debtToEquity: z.number().nullable().optional().default(0),
-    shortTermDebt: z.number().optional().default(0),
-    longTermDebt: z.number().optional().default(0),
-    shortVsLongTermRatio: z.number().or(z.string()).optional().default(0),
-    recentChangesInDebt: z.string().optional().default(''),
-    debtRisks: z.string().optional().default(''),
+    shortTermDebt: z.number().nullable().optional().default(0),
+    longTermDebt: z.number().nullable().optional().default(0),
+    shortVsLongTermRatio: z.number().or(z.string()).nullable().optional().default(0),
+    recentChangesInDebt: z.string().nullable().optional().default(''),
+    debtRisks: z.string().nullable().optional().default(''),
 
     // Valuation Metric Comparisons
     priceToBook: z.any().optional(),
@@ -157,7 +157,22 @@ const reportsCollection = defineCollection({
       twitter: z.array(z.string()).default([]),
       redditTitle: z.string().default(''),
       telegram: z.string().default('')
-    }).default({})
+    }).default({}),
+
+    // Morningstar Framework & Institutional Rigor
+    morningstarRating: z.any().optional(),
+    starRating: z.number().optional(),
+    starRatingString: z.string().optional(),
+    uncertaintyRating: z.string().optional(),
+    fiveStarPrice: z.number().optional(),
+    oneStarPrice: z.number().optional(),
+    priceToFairValue: z.number().optional(),
+    moatTrend: z.string().optional(),
+    moatSources: z.any().optional(),
+    competitorBenchmarking: z.any().optional(),
+    businessSummary: z.string().optional(),
+    segmentRevenueBreakdown: z.array(z.any()).optional(),
+    sectorDynamics: z.any().optional()
   }).passthrough()
 });
 
