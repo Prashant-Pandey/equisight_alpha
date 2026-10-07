@@ -586,7 +586,18 @@ In today's trading session, **Constellation Energy Corporation (CEG)** experienc
 Social discussion velocity around $CEG shifted by **+150%**, with the primary price driver identified as **Landmark long-term nuclear power agreement with Google to supply AI data centers**. The algorithmic artificial inflation risk profile is appraised as **Low** (Verified Organic Market Flow).
 
 | Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :---
+| :--- | :--- | :--- |
+| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
+| **Session Movement** | `+13.5%` | Daily volatility threshold |
+| **Morningstar Star Rating** | **★** | **1 Stars** (Uncertainty: **Medium**) |
+| **Consensus Fair Value** | **$185.11** | Price / Fair Value: `1.62x` (**Significantly Overvalued**) |
+| **Economic Moat** | **Wide Moat** | Moat Trend: **Stable** |
+| **Market Capitalization** | `$106.43B` | Classification: Value / Turnaround |
+| **Trading Volume** | `13,476,624` | Anomaly Ratio: 2.3x vs 90d avg |
+| **52-Week Range** | `$300.40 - $300.40` | Current: $300.40 |
+| **Social Sentiment** | `90% Bull / 10% Bear` | Major Driver: Landmark long-term nuclear power agreement with Google to supply AI data centers |
+
+---
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -604,19 +615,6 @@ Social discussion velocity around $CEG shifted by **+150%**, with the primary pr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
- | :--- | :--- |
-| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
-| **Session Movement** | `+13.5%` | Daily volatility threshold |
-| **Morningstar Star Rating** | **★** | **1 Stars** (Uncertainty: **Medium**) |
-| **Consensus Fair Value** | **$185.11** | Price / Fair Value: `1.62x` (**Significantly Overvalued**) |
-| **Economic Moat** | **Wide Moat** | Moat Trend: **Stable** |
-| **Market Capitalization** | `$106.43B` | Classification: Value / Turnaround |
-| **Trading Volume** | `13,476,624` | Anomaly Ratio: 2.3x vs 90d avg |
-| **52-Week Range** | `$300.40 - $300.40` | Current: $300.40 |
-| **Social Sentiment** | `90% Bull / 10% Bear` | Major Driver: Landmark long-term nuclear power agreement with Google to supply AI data centers |
-
----
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -9,7 +9,11 @@ import { macroContextIngestor } from '../pipeline/src/ingestion/macroContext.js'
 import { socialSentimentIngestor, classifyCatalystsWithAgy } from '../pipeline/src/ingestion/socialSentiment.js';
 import { webScraper, extractTextFromHtml } from '../pipeline/src/ingestion/webScraper.js';
 import { synthesisAgent } from '../pipeline/src/llm/synthesisAgent.js';
-import { buildUserPrompt } from '../pipeline/src/llm/prompts.js';
+import {
+  buildUserPrompt,
+  buildExecutiveSummarySystemPrompt,
+  buildExecutiveSummaryUserPrompt
+} from '../pipeline/src/llm/prompts.js';
 import type { MarketMover, FundamentalMetrics, LLMAnalysisOutput, SocialSentiment } from '../pipeline/src/types.js';
 import path from 'path';
 import fs from 'fs';
@@ -691,6 +695,7 @@ async function runTestSuite() {
     companyName: 'Constellation Energy Corporation',
     sector: 'Utilities',
     industry: 'Independent Power Producers',
+    peerTickers: ['VST', 'NRG'],
     description: 'Constellation Energy generates clean baseload nuclear and renewable power.',
     marketCap: 108_000_000_000,
     peRatioTrailing: 35.5,
@@ -735,8 +740,8 @@ async function runTestSuite() {
   assert.strictEqual(focalRow.ticker, 'CEG', 'First row must be focal stock');
   assert.strictEqual(focalRow.moat, 'Wide Moat', 'Focal row moat rating must match Wide Moat');
   const peerTickers = enrichedUtilities.competitorBenchmarking.peers.map(p => p.ticker);
-  assert.ok(peerTickers.includes('VST'), 'VST should be in peer universe for CEG');
-  assert.ok(peerTickers.includes('NRG'), 'NRG should be in peer universe for CEG');
+  assert.ok(peerTickers.includes('VST'), 'VST should be in peer list for CEG');
+  assert.ok(peerTickers.includes('NRG'), 'NRG should be in peer list for CEG');
   console.log(`✓ Pass: Competitor Benchmarking Matrix assembled (${peerTickers.join(', ')}).`);
 
   // 16.3 Test 3-Stage DCF with Moat Fade (Resolution of CEG $4.25 anomaly)
@@ -760,6 +765,39 @@ async function runTestSuite() {
   assert.ok(enrichedUtilities.oneStarPrice! > enrichedUtilities.fiveStarPrice!, '1-Star price hurdle must be greater than 5-Star price hurdle');
   assert.ok(enrichedUtilities.morningstarRating, 'Full morningstarRating object must exist');
   console.log(`✓ Pass: Morningstar Star Rating (${enrichedUtilities.starRatingString}, ${enrichedUtilities.uncertaintyRating} Uncertainty) with 5-Star hurdle $${enrichedUtilities.fiveStarPrice} and 1-Star hurdle $${enrichedUtilities.oneStarPrice} verified.\n`);
+
+  // 17. Test Dedicated Parallel Executive Summary & Session Catalyst Synthesis Engine
+  console.log('Test 17: Parallel Executive Summary & Session Catalyst Synthesis');
+  const execSysPrompt = buildExecutiveSummarySystemPrompt();
+  assert.ok(execSysPrompt.includes('CORE OBJECTIVES FOR THIS EXECUTIVE SUMMARY & SESSION CATALYST'), 'Executive summary system prompt must exist');
+  assert.ok(execSysPrompt.includes("PUBLISHER'S EXEMPTION"), 'Executive summary prompt must enforce publisher exemption');
+
+  const execUserPrompt = buildExecutiveSummaryUserPrompt(usMover, usFundamentals, macro, mockSentiment);
+  assert.ok(execUserPrompt.includes('=== SESSION CATALYST INTELLIGENCE ==='), 'User prompt must include session catalyst intelligence');
+  assert.ok(execUserPrompt.includes('=== TRADING STRUCTURE & ANOMALIES ==='), 'User prompt must include trading structure anomalies');
+
+  const detExecSummary = synthesisAgent.generateDeterministicExecutiveSummary(usMover, usFundamentals, macro, mockSentiment);
+  assert.ok(typeof detExecSummary.catalystHeadline === 'string' && detExecSummary.catalystHeadline.length > 0, 'catalystHeadline must be present');
+  assert.ok(typeof detExecSummary.catalystCategory === 'string' && detExecSummary.catalystCategory.length > 0, 'catalystCategory must be present');
+  assert.ok(typeof detExecSummary.expectationsVsReality === 'string' && detExecSummary.expectationsVsReality.length > 0, 'expectationsVsReality must be present');
+  assert.ok(Array.isArray(detExecSummary.keyTakeaways) && detExecSummary.keyTakeaways.length >= 3, 'keyTakeaways must have >= 3 items');
+  assert.ok(detExecSummary.formattedMarkdown!.includes('## Executive Summary & Session Catalyst'), 'formattedMarkdown must contain section heading');
+  assert.ok(detExecSummary.formattedMarkdown!.includes('Key Session Takeaways'), 'formattedMarkdown must contain key takeaways block');
+  assert.ok(detExecSummary.formattedMarkdown!.includes('| Key Session Metric |'), 'formattedMarkdown must contain metric table');
+
+  // Verify section replacement
+  const sampleBody = `## Executive Summary & Session Catalyst\n\nOld summary.\n\n---\n\n## 1. Trading Activity\n\nBody.`;
+  const replacedBody = synthesisAgent.replaceExecutiveSummarySection(sampleBody, detExecSummary.formattedMarkdown!);
+  assert.ok(replacedBody.includes(detExecSummary.catalystHeadline), 'Replaced markdown must include new catalyst headline');
+  assert.ok(!replacedBody.includes('Old summary.'), 'Old summary must be replaced');
+  assert.ok(replacedBody.includes('## 1. Trading Activity'), 'Subsequent sections must remain intact');
+
+  // Verify frontmatter pass-through
+  const execReport = synthesisAgent.generateDeterministicReport(usMover, usFundamentals, macro, mockSentiment);
+  const execInjection = adInjector.injectMonetization(usMover, usFundamentals, execReport, mockSentiment);
+  assert.ok(execInjection.frontmatter.executiveSummaryData !== undefined, 'Frontmatter must contain executiveSummaryData');
+  assert.strictEqual(execInjection.frontmatter.executiveSummaryData?.catalystHeadline, detExecSummary.catalystHeadline);
+  console.log('✓ Pass: Parallel Executive Summary & Session Catalyst synthesis engine and frontmatter verified.\n');
 
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);

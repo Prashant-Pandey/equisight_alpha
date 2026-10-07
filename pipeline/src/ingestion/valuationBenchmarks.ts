@@ -138,74 +138,101 @@ export function rateAdjustmentFactor(riskFreeRate: number): number {
   return Math.min(1.2, Math.max(0.8, factor));
 }
 
+export const SECTOR_ETF_MAP: Record<SectorKey, string> = {
+  'Technology': 'XLK',
+  'Communication Services': 'XLC',
+  'Healthcare': 'XLV',
+  'Financial Services': 'XLF',
+  'Real Estate': 'XLRE',
+  'Utilities': 'XLU',
+  'Energy': 'XLE',
+  'Industrials': 'XLI',
+  'Basic Materials': 'XLB',
+  'Consumer Cyclical': 'XLY',
+  'Consumer Defensive': 'XLP',
+  'General Equities': 'SPY'
+};
+
 export interface SectorDynamics {
   industryCondition: string;
   obstaclesAndChallenges: string;
   economicPoliticalCulturalRisks: string;
 }
 
-export const SECTOR_DYNAMICS: Record<SectorKey, SectorDynamics> = {
-  'Utilities': {
-    industryCondition: 'The Utilities sector is experiencing an unprecedented structural renaissance driven by surging baseload power demand from AI hyperscale data centers, industrial onshoring, and vehicle electrification. Grid operators face tightening reserve margins while transitioning to clean generation portfolios, elevating the value of 24/7 carbon-free capacity.',
-    obstaclesAndChallenges: 'Primary operational obstacles include elevated capital expenditure requirements for transmission upgrades, prolonged interconnection queue backlogs, regional ISO market design frictions, and the necessity to maintain reserve reliability under volatile weather extremes.',
-    economicPoliticalCulturalRisks: 'Key exposures encompass interest rate sensitivity given heavy balance-sheet debt loads, state Public Utility Commission (PUC) rate case regulatory lag, Federal Energy Regulatory Commission (FERC) policy interventions, and clean-energy tax credit policy shifts.'
-  },
-  'Technology': {
-    industryCondition: 'The enterprise technology and semiconductor sector is propelled by generative AI infrastructure buildouts, enterprise cloud migration, and accelerated compute deployment. Platform providers with integrated software ecosystems and proprietary silicon architectures continue to capture disproportionate operating leverage.',
-    obstaclesAndChallenges: 'Leading operational hurdles involve rapid hardware obsolescence cycles, massive advanced-node foundry capacity constraints, escalating hyperscaler R&D expenditures, and intense developer ecosystem lock-in competition.',
-    economicPoliticalCulturalRisks: 'Vulnerabilities center on cross-border semiconductor export controls, heightened FTC/DOJ antitrust scrutiny over proprietary walled gardens, enterprise IT budget tightening, and sovereign cloud data residency mandates.'
-  },
-  'Healthcare': {
-    industryCondition: 'The healthcare and life sciences landscape is characterized by secular demographic aging tailwinds, GLP-1 and antibody-drug conjugate clinical breakthroughs, and increasing adoption of outpatient ambulatory care models, counterbalanced by payor cost-containment pressures.',
-    obstaclesAndChallenges: 'Structural obstacles include clinical trial Phase III attrition rates, patent exclusivity cliffs, generic and biosimilar substitution erosion, and prolonged FDA regulatory approval timelines.',
-    economicPoliticalCulturalRisks: 'Primary macro risks include Inflation Reduction Act (IRA) Medicare drug price negotiations, pharmacy benefit manager (PBM) legislative reform, Medicaid redetermination volume shifts, and healthcare labor wage inflation.'
-  },
-  'Financial Services': {
-    industryCondition: 'Financial institutions navigate a higher-for-longer yield curve environment marked by net interest margin (NIM) recalibration, deposit beta competition, and rising non-interest fee diversification across wealth management and investment banking.',
-    obstaclesAndChallenges: 'Headwinds encompass commercial real estate (CRE) credit exposure normalization, regulatory capital requirement increases under Basel III Endgame revisions, and fintech payment disintermediation.',
-    economicPoliticalCulturalRisks: 'Vulnerabilities involve Federal Reserve rate easing pacing, cyclical credit default cycles in leveraged lending, deposit flight risks during market stress, and consumer credit card delinquency trends.'
-  },
-  'Energy': {
-    industryCondition: 'The global energy sector operates under capital discipline mandates prioritizing shareholder return dividends and share buybacks over speculative production growth, supported by global liquids demand growth and LNG export expansion.',
-    obstaclesAndChallenges: 'Core challenges feature geological reserve depletion, OPEC+ production quota volatility, oilfield service cost inflation, and midstream pipeline egress bottlenecks in key producing basins.',
-    economicPoliticalCulturalRisks: 'Macro risks include global crude demand cyclicality, geopolitical supply disruption shocks, carbon taxation frameworks, and fluctuating environmental drilling permitting policies.'
-  },
-  'Industrials': {
-    industryCondition: 'Capital goods and aerospace manufacturers benefit from multi-year federal infrastructure investment programs, defense modernization outlays, and aerospace commercial fleet replacement backlogs.',
-    obstaclesAndChallenges: 'Major headwinds comprise persistent aerospace supply chain bottlenecks, specialized machining labor shortages, and cyclical freight/industrial destocking cycles.',
-    economicPoliticalCulturalRisks: 'Exposures include global trade tariff escalations, raw material input cost volatility (steel, titanium, composites), and sovereign defense budget allocation reprioritizations.'
-  },
-  'Communication Services': {
-    industryCondition: 'The sector transitions toward digital ad optimization fueled by algorithmic machine learning targeting, connected TV (CTV) streaming consolidation, and high-margin subscription monetization.',
-    obstaclesAndChallenges: 'Obstacles include linear television cord-cutting acceleration, digital advertising cyclical sensitivity, and ballooning streaming content production expenditures.',
-    economicPoliticalCulturalRisks: 'Risks encompass global digital privacy regulations, app platform tracking restrictions, antitrust content distribution reviews, and macro consumer discretionary spending fatigue.'
-  },
-  'Consumer Cyclical': {
-    industryCondition: 'Consumer discretionary operators experience bifurcation between value-oriented discounters and premium luxury brands, with omnichannel fulfillment and loyalty data playing decisive competitive roles.',
-    obstaclesAndChallenges: 'Challenges encompass inventory markdown pressures, customer acquisition cost inflation across digital channels, and shifting retail labor wage dynamics.',
-    economicPoliticalCulturalRisks: 'Primary vulnerabilities include real wage growth deceleration, elevated consumer debt servicing burdens, consumer confidence sentiment drops, and retail shrinkage.'
-  },
-  'Consumer Defensive': {
-    industryCondition: 'Staples businesses rely on brand equity and category dominance to defend pricing power, though volume elasticity is increasingly tested by private-label grocery alternatives.',
-    obstaclesAndChallenges: 'Hurdles involve packaging and agricultural commodity input inflation, shelf-space competition with retailer private labels, and shifting consumer wellness preferences.',
-    economicPoliticalCulturalRisks: 'Exposures include foreign currency translation headwinds from overseas revenue, retail partner margin negotiations, and regulatory restrictions on ultra-processed foods.'
-  },
-  'Basic Materials': {
-    industryCondition: 'Chemical, mining, and packaging producers navigate global industrial demand cycles, with structural demand driven by critical minerals for grid transformation and lightweight packaging.',
-    obstaclesAndChallenges: 'Headwinds involve commodity pricing cyclicality, heavy energy and feedstock input costs, and prolonged capital expenditure gestation cycles for new extraction capacity.',
-    economicPoliticalCulturalRisks: 'Risks center on Chinese industrial demand fluctuations, environmental mining permitting hurdles, resource nationalism, and global freight rate swings.'
-  },
-  'Real Estate': {
-    industryCondition: 'Real estate investment trusts (REITs) experience wide divergence across sub-sectors, with data centers, industrial logistics, and cell towers outperforming traditional office and retail properties.',
-    obstaclesAndChallenges: 'Obstacles involve refinancing maturing low-coupon mortgage debt at substantially higher interest rates and elevated building materials replacement costs.',
-    economicPoliticalCulturalRisks: 'Exposures include tenant credit distress, municipal property tax reassessments, cap rate expansion, and sovereign bond yield competition for income investors.'
-  },
-  'General Equities': {
-    industryCondition: 'Broad equities operate under prevailing monetary policy and macroeconomic liquidity conditions, where balance sheet resilience and free cash flow generation separate market leaders from capital-dependent operators.',
-    obstaclesAndChallenges: 'Key challenges center on competitive pricing power, customer retention, input cost discipline, and technological modernization.',
-    economicPoliticalCulturalRisks: 'Risks involve broader macroeconomic interest rate trajectories, sovereign yield volatility, and economic growth cycle shifts.'
+/**
+ * Dynamically derives sector and industry conditions using live market data,
+ * benchmark ETF multiples, sovereign discount rates, and the company's real industry/SIC.
+ * Eliminates static hardcoded narratives.
+ */
+export function deriveSectorDynamics(
+  sectorInput?: string | null,
+  industryInput?: string | null,
+  macro?: {
+    us10YearYield?: number;
+    fedFundsRate?: number;
+    vixIndex?: number;
+    crudeOilWTI?: number;
+    cpiInflationRate?: number;
+  } | null,
+  etfQuote?: { price?: number; trailingPE?: number; forwardPE?: number } | null
+): SectorDynamics {
+  const sector = normalizeSector(sectorInput);
+  const industry = industryInput?.trim() || `${sector} Industry`;
+  const y10 = macro?.us10YearYield ?? 4.25;
+  const fedRate = macro?.fedFundsRate ?? 4.75;
+  const vix = macro?.vixIndex ?? 15.0;
+  const oil = macro?.crudeOilWTI ?? 75.0;
+  const cpi = macro?.cpiInflationRate ?? 2.8;
+  const etfTicker = SECTOR_ETF_MAP[sector] || 'SPY';
+  const peStr = etfQuote?.trailingPE
+    ? `trading at a benchmark P/E of ${etfQuote.trailingPE}x (via ${etfTicker})`
+    : `benchmarked against ${etfTicker}`;
+
+  const rateHurdle = y10 > 4.25 ? 'elevated long-term borrowing costs' : 'moderating sovereign discount rates';
+  const volRegime = vix > 20 ? 'elevated market volatility' : 'subdued volatility conditions';
+
+  let condition: string;
+  if (sector === 'Utilities') {
+    condition = `The Utilities sector (${industry}), ${peStr}, operates within regulated capital return frameworks sensitive to prevailing 10-Year sovereign yields of ${y10.toFixed(2)}%. Operating conditions require ongoing balancing between capital expenditure obligations, grid transmission maintenance, and cost-of-debt hurdles, with return on equity governed by regulatory rate-case filings.`;
+  } else if (sector === 'Technology') {
+    condition = `The Technology sector (${industry}), ${peStr}, is influenced by enterprise capital allocation cycles, technology adoption velocity, and discount-rate sensitivity from prevailing ${y10.toFixed(2)}% Treasury yields on long-duration equity cash flows.`;
+  } else if (sector === 'Energy') {
+    condition = `The Energy sector (${industry}), ${peStr}, operates against benchmark crude prices of $${oil.toFixed(2)}/bbl, balancing operational reinvestment rates against balance-sheet discipline and cash returns across global commodity cycles.`;
+  } else if (sector === 'Financial Services') {
+    condition = `Financial institutions in ${industry}, ${peStr}, navigate yield curve dynamics between 10-Year yields at ${y10.toFixed(2)}% and the policy rate at ${fedRate.toFixed(2)}%, managing deposit beta pressures and credit quality across economic cycles.`;
+  } else if (sector === 'Healthcare') {
+    condition = `The Healthcare sector (${industry}), ${peStr}, is guided by clinical research timelines, commercial patent protection cycles, and payor reimbursement trends alongside broader healthcare labor and supply input costs.`;
+  } else if (sector === 'Real Estate') {
+    condition = `Real Estate operators in ${industry}, ${peStr}, face capitalization rate adjustments driven by the ${y10.toFixed(2)}% 10-Year Treasury yield, refinancing spreads, and commercial occupancy patterns.`;
+  } else {
+    condition = `The ${sector} sector (${industry}), ${peStr}, operates in a macroeconomic environment anchored by a US 10-Year yield of ${y10.toFixed(2)}% and policy rates at ${fedRate.toFixed(2)}%, where operating execution, margin resilience, and capital allocation determine competitive performance.`;
   }
-};
+
+  const obstacles = `Primary operational obstacles across ${industry} include managing ${rateHurdle}, navigating labor and input expenses (CPI inflation at ${cpi.toFixed(1)}%), and defending unit margins amid competitive market positioning.`;
+
+  const risks = `Macro, political, and regulatory risks encompass central bank interest rate trajectory adjustments, sovereign yield volatility, sector-specific statutory oversight, and broader economic cycle shifts under ${volRegime} (VIX: ${vix.toFixed(1)}).`;
+
+  return {
+    industryCondition: condition,
+    obstaclesAndChallenges: obstacles,
+    economicPoliticalCulturalRisks: risks
+  };
+}
+
+export function getSectorDynamics(
+  sectorInput?: string | null,
+  industryInput?: string | null,
+  macro?: {
+    us10YearYield?: number;
+    fedFundsRate?: number;
+    vixIndex?: number;
+    crudeOilWTI?: number;
+    cpiInflationRate?: number;
+  } | null,
+  etfQuote?: { price?: number; trailingPE?: number; forwardPE?: number } | null
+): SectorDynamics {
+  return deriveSectorDynamics(sectorInput, industryInput, macro, etfQuote);
+}
 
 export interface PeerProfile {
   ticker: string;
@@ -213,118 +240,17 @@ export interface PeerProfile {
   marketCap: number;
   peRatio: number | null;
   evToEbitda: number | null;
-  moat: 'Wide' | 'Narrow' | 'None';
+  moat: string;
   roic: number | null;
 }
 
-export const PEER_UNIVERSE: Record<string, PeerProfile[]> = {
-  // Key Utilities / Independent Power Producers
-  'CEG': [
-    { ticker: 'VST', name: 'Vistra Corp', marketCap: 54e9, peRatio: 27.1, evToEbitda: 13.8, moat: 'Narrow', roic: 14.2 },
-    { ticker: 'NRG', name: 'NRG Energy Inc', marketCap: 22e9, peRatio: 25.3, evToEbitda: 10.4, moat: 'Narrow', roic: 11.8 },
-    { ticker: 'EXC', name: 'Exelon Corporation', marketCap: 43e9, peRatio: 15.3, evToEbitda: 11.2, moat: 'Narrow', roic: 7.9 }
-  ],
-  'VST': [
-    { ticker: 'CEG', name: 'Constellation Energy Corp', marketCap: 108e9, peRatio: 30.0, evToEbitda: 14.5, moat: 'Narrow', roic: 12.8 },
-    { ticker: 'NRG', name: 'NRG Energy Inc', marketCap: 22e9, peRatio: 25.3, evToEbitda: 10.4, moat: 'Narrow', roic: 11.8 },
-    { ticker: 'TLN', name: 'Talen Energy Corp', marketCap: 11e9, peRatio: 24.0, evToEbitda: 12.1, moat: 'Narrow', roic: 13.5 }
-  ],
-  'TLN': [
-    { ticker: 'CEG', name: 'Constellation Energy Corp', marketCap: 108e9, peRatio: 30.0, evToEbitda: 14.5, moat: 'Narrow', roic: 12.8 },
-    { ticker: 'VST', name: 'Vistra Corp', marketCap: 54e9, peRatio: 27.1, evToEbitda: 13.8, moat: 'Narrow', roic: 14.2 },
-    { ticker: 'NRG', name: 'NRG Energy Inc', marketCap: 22e9, peRatio: 25.3, evToEbitda: 10.4, moat: 'Narrow', roic: 11.8 }
-  ],
-  // Key Tech / Hardware / Semis
-  'AAPL': [
-    { ticker: 'MSFT', name: 'Microsoft Corporation', marketCap: 3200e9, peRatio: 34.5, evToEbitda: 23.1, moat: 'Wide', roic: 28.4 },
-    { ticker: 'GOOGL', name: 'Alphabet Inc', marketCap: 2100e9, peRatio: 24.2, evToEbitda: 16.5, moat: 'Wide', roic: 26.1 },
-    { ticker: 'HPQ', name: 'HP Inc', marketCap: 35e9, peRatio: 11.8, evToEbitda: 7.9, moat: 'None', roic: 18.2 }
-  ],
-  'NVDA': [
-    { ticker: 'AMD', name: 'Advanced Micro Devices', marketCap: 260e9, peRatio: 48.0, evToEbitda: 35.2, moat: 'Narrow', roic: 12.5 },
-    { ticker: 'INTC', name: 'Intel Corporation', marketCap: 95e9, peRatio: 22.0, evToEbitda: 11.0, moat: 'None', roic: 3.5 },
-    { ticker: 'QCOM', name: 'Qualcomm Inc', marketCap: 185e9, peRatio: 18.5, evToEbitda: 14.2, moat: 'Narrow', roic: 24.8 }
-  ]
-};
-
-export const SECTOR_DEFAULT_PEERS: Record<SectorKey, PeerProfile[]> = {
-  'Utilities': [
-    { ticker: 'CEG', name: 'Constellation Energy Corp', marketCap: 108e9, peRatio: 30.0, evToEbitda: 14.5, moat: 'Narrow', roic: 12.8 },
-    { ticker: 'VST', name: 'Vistra Corp', marketCap: 54e9, peRatio: 27.1, evToEbitda: 13.8, moat: 'Narrow', roic: 14.2 },
-    { ticker: 'EXC', name: 'Exelon Corporation', marketCap: 43e9, peRatio: 15.3, evToEbitda: 11.2, moat: 'Narrow', roic: 7.9 }
-  ],
-  'Technology': [
-    { ticker: 'MSFT', name: 'Microsoft Corporation', marketCap: 3200e9, peRatio: 34.5, evToEbitda: 23.1, moat: 'Wide', roic: 28.4 },
-    { ticker: 'AAPL', name: 'Apple Inc', marketCap: 3400e9, peRatio: 33.2, evToEbitda: 24.0, moat: 'Wide', roic: 52.0 },
-    { ticker: 'NVDA', name: 'NVIDIA Corporation', marketCap: 3000e9, peRatio: 45.2, evToEbitda: 32.0, moat: 'Wide', roic: 42.0 }
-  ],
-  'Healthcare': [
-    { ticker: 'LLY', name: 'Eli Lilly and Company', marketCap: 850e9, peRatio: 55.0, evToEbitda: 38.0, moat: 'Wide', roic: 22.0 },
-    { ticker: 'UNH', name: 'UnitedHealth Group Inc', marketCap: 520e9, peRatio: 22.5, evToEbitda: 14.0, moat: 'Narrow', roic: 15.5 },
-    { ticker: 'JNJ', name: 'Johnson & Johnson', marketCap: 390e9, peRatio: 16.5, evToEbitda: 12.0, moat: 'Wide', roic: 16.8 }
-  ],
-  'Financial Services': [
-    { ticker: 'JPM', name: 'JPMorgan Chase & Co', marketCap: 620e9, peRatio: 12.4, evToEbitda: 10.5, moat: 'Wide', roic: 16.5 },
-    { ticker: 'BAC', name: 'Bank of America Corp', marketCap: 310e9, peRatio: 13.8, evToEbitda: 9.8, moat: 'Narrow', roic: 10.2 },
-    { ticker: 'MS', name: 'Morgan Stanley', marketCap: 170e9, peRatio: 15.2, evToEbitda: 11.4, moat: 'Narrow', roic: 13.0 }
-  ],
-  'Energy': [
-    { ticker: 'XOM', name: 'Exxon Mobil Corp', marketCap: 470e9, peRatio: 13.5, evToEbitda: 6.8, moat: 'Narrow', roic: 14.5 },
-    { ticker: 'CVX', name: 'Chevron Corporation', marketCap: 280e9, peRatio: 14.2, evToEbitda: 7.2, moat: 'Narrow', roic: 12.0 },
-    { ticker: 'COP', name: 'ConocoPhillips', marketCap: 130e9, peRatio: 12.0, evToEbitda: 5.8, moat: 'Narrow', roic: 16.2 }
-  ],
-  'Industrials': [
-    { ticker: 'GE', name: 'GE Aerospace', marketCap: 200e9, peRatio: 32.0, evToEbitda: 20.5, moat: 'Wide', roic: 18.0 },
-    { ticker: 'CAT', name: 'Caterpillar Inc', marketCap: 190e9, peRatio: 17.5, evToEbitda: 12.2, moat: 'Narrow', roic: 28.5 },
-    { ticker: 'HON', name: 'Honeywell International', marketCap: 140e9, peRatio: 22.0, evToEbitda: 14.5, moat: 'Narrow', roic: 15.8 }
-  ],
-  'Communication Services': [
-    { ticker: 'GOOGL', name: 'Alphabet Inc', marketCap: 2100e9, peRatio: 24.2, evToEbitda: 16.5, moat: 'Wide', roic: 26.1 },
-    { ticker: 'META', name: 'Meta Platforms Inc', marketCap: 1500e9, peRatio: 28.0, evToEbitda: 17.2, moat: 'Wide', roic: 29.5 },
-    { ticker: 'DIS', name: 'Walt Disney Co', marketCap: 190e9, peRatio: 21.0, evToEbitda: 12.8, moat: 'Narrow', roic: 8.5 }
-  ],
-  'Consumer Cyclical': [
-    { ticker: 'AMZN', name: 'Amazon.com Inc', marketCap: 2000e9, peRatio: 42.0, evToEbitda: 18.5, moat: 'Wide', roic: 15.0 },
-    { ticker: 'HD', name: 'The Home Depot Inc', marketCap: 400e9, peRatio: 26.5, evToEbitda: 17.0, moat: 'Wide', roic: 36.0 },
-    { ticker: 'TSLA', name: 'Tesla Inc', marketCap: 750e9, peRatio: 65.0, evToEbitda: 38.0, moat: 'Narrow', roic: 14.0 }
-  ],
-  'Consumer Defensive': [
-    { ticker: 'WMT', name: 'Walmart Inc', marketCap: 640e9, peRatio: 32.0, evToEbitda: 16.5, moat: 'Wide', roic: 14.0 },
-    { ticker: 'PG', name: 'Procter & Gamble Co', marketCap: 400e9, peRatio: 26.0, evToEbitda: 18.0, moat: 'Wide', roic: 22.0 },
-    { ticker: 'COST', name: 'Costco Wholesale Corp', marketCap: 410e9, peRatio: 52.0, evToEbitda: 28.0, moat: 'Wide', roic: 21.0 }
-  ],
-  'Basic Materials': [
-    { ticker: 'LIN', name: 'Linde plc', marketCap: 220e9, peRatio: 33.0, evToEbitda: 18.0, moat: 'Wide', roic: 13.5 },
-    { ticker: 'APD', name: 'Air Products and Chemicals', marketCap: 65e9, peRatio: 24.0, evToEbitda: 13.5, moat: 'Narrow', roic: 11.0 },
-    { ticker: 'FCX', name: 'Freeport-McMoRan Inc', marketCap: 68e9, peRatio: 26.0, evToEbitda: 9.5, moat: 'Narrow', roic: 14.8 }
-  ],
-  'Real Estate': [
-    { ticker: 'PLD', name: 'Prologis Inc', marketCap: 115e9, peRatio: 35.0, evToEbitda: 22.0, moat: 'Narrow', roic: 7.2 },
-    { ticker: 'AMT', name: 'American Tower Corp', marketCap: 105e9, peRatio: 38.0, evToEbitda: 20.0, moat: 'Narrow', roic: 8.5 },
-    { ticker: 'EQIX', name: 'Equinix Inc', marketCap: 88e9, peRatio: 72.0, evToEbitda: 24.5, moat: 'Narrow', roic: 6.8 }
-  ],
-  'General Equities': [
-    { ticker: 'SPY', name: 'S&P 500 Index Benchmark', marketCap: 500e9, peRatio: 22.0, evToEbitda: 14.0, moat: 'Narrow', roic: 15.0 },
-    { ticker: 'QQQ', name: 'Invesco QQQ Benchmark', marketCap: 280e9, peRatio: 28.0, evToEbitda: 18.0, moat: 'Wide', roic: 22.0 },
-    { ticker: 'IWM', name: 'Russell 2000 Benchmark', marketCap: 70e9, peRatio: 18.0, evToEbitda: 11.0, moat: 'None', roic: 8.0 }
-  ]
-};
-
+/**
+ * Legacy synchronous stub: Returns empty array.
+ * Peer tickers and profiles are fetched dynamically from live financial APIs
+ * via webScraper.fetchPeerTickers() and webScraper.fetchPeerQuotes().
+ */
 export function getPeersForTicker(ticker: string, sectorInput?: string | null): PeerProfile[] {
-  const clean = ticker.split('.')[0].toUpperCase();
-  if (PEER_UNIVERSE[clean]) {
-    return PEER_UNIVERSE[clean];
-  }
-  const sector = normalizeSector(sectorInput);
-  const defaults = SECTOR_DEFAULT_PEERS[sector] || SECTOR_DEFAULT_PEERS['General Equities'];
-  // Exclude current ticker if it happens to be in default list
-  const filtered = defaults.filter((p) => p.ticker.toUpperCase() !== clean);
-  return filtered.slice(0, 3);
-}
-
-export function getSectorDynamics(sectorInput?: string | null): SectorDynamics {
-  const sector = normalizeSector(sectorInput);
-  return SECTOR_DYNAMICS[sector] || SECTOR_DYNAMICS['General Equities'];
+  return [];
 }
 
 /**

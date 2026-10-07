@@ -352,7 +352,16 @@ In today's trading session, **Standard Nuclear, Inc. (STDN)** experienced notabl
 Social discussion velocity around $STDN shifted by **+150%**, with the primary price driver identified as **Multi-year TRISO nuclear fuel supply agreement with Antares and bullish Needham initiation**. The algorithmic artificial inflation risk profile is appraised as **Low** (Verified Organic Market Flow).
 
 | Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :---
+| :--- | :--- | :--- |
+| **Trading Venue** | `New York Stock Exchange` | Standard Exchange Listing |
+| **Session Movement** | `+16.8%` | Daily volatility threshold |
+| **Market Capitalization** | `$2.44B` | Classification: Value / Turnaround |
+| **Trading Volume** | `1,306,315` | Anomaly Ratio: 1.4x vs 90d avg |
+| **52-Week Range** | `$7.05 - $17.34` | Current: $15.19 |
+| **Fundamental Rating** | `Fairly Valued` | Consensus Fair Value: N/A (Standard Models Inapplicable) |
+| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Multi-year TRISO nuclear fuel supply agreement with Antares and bullish Needham initiation |
+
+---
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -370,17 +379,6 @@ Social discussion velocity around $STDN shifted by **+150%**, with the primary p
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
- | :--- | :--- |
-| **Trading Venue** | `New York Stock Exchange` | Standard Exchange Listing |
-| **Session Movement** | `+16.8%` | Daily volatility threshold |
-| **Market Capitalization** | `$2.44B` | Classification: Value / Turnaround |
-| **Trading Volume** | `1,306,315` | Anomaly Ratio: 1.4x vs 90d avg |
-| **52-Week Range** | `$7.05 - $17.34` | Current: $15.19 |
-| **Fundamental Rating** | `Fairly Valued` | Consensus Fair Value: N/A (Standard Models Inapplicable) |
-| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Multi-year TRISO nuclear fuel supply agreement with Antares and bullish Needham initiation |
-
----
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

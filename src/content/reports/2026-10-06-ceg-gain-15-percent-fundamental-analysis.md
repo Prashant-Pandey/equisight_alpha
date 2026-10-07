@@ -365,7 +365,16 @@ In today's trading session, **Constellation Energy Corporatio (CEG)** experience
 Social discussion velocity around $CEG shifted by **+150%**, with the primary price driver identified as **20-year power purchase agreement announcements with tech hyperscalers (Amazon/Google) for nuclear energy**. The algorithmic artificial inflation risk profile is appraised as **High** (Elevated Retail Momentum / Liquidity Dislocation Detected).
 
 | Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :---
+| :--- | :--- | :--- |
+| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
+| **Session Movement** | `+14.8%` | Daily volatility threshold |
+| **Market Capitalization** | `$108.89B` | Classification: Value / Turnaround |
+| **Trading Volume** | `7,947,864` | Anomaly Ratio: 2.84x vs 90d avg |
+| **52-Week Range** | `$228.63 - $412.70` | Current: $307.32 |
+| **Fundamental Rating** | `Weak` | Consensus Fair Value: $135.20 (-56%) |
+| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: 20-year power purchase agreement announcements with tech hyperscalers (Amazon/Google) for nuclear energy |
+
+---
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -383,17 +392,6 @@ Social discussion velocity around $CEG shifted by **+150%**, with the primary pr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
- | :--- | :--- |
-| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
-| **Session Movement** | `+14.8%` | Daily volatility threshold |
-| **Market Capitalization** | `$108.89B` | Classification: Value / Turnaround |
-| **Trading Volume** | `7,947,864` | Anomaly Ratio: 2.84x vs 90d avg |
-| **52-Week Range** | `$228.63 - $412.70` | Current: $307.32 |
-| **Fundamental Rating** | `Weak` | Consensus Fair Value: $135.20 (-56%) |
-| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: 20-year power purchase agreement announcements with tech hyperscalers (Amazon/Google) for nuclear energy |
-
----
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

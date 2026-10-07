@@ -345,7 +345,16 @@ In today's trading session, **Vistra Corp. (VST)** experienced notable price vol
 Social discussion velocity around $VST shifted by **+150%**, with the primary price driver identified as **Reports of a $4B federal loan for nuclear expansion alongside sector momentum from big-tech nuclear energy deals**. The algorithmic artificial inflation risk profile is appraised as **Moderate** (Verified Organic Market Flow).
 
 | Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :---
+| :--- | :--- | :--- |
+| **Trading Venue** | `New York Stock Exchange` | Standard Exchange Listing |
+| **Session Movement** | `+10.8%` | Daily volatility threshold |
+| **Market Capitalization** | `$53.87B` | Classification: Growth Stock |
+| **Trading Volume** | `18,086,592` | Anomaly Ratio: 3.81x vs 90d avg |
+| **52-Week Range** | `$132.66 - $217.10` | Current: $160.50 |
+| **Fundamental Rating** | `Weak` | Consensus Fair Value: $82.81 (-48.4%) |
+| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Reports of a $4B federal loan for nuclear expansion alongside sector momentum from big-tech nuclear energy deals |
+
+---
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -363,17 +372,6 @@ Social discussion velocity around $VST shifted by **+150%**, with the primary pr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
- | :--- | :--- |
-| **Trading Venue** | `New York Stock Exchange` | Standard Exchange Listing |
-| **Session Movement** | `+10.8%` | Daily volatility threshold |
-| **Market Capitalization** | `$53.87B` | Classification: Growth Stock |
-| **Trading Volume** | `18,086,592` | Anomaly Ratio: 3.81x vs 90d avg |
-| **52-Week Range** | `$132.66 - $217.10` | Current: $160.50 |
-| **Fundamental Rating** | `Weak` | Consensus Fair Value: $82.81 (-48.4%) |
-| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Reports of a $4B federal loan for nuclear expansion alongside sector momentum from big-tech nuclear energy deals |
-
----
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -2,6 +2,8 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { path } from '../../utils/paths';
+import { formatFCF } from '../../utils/formatters';
+import { isPennyStock as checkPennyStock, getClassification } from '../../utils/financialClassification';
 
 const allReports = await getCollection('reports');
 const sortedReports = allReports.sort(
@@ -10,15 +12,6 @@ const sortedReports = allReports.sort(
 
 const pageTitle = "Complete Equity Research  | EquiSight Alpha";
 const pageDescription = "Full index of evidence-based fundamental equity research reports, multi-model valuations, balance sheet solvency stress tests, and financial health trends covering US and European equities.";
-
-function formatFCF(val: number): string {
-  if (val === undefined || val === null || isNaN(val)) return '$0';
-  const abs = Math.abs(val);
-  const sign = val >= 0 ? '+' : '-';
-  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(1)}B`;
-  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(0)}M`;
-  return `${sign}$${abs.toLocaleString()}`;
-}
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -241,8 +234,16 @@ function formatFCF(val: number): string {
     <!-- Reports Grid -->
     <div id="reports-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {sortedReports.map((report) => {
-        const isPenny = report.data.isPennyStock || report.data.currentPrice < 5;
-        const classification = report.data.classification || (isPenny ? 'Speculative Penny Stock' : (report.data.peRatio && report.data.peRatio > 25 ? 'Growth Stock' : (report.data.dividendYield > 2 ? 'Income Stock' : 'Value / Turnaround')));
+        const isPenny = checkPennyStock(report.data.currentPrice, report.data.exchange, report.data.isPennyStock);
+        const classification = getClassification({
+          classification: report.data.classification,
+          isPennyStock: isPenny,
+          currentPrice: report.data.currentPrice,
+          exchange: report.data.exchange,
+          peRatio: report.data.peRatio,
+          dividendYield: report.data.dividendYield,
+          operatingMargin: report.data.operatingMargin
+        });
         const fcfVal = report.data.cashFlow?.freeCashFlow ?? report.data.freeCashFlow ?? (report.data.marketCap ? Math.round(report.data.marketCap * 0.054) : 180000000);
         const peVal = report.data.peRatio ?? (report.data.priceToEarningsRatio?.current ?? null);
         const riskVal = report.data.riskScore ?? 5;

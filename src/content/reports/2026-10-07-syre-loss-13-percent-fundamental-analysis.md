@@ -409,7 +409,16 @@ In today's trading session, **Spyre Therapeutics, Inc. (SYRE)** experienced nota
 Social discussion velocity around $SYRE shifted by **+150%**, with the primary price driver identified as **Upsized $350 million equity offering priced below market value**. The algorithmic artificial inflation risk profile is appraised as **Low** (Verified Organic Market Flow).
 
 | Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :---
+| :--- | :--- | :--- |
+| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
+| **Session Movement** | `-13.4%` | Daily volatility threshold |
+| **Market Capitalization** | `$7.08B` | Classification: Value / Turnaround |
+| **Trading Volume** | `2,485,944` | Anomaly Ratio: 2.2x vs 90d avg |
+| **52-Week Range** | `$16.00 - $110.17` | Current: $80.32 |
+| **Fundamental Rating** | `Weak` | Consensus Fair Value: $9.43 (-88.3%) |
+| **Social Sentiment** | `25% Bull / 75% Bear` | Major Driver: Upsized $350 million equity offering priced below market value |
+
+---
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -427,17 +436,6 @@ Social discussion velocity around $SYRE shifted by **+150%**, with the primary p
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
- | :--- | :--- |
-| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
-| **Session Movement** | `-13.4%` | Daily volatility threshold |
-| **Market Capitalization** | `$7.08B` | Classification: Value / Turnaround |
-| **Trading Volume** | `2,485,944` | Anomaly Ratio: 2.2x vs 90d avg |
-| **52-Week Range** | `$16.00 - $110.17` | Current: $80.32 |
-| **Fundamental Rating** | `Weak` | Consensus Fair Value: $9.43 (-88.3%) |
-| **Social Sentiment** | `25% Bull / 75% Bear` | Major Driver: Upsized $350 million equity offering priced below market value |
-
----
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

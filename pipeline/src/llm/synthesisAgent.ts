@@ -1,15 +1,33 @@
 import { execFile } from 'child_process';
 import { CONFIG } from '../config.js';
 import { fetchWithRetry } from '../utils/httpClient.js';
-import { buildSystemPrompt, buildUserPrompt } from './prompts.js';
+import {
+  buildSystemPrompt,
+  buildUserPrompt,
+  buildExecutiveSummarySystemPrompt,
+  buildExecutiveSummaryUserPrompt
+} from './prompts.js';
 import { factChecker } from './factChecker.js';
-import { buildTheses, formatPriceTimestamp } from '../monetization/adInjector.js';
+import { buildTheses } from '../monetization/adInjector.js';
+import { formatPriceTimestamp } from '../../../src/utils/formatters.js';
+import {
+  isPennyStock as checkPennyStock,
+  getClassification,
+  getFundamentalRating,
+  getVolatilityRating,
+  resolveTradingVenue,
+  getCashFlowStatus,
+  getManagementQuality,
+  getMoatTrend,
+  getEconomicMoat
+} from '../../../src/utils/financialClassification.js';
 import type {
   MarketMover,
   FundamentalMetrics,
   MacroBackdrop,
   SocialSentiment,
   LLMAnalysisOutput,
+  ExecutiveSummaryData,
   ThesisPoint,
   ValuationModels,
   ArtificialInflation,
@@ -33,37 +51,20 @@ export class LLMSynthesisAgent {
   ): Promise<LLMAnalysisOutput> {
     console.log(`[LLMSynthesisAgent] Synthesizing research report for ${mover.ticker} (${mover.category})...`);
 
-    const systemPrompt = buildSystemPrompt();
-    const userPrompt = buildUserPrompt(mover, fundamentals, macro, sentiment);
+    const mainSystemPrompt = buildSystemPrompt();
+    const mainUserPrompt = buildUserPrompt(mover, fundamentals, macro, sentiment);
 
-    let rawOutput: LLMAnalysisOutput | null = null;
+    const execSystemPrompt = buildExecutiveSummarySystemPrompt();
+    const execUserPrompt = buildExecutiveSummaryUserPrompt(mover, fundamentals, macro, sentiment);
 
-    // Try Antigravity (agy) CLI if configured (100% free local host LLM runtime)
-    if (CONFIG.LLM_PROVIDER === 'agy') {
-      try {
-        rawOutput = await this.callAgy(systemPrompt, userPrompt);
-      } catch (err: any) {
-        console.warn(`[LLMSynthesisAgent] agy CLI call failed (${err.message}). Attempting fallbacks...`);
-      }
-    }
+    // Execute TWO parallel LLM calls concurrently
+    console.log(`[LLMSynthesisAgent] Launching PARALLEL LLM calls: [1] Full Report & [2] Executive Summary & Session Catalyst for $${mover.ticker}...`);
+    const [mainOutput, execOutput] = await Promise.all([
+      this.executeLLMCall<LLMAnalysisOutput>(mainSystemPrompt, mainUserPrompt, `MainReport-${mover.ticker}`),
+      this.executeLLMCall<ExecutiveSummaryData>(execSystemPrompt, execUserPrompt, `ExecSummary-${mover.ticker}`)
+    ]);
 
-    // Try OpenAI if configured
-    if (!rawOutput && CONFIG.OPENAI_API_KEY && CONFIG.LLM_PROVIDER === 'openai') {
-      try {
-        rawOutput = await this.callOpenAI(systemPrompt, userPrompt);
-      } catch (err: any) {
-        console.warn(`[LLMSynthesisAgent] OpenAI call failed (${err.message}). Attempting fallbacks...`);
-      }
-    }
-
-    // Try Anthropic if configured
-    if (!rawOutput && CONFIG.ANTHROPIC_API_KEY && (CONFIG.LLM_PROVIDER === 'anthropic' || !CONFIG.OPENAI_API_KEY)) {
-      try {
-        rawOutput = await this.callAnthropic(systemPrompt, userPrompt);
-      } catch (err: any) {
-        console.warn(`[LLMSynthesisAgent] Anthropic call failed (${err.message})...`);
-      }
-    }
+    let rawOutput: LLMAnalysisOutput | null = mainOutput;
 
     // Fallback: Deterministic Algorithmic Synthesis Engine (institutional-grade template)
     if (!rawOutput) {
@@ -78,6 +79,22 @@ export class LLMSynthesisAgent {
       }
       if (!rawOutput.filteredHeadlines && sentiment.filteredHeadlines) {
         rawOutput.filteredHeadlines = sentiment.filteredHeadlines;
+      }
+    }
+
+    // Integrate dedicated parallel Executive Summary LLM data
+    const specializedExec = execOutput || this.generateDeterministicExecutiveSummary(mover, fundamentals, macro, sentiment);
+    if (specializedExec) {
+      console.log(`[LLMSynthesisAgent] Integrating specialized Executive Summary & Session Catalyst data into $${mover.ticker} report...`);
+      rawOutput.executiveSummaryData = specializedExec;
+      if (specializedExec.catalystHeadline) {
+        rawOutput.catalystSummary = specializedExec.catalystHeadline;
+      }
+      if (specializedExec.expectationsVsReality) {
+        rawOutput.catalystSynthesis = specializedExec.expectationsVsReality;
+      }
+      if (specializedExec.formattedMarkdown) {
+        rawOutput.markdownBody = this.replaceExecutiveSummarySection(rawOutput.markdownBody, specializedExec.formattedMarkdown);
       }
     }
 
@@ -100,9 +117,49 @@ export class LLMSynthesisAgent {
   }
 
   /**
+   * Dispatches an LLM invocation across configured providers (agy CLI, OpenAI, Anthropic).
+   */
+  private async executeLLMCall<T>(
+    systemPrompt: string,
+    userPrompt: string,
+    callerTag = 'LLM'
+  ): Promise<T | null> {
+    let result: T | null = null;
+
+    // Try Antigravity (agy) CLI if configured (100% free local host LLM runtime)
+    if (CONFIG.LLM_PROVIDER === 'agy') {
+      try {
+        result = await this.callAgy<T>(systemPrompt, userPrompt, callerTag);
+      } catch (err: any) {
+        console.warn(`[LLMSynthesisAgent] agy CLI call failed for ${callerTag} (${err.message}). Attempting fallbacks...`);
+      }
+    }
+
+    // Try OpenAI if configured
+    if (!result && CONFIG.OPENAI_API_KEY && CONFIG.LLM_PROVIDER === 'openai') {
+      try {
+        result = await this.callOpenAI<T>(systemPrompt, userPrompt, callerTag);
+      } catch (err: any) {
+        console.warn(`[LLMSynthesisAgent] OpenAI call failed for ${callerTag} (${err.message}). Attempting fallbacks...`);
+      }
+    }
+
+    // Try Anthropic if configured
+    if (!result && CONFIG.ANTHROPIC_API_KEY && (CONFIG.LLM_PROVIDER === 'anthropic' || !CONFIG.OPENAI_API_KEY)) {
+      try {
+        result = await this.callAnthropic<T>(systemPrompt, userPrompt, callerTag);
+      } catch (err: any) {
+        console.warn(`[LLMSynthesisAgent] Anthropic call failed for ${callerTag} (${err.message})...`);
+      }
+    }
+
+    return result;
+  }
+
+  /**
    * Invokes the local Antigravity (agy) CLI runtime.
    */
-  private async callAgy(systemPrompt: string, userPrompt: string): Promise<LLMAnalysisOutput> {
+  private async callAgy<T>(systemPrompt: string, userPrompt: string, callerTag = 'agy'): Promise<T> {
     const combinedPrompt = `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid, parseable JSON object adhering strictly to the schema provided. Do NOT wrap in markdown backticks (no \`\`\`json), no introductory notes, no conversational closing. Start your output with { and end with }.`;
 
     const agyBin = CONFIG.AGY_PATH || 'agy';
@@ -116,7 +173,7 @@ export class LLMSynthesisAgent {
       CONFIG.AGY_MODEL || 'gemini-3.8-flash-high'
     ];
 
-    console.log(`[LLMSynthesisAgent] Invoking agy CLI with model ${CONFIG.AGY_MODEL || 'gemini-3.8-flash-high'}...`);
+    console.log(`[LLMSynthesisAgent] Invoking agy CLI (${callerTag}) with model ${CONFIG.AGY_MODEL || 'gemini-3.8-flash-high'}...`);
 
     const outputText = await new Promise<string>((resolve, reject) => {
       execFile(
@@ -128,7 +185,7 @@ export class LLMSynthesisAgent {
         },
         (error, stdout, stderr) => {
           if (error) {
-            return reject(new Error(`agy CLI execution failed: ${error.message} (stderr: ${stderr})`));
+            return reject(new Error(`agy CLI execution failed (${callerTag}): ${error.message} (stderr: ${stderr})`));
           }
           resolve(stdout);
         }
@@ -137,21 +194,17 @@ export class LLMSynthesisAgent {
 
     const jsonMatch = outputText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error('Could not find JSON payload in agy output');
+      throw new Error(`Could not find JSON payload in agy output (${callerTag})`);
     }
 
-    const parsed = JSON.parse(jsonMatch[0]) as LLMAnalysisOutput;
-    if (!parsed.title || !parsed.markdownBody) {
-      throw new Error('Parsed agy JSON is missing required fields (title or markdownBody)');
-    }
-
+    const parsed = JSON.parse(jsonMatch[0]) as T;
     return parsed;
   }
 
   /**
    * OpenAI API Invocation with JSON schema adherence.
    */
-  private async callOpenAI(systemPrompt: string, userPrompt: string): Promise<LLMAnalysisOutput> {
+  private async callOpenAI<T>(systemPrompt: string, userPrompt: string, callerTag = 'OpenAI'): Promise<T> {
     const url = 'https://api.openai.com/v1/chat/completions';
     const res = await fetchWithRetry(url, {
       method: 'POST',
@@ -172,20 +225,20 @@ export class LLMSynthesisAgent {
 
     if (!res.ok) {
       const errText = await res.text();
-      throw new Error(`OpenAI API error ${res.status}: ${errText}`);
+      throw new Error(`OpenAI API error (${callerTag}) ${res.status}: ${errText}`);
     }
 
     const data = await res.json();
     const content = data?.choices?.[0]?.message?.content;
-    if (!content) throw new Error('Empty response from OpenAI');
+    if (!content) throw new Error(`Empty response from OpenAI (${callerTag})`);
 
-    return JSON.parse(content) as LLMAnalysisOutput;
+    return JSON.parse(content) as T;
   }
 
   /**
    * Anthropic Claude API Invocation.
    */
-  private async callAnthropic(systemPrompt: string, userPrompt: string): Promise<LLMAnalysisOutput> {
+  private async callAnthropic<T>(systemPrompt: string, userPrompt: string, callerTag = 'Anthropic'): Promise<T> {
     const url = 'https://api.anthropic.com/v1/messages';
     const res = await fetchWithRetry(url, {
       method: 'POST',
@@ -204,17 +257,141 @@ export class LLMSynthesisAgent {
 
     if (!res.ok) {
       const errText = await res.text();
-      throw new Error(`Anthropic API error ${res.status}: ${errText}`);
+      throw new Error(`Anthropic API error (${callerTag}) ${res.status}: ${errText}`);
     }
 
     const data = await res.json();
     const text = data?.content?.[0]?.text;
-    if (!text) throw new Error('Empty response from Anthropic');
+    if (!text) throw new Error(`Empty response from Anthropic (${callerTag})`);
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Could not find JSON payload in Anthropic response');
+    if (!jsonMatch) throw new Error(`Could not find JSON payload in Anthropic response (${callerTag})`);
 
-    return JSON.parse(jsonMatch[0]) as LLMAnalysisOutput;
+    return JSON.parse(jsonMatch[0]) as T;
+  }
+
+  /**
+   * Replaces the ## Executive Summary & Session Catalyst section within markdown text.
+   */
+  public replaceExecutiveSummarySection(markdownBody: string, newSectionMarkdown: string): string {
+    const trimmedNew = newSectionMarkdown.trim();
+    const execSectionRegex = /## Executive Summary & Session Catalyst[\s\S]*?(?=(?:\n---\n|\n## 1\.))/;
+    if (execSectionRegex.test(markdownBody)) {
+      return markdownBody.replace(execSectionRegex, trimmedNew + '\n\n');
+    }
+    return `${trimmedNew}\n\n---\n\n${markdownBody}`;
+  }
+
+  /**
+   * Generates a high-fidelity, deterministic Executive Summary & Session Catalyst data structure.
+   */
+  public generateDeterministicExecutiveSummary(
+    mover: MarketMover,
+    f: FundamentalMetrics,
+    macro: MacroBackdrop,
+    s: SocialSentiment
+  ): ExecutiveSummaryData {
+    const isGainer = mover.category === 'gainer';
+    const actionVerb = isGainer ? 'Surges' : 'Retreats';
+    const sign = mover.changePercent > 0 ? '+' : '';
+    const moveStr = `${sign}${mover.changePercent.toFixed(1)}%`;
+    const cleanTicker = mover.ticker.toUpperCase();
+    const isPennyStock = checkPennyStock(mover.price, mover.exchange, mover.isPennyStock);
+    const venue = mover.moneyMarketTradingVenue || resolveTradingVenue(mover.ticker, mover.exchange, isPennyStock);
+    const volumeAnomalyRatio = s.volumeAnomalyRatio || +(mover.volume / Math.max(1, mover.avgVolume)).toFixed(2);
+    const majorPriceDriver = s.majorPriceDriver || mover.newsHeadline || 'Market Flow';
+    const riskLevel = s.artificialInflationRisk || 'Low';
+    const isInflated = s.isArtificiallyInflated || false;
+    const consensusFairValue = f.valuationModels?.consensusFairValue ?? null;
+    const verdict = f.valuationModels?.verdict ?? 'Fairly Valued';
+    const classification = getClassification({
+      classification: f.classification,
+      isPennyStock,
+      currentPrice: mover.price,
+      exchange: mover.exchange,
+      peRatio: f.peRatioTrailing ?? f.peRatioForward,
+      dividendYield: f.dividendYield,
+      operatingMargin: f.operatingMargin
+    });
+    const moatResult = getEconomicMoat({
+      existingRating: f.competitiveMoat?.rating,
+      existingSummary: f.competitiveMoat?.summary,
+      isPennyStock
+    });
+    const competitiveMoat: CompetitiveMoat = {
+      rating: moatResult.rating,
+      trend: getMoatTrend({
+        existingTrend: f.competitiveMoat?.trend
+      }),
+      summary: moatResult.summary,
+      sources: f.competitiveMoat?.sources
+    };
+    const alignment = s.catalystAlignment || 'ALIGNED';
+
+    let catalystCategory = 'Institutional Order Flow';
+    const lowerDriver = majorPriceDriver.toLowerCase();
+    if (lowerDriver.includes('contract') || lowerDriver.includes('agreement') || lowerDriver.includes('deal') || lowerDriver.includes('partnership')) {
+      catalystCategory = 'Commercial Contract / Supply Agreement';
+    } else if (lowerDriver.includes('offering') || lowerDriver.includes('dilution') || lowerDriver.includes('debt') || lowerDriver.includes('notes')) {
+      catalystCategory = 'Capital Structure & Public Offering';
+    } else if (lowerDriver.includes('earnings') || lowerDriver.includes('revenue') || lowerDriver.includes('eps') || lowerDriver.includes('guidance')) {
+      catalystCategory = 'Quarterly Financial Results & Guidance';
+    } else if (lowerDriver.includes('fda') || lowerDriver.includes('trial') || lowerDriver.includes('clinical') || lowerDriver.includes('patent')) {
+      catalystCategory = 'Regulatory Milestone / Clinical Readout';
+    } else if (lowerDriver.includes('loan') || lowerDriver.includes('federal') || lowerDriver.includes('nuclear') || lowerDriver.includes('energy')) {
+      catalystCategory = 'Regulatory Capital Support / Industrial Policy';
+    }
+
+    const expectationsVsReality = s.catalystSynthesis ||
+      `${f.companyName}'s session movement of ${moveStr} aligned with market participants actively re-pricing the security following ${majorPriceDriver}. Institutional order flow and session volume velocity demonstrated focused capital repositioning, testing upper liquidity thresholds against prevailing market multiples.`;
+
+    const sessionDynamics = `In today's trading session, **${f.companyName} (${cleanTicker})** experienced notable price volatility on the **${venue}**, closing with a session movement of **${moveStr}** to trade at **$${mover.price.toFixed(2)} ${mover.currency}**. Total trading volume recorded **${mover.volume.toLocaleString()} shares**, representing a **${volumeAnomalyRatio}x divergence** against the 90-day historical average volume of ${mover.avgVolume.toLocaleString()} shares. Social discussion velocity around $${cleanTicker} shifted by **+${s.volumeChange24h}%**, with the primary price driver identified as **${majorPriceDriver}**. The algorithmic artificial inflation risk profile is appraised as **${riskLevel}**${isInflated ? ' (Elevated Retail Momentum / Liquidity Dislocation Detected)' : ' (Verified Organic Market Flow)'}.`;
+
+    const macroeconomicContext = `Macroeconomic conditions exerted contextual influence, with benchmark US 10-Year Treasury Yields at ${macro.us10YearYield.toFixed(2)}% and the Cboe Volatility Index (VIX) at ${macro.vixIndex.toFixed(1)}, shaping the broad valuation multiple tolerance across ${f.sector} equities.`;
+
+    const fundamentalImpact = `From a fundamental perspective, ${f.companyName} operates with TTM Revenue of $${(f.revenueTTM / 1e9).toFixed(2)}B and an operating margin of ${f.operatingMargin.toFixed(1)}%. Against multi-model valuation metrics, the stock reflects a Consensus Fair Value of ${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'} (${verdict}), balancing immediate session catalyst excitement against balance sheet debt obligations and cash generation capability.`;
+
+    const keyTakeaways = [
+      `Primary Catalyst: ${majorPriceDriver} (${catalystCategory} &bull; Alignment: \`${alignment}\`).`,
+      `Order Flow Divergence: Session volume expanded to ${volumeAnomalyRatio}x historical 90-day baseline${isPennyStock ? ' across micro-cap venue liquidity' : ''}.`,
+      `Valuation Framework: Multi-model consensus fair value target stands at ${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'} (${verdict}).`,
+      `Capital Structure Context: Net debt stands at $${((f.netDebt ?? 0) / 1e9).toFixed(2)}B supported by $${((f.cashAndEquivalents ?? 0) / 1e9).toFixed(2)}B in liquid cash reserves.`
+    ];
+
+    const formattedMarkdown = `## Executive Summary & Session Catalyst
+
+${sessionDynamics}
+
+${expectationsVsReality}
+
+> **Key Session Takeaways:**
+> - **Primary Catalyst:** ${majorPriceDriver} (${catalystCategory} &bull; Alignment: \`${alignment}\`)
+> - **Volume & Liquidity:** Volume expanded to **${volumeAnomalyRatio}x** historical 90d average${isPennyStock ? ' (Penny stock venue trading)' : ''}.
+> - **Valuation Consensus:** Multi-model fair value target stands at **${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}** (**${verdict}**).
+> - **Macro & Solvency:** US 10Y Yield at **${macro.us10YearYield.toFixed(2)}%**; Net debt position of **$${((f.netDebt ?? 0) / 1e9).toFixed(2)}B**.
+
+| Key Session Metric | Observed Level | Benchmark / Analytical Context |
+| :--- | :--- | :--- |
+| **Trading Venue** | \`${venue}\` | ${isPennyStock ? 'Penny Stock (< $5.00 Micro-Cap Tier)' : 'Standard Exchange Listing'} |
+| **Session Movement** | \`${moveStr}\` | Daily volatility threshold |
+| **Morningstar Star Rating** | **${f.starRatingString || '★★★☆☆'}** | **${f.starRating || 3} Stars** (Uncertainty: **${f.uncertaintyRating || 'Medium'}**) |
+| **Consensus Fair Value** | **$${(consensusFairValue ?? 0).toFixed(2)}** | Price / Fair Value: \`${f.priceToFairValue ? f.priceToFairValue.toFixed(2) : '1.00'}x\` (**${verdict}**) |
+| **Economic Moat** | **${competitiveMoat.rating}** | Moat Trend: **${competitiveMoat.trend || 'Stable'}** |
+| **Market Capitalization** | \`$${(f.marketCap / 1e9).toFixed(2)}B\` | Classification: ${classification} |
+| **Trading Volume** | \`${mover.volume.toLocaleString()}\` | Anomaly Ratio: ${volumeAnomalyRatio}x vs 90d avg |
+| **52-Week Range** | \`$${f.fiftyTwoWeekLow.toFixed(2)} - $${f.fiftyTwoWeekHigh.toFixed(2)}\` | Current: $${mover.price.toFixed(2)} |
+| **Social Sentiment** | \`${s.bullishPercent}% Bull / ${s.bearishPercent}% Bear\` | Major Driver: ${majorPriceDriver} |`;
+
+    return {
+      catalystHeadline: majorPriceDriver,
+      catalystCategory,
+      expectationsVsReality,
+      sessionDynamics,
+      macroeconomicContext,
+      fundamentalImpact,
+      keyTakeaways,
+      formattedMarkdown
+    };
   }
 
   /**
@@ -234,12 +411,8 @@ export class LLMSynthesisAgent {
     const cleanTicker = mover.ticker.toUpperCase();
     const slug = `${cleanTicker.toLowerCase()}-${isGainer ? 'gain' : 'loss'}-${Math.abs(Math.round(mover.changePercent))}-percent-fundamental-analysis`;
 
-    const isPennyStock = mover.isPennyStock ?? (mover.price < 5.0 || mover.exchange === 'NYSE American' || (mover.exchange as string)?.includes('Capital Market'));
-    const venue = mover.moneyMarketTradingVenue || (
-      mover.exchange === 'NASDAQ' ? 'Nasdaq Capital Market' :
-        mover.exchange === 'NYSE' ? 'NYSE American' :
-          mover.exchange
-    );
+    const isPennyStock = checkPennyStock(mover.price, mover.exchange, mover.isPennyStock);
+    const venue = mover.moneyMarketTradingVenue || resolveTradingVenue(mover.ticker, mover.exchange, isPennyStock);
 
     const priceTimestamp = formatPriceTimestamp(new Date());
 
@@ -375,15 +548,23 @@ export class LLMSynthesisAgent {
     };
 
     // 5. Governance & Moat
-    const managementQuality: ManagementQuality = {
-      rating: (f.managementQuality?.rating as any) ?? 'Established',
-      trackRecord: f.managementQuality?.trackRecord ?? 'Executive team exhibits operational stewardship.'
-    };
+    const managementQuality: ManagementQuality = getManagementQuality({
+      existingRating: f.managementQuality?.rating,
+      existingTrackRecord: f.managementQuality?.trackRecord,
+      isPennyStock
+    });
 
+    const moatResult = getEconomicMoat({
+      existingRating: f.competitiveMoat?.rating,
+      existingSummary: f.competitiveMoat?.summary,
+      isPennyStock
+    });
     const competitiveMoat: CompetitiveMoat = {
-      rating: (f.competitiveMoat?.rating as any) ?? 'Narrow Moat',
-      trend: f.competitiveMoat?.trend ?? 'Stable',
-      summary: f.competitiveMoat?.summary ?? 'Established commercial footprint and domain competencies provide operational durability.',
+      rating: moatResult.rating,
+      trend: getMoatTrend({
+        existingTrend: f.competitiveMoat?.trend
+      }),
+      summary: moatResult.summary,
       sources: f.competitiveMoat?.sources
     };
 
@@ -416,50 +597,46 @@ export class LLMSynthesisAgent {
     const verdict = valuationModels.verdict || 'Fairly Valued';
     const consensusUpside = consensusFairValue !== null ? +(((consensusFairValue - mover.price) / Math.max(0.01, mover.price)) * 100).toFixed(1) : null;
 
-    const classification = (f.classification as any) ?? (
-      isPennyStock ? 'Speculative Penny Stock' :
-        f.dividendYield > 2 ? 'Income Stock' :
-          'Growth Stock'
-    );
+    const classification = getClassification({
+      classification: f.classification,
+      isPennyStock,
+      currentPrice: mover.price,
+      exchange: mover.exchange,
+      peRatio: f.peRatioTrailing ?? f.peRatioForward,
+      dividendYield: f.dividendYield,
+      operatingMargin: f.operatingMargin
+    });
 
-    const fundamentalRating = f.fundamentalRating ?? (
-      consensusUpside !== null && consensusUpside > 15 ? 'Strong' :
-        consensusUpside !== null && consensusUpside < -10 ? 'Weak' :
-          'Fairly Valued'
-    );
+    const fundamentalRating = getFundamentalRating({
+      fundamentalRating: f.fundamentalRating,
+      isPennyStock,
+      consensusUpside,
+      verdict
+    });
 
     const volatilityIndex = {
       value: +(f.beta ?? 1.15).toFixed(2),
-      rating: (f.beta ?? 1.15) > 1.5 ? 'Elevated Beta / High Volatility' : 'Moderate Volatility'
+      rating: getVolatilityRating(undefined, f.beta ?? 1.15)
     };
 
     const cashFlow = {
       operatingCashFlow: f.cashFlow?.operatingCashFlow ?? Math.round(f.freeCashFlowTTM * 1.2),
       freeCashFlow: f.freeCashFlowTTM,
-      status: f.freeCashFlowTTM >= 0 ? 'Positive Operating Generation' : 'Negative Cash Burn'
+      status: getCashFlowStatus({
+        status: f.cashFlow?.status,
+        freeCashFlow: f.freeCashFlowTTM,
+        operatingCashFlow: f.cashFlow?.operatingCashFlow,
+        isPennyStock
+      })
     };
+
+    const execSummaryData = this.generateDeterministicExecutiveSummary(mover, f, macro, s);
 
     const title = `${f.companyName} (${cleanTicker}) ${actionVerb} ${moveStr}: Fundamental & Valuation Analysis`;
     const seoDescription = `Evidence-based financial analysis of ${f.companyName} (${cleanTicker}) following today's ${moveStr} move on ${venue}. Valuation models, debt breakdown, and macro impact.`;
 
     const markdownBody = `
-## Executive Summary & Session Catalyst
-
-In today's trading session, **${f.companyName} (${cleanTicker})** experienced notable price volatility on the **${venue}**, closing with a session movement of **${moveStr}** to trade at **$${mover.price.toFixed(2)} ${mover.currency}**. Total trading volume recorded **${mover.volume.toLocaleString()} shares**, representing a **${volumeAnomalyRatio}x divergence** against the 90-day historical average volume of ${mover.avgVolume.toLocaleString()} shares.
-
-Social discussion velocity around $${cleanTicker} shifted by **+${s.volumeChange24h}%**, with the primary price driver identified as **${majorPriceDriver}**. The algorithmic artificial inflation risk profile is appraised as **${riskLevel}**${isInflated ? ' (Elevated Retail Momentum / Liquidity Dislocation Detected)' : ' (Verified Organic Market Flow)'}.
-
-| Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :--- | :--- | :--- |
-| **Trading Venue** | \`${venue}\` | ${isPennyStock ? 'Penny Stock (< $5.00 Micro-Cap Tier)' : 'Standard Exchange Listing'} |
-| **Session Movement** | \`${moveStr}\` | Daily volatility threshold |
-| **Morningstar Star Rating** | **${f.starRatingString || '★★★☆☆'}** | **${f.starRating || 3} Stars** (Uncertainty: **${f.uncertaintyRating || 'Medium'}**) |
-| **Consensus Fair Value** | **$${(consensusFairValue ?? 0).toFixed(2)}** | Price / Fair Value: \`${f.priceToFairValue ? f.priceToFairValue.toFixed(2) : '1.00'}x\` (**${verdict}**) |
-| **Economic Moat** | **${competitiveMoat.rating}** | Moat Trend: **${competitiveMoat.trend || 'Stable'}** |
-| **Market Capitalization** | \`$${(f.marketCap / 1e9).toFixed(2)}B\` | Classification: ${classification} |
-| **Trading Volume** | \`${mover.volume.toLocaleString()}\` | Anomaly Ratio: ${volumeAnomalyRatio}x vs 90d avg |
-| **52-Week Range** | \`$${f.fiftyTwoWeekLow.toFixed(2)} - $${f.fiftyTwoWeekHigh.toFixed(2)}\` | Current: $${mover.price.toFixed(2)} |
-| **Social Sentiment** | \`${s.bullishPercent}% Bull / ${s.bearishPercent}% Bear\` | Major Driver: ${majorPriceDriver} |
+${execSummaryData.formattedMarkdown}
 
 ---
 
@@ -644,7 +821,8 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
       slug,
       primaryKeywords: [`${cleanTicker} stock analysis`, `${f.companyName} valuation`, `${cleanTicker} P/E ratio`],
       secondaryKeywords: [`${cleanTicker} debt breakdown`, `${f.sector} stock movers`, `${cleanTicker} DCF model`],
-      catalystSummary: `${f.companyName} (${cleanTicker}) moved ${moveStr} today on trading volume of ${mover.volume.toLocaleString()} shares on ${venue}.`,
+      catalystSummary: execSummaryData.catalystHeadline || `${f.companyName} (${cleanTicker}) moved ${moveStr} today on trading volume of ${mover.volume.toLocaleString()} shares on ${venue}.`,
+      executiveSummaryData: execSummaryData,
       markdownBody: markdownBody.trim(),
       extractedFigures: {
         peRatio: f.peRatioTrailing || f.peRatioForward || 22.0,

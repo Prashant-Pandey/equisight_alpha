@@ -592,5 +592,14 @@
     "category": "gainer",
     "movePercent": 10.7737,
     "slug": "vst-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MIR",
+    "companyName": "Mirion Technologies, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-07T06:00:47.841Z",
+    "category": "gainer",
+    "movePercent": 9.04826,
+    "slug": "mir-gain-9-percent-fundamental-analysis"
   }
 ]

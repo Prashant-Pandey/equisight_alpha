@@ -1,4 +1,20 @@
 ---
+import { formatCurrency, formatEPS } from '../utils/formatters';
+import {
+  isPennyStock as checkPennyStock,
+  getClassification,
+  getFundamentalRating,
+  getRiskCategory,
+  getCashFlowStatus,
+  getVolatilityRating,
+  getDebtLeverageLabel,
+  getStarRatingString,
+  resolveTradingVenue,
+  getManagementQuality,
+  getMoatTrend,
+  getEconomicMoat
+} from '../utils/financialClassification';
+
 export interface Props {
   report?: any;
   metrics?: any;
@@ -16,16 +32,42 @@ const peRatio = data.peRatio ?? null;
 const forwardPE = data.forwardPE ?? null;
 const dividendYield = data.dividendYield ?? null;
 const riskScore = data.riskScore ?? 5;
-const isPennyStock = data.isPennyStock ?? (currentPrice < 5);
-const moneyMarketTradingVenue = data.moneyMarketTradingVenue || (data.exchange ? `${data.exchange} Primary Listed` : 'Nasdaq / NYSE');
-const fundamentalRating = data.fundamentalRating || (riskScore <= 3 ? 'Strong' : riskScore <= 6 ? 'Fairly Valued' : 'Weak');
-const classification = data.classification || (isPennyStock ? 'Speculative Penny Stock' : (peRatio && peRatio > 25 ? 'Growth Stock' : (dividendYield && dividendYield > 2 ? 'Income Stock' : 'Value / Turnaround')));
+const isPennyStock = checkPennyStock(currentPrice, data.exchange, data.isPennyStock);
+const moneyMarketTradingVenue = data.moneyMarketTradingVenue || resolveTradingVenue('', data.exchange, isPennyStock);
+const fundamentalRating = getFundamentalRating({
+  fundamentalRating: data.fundamentalRating,
+  isPennyStock,
+  riskScore
+});
+const classification = getClassification({
+  classification: data.classification,
+  isPennyStock,
+  currentPrice,
+  exchange: data.exchange,
+  peRatio,
+  dividendYield,
+  operatingMargin: data.operatingMargin
+});
 const returnOnEquity = data.returnOnEquity ?? null;
 
 // Cash flow
 const operatingCashFlow = data.cashFlow?.operatingCashFlow ?? data.operatingCashFlow ?? null;
 const freeCashFlow = data.cashFlow?.freeCashFlow ?? data.freeCashFlow ?? null;
-const cashFlowStatus = data.cashFlow?.status || (freeCashFlow !== null && freeCashFlow !== undefined ? (freeCashFlow >= 0 ? 'Positive Free Cash Flow' : 'Cash Burn / Capital Intensive') : 'Not Available');
+const cashFlowStatus = getCashFlowStatus({
+  status: data.cashFlow?.status,
+  freeCashFlow,
+  operatingCashFlow,
+  isPennyStock
+});
+const isLongCashFlowStatus = cashFlowStatus.length > 20;
+const trimmedCashFlowStatus = isLongCashFlowStatus
+  ? (() => {
+      const sub = cashFlowStatus.slice(0, 22);
+      const lastSpace = sub.lastIndexOf(' ');
+      const cleanSub = (lastSpace > 10 ? sub.slice(0, lastSpace) : sub).trim();
+      return `${cleanSub}...`;
+    })()
+  : cashFlowStatus;
 
 // Debt Analysis
 const debt = data.debtAnalysis || {};
@@ -36,7 +78,7 @@ const longTermDebt = debt.longTermDebt ?? null;
 const shortVsLongTermRatio = debt.shortVsLongTermRatio || 'Not Available';
 const recentChanges = debt.recentChanges || 'Not Available';
 const debtRisks = debt.risks || 'Not Available';
-const debtLeverageLabel = debtToEquity !== null ? (debtToEquity > 1.2 ? 'Elevated Leverage' : 'Healthy Leverage') : 'N/A';
+const debtLeverageLabel = getDebtLeverageLabel(debtToEquity);
 
 // Price-to-Book Ratio & Benchmarks
 const pb = data.priceToBookRatio || {};
@@ -57,22 +99,6 @@ let quarterlyEPS = (epsObj.quarterlyEPSPast2Years && epsObj.quarterlyEPSPast2Yea
   ? epsObj.quarterlyEPSPast2Years
   : [];
 
-// Helpers
-function formatCurrency(val: number | null | undefined): string {
-  if (val === undefined || val === null || isNaN(val)) return 'N/A';
-  const abs = Math.abs(val);
-  const sign = val < 0 ? '-' : '';
-  if (abs >= 1e9) return `${sign}$${(abs / 1e9).toFixed(2)}B`;
-  if (abs >= 1e6) return `${sign}$${(abs / 1e6).toFixed(1)}M`;
-  return `${sign}$${abs.toLocaleString()}`;
-}
-
-function formatEPS(val: number | null | undefined): string {
-  if (val === undefined || val === null || isNaN(val)) return 'N/A';
-  if (val < 0) return `-$${Math.abs(val).toFixed(2)}`;
-  return `$${val.toFixed(2)}`;
-}
-
 // Ensure quarterly EPS is in chronological order (oldest -> newest, left -> right)
 let sortedQuarterlyEPS = [...quarterlyEPS];
 if (sortedQuarterlyEPS.length > 1) {
@@ -92,23 +118,43 @@ if (sortedQuarterlyEPS.length > 1) {
 // Volatility Index
 const vol = data.volatilityIndex || {};
 const volValue = vol.value ?? null;
-const volRating = vol.rating || (volValue !== null ? (volValue > 1.3 ? 'High Volatility' : volValue < 0.9 ? 'Low Volatility' : 'Moderate Volatility') : 'Not Rated');
+const volRating = getVolatilityRating(vol.rating, volValue);
 
 // Management Quality
-const mgmt = data.managementQuality || {};
-const mgmtRating = mgmt.rating || 'Not Rated';
-const trackRecord = mgmt.trackRecord || 'Not Available';
+const mgmtObj = getManagementQuality({
+  existingRating: data.managementQuality?.rating,
+  existingTrackRecord: data.managementQuality?.trackRecord,
+  isPennyStock,
+  roic: data.roic ?? data.returnOnInvestedCapital ?? null,
+  roe: returnOnEquity,
+  debtToEquity,
+  operatingCashFlow
+});
+const mgmtRating = mgmtObj.rating;
+const trackRecord = mgmtObj.trackRecord;
 
 // Competitive Moat & Morningstar Framework
 const moat = data.competitiveMoat || {};
-const moatRating = moat.rating || 'Not Rated';
-const moatSummary = moat.summary || 'Not Available';
-const moatTrend = data.moatTrend || moat.trend || 'Stable';
+const moatResult = getEconomicMoat({
+  existingRating: moat.rating,
+  existingSummary: moat.summary,
+  isPennyStock
+});
+const moatRating = moatResult.rating;
+const moatSummary = moatResult.summary;
+const moatTrend = getMoatTrend({
+  existingTrend: data.moatTrend || moat.trend,
+  revenueGrowthYoY: data.revenueGrowthYoY,
+  roic: data.roic ?? data.returnOnInvestedCapital ?? null
+});
 const moatSources = data.moatSources || moat.sources || null;
 
 // Morningstar Star Rating & Uncertainty
 const starRating = data.starRating || data.morningstarRating?.starRating || null;
-const starRatingString = data.starRatingString || data.morningstarRating?.starRatingString || (starRating ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating) : null);
+const starRatingString = getStarRatingString(
+  data.starRatingString || data.morningstarRating?.starRatingString,
+  starRating
+);
 const uncertaintyRating = data.uncertaintyRating || data.morningstarRating?.uncertaintyRating || 'Medium';
 const fiveStarPrice = data.fiveStarPrice || data.morningstarRating?.fiveStarPrice || null;
 const oneStarPrice = data.oneStarPrice || data.morningstarRating?.oneStarPrice || null;
@@ -118,7 +164,7 @@ const priceToFairValue = data.priceToFairValue || data.morningstarRating?.priceT
 const competitorBenchmarking = data.competitorBenchmarking || null;
 
 // Risk Factor
-const riskCategory = riskScore <= 3 ? 'Conservative / Low Risk' : riskScore <= 6 ? 'Core / Moderate Risk' : 'High Risk / Speculative';
+const riskCategory = getRiskCategory(riskScore);
 
 // Artificial Inflation
 const art = data.artificialInflation || {};
@@ -170,27 +216,27 @@ const maxAbsEPS = Math.max(...epsValues.map((val: number) => Math.abs(val)), 0.0
 
 let zeroY = 90;
 let maxBarHeight = 55;
-let svgViewBoxHeight = 190;
-let xAxisLabelY = 172;
+let svgViewBoxHeight = 200;
+let xAxisLabelY = 170;
 
 if (hasNegEPS && !hasPosEPS) {
   // All quarters are losses
   zeroY = 35;
   maxBarHeight = 90;
-  svgViewBoxHeight = 185;
-  xAxisLabelY = 166;
+  svgViewBoxHeight = 195;
+  xAxisLabelY = 162;
 } else if (hasPosEPS && !hasNegEPS) {
   // All quarters are positive
   zeroY = 140;
   maxBarHeight = 90;
-  svgViewBoxHeight = 185;
-  xAxisLabelY = 166;
+  svgViewBoxHeight = 195;
+  xAxisLabelY = 162;
 } else {
   // Mixed positive and loss quarters
   zeroY = 90;
   maxBarHeight = 55;
-  svgViewBoxHeight = 190;
-  xAxisLabelY = 172;
+  svgViewBoxHeight = 200;
+  xAxisLabelY = 170;
 }
 ---
 
@@ -200,53 +246,40 @@ if (hasNegEPS && !hasPosEPS) {
   <div class="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-slate-800">
     <div>
       <div class="flex flex-wrap items-center gap-2 mb-1.5">
-        <span class="text-xs font-mono uppercase tracking-wider text-slate-400">Institutional Analytics</span>
-        <span class="text-slate-600">&bull;</span>
-        <span class="text-xs font-mono font-medium px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
-          Venue: {moneyMarketTradingVenue}
-        </span>
-        {isPennyStock && (
+        <!-- Morningstar Star Rating Badge -->
+        {starRatingString && (
+          <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold font-mono bg-amber-950/80 border-amber-500/40 text-amber-300">
+            <span class="text-[10px] uppercase font-sans text-amber-400/80">Rating:</span>
+            <span>{starRatingString}</span>
+            <span class="text-[10px] px-1 rounded bg-amber-900/60 text-amber-200">({uncertaintyRating})</span>
+          </div>
+        )}
+
+        <!-- Fundamental Rating Badge -->
+        <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold font-mono"
+          class:list={[
+            fundamentalRating === 'Strong' ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400' :
+            fundamentalRating === 'Fairly Valued' ? 'bg-sky-950/80 border-sky-500/40 text-sky-400' :
+            'bg-rose-950/80 border-rose-500/40 text-rose-400'
+          ]}>
+          <span class="text-[10px] uppercase font-sans text-slate-400">Fundamentals:</span>
+          <span>{fundamentalRating}</span>
+        </div>
+
+         {isPennyStock && (
           <span class="text-xs font-mono font-bold px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800/60">
             Micro-Cap / Penny Stock
           </span>
         )}
+
+        <!-- Classification Badge -->
+        <span class="px-3 py-1 rounded-lg bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 text-xs font-mono font-semibold">
+          Classification: {classification}
+        </span>
       </div>
       <h3 class="text-lg sm:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
         <span>Comprehensive Stock Analytics & Fundamental Matrix</span>
       </h3>
-    </div>
-
-    <!-- Rating Badges -->
-    <div class="flex flex-wrap items-center gap-2">
-      <!-- Morningstar Star Rating Badge -->
-      {starRatingString && (
-        <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold font-mono bg-amber-950/80 border-amber-500/40 text-amber-300">
-          <span class="text-[10px] uppercase font-sans text-amber-400/80">Rating:</span>
-          <span>{starRatingString}</span>
-          <span class="text-[10px] px-1 rounded bg-amber-900/60 text-amber-200">({uncertaintyRating})</span>
-        </div>
-      )}
-
-      <!-- Fundamental Rating Badge -->
-      <div class="flex items-center gap-1.5 px-3 py-1 rounded-lg border text-xs font-bold font-mono"
-        class:list={[
-          fundamentalRating === 'Strong' ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-400' :
-          fundamentalRating === 'Fairly Valued' ? 'bg-sky-950/80 border-sky-500/40 text-sky-400' :
-          'bg-rose-950/80 border-rose-500/40 text-rose-400'
-        ]}>
-        <span class="text-[10px] uppercase font-sans text-slate-400">Fundamentals:</span>
-        <span>{fundamentalRating}</span>
-      </div>
-
-      <!-- Classification Badge -->
-      <span class="px-3 py-1 rounded-lg bg-indigo-950/80 border border-indigo-500/40 text-indigo-300 text-xs font-mono font-semibold">
-        {classification}
-      </span>
-
-      <!-- Session Move Badge -->
-      <span class={`text-xs font-mono font-bold px-3 py-1 rounded-lg border ${isPositive ? 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40' : 'bg-rose-950/80 text-rose-400 border-rose-500/40'}`}>
-        {isPositive ? '+' : ''}{movePercent.toFixed(2)}% Session
-      </span>
     </div>
   </div>
 
@@ -493,6 +526,10 @@ if (hasNegEPS && !hasPosEPS) {
             const barY = isPos ? (zeroY - barHeight) : zeroY;
             const barColor = isPos ? '#10b981' : '#f43f5e';
             const valLabelY = isPos ? (barY - 6) : (barY + barHeight + 12);
+            const quarterStr = String(item.quarter || '').trim();
+            const quarterParts = quarterStr.split(/\s+/);
+            const quarterTop = quarterParts[0] || '';
+            const quarterBottom = quarterParts.slice(1).join(' ');
 
             return (
               <g>
@@ -519,16 +556,42 @@ if (hasNegEPS && !hasPosEPS) {
                   {formatEPS(val)}
                 </text>
                 <!-- Quarter Label on X Axis -->
-                <text
-                  x={colX + 18}
-                  y={xAxisLabelY}
-                  text-anchor="middle"
-                  fill="#94a3b8"
-                  font-size="11"
-                  font-family="monospace"
-                >
-                  {item.quarter}
-                </text>
+                {quarterParts.length > 1 ? (
+                  <g>
+                    <text
+                      x={colX + 18}
+                      y={xAxisLabelY}
+                      text-anchor="middle"
+                      fill="#cbd5e1"
+                      font-size="10"
+                      font-family="monospace"
+                      font-weight="600"
+                    >
+                      {quarterTop}
+                    </text>
+                    <text
+                      x={colX + 18}
+                      y={xAxisLabelY + 13}
+                      text-anchor="middle"
+                      fill="#94a3b8"
+                      font-size="9.5"
+                      font-family="monospace"
+                    >
+                      {quarterBottom}
+                    </text>
+                  </g>
+                ) : (
+                  <text
+                    x={colX + 18}
+                    y={xAxisLabelY + 6}
+                    text-anchor="middle"
+                    fill="#cbd5e1"
+                    font-size="10"
+                    font-family="monospace"
+                  >
+                    {quarterStr}
+                  </text>
+                )}
               </g>
             );
           })}
@@ -604,25 +667,43 @@ if (hasNegEPS && !hasPosEPS) {
 
     <div class="flex flex-wrap gap-3">
       <div class="flex-1 min-w-[200px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Operating Cash Flow (OCF)</div>
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Operating Cash Flow</div>
         <div class="text-lg font-bold font-mono text-white mt-1 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(operatingCashFlow)}</div>
         <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Core Operations Generation</div>
       </div>
 
       <div class="flex-1 min-w-[200px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Free Cash Flow (FCF)</div>
+        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Free Cash Flow</div>
         <div class={`text-lg font-bold font-mono mt-1 whitespace-nowrap max-sm:whitespace-normal ${freeCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
           {formatCurrency(freeCashFlow)}
         </div>
         <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Operating CF minus CapEx</div>
       </div>
 
-      <div class="flex-1 min-w-[220px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800 flex flex-col justify-between">
-        <div>
-          <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Cash Flow Profile</div>
-          <div class="text-sm font-bold font-mono text-white mt-1 whitespace-nowrap max-sm:whitespace-normal">{cashFlowStatus}</div>
+      <div class="flex-1 min-w-[220px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800 flex flex-col justify-between min-w-0 relative group/cf">
+        <div class="min-w-0">
+          <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal flex items-center justify-between">
+            <span>Cash Flow Profile</span>
+          </div>
+          <div
+            class="text-sm font-bold font-mono text-white mt-1 truncate max-w-full cursor-help"
+            title={cashFlowStatus}
+          >
+            {trimmedCashFlowStatus}
+          </div>
+
+          {isLongCashFlowStatus && (
+            <div
+              role="tooltip"
+              class="absolute bottom-full left-3 mb-2 hidden group-hover/cf:flex flex-col z-30 px-3 py-2 text-xs font-mono font-medium text-slate-100 bg-slate-900/95 border border-slate-700 rounded-lg shadow-2xl backdrop-blur whitespace-normal min-w-[220px] max-w-[300px] pointer-events-none transition-all duration-200"
+            >
+              <span class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold mb-0.5">Full Cash Flow Profile</span>
+              <span class="text-white font-bold leading-snug">{cashFlowStatus}</span>
+              <div class="absolute top-full left-6 -mt-[1px] border-solid border-t-slate-700 border-t-4 border-x-transparent border-x-4 border-b-0 w-0 h-0"></div>
+            </div>
+          )}
         </div>
-        <div class="text-[10px] text-emerald-400 mt-1 whitespace-nowrap max-sm:whitespace-normal">
+        <div class={`text-[10px] mt-1 whitespace-nowrap max-sm:whitespace-normal ${freeCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
           {freeCashFlow >= 0 ? 'Self-funding organic operations' : 'External financing dependency'}
         </div>
       </div>
@@ -814,55 +895,55 @@ if (hasNegEPS && !hasPosEPS) {
       </div>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs mb-3">
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Volume Anomaly</div>
-        <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{volumeAnomalyRatio !== null && volumeAnomalyRatio !== undefined ? `${volumeAnomalyRatio.toFixed(2)}x normal` : 'N/A'}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{volumeStatusLabel}</div>
+    <div class="flex flex-wrap gap-3 text-xs mb-3">
+      <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Volume Anomaly</div>
+        <div class="text-base font-bold font-mono text-white mt-0.5 leading-tight">{volumeAnomalyRatio !== null && volumeAnomalyRatio !== undefined ? `${volumeAnomalyRatio.toFixed(2)}x normal` : 'N/A'}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">{volumeStatusLabel}</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Major Price Driver</div>
-        <div class="text-xs font-bold text-slate-200 mt-1 line-clamp-2">{majorPriceDriver}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Primary Order Catalyst</div>
+      <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Major Price Driver</div>
+        <div class="text-xs font-bold text-slate-200 mt-1 line-clamp-2 leading-tight">{majorPriceDriver}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">Primary Order Catalyst</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Sentiment Score</div>
-        <div class="text-base font-bold font-mono text-emerald-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{sentimentScore !== null && sentimentScore !== undefined ? `${(sentimentScore * 100).toFixed(0)} / 100` : 'N/A'}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{sentimentLabel}</div>
+      <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Sentiment Score</div>
+        <div class="text-base font-bold font-mono text-emerald-400 mt-0.5 leading-tight">{sentimentScore !== null && sentimentScore !== undefined ? `${(sentimentScore * 100).toFixed(0)} / 100` : 'N/A'}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">{sentimentLabel}</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Artificial Pump Risk</div>
-        <div class={`text-base font-bold font-mono mt-0.5 whitespace-nowrap max-sm:whitespace-normal ${isInflated ? 'text-rose-400' : 'text-emerald-400'}`}>
+      <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Artificial Pump Risk</div>
+        <div class={`text-base font-bold font-mono mt-0.5 leading-tight ${isInflated ? 'text-rose-400' : 'text-emerald-400'}`}>
           {isInflated ? 'High Alert' : 'Minimal (Under 5%)'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Wash Trading / Bot Audit</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">Wash Trading / Bot Audit</div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Option Gamma Imbalance</div>
-        <div class={`text-base font-bold font-mono mt-0.5 whitespace-nowrap max-sm:whitespace-normal ${
+      <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Option Gamma Imbalance</div>
+        <div class={`text-base font-bold font-mono mt-0.5 leading-tight ${
           optionGamma?.riskLevel === 'Severe' || optionGamma?.riskLevel === 'High' ? 'text-rose-400' :
           optionGamma?.riskLevel === 'Moderate' ? 'text-amber-400' : 'text-emerald-400'
         }`}>
           {optionGamma?.riskLevel ? `${optionGamma.riskLevel} Risk` : 'Balanced'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal truncate" title={optionGamma?.imbalanceRatio !== null && optionGamma?.imbalanceRatio !== undefined ? `${optionGamma.imbalanceRatio.toFixed(2)}x Call/Put Ratio` : (optionGamma?.netGammaExposure || 'Neutral Gamma')}>
+        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight break-words" title={optionGamma?.imbalanceRatio !== null && optionGamma?.imbalanceRatio !== undefined ? `${optionGamma.imbalanceRatio.toFixed(2)}x Call/Put Ratio` : (optionGamma?.netGammaExposure || 'Neutral Gamma')}>
           {optionGamma?.imbalanceRatio !== null && optionGamma?.imbalanceRatio !== undefined ? `${optionGamma.imbalanceRatio.toFixed(2)}x Call/Put Ratio` : (optionGamma?.netGammaExposure || 'Neutral Gamma')}
         </div>
       </div>
 
-      <div class="p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
-        <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Free Float Concentration</div>
-        <div class={`text-base font-bold font-mono mt-0.5 whitespace-nowrap max-sm:whitespace-normal ${
+      <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
+        <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Free Float Concentration</div>
+        <div class={`text-base font-bold font-mono mt-0.5 leading-tight ${
           freeFloat?.concentrationLevel === 'Extreme' || freeFloat?.concentrationLevel === 'High' ? 'text-rose-400' :
           freeFloat?.concentrationLevel === 'Moderate' ? 'text-amber-400' : 'text-emerald-400'
         }`}>
           {freeFloat?.concentrationLevel ? `${freeFloat.concentrationLevel} Tier` : 'Normal Float'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal truncate" title={freeFloat?.freeFloatPercent !== null && freeFloat?.freeFloatPercent !== undefined ? `${freeFloat.freeFloatPercent.toFixed(1)}% Float (${freeFloat.floatTurnoverRatio !== null ? `${(freeFloat.floatTurnoverRatio * 100).toFixed(1)}%` : '0%'} T/O)` : 'Standard Liquid Float'}>
+        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight break-words" title={freeFloat?.freeFloatPercent !== null && freeFloat?.freeFloatPercent !== undefined ? `${freeFloat.freeFloatPercent.toFixed(1)}% Float (${freeFloat.floatTurnoverRatio !== null ? `${(freeFloat.floatTurnoverRatio * 100).toFixed(1)}%` : '0%'} T/O)` : 'Standard Liquid Float'}>
           {freeFloat?.freeFloatPercent !== null && freeFloat?.freeFloatPercent !== undefined ? `${freeFloat.freeFloatPercent.toFixed(1)}% Float (${freeFloat.floatTurnoverRatio !== null ? `${(freeFloat.floatTurnoverRatio * 100).toFixed(1)}%` : '0%'} T/O)` : 'Standard Liquid Float'}
         </div>
       </div>

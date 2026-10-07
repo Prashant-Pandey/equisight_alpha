@@ -8,8 +8,9 @@ import {
   normalizeSector,
   sectorFromSic,
   rateAdjustmentFactor,
+  deriveSectorDynamics,
   getSectorDynamics,
-  getPeersForTicker,
+  SECTOR_ETF_MAP,
   calculateMorningstarRating,
   determineUncertaintyRating,
   type SectorDynamics,
@@ -39,6 +40,14 @@ import type {
   StarRating,
   UncertaintyRating
 } from '../types.js';
+import {
+  getClassification,
+  getFundamentalRating,
+  getCashFlowStatus,
+  getManagementQuality,
+  getMoatTrend,
+  getEconomicMoat
+} from '../../../src/utils/financialClassification.js';
 
 const clamp = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
 const pctOf = (part: number, whole: number): number => Math.round((part / whole) * 100);
@@ -202,18 +211,28 @@ export class FundamentalDataIngestor {
     if (!profile) {
       try {
         profile = await webScraper.fetchCompanyProfile(cleanTicker) || undefined;
-      } catch {}
+      } catch { }
     }
     const businessSummary = profile?.businessSummary || secData?.businessSummary;
     const description = businessSummary || `${name} is an equity security publicly traded on major financial markets operating in the ${sector} sector (${industry}).`;
     const segmentRevenueBreakdown = extractSegmentBreakdown(businessSummary, revenueTTM);
 
-    // Fetch peer live metrics for competitor benchmarking matrix
-    const peerTickers = getPeersForTicker(cleanTicker, sector).map(p => p.ticker);
+    // Dynamically derive peer tickers from market APIs (Finnhub & Yahoo Finance)
+    const peerTickers = await webScraper.fetchPeerTickers(cleanTicker, sector);
     let peerData: Record<string, any> = {};
+    if (peerTickers.length > 0) {
+      try {
+        peerData = await webScraper.fetchPeerQuotes(peerTickers);
+      } catch { }
+    }
+
+    // Fetch benchmark Sector ETF quote for real-time sector valuation multiples
+    const sectorEtf = SECTOR_ETF_MAP[sector as keyof typeof SECTOR_ETF_MAP] || 'SPY';
+    let etfData: { price?: number; trailingPE?: number; forwardPE?: number } | undefined;
     try {
-      peerData = await webScraper.fetchPeerQuotes(peerTickers);
-    } catch {}
+      const etfQuotes = await webScraper.fetchPeerQuotes([sectorEtf]);
+      etfData = etfQuotes[sectorEtf] as any;
+    } catch { }
 
     return this.enrichFundamentalMetrics({
       ticker: cleanTicker,
@@ -223,7 +242,9 @@ export class FundamentalDataIngestor {
       description,
       businessSummary,
       segmentRevenueBreakdown,
+      peerTickers,
       peerData,
+      etfData,
       marketCap,
       peRatioTrailing,
       peRatioForward,
@@ -277,7 +298,9 @@ export class FundamentalDataIngestor {
     description: string;
     businessSummary?: string;
     segmentRevenueBreakdown?: SegmentBreakdownItem[];
+    peerTickers?: string[];
     peerData?: Record<string, any>;
+    etfData?: { price?: number; trailingPE?: number; forwardPE?: number };
     marketCap: number;
     peRatioTrailing: number | null;
     peRatioForward: number | null;
@@ -436,13 +459,11 @@ export class FundamentalDataIngestor {
     // 6. Cash Flow Breakdown
     const operatingCashFlow = raw.operatingCashFlow ?? 0;
     const freeCashFlow = raw.freeCashFlowTTM;
-    const cashFlowStatus = isPenny
-      ? 'Micro-Cap / Cash Conservation Focus'
-      : freeCashFlow > 0
-        ? 'Positive Operating Free Cash Flow'
-        : freeCashFlow < 0
-          ? 'Operating Cash Flow Deficit'
-          : 'Cash Neutral / Not Reported';
+    const cashFlowStatus = getCashFlowStatus({
+      freeCashFlow,
+      operatingCashFlow,
+      isPennyStock: isPenny
+    });
 
     const cashFlow: CashFlowBreakdown = {
       operatingCashFlow,
@@ -451,22 +472,19 @@ export class FundamentalDataIngestor {
     };
 
     // 7. Management Quality & Competitive Moat (Deconstructed into 5 Morningstar Pillars + Trend)
-    const managementQuality: ManagementQuality = {
-      rating: isPenny ? 'Speculative' : 'Established',
-      trackRecord: isPenny
-        ? 'Executive leadership operating in micro-cap capital structure environment with ongoing financing exposure.'
-        : 'Management team with operational track record navigating sector cycles.'
-    };
+    const managementQuality: ManagementQuality = getManagementQuality({
+      isPennyStock: isPenny,
+      roic: computedRoic,
+      roe: returnOnEquity,
+      debtToEquity: raw.debtToEquity,
+      operatingCashFlow
+    });
 
     const normSector = normalizeSector(raw.sector);
-    let moatTrend: MoatTrend = 'Stable';
-    if (raw.revenueGrowthYoY !== null && raw.revenueGrowthYoY !== undefined) {
-      if (raw.revenueGrowthYoY > 8 && (computedRoic === null || computedRoic > 10)) {
-        moatTrend = 'Positive';
-      } else if (raw.revenueGrowthYoY < -5 || (computedRoic !== null && computedRoic < 4)) {
-        moatTrend = 'Negative';
-      }
-    }
+    const moatTrend: MoatTrend = getMoatTrend({
+      revenueGrowthYoY: raw.revenueGrowthYoY,
+      roic: computedRoic
+    });
 
     let intangiblesRating: MoatPillarRating = 'None';
     let intangiblesDesc = 'No material pricing power derived from proprietary patents or regulatory brand equity.';
@@ -558,30 +576,27 @@ export class FundamentalDataIngestor {
     const wideCount = [intangiblesRating, switchingRating, networkRating, costAdvantageRating, efficientScaleRating].filter(r => r === 'Wide').length;
     const narrowCount = [intangiblesRating, switchingRating, networkRating, costAdvantageRating, efficientScaleRating].filter(r => r === 'Narrow').length;
 
-    let overallMoatRating = 'None';
-    if (!isPenny) {
-      if (wideCount >= 1 || (narrowCount >= 2 && (computedRoic ?? 10) > 8)) {
-        overallMoatRating = 'Wide Moat';
-      } else if (narrowCount >= 1 || (computedRoic !== null && computedRoic > 9)) {
-        overallMoatRating = 'Narrow Moat';
-      }
-    }
+    const moatResult = getEconomicMoat({
+      isPennyStock: isPenny,
+      widePillarsCount: wideCount,
+      narrowPillarsCount: narrowCount,
+      roic: computedRoic
+    });
 
     const competitiveMoat: CompetitiveMoat = {
-      rating: overallMoatRating,
+      rating: moatResult.rating,
       trend: moatTrend,
-      summary: isPenny
-        ? 'Limited enterprise switching barriers; operations exposed to commodity pricing or commercial adoption velocity.'
-        : overallMoatRating === 'Wide Moat'
-          ? `Structural competitive advantages driven by ${wideCount >= 1 ? 'durable economic moat pillars' : 'high barrier to entry'} and defensible market position.`
-          : overallMoatRating === 'Narrow Moat'
-            ? 'Established customer relationships, localized scale, and specialized operations provide baseline commercial protection.'
-            : 'Minimal competitive barriers; subject to industry cyclicality and pricing pressures.',
+      summary: moatResult.summary,
       sources: moatSources
     };
 
-    // 8. Key Company & Industry Questions (Enriched with business description, segment breakdown, and sector dynamics)
-    const sectorDynamicsInfo = getSectorDynamics(raw.sector);
+    // 8. Key Company & Industry Questions (Enriched with business description, segment breakdown, and dynamic sector dynamics from live API data)
+    const sectorDynamicsInfo = deriveSectorDynamics(
+      raw.sector,
+      raw.industry,
+      { us10YearYield: raw.riskFreeRate },
+      raw.etfData
+    );
     const sectorDynamics = {
       industryCondition: sectorDynamicsInfo.industryCondition,
       obstaclesAndChallenges: sectorDynamicsInfo.obstaclesAndChallenges,
@@ -622,6 +637,7 @@ export class FundamentalDataIngestor {
     let stage3Pv = 0;
     let enterpriseValue = 0;
     let equityValue = 0;
+    const overallMoatRating = moatResult.rating;
     const fadeYears = overallMoatRating === 'Wide Moat' ? 15 : overallMoatRating === 'Narrow Moat' ? 10 : 5;
     const dcfDiscountRate = Math.max(terminalGrowth + 0.02, wacc);
     const stage1GrowthRate = raw.revenueGrowthYoY !== null && raw.revenueGrowthYoY !== undefined && raw.revenueGrowthYoY > 0
@@ -631,10 +647,10 @@ export class FundamentalDataIngestor {
     // Normalize FCFF to prevent one-off CapEx lumpiness from distorting fair value
     const normalizedFcf = operatingCashFlow > 0
       ? Math.max(
-          raw.freeCashFlowTTM > 0 ? raw.freeCashFlowTTM : operatingCashFlow * 0.35,
-          operatingCashFlow * 0.35,
-          (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0)
-        )
+        raw.freeCashFlowTTM > 0 ? raw.freeCashFlowTTM : operatingCashFlow * 0.35,
+        operatingCashFlow * 0.35,
+        (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0)
+      )
       : (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0);
 
     if (normalizedFcf > 0 && shares > 0 && dcfDiscountRate > terminalGrowth) {
@@ -835,8 +851,7 @@ export class FundamentalDataIngestor {
       verdict = isPenny ? 'Speculative Penny Stock / Fundamentals Inapplicable' : 'Inconclusive / Data Limited';
     }
 
-    // Competitor Benchmarking Matrix (Focal stock + 2-3 sector peers)
-    const peerProfiles = getPeersForTicker(raw.ticker, raw.sector);
+    // Competitor Benchmarking Matrix (Focal stock + live peer equities dynamically derived from APIs)
     const peerRows: PeerComparisonRow[] = [
       {
         ticker: raw.ticker,
@@ -849,27 +864,34 @@ export class FundamentalDataIngestor {
       }
     ];
 
-    for (const p of peerProfiles) {
-      const liveP = raw.peerData?.[p.ticker];
+    const candidatePeers = (raw.peerTickers && raw.peerTickers.length > 0)
+      ? raw.peerTickers
+      : Object.keys(raw.peerData || {});
+    const cleanPeerTickers = candidatePeers.filter(t => t.toUpperCase() !== raw.ticker.toUpperCase()).slice(0, 3);
+
+    for (const pTicker of cleanPeerTickers) {
+      const liveP = raw.peerData?.[pTicker];
       peerRows.push({
-        ticker: p.ticker,
-        name: p.name,
-        marketCap: liveP?.marketCap ?? p.defaultMarketCap,
-        peRatio: liveP?.peTrailing ?? p.defaultPe,
-        evToEbitda: liveP?.evToEbitda ?? p.defaultEvEbitda,
-        moat: p.moatRating,
-        roic: liveP?.roic ?? p.defaultRoic
+        ticker: pTicker,
+        name: liveP?.name || pTicker,
+        marketCap: liveP?.marketCap ?? 0,
+        peRatio: (liveP?.trailingPE ?? liveP?.forwardPE) ? parseFloat((liveP.trailingPE ?? liveP.forwardPE)!.toFixed(1)) : null,
+        evToEbitda: (typeof liveP?.evToEbitda === 'number') ? parseFloat(liveP.evToEbitda.toFixed(1)) : null,
+        moat: 'Unrated',
+        roic: (typeof liveP?.roic === 'number') ? parseFloat(liveP.roic.toFixed(1)) : null
       });
     }
 
     const competitorBenchmarking: CompetitorBenchmarkingMatrix = {
       peers: peerRows,
-      commentary: `${raw.companyName} trades at ${currentPE ? currentPE + 'x P/E' : 'unreported P/E'} against peer group medians, supported by a ${competitiveMoat.rating} classification.`
+      commentary: cleanPeerTickers.length > 0
+        ? `${raw.companyName} trades at ${currentPE ? currentPE + 'x P/E' : 'unreported P/E'} against peer group participants (${cleanPeerTickers.join(', ')}), supported by a ${competitiveMoat.rating} classification.`
+        : `${raw.companyName} evaluated against broader ${raw.sector} valuation benchmarks, supported by a ${competitiveMoat.rating} classification.`
     };
 
     // Morningstar Star Rating & Uncertainty Analysis
     const uncertaintyRating = determineUncertaintyRating(raw.sector, raw.beta, raw.debtToEquity, isPenny);
-    const morningstarRating = calculateMorningstarRating(baseVal, consensusFairValue, uncertaintyRating);
+    const morningstarRating = calculateMorningstarRating(baseVal, consensusFairValue ?? baseVal, uncertaintyRating);
 
     const valuationModels: ValuationModels = {
       dcf: {
@@ -971,21 +993,18 @@ export class FundamentalDataIngestor {
     };
 
     // 10. Classification & Fundamental Rating
-    const classification: FundamentalMetrics['classification'] = isPenny
-      ? 'Speculative Penny Stock'
-      : raw.dividendYield >= 2.0
-        ? 'Income Stock'
-        : raw.operatingMargin > 15
-          ? 'Growth Stock'
-          : 'Value / Turnaround';
+    const classification: FundamentalMetrics['classification'] = getClassification({
+      isPennyStock: isPenny,
+      dividendYield: raw.dividendYield,
+      operatingMargin: raw.operatingMargin,
+      peRatio: currentPE
+    });
 
-    const fundamentalRating: FundamentalMetrics['fundamentalRating'] = isPenny
-      ? 'Weak'
-      : (verdict.includes('Undervalued') && (raw.debtToEquity ?? 0.5) < 1.5)
-        ? 'Strong'
-        : verdict.includes('Overvalued') || (raw.debtToEquity && raw.debtToEquity > 2.5)
-          ? 'Weak'
-          : 'Fairly Valued';
+    const fundamentalRating: FundamentalMetrics['fundamentalRating'] = getFundamentalRating({
+      isPennyStock: isPenny,
+      verdict,
+      debtToEquity: raw.debtToEquity
+    });
 
     return {
       ticker: raw.ticker,

@@ -158,6 +158,16 @@ const reportsCollection = defineCollection({
       redditTitle: z.string().default(''),
       telegram: z.string().default('')
     }).default({}),
+    executiveSummaryData: z.object({
+      catalystHeadline: z.string().optional(),
+      catalystCategory: z.string().optional(),
+      expectationsVsReality: z.string().optional(),
+      sessionDynamics: z.string().optional(),
+      macroeconomicContext: z.string().optional(),
+      fundamentalImpact: z.string().optional(),
+      keyTakeaways: z.array(z.string()).optional(),
+      formattedMarkdown: z.string().optional()
+    }).passthrough().optional(),
 
     // Morningstar Framework & Institutional Rigor
     morningstarRating: z.any().optional(),

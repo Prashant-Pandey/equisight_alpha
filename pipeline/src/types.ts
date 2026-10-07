@@ -16,6 +16,7 @@ export interface MarketMover {
   moneyMarketTradingVenue: string;
   sharesOutstanding?: number;
   floatShares?: number;
+  newsHeadline?: string;
 }
 
 export interface ValuationMetricComparison {
@@ -466,6 +467,17 @@ export interface ThesisPoint {
   deductionChain: string;
 }
 
+export interface ExecutiveSummaryData {
+  catalystHeadline: string;
+  catalystCategory?: string;
+  expectationsVsReality?: string;
+  sessionDynamics?: string;
+  macroeconomicContext?: string;
+  fundamentalImpact?: string;
+  keyTakeaways?: string[];
+  formattedMarkdown?: string;
+}
+
 export interface LLMAnalysisOutput {
   title: string;
   seoDescription: string;
@@ -473,6 +485,7 @@ export interface LLMAnalysisOutput {
   primaryKeywords: string[];
   secondaryKeywords: string[];
   catalystSummary: string;
+  executiveSummaryData?: ExecutiveSummaryData;
   markdownBody: string;
   extractedFigures: {
     peRatio?: number;
@@ -579,6 +592,7 @@ export interface FinalReportFrontmatter {
     redditTitle: string;
     telegram: string;
   };
+  executiveSummaryData?: ExecutiveSummaryData;
 
   // Penny Stock & Trading Venue
   isPennyStock: boolean;

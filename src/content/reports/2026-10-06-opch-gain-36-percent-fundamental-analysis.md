@@ -385,7 +385,16 @@ In today's trading session, **Option Care Health, Inc. (OPCH)** experienced nota
 Social discussion velocity around $OPCH shifted by **+150%**, with the primary price driver identified as **$5.8 billion definitive acquisition agreement by CD&R and McKesson at $32.05/share**. The algorithmic artificial inflation risk profile is appraised as **High** (Elevated Retail Momentum / Liquidity Dislocation Detected).
 
 | Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :---
+| :--- | :--- | :--- |
+| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
+| **Session Movement** | `+36.0%` | Daily volatility threshold |
+| **Market Capitalization** | `$4.65B` | Classification: Value / Turnaround |
+| **Trading Volume** | `28,840,284` | Anomaly Ratio: 4x vs 90d avg |
+| **52-Week Range** | `$31.02 - $31.02` | Current: $31.02 |
+| **Fundamental Rating** | `Weak` | Consensus Fair Value: $23.14 (-25.4%) |
+| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: $5.8 billion definitive acquisition agreement by CD&R and McKesson at $32.05/share |
+
+---
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -403,17 +412,6 @@ Social discussion velocity around $OPCH shifted by **+150%**, with the primary p
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
- | :--- | :--- |
-| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
-| **Session Movement** | `+36.0%` | Daily volatility threshold |
-| **Market Capitalization** | `$4.65B` | Classification: Value / Turnaround |
-| **Trading Volume** | `28,840,284` | Anomaly Ratio: 4x vs 90d avg |
-| **52-Week Range** | `$31.02 - $31.02` | Current: $31.02 |
-| **Fundamental Rating** | `Weak` | Consensus Fair Value: $23.14 (-25.4%) |
-| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: $5.8 billion definitive acquisition agreement by CD&R and McKesson at $32.05/share |
-
----
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

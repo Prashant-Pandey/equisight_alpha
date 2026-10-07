@@ -279,3 +279,97 @@ Please format your response strictly as JSON with this schema:
   }
 }`;
 }
+
+export function buildExecutiveSummarySystemPrompt(): string {
+  return `You are a Senior Quantitative Equity Research Analyst and Lead Market Strategist.
+Your specific role is to author an institutional-grade, empirical, and deep "Executive Summary & Session Catalyst" section for today's equity research report.
+
+${PUBLISHER_COMPLIANCE_DIRECTIVE}
+
+CORE OBJECTIVES FOR THIS EXECUTIVE SUMMARY & SESSION CATALYST:
+1. Session Catalyst Identification & Precision:
+   - Precisely pinpoint the catalyst responsible for today's price dislocation (e.g. SEC 8-K/10-Q filing, multi-year commercial contract, clinical trial readout, secondary offering dilution, earnings beat/miss, short-squeeze mechanics, or sector macro contagion).
+   - Classify the catalyst nature (e.g., Commercial Contract, Regulatory Filing, Capital Structure / Dilution, Earnings Surprise, Macro / Sector Momentum, Retail Hype).
+2. Catalyst-Price Alignment & Expectations vs. Reality Gap:
+   - Critically evaluate whether the magnitude of the move aligns with empirical evidence, or exhibits divergence (e.g. DIVERGENT_SELL_THE_NEWS, DIVERGENT_RELIEF_RALLY, MACRO_DOMINATED, NOISE_SPECULATION).
+   - Deconstruct the expectations gap: Explain how pre-session market positioning, whisper numbers, and existing valuation multiples collided with the actual news revelation.
+3. Order Flow & Volume Anomaly Breakdown:
+   - Quantify trading volume against 90-day historical averages (Volume Anomaly Ratio).
+   - Evaluate whether order flow represents authentic institutional accumulation/distribution or transient retail momentum.
+   - Note the trading venue (e.g. Nasdaq Global Select, NYSE American, OTC Markets) and whether the asset trades under penny stock parameters (< $5.00).
+4. Macro Backdrop Interplay:
+   - Synthesize how prevailing benchmark yields (US 10Y), Fed/ECB monetary policies, and broad market volatility (VIX) interact with this stock's duration and valuation multiples.
+5. High-Level Valuation & Solvency Anchor:
+   - Anchor the session move against the multi-model Consensus Fair Value target, Morningstar Star Rating, Economic Moat, and near-term debt maturity profile.
+6. Institutional Key Takeaways:
+   - Distill 3 to 4 analytical takeaways in clear, bulleted institutional style.
+7. Formatted Section Markdown:
+   - Construct the complete markdown starting with "## Executive Summary & Session Catalyst", incorporating:
+     * High-density narrative paragraphs synthesizing the session catalyst, expectation gap, and order flow.
+     * A blockquote highlighting "Key Session Takeaways".
+     * The standard Key Session Metric markdown table.
+
+OUTPUT FORMAT:
+You MUST respond with valid, parseable JSON conforming strictly to this schema:
+{
+  "catalystHeadline": "string (crisp 1-sentence headline of the driver)",
+  "catalystCategory": "string",
+  "expectationsVsReality": "string (2-3 paragraphs analyzing the expectations vs reality gap)",
+  "sessionDynamics": "string (narrative explaining price action, volume divergence, and venue characteristics)",
+  "macroeconomicContext": "string (how macro rates, VIX, or sector factors influenced the session)",
+  "fundamentalImpact": "string (how the catalyst alters or confirms the company's fundamental trajectory)",
+  "keyTakeaways": [
+    "Takeaway 1...",
+    "Takeaway 2...",
+    "Takeaway 3..."
+  ],
+  "formattedMarkdown": "string (The complete markdown section starting with '## Executive Summary & Session Catalyst')"
+}`;
+}
+
+export function buildExecutiveSummaryUserPrompt(
+  mover: MarketMover,
+  fundamentals: FundamentalMetrics,
+  macro: MacroBackdrop,
+  sentiment: SocialSentiment
+): string {
+  const cleanTicker = mover.ticker.toUpperCase();
+  const moveStr = `${mover.changePercent > 0 ? '+' : ''}${mover.changePercent.toFixed(1)}%`;
+  const volumeAnomalyRatio = sentiment.volumeAnomalyRatio || +(mover.volume / Math.max(1, mover.avgVolume)).toFixed(2);
+  const consensusFV = fundamentals.valuationModels?.consensusFairValue ?? null;
+  const verdict = fundamentals.valuationModels?.verdict ?? 'Fairly Valued';
+
+  return `Generate an institutional-grade "Executive Summary & Session Catalyst" section for:
+Equity: ${fundamentals.companyName} ($${cleanTicker})
+Trading Venue: ${mover.moneyMarketTradingVenue || mover.exchange} (Penny Stock: ${mover.isPennyStock ? 'Yes (< $5.00)' : 'No'})
+Closing Price: $${mover.price.toFixed(2)} ${mover.currency} (${moveStr} Move)
+Trading Volume: ${mover.volume.toLocaleString()} shares vs 90-Day Avg of ${mover.avgVolume.toLocaleString()} (${volumeAnomalyRatio}x RVOL)
+Market Capitalization: $${(fundamentals.marketCap / 1e9).toFixed(2)}B (${fundamentals.classification || 'Equities'})
+
+=== SESSION CATALYST INTELLIGENCE ===
+Primary Driver: ${sentiment.majorPriceDriver || mover.newsHeadline || 'Market Flow'}
+Catalyst-Price Alignment: ${sentiment.catalystAlignment || 'ALIGNED'}
+Expectations Gap Synthesis: ${sentiment.catalystSynthesis || 'Market reacting to fundamental developments.'}
+${sentiment.secFilingSummary ? `SEC EDGAR Filing Context: ${sentiment.secFilingSummary}` : ''}
+${sentiment.filteredHeadlines && sentiment.filteredHeadlines.length > 0 ? `Verified Headlines:\n${sentiment.filteredHeadlines.map(h => `- [${h.source}] (${h.headlineSentiment}, Relevance: ${h.relevance}/10) ${h.title}`).join('\n')}` : ''}
+${sentiment.recentHeadlines && sentiment.recentHeadlines.length > 0 ? `Recent Scraped News:\n${sentiment.recentHeadlines.slice(0, 5).map(h => `- ${h}`).join('\n')}` : ''}
+
+=== TRADING STRUCTURE & ANOMALIES ===
+Artificial Inflation Risk: ${sentiment.artificialInflationRisk}
+Option Gamma Skew: ${sentiment.optionGammaImbalance ? `${sentiment.optionGammaImbalance.riskLevel} - ${sentiment.optionGammaImbalance.status}` : 'No Options Chain'}
+Free Float Concentration: ${sentiment.freeFloatConcentration ? `${sentiment.freeFloatConcentration.concentrationLevel} (${sentiment.freeFloatConcentration.freeFloatPercent ?? 'N/A'}% float) - ${sentiment.freeFloatConcentration.status}` : 'Normal Float'}
+Sentiment Score: ${sentiment.bullishPercent}% Bull / ${sentiment.bearishPercent}% Bear (Delta 24h: +${sentiment.volumeChange24h}%)
+
+=== FUNDAMENTAL & VALUATION BENCHMARKS ===
+Morningstar Rating: ${fundamentals.starRatingString || '★★★☆☆'} (${fundamentals.starRating || 3} Stars, Uncertainty: ${fundamentals.uncertaintyRating || 'Medium'})
+Economic Moat: ${fundamentals.competitiveMoat?.rating || 'None'} (Trend: ${fundamentals.competitiveMoat?.trend || 'Stable'})
+Consensus Fair Value: ${consensusFV !== null ? `$${consensusFV.toFixed(2)}` : 'N/A'} (Verdict: ${verdict}, Price/FV: ${fundamentals.priceToFairValue ? `${fundamentals.priceToFairValue.toFixed(2)}x` : '1.0x'})
+TTM Revenue: $${(fundamentals.revenueTTM / 1e9).toFixed(2)}B | Operating Margin: ${fundamentals.operatingMargin.toFixed(1)}% | TTM FCF: $${(fundamentals.freeCashFlowTTM / 1e9).toFixed(2)}B
+Total Debt: $${((fundamentals.totalDebt || 0) / 1e9).toFixed(2)}B (Short-Term: $${(((fundamentals.shortTermDebt || 0) / 1e6)).toFixed(1)}M) | Cash: $${((fundamentals.cashAndEquivalents || 0) / 1e9).toFixed(2)}B
+
+=== MACRO BACKDROP ===
+US 10-Year Yield: ${macro.us10YearYield.toFixed(2)}% | Fed Funds Rate: ${macro.fedFundsRate.toFixed(2)}% | VIX: ${macro.vixIndex.toFixed(1)}
+Macro Impact: ${macro.sectorImpactSummary}
+
+Produce the comprehensive JSON output strictly according to the specified schema.`;
+}

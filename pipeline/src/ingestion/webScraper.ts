@@ -30,6 +30,16 @@ export interface ScrapedRedditPost {
   subreddit?: string;
 }
 
+export interface LivePeerData {
+  price: number;
+  name?: string;
+  trailingPE?: number | null;
+  forwardPE?: number | null;
+  marketCap?: number;
+  evToEbitda?: number | null;
+  roic?: number | null;
+}
+
 export interface SecQuarterlyEPS {
   quarter: string;
   eps: number;
@@ -894,11 +904,73 @@ export class WebScraper {
   }
 
   /**
-   * Fetches real-time price and valuation metrics for peer equities.
+   * Dynamically retrieves peer equity tickers from live financial APIs (Finnhub & Yahoo Recommendations).
+   * Derives peer symbols directly from market APIs instead of static hardcoded dictionaries.
    */
-  public async fetchPeerQuotes(symbols: string[]): Promise<Record<string, { price: number; trailingPE?: number; forwardPE?: number; marketCap?: number }>> {
-    const result: Record<string, { price: number; trailingPE?: number; forwardPE?: number; marketCap?: number }> = {};
+  public async fetchPeerTickers(ticker: string, sector?: string): Promise<string[]> {
+    const cleanTicker = ticker.split('.')[0].trim().toUpperCase();
+    const candidatePeers: string[] = [];
+
+    // 1. Primary Source: Finnhub Peers API (Official stock peer endpoint)
+    if (CONFIG.FINNHUB_API_KEY) {
+      try {
+        const url = `https://finnhub.io/api/v1/stock/peers?symbol=${encodeURIComponent(cleanTicker)}&token=${CONFIG.FINNHUB_API_KEY}`;
+        const res = await fetchWithRetry(url, { timeoutMs: 3500, retries: 1 });
+        if (res.ok) {
+          const list = await res.json();
+          if (Array.isArray(list)) {
+            for (const sym of list) {
+              if (typeof sym === 'string') {
+                const s = sym.trim().toUpperCase();
+                if (s && s !== cleanTicker && !s.includes('.') && !candidatePeers.includes(s)) {
+                  candidatePeers.push(s);
+                }
+              }
+            }
+          }
+        }
+      } catch {}
+    }
+
+    if (candidatePeers.length >= 3) {
+      return candidatePeers.slice(0, 5);
+    }
+
+    // 2. Secondary Source: Yahoo Finance Recommendations / Similar Equities API
+    try {
+      const auth = await getYahooAuth();
+      const url = `https://query2.finance.yahoo.com/v6/finance/recommendationsbysymbol/${encodeURIComponent(cleanTicker)}`;
+      const res = await fetchWithRetry(url, {
+        timeoutMs: 3500,
+        retries: 1,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+          ...(auth?.cookie ? { 'Cookie': auth.cookie } : {})
+        }
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const recList = json?.finance?.result?.[0]?.recommendedSymbols || [];
+        for (const item of recList) {
+          const sym = typeof item?.symbol === 'string' ? item.symbol.trim().toUpperCase() : '';
+          if (sym && sym !== cleanTicker && !sym.includes('=') && !candidatePeers.includes(sym)) {
+            candidatePeers.push(sym);
+          }
+        }
+      }
+    } catch {}
+
+    return candidatePeers.slice(0, 5);
+  }
+
+  /**
+   * Fetches real-time price and valuation metrics for peer equities from live financial APIs.
+   * Pulls live market capitalization, P/E ratios, EV/EBITDA, and ROIC dynamically.
+   */
+  public async fetchPeerQuotes(symbols: string[]): Promise<Record<string, LivePeerData>> {
+    const result: Record<string, LivePeerData> = {};
     if (!symbols.length) return result;
+
     try {
       const auth = await getYahooAuth();
       const cleanSymbols = symbols.map(s => s.trim().toUpperCase()).join(',');
@@ -918,16 +990,67 @@ export class WebScraper {
         const list = data?.quoteResponse?.result || [];
         for (const item of list) {
           if (item.symbol) {
-            result[item.symbol.toUpperCase()] = {
+            const sym = item.symbol.toUpperCase();
+            result[sym] = {
               price: item.regularMarketPrice ?? 0,
-              trailingPE: item.trailingPE ? parseFloat(item.trailingPE.toFixed(1)) : undefined,
-              forwardPE: item.forwardPE ? parseFloat(item.forwardPE.toFixed(1)) : undefined,
-              marketCap: item.marketCap ?? 0
+              name: item.shortName || item.longName || sym,
+              trailingPE: (typeof item.trailingPE === 'number' && item.trailingPE > 0)
+                ? parseFloat(item.trailingPE.toFixed(1))
+                : undefined,
+              forwardPE: (typeof item.forwardPE === 'number' && item.forwardPE > 0)
+                ? parseFloat(item.forwardPE.toFixed(1))
+                : undefined,
+              marketCap: typeof item.marketCap === 'number' ? item.marketCap : 0,
+              evToEbitda: (typeof item.enterpriseToEbitda === 'number' && item.enterpriseToEbitda > 0)
+                ? parseFloat(item.enterpriseToEbitda.toFixed(1))
+                : undefined,
+              roic: undefined
             };
           }
         }
       }
     } catch {}
+
+    // Enrich peer EV/EBITDA and ROIC via Finnhub metrics when available
+    if (CONFIG.FINNHUB_API_KEY) {
+      const symbolsToEnrich = symbols.slice(0, 4);
+      await Promise.allSettled(
+        symbolsToEnrich.map(async (sym) => {
+          const clean = sym.trim().toUpperCase();
+          try {
+            const mUrl = `https://finnhub.io/api/v1/stock/metric?symbol=${encodeURIComponent(clean)}&metric=all&token=${CONFIG.FINNHUB_API_KEY}`;
+            const mRes = await fetchWithRetry(mUrl, { timeoutMs: 3000, retries: 1 });
+            if (mRes.ok) {
+              const mData = await mRes.json();
+              const metric = mData?.metric;
+              if (metric) {
+                if (!result[clean]) {
+                  result[clean] = {
+                    price: 0,
+                    name: clean,
+                    marketCap: typeof metric.marketCapitalization === 'number' ? metric.marketCapitalization * 1e6 : 0
+                  };
+                }
+                if (result[clean].evToEbitda === undefined && typeof metric.evEbitdaTTM === 'number') {
+                  result[clean].evToEbitda = parseFloat(metric.evEbitdaTTM.toFixed(1));
+                }
+                if (result[clean].trailingPE === undefined && typeof metric.peTTM === 'number') {
+                  result[clean].trailingPE = parseFloat(metric.peTTM.toFixed(1));
+                }
+                if (result[clean].roic === undefined) {
+                  if (typeof metric.roiTTM === 'number') {
+                    result[clean].roic = parseFloat(metric.roiTTM.toFixed(1));
+                  } else if (typeof metric.roeTTM === 'number') {
+                    result[clean].roic = parseFloat(metric.roeTTM.toFixed(1));
+                  }
+                }
+              }
+            }
+          } catch {}
+        })
+      );
+    }
+
     return result;
   }
 

@@ -8,21 +8,20 @@ import type {
   ThesisPoint
 } from '../types.js';
 import { affiliateEngine } from './affiliateEngine.js';
+import { formatPriceTimestamp } from '../../../src/utils/formatters.js';
+import {
+  isPennyStock as checkPennyStock,
+  getClassification,
+  getFundamentalRating,
+  getCashFlowStatus,
+  getVolatilityRating,
+  resolveTradingVenue,
+  getManagementQuality,
+  getMoatTrend,
+  getEconomicMoat
+} from '../../../src/utils/financialClassification.js';
 
-export function formatPriceTimestamp(date = new Date()): string {
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/New_York',
-    timeZoneName: 'short'
-  };
-  const formatted = new Intl.DateTimeFormat('en-US', options).format(date);
-  return `Price on ${formatted}`;
-}
+export { formatPriceTimestamp };
 
 export function buildTheses(
   mover: MarketMover,
@@ -71,12 +70,8 @@ export class ProgrammaticAdInjector {
 
     const priceTimestamp = analysis.priceTimestamp || formatPriceTimestamp(new Date());
 
-    const isPennyStock = mover.isPennyStock ?? (mover.price < 5.0 || mover.exchange === 'NYSE American' || (mover.exchange as string)?.includes('Capital Market'));
-    const moneyMarketTradingVenue = mover.moneyMarketTradingVenue || (
-      mover.exchange === 'NASDAQ' ? 'Nasdaq Capital Market' :
-        mover.exchange === 'NYSE' ? 'NYSE American' :
-          mover.exchange
-    );
+    const isPennyStock = checkPennyStock(mover.price, mover.exchange, mover.isPennyStock);
+    const moneyMarketTradingVenue = mover.moneyMarketTradingVenue || resolveTradingVenue(mover.ticker, mover.exchange, isPennyStock);
 
     const defaultRiskLevel: 'Low' | 'Moderate' | 'High' | 'Severe' = isPennyStock && mover.category === 'gainer'
       ? 'Severe'
@@ -168,15 +163,23 @@ export class ProgrammaticAdInjector {
     };
 
     // 6. Management Quality & Competitive Moat
-    const managementQuality = {
-      rating: (fundamentals.managementQuality?.rating as any) ?? 'Not Rated',
-      trackRecord: fundamentals.managementQuality?.trackRecord ?? 'Not Available'
-    };
+    const managementQuality = getManagementQuality({
+      existingRating: fundamentals.managementQuality?.rating,
+      existingTrackRecord: fundamentals.managementQuality?.trackRecord,
+      isPennyStock
+    });
 
+    const moatResult = getEconomicMoat({
+      existingRating: fundamentals.competitiveMoat?.rating,
+      existingSummary: fundamentals.competitiveMoat?.summary,
+      isPennyStock
+    });
     const competitiveMoat = {
-      rating: (fundamentals.competitiveMoat?.rating as any) ?? 'Not Rated',
-      trend: fundamentals.competitiveMoat?.trend ?? analysis.moatTrend ?? 'Stable',
-      summary: fundamentals.competitiveMoat?.summary ?? 'Not Available',
+      rating: moatResult.rating,
+      trend: getMoatTrend({
+        existingTrend: fundamentals.competitiveMoat?.trend ?? analysis.moatTrend
+      }),
+      summary: moatResult.summary,
       sources: fundamentals.competitiveMoat?.sources ?? analysis.moatSources
     };
 
@@ -235,26 +238,35 @@ export class ProgrammaticAdInjector {
     };
     const volatilityIndex = {
       value: fundamentals.volatilityIndex?.value ?? +(fundamentals.beta ?? 1.15).toFixed(2),
-      rating: fundamentals.volatilityIndex?.rating ?? ((fundamentals.beta ?? 1.15) > 1.5 ? 'High Volatility' : 'Moderate Volatility')
+      rating: getVolatilityRating(fundamentals.volatilityIndex?.rating, fundamentals.beta ?? 1.15)
     };
 
     const cashFlow = {
       operatingCashFlow: fundamentals.cashFlow?.operatingCashFlow ?? null,
       freeCashFlow: fundamentals.freeCashFlowTTM ?? null,
-      status: fundamentals.cashFlow?.status ?? (fundamentals.freeCashFlowTTM !== null && fundamentals.freeCashFlowTTM !== undefined ? (fundamentals.freeCashFlowTTM >= 0 ? 'Positive Operating Generation' : 'Negative Cash Burn') : 'Not Available')
+      status: getCashFlowStatus({
+        status: fundamentals.cashFlow?.status,
+        freeCashFlow: fundamentals.freeCashFlowTTM,
+        operatingCashFlow: fundamentals.cashFlow?.operatingCashFlow,
+        isPennyStock
+      })
     };
 
-    const classification = (fundamentals.classification as any) ?? (
-      isPennyStock ? 'Speculative Penny Stock' :
-        fundamentals.dividendYield > 2 ? 'Income Stock' :
-          'Growth Stock'
-    );
+    const classification = getClassification({
+      classification: fundamentals.classification,
+      isPennyStock,
+      currentPrice: mover.price,
+      exchange: mover.exchange,
+      peRatio: fundamentals.peRatioTrailing ?? fundamentals.peRatioForward,
+      dividendYield: fundamentals.dividendYield,
+      operatingMargin: fundamentals.operatingMargin
+    });
 
-    const fundamentalRating = (fundamentals.fundamentalRating as any) ?? (
-      calculatedRisk > 7 ? 'Weak' :
-        calculatedRisk > 4 ? 'Fairly Valued' :
-          'Strong'
-    );
+    const fundamentalRating = getFundamentalRating({
+      fundamentalRating: fundamentals.fundamentalRating,
+      isPennyStock,
+      riskScore: calculatedRisk
+    });
 
     const theses = buildTheses(mover, fundamentals, analysis);
 
@@ -297,6 +309,7 @@ export class ProgrammaticAdInjector {
         redditTitle: analysis.socialHooks.redditPost.title,
         telegram: analysis.socialHooks.telegramAlert
       },
+      executiveSummaryData: analysis.executiveSummaryData,
 
       // Extended fields: Penny stock & Venue
       isPennyStock,
@@ -441,8 +454,10 @@ export class ProgrammaticAdInjector {
 </div>\n\n`;
 
     // Insert Slot A after Section 1 (Executive Summary)
-    if (result.includes('---')) {
-      result = result.replace('---', `---${slotAComponent}`);
+    // IMPORTANT: Match a standalone horizontal rule '\n---\n', NEVER inside table rows like '| :--- |'
+    const hrMatch = result.match(/\n---\n/);
+    if (hrMatch && hrMatch.index !== undefined) {
+      result = result.slice(0, hrMatch.index) + '\n---\n' + slotAComponent + result.slice(hrMatch.index + 5);
     } else {
       result = result + slotAComponent;
     }

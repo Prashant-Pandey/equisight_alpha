@@ -81,7 +81,7 @@ Below is the chronological breakdown of every section, topic, data point, and an
     * **Uncertainty:** `High`
     * **Capital Allocation:** `Standard`
     * **ESG Risk Rating Assessment:** `1 globe / Sustainalytics rating` (7 Jul 2021 05:00, UTC)
-* **Price vs. Fair Value Visual Chart (2016 – 2020, YTD):**
+* **Price vs. Fair Value Visual Chart (last 8 Quarters):**
   * Graphical comparison plotting closing stock price against the analyst's Fair Value line.
   * Shaded visualization differentiating **Over Valued** (orange) and **Under Valued** (blue) regimes.
   * Tabular Historical Underlay:

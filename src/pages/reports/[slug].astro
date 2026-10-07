@@ -16,6 +16,8 @@ import AffiliateBanner from '../../components/AffiliateBanner.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import { path } from '../../utils/paths';
 import { resolveThesisSource } from '../../utils/thesisSource';
+import { formatPriceTimestamp } from '../../utils/formatters';
+import { getConsensusVerdict, getConsensusVerdictColor, getStarRatingString } from '../../utils/financialClassification';
 
 const { entry } = Astro.props;
 
@@ -60,28 +62,12 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
   day: 'numeric'
 });
 
-// Price Timestamp helper ("Price on <date and time and zone>")
-function formatPriceTimestamp(dateInput: string | Date, explicitTimestamp?: string): string {
-  if (explicitTimestamp && explicitTimestamp.trim().length > 0) {
-    return explicitTimestamp.startsWith('Price on') ? explicitTimestamp : `Price on ${explicitTimestamp}`;
-  }
-  const d = new Date(dateInput);
-  const datePart = d.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    timeZone: 'America/New_York'
-  });
-  const timePart = d.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'America/New_York'
-  });
-  return `Price on ${datePart}, ${timePart} EDT`;
-}
-
 const priceDisplayLabel = formatPriceTimestamp(report.publishDate, report.priceTimestamp);
+
+const reportUrl = new URL(Astro.url.pathname, Astro.site || 'https://equisight-alpha.com').href;
+const xShareText = report.socialHooks?.twitter?.[0] || `${report.companyName} ($${report.ticker}) ${isPositive ? 'surged' : 'dropped'} ${isPositive ? '+' : ''}${report.movePercent.toFixed(1)}% today. Read our institutional fundamental research deep dive:`;
+const redditShareTitle = report.socialHooks?.redditTitle || report.title;
+const telegramShareText = report.socialHooks?.telegram || `🚨 $${report.ticker} Research: ${report.title}`;
 
 const bullTheses = (report.theses?.bull && report.theses.bull.length > 0) ? report.theses.bull : [];
 const bearTheses = (report.theses?.bear && report.theses.bear.length > 0) ? report.theses.bear : [];
@@ -144,20 +130,15 @@ const consensusFairValue = report.valuationModels?.consensusFairValue ?? (validV
 const consensusUpside = consensusFairValue !== null ? Number((((consensusFairValue - P) / P) * 100).toFixed(1)) : null;
 const isConsensusPositive = consensusUpside !== null ? consensusUpside >= 0 : false;
 
-let consensusVerdict = report.valuationModels?.verdict;
-if (!consensusVerdict) {
-  if (consensusUpside !== null) {
-    if (consensusUpside >= 15) consensusVerdict = "Significantly Undervalued / Attractive Risk-Reward";
-    else if (consensusUpside >= 5) consensusVerdict = "Modestly Undervalued / Accumulate";
-    else if (consensusUpside >= -5) consensusVerdict = "Fairly Valued / Market Weight";
-    else consensusVerdict = "Overvalued / Multiple Vulnerability";
-  } else {
-    consensusVerdict = "N/A";
-  }
-}
+const consensusVerdict = getConsensusVerdict(report.valuationModels?.verdict, consensusUpside);
+const consensusVerdictColor = getConsensusVerdictColor(consensusVerdict);
+const consensusTargetColor = consensusFairValue !== null ? (isConsensusPositive ? 'text-emerald-400' : 'text-rose-400') : 'text-slate-400';
 
 const starRating = report.starRating || report.morningstarRating?.starRating || null;
-const starRatingString = report.starRatingString || report.morningstarRating?.starRatingString || (starRating ? '★'.repeat(starRating) + '☆'.repeat(5 - starRating) : null);
+const starRatingString = getStarRatingString(
+  report.starRatingString || report.morningstarRating?.starRatingString,
+  starRating
+);
 const uncertaintyRating = report.uncertaintyRating || report.morningstarRating?.uncertaintyRating || 'Medium';
 const fiveStarPrice = report.fiveStarPrice || report.morningstarRating?.fiveStarPrice || null;
 const oneStarPrice = report.oneStarPrice || report.morningstarRating?.oneStarPrice || null;
@@ -300,6 +281,88 @@ const valuationRows = [
         </div>
       </div>
     </header>
+
+    <!-- Social Distribution Quick Action Bar -->
+    <div class="my-6 p-3.5 sm:p-4 rounded-xl border border-slate-700 bg-slate-900/90 shadow-md flex flex-wrap items-center justify-between gap-3" id="social-distribution-top">
+      <div class="flex items-center gap-2">
+        <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-xs font-bold uppercase tracking-wider text-white">Social Distribution</span>
+        <span class="text-xs text-slate-400 hidden sm:inline">&bull; Syndicate Research</span>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <!-- X / Twitter -->
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(xShareText)}&url=${encodeURIComponent(reportUrl)}`}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black hover:bg-slate-900 text-white border border-slate-700 hover:border-slate-500 text-xs font-semibold transition-all shadow-sm"
+          title="Share research thread on X (Twitter)"
+        >
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          <span>Share on X</span>
+        </a>
+
+        <!-- Reddit -->
+        <a
+          href={`https://www.reddit.com/submit?url=${encodeURIComponent(reportUrl)}&title=${encodeURIComponent(redditShareTitle)}`}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF4500]/20 hover:bg-[#FF4500]/30 text-orange-300 hover:text-white border border-[#FF4500]/50 hover:border-[#FF4500] text-xs font-semibold transition-all shadow-sm"
+          title="Submit deep dive to Reddit r/stocks"
+        >
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.609a1.246 1.246 0 0 1 1.108-.693zM9.5 13.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+          <span>Reddit DD</span>
+        </a>
+
+        <!-- Telegram -->
+        <a
+          href={`https://t.me/share/url?url=${encodeURIComponent(reportUrl)}&text=${encodeURIComponent(telegramShareText)}`}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#229ED9]/20 hover:bg-[#229ED9]/30 text-sky-300 hover:text-white border border-[#229ED9]/50 hover:border-[#229ED9] text-xs font-semibold transition-all shadow-sm"
+          title="Broadcast research alert on Telegram"
+        >
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.87 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.535-.194 1.006.128.832.923z"/></svg>
+          <span>Telegram</span>
+        </a>
+
+        <!-- LinkedIn -->
+        <a
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(reportUrl)}`}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A66C2]/20 hover:bg-[#0A66C2]/30 text-blue-300 hover:text-white border border-[#0A66C2]/50 hover:border-[#0A66C2] text-xs font-semibold transition-all shadow-sm"
+          title="Publish report to LinkedIn"
+        >
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          <span>LinkedIn</span>
+        </a>
+
+        <!-- StockTwits -->
+        <a
+          href={`https://stocktwits.com/symbol/${report.ticker}`}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 hover:text-white border border-emerald-500/50 hover:border-emerald-400 text-xs font-semibold transition-all shadow-sm"
+          title={`View $${report.ticker} stream on StockTwits`}
+        >
+          <span class="font-bold font-mono text-[11px]">$ST</span>
+          <span>${report.ticker}</span>
+        </a>
+
+        <!-- Copy Link Button -->
+        <button
+          type="button"
+          class="copy-report-link-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600 text-xs font-semibold transition-all shadow-sm cursor-pointer"
+          data-url={reportUrl}
+          title="Copy research URL to clipboard"
+        >
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+          <span class="copy-btn-label">Copy URL</span>
+        </button>
+      </div>
+    </div>
 
     <!-- Top Programmatic Ad Slot -->
     {report.adSlots.topBanner && (
@@ -613,10 +676,10 @@ const valuationRows = [
       <div class="mt-4 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
         <div class="flex items-center gap-2">
           <span class="text-slate-400 font-mono">Consensus Valuation Verdict:</span>
-          <span class="font-bold text-emerald-400 font-mono">{consensusVerdict}</span>
+          <span class={`font-bold font-mono ${consensusVerdictColor}`}>{consensusVerdict}</span>
         </div>
         <div class="text-[11px] text-slate-400 font-mono">
-          Current Price: <strong class="text-white">${report.currentPrice.toFixed(2)}</strong> &bull; Target: <strong class="text-emerald-400">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
+          Current Price: <strong class="text-white">${report.currentPrice.toFixed(2)}</strong> &bull; Target: <strong class={consensusTargetColor}>{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
         </div>
       </div>
     </section>
@@ -785,32 +848,164 @@ const valuationRows = [
       </section>
     )}
 
-    <!-- Social Distribution Hooks Container -->
-    <div class="my-10 p-5 rounded-xl border border-slate-800 bg-slate-900/50">
-      <h3 class="text-sm font-bold text-white mb-2">Share & Distribute Research</h3>
-      <p class="text-xs text-slate-400 mb-4">Export key metrics and evidence-based analysis directly to your financial network.</p>
-      <div class="flex flex-wrap gap-3">
-        <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(report.socialHooks?.twitter?.[0] || report.title)}&url=${encodeURIComponent(Astro.url.href)}`}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-colors"
-        >
-          <span>Share Thread on X</span>
-        </a>
-        <a
-          href={`https://www.reddit.com/submit?url=${encodeURIComponent(Astro.url.href)}&title=${encodeURIComponent(report.title)}`}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-colors"
-        >
-          <span>Submit to Reddit</span>
-        </a>
+    <!-- Social Distribution & Network Syndication Section -->
+    <section class="my-12 p-6 rounded-2xl border border-slate-700 bg-gradient-to-b from-slate-900/90 to-slate-950 shadow-xl" id="social-distribution">
+      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-800">
+        <div>
+          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-[11px] font-mono font-semibold text-emerald-400 mb-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Institutional Syndication Hub
+          </div>
+          <h3 class="text-lg font-extrabold text-white tracking-tight">Social Distribution & Network Syndication</h3>
+          <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+            Distribute verified equity research, multi-model valuation figures, and balance sheet stress tests directly to active market participants and professional communities.
+          </p>
+        </div>
       </div>
-    </div>
 
-    <!-- Statutory Publisher's Exemption Footer -->
-    <ComplianceDisclaimer variant="full" />
+      <!-- Visible Primary Distribution Anchor Tags -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+        <!-- X / Twitter -->
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(xShareText)}&url=${encodeURIComponent(reportUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3.5 rounded-xl bg-black hover:bg-slate-900 border border-slate-700 hover:border-slate-500 transition-all group flex items-center justify-between shadow-sm"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">Share on X</div>
+              <div class="text-[10px] text-slate-400">Post 3-Tweet Analysis</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+        </a>
+
+        <!-- Reddit -->
+        <a
+          href={`https://www.reddit.com/submit?url=${encodeURIComponent(reportUrl)}&title=${encodeURIComponent(redditShareTitle)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3.5 rounded-xl bg-[#FF4500]/15 hover:bg-[#FF4500]/25 border border-[#FF4500]/40 hover:border-[#FF4500] transition-all group flex items-center justify-between shadow-sm"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#FF4500]/20 flex items-center justify-center text-[#FF4500] shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.609a1.246 1.246 0 0 1 1.108-.693zM9.5 13.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white group-hover:text-orange-400 transition-colors">Submit to Reddit</div>
+              <div class="text-[10px] text-slate-400">Post to r/stocks</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+        </a>
+
+        <!-- Telegram -->
+        <a
+          href={`https://t.me/share/url?url=${encodeURIComponent(reportUrl)}&text=${encodeURIComponent(telegramShareText)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3.5 rounded-xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 hover:border-[#229ED9] transition-all group flex items-center justify-between shadow-sm"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#229ED9]/20 flex items-center justify-center text-[#229ED9] shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.87 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.535-.194 1.006.128.832.923z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white group-hover:text-sky-400 transition-colors">Telegram Alert</div>
+              <div class="text-[10px] text-slate-400">Broadcast Channel Link</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+        </a>
+
+        <!-- LinkedIn -->
+        <a
+          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(reportUrl)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3.5 rounded-xl bg-[#0A66C2]/15 hover:bg-[#0A66C2]/25 border border-[#0A66C2]/40 hover:border-[#0A66C2] transition-all group flex items-center justify-between shadow-sm"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-[#0A66C2]/20 flex items-center justify-center text-[#0A66C2] shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">LinkedIn Network</div>
+              <div class="text-[10px] text-slate-400">Institutional Feed</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+        </a>
+
+        <!-- StockTwits -->
+        <a
+          href={`https://stocktwits.com/symbol/${report.ticker}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="p-3.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/40 hover:border-emerald-400 transition-all group flex items-center justify-between shadow-sm"
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-emerald-900/60 flex items-center justify-center text-emerald-300 shrink-0 font-bold font-mono text-xs group-hover:scale-105 transition-transform">
+              $ST
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">${report.ticker} Stream</div>
+              <div class="text-[10px] text-slate-400">Real-time Retail Stream</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+        </a>
+
+        <!-- Copy Direct URL -->
+        <button
+          type="button"
+          class="copy-report-link-btn p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-slate-500 transition-all group flex items-center justify-between shadow-sm cursor-pointer text-left"
+          data-url={reportUrl}
+        >
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-slate-200 shrink-0 group-hover:scale-105 transition-transform">
+              <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-white copy-btn-label">Copy Direct Link</div>
+              <div class="text-[10px] text-slate-400">Canonical Research URL</div>
+            </div>
+          </div>
+          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+        </button>
+      </div>
+
+      <!-- Pre-Drafted Social Hooks Preview Box -->
+      {report.socialHooks?.twitter && report.socialHooks.twitter.length > 0 && (
+        <details class="group mt-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4 transition-all">
+          <summary class="flex items-center justify-between cursor-pointer text-xs font-semibold text-slate-300 hover:text-white">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-emerald-400">🧵</span>
+              <span>View Pre-Composed Twitter / X Thread ({report.socialHooks.twitter.length} Tweets)</span>
+            </div>
+            <span class="text-slate-400 group-open:rotate-180 transition-transform">&darr;</span>
+          </summary>
+          <div class="mt-4 space-y-3 pt-3 border-t border-slate-800/80">
+            {report.socialHooks.twitter.map((tweet: string) => (
+              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300 font-sans leading-relaxed flex items-start justify-between gap-3">
+                <span class="flex-1">{tweet}</span>
+                <button
+                  type="button"
+                  class="copy-raw-text-btn shrink-0 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 hover:text-white border border-slate-700 transition-colors cursor-pointer"
+                  data-raw={tweet}
+                >
+                  Copy
+                </button>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </section>
   </article>
 </BaseLayout>
 
@@ -984,7 +1179,44 @@ const valuationRows = [
     });
   }
 
+  function setupSocialShareButtons() {
+    document.querySelectorAll<HTMLElement>('.copy-report-link-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const url = btn.dataset.url || window.location.href;
+        try {
+          await navigator.clipboard.writeText(url);
+          const label = btn.querySelector('.copy-btn-label');
+          if (label) {
+            const original = label.textContent;
+            label.textContent = 'Link Copied!';
+            setTimeout(() => { label.textContent = original; }, 2000);
+          }
+        } catch (e) {
+          console.warn('Failed to copy to clipboard', e);
+        }
+      });
+    });
+
+    document.querySelectorAll<HTMLElement>('.copy-raw-text-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const raw = btn.dataset.raw || '';
+        try {
+          await navigator.clipboard.writeText(raw);
+          const original = btn.textContent;
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = original; }, 2000);
+        } catch (e) {
+          console.warn('Failed to copy text', e);
+        }
+      });
+    });
+  }
+
   // Initialize on page load
   setupThesisModal();
-  document.addEventListener('astro:page-load', setupThesisModal);
+  setupSocialShareButtons();
+  document.addEventListener('astro:page-load', () => {
+    setupThesisModal();
+    setupSocialShareButtons();
+  });
 </script>

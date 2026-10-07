@@ -4,22 +4,9 @@ import { CONFIG } from '../config.js';
 import { webScraper } from './webScraper.js';
 import type { MarketMover } from '../types.js';
 
-export function resolveTradingVenue(symbol: string, exchange: string, isPennyStock: boolean): string {
-  const normEx = (exchange || '').toUpperCase();
-  if (isPennyStock) {
-    if (normEx.includes('ASE') || normEx.includes('NYSE')) return 'NYSE American';
-    if (normEx.includes('PNK') || normEx.includes('OTC') || normEx === 'OTHER') return 'OTC Markets Pink Sheets';
-    return 'Nasdaq Capital Market';
-  }
+import { resolveTradingVenue, isPennyStock as checkPennyStock } from '../../../src/utils/financialClassification.js';
 
-  // Major venue resolution
-  if (normEx.includes('NASDAQ') || normEx.includes('NMS')) return 'Nasdaq Global Select Market';
-  if (normEx.includes('NYSE') || normEx.includes('NYQ')) return 'New York Stock Exchange';
-  if (normEx.includes('LSE')) return 'London Stock Exchange';
-  if (normEx.includes('EURONEXT') || normEx.includes('PA')) return 'Euronext Paris';
-  if (normEx.includes('DAX') || normEx.includes('DE')) return 'XETRA Frankfurt';
-  return 'Cboe BZX';
-}
+export { resolveTradingVenue };
 
 export class MarketMoverIngestor {
   private rawQuoteCache = new Map<string, any>();
@@ -60,7 +47,7 @@ export class MarketMoverIngestor {
     const prevClose = meta.chartPreviousClose ?? price;
     const change = price - prevClose;
     const changePercent = prevClose > 0 ? ((price - prevClose) / prevClose) * 100 : 0;
-    const isPenny = price < 5.0;
+    const isPenny = checkPennyStock(price);
 
     const isEU = symbol.endsWith('.L') || symbol.endsWith('.PA') || symbol.endsWith('.DE') || symbol.endsWith('.AS');
     const exName = (meta.exchangeName || '').toUpperCase();

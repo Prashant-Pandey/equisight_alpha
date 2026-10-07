@@ -369,7 +369,16 @@ In today's trading session, **Talen Energy Corporation (TLN)** experienced notab
 Social discussion velocity around $TLN shifted by **+150%**, with the primary price driver identified as **Expanded $1.5B accelerated share repurchase plan alongside nuclear AI power sector momentum**. The algorithmic artificial inflation risk profile is appraised as **Low** (Verified Organic Market Flow).
 
 | Key Session Metric | Observed Level | Benchmark / Analytical Context |
-| :---
+| :--- | :--- | :--- |
+| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
+| **Session Movement** | `+13.4%` | Daily volatility threshold |
+| **Market Capitalization** | `$17.80B` | Classification: Value / Turnaround |
+| **Trading Volume** | `1,461,679` | Anomaly Ratio: 1.82x vs 90d avg |
+| **52-Week Range** | `$279.77 - $449.84` | Current: $376.25 |
+| **Fundamental Rating** | `Weak` | Consensus Fair Value: $210.09 (-44.2%) |
+| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Expanded $1.5B accelerated share repurchase plan alongside nuclear AI power sector momentum |
+
+---
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -387,17 +396,6 @@ Social discussion velocity around $TLN shifted by **+150%**, with the primary pr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
- | :--- | :--- |
-| **Trading Venue** | `Nasdaq Global Select Market` | Standard Exchange Listing |
-| **Session Movement** | `+13.4%` | Daily volatility threshold |
-| **Market Capitalization** | `$17.80B` | Classification: Value / Turnaround |
-| **Trading Volume** | `1,461,679` | Anomaly Ratio: 1.82x vs 90d avg |
-| **52-Week Range** | `$279.77 - $449.84` | Current: $376.25 |
-| **Fundamental Rating** | `Weak` | Consensus Fair Value: $210.09 (-44.2%) |
-| **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Expanded $1.5B accelerated share repurchase plan alongside nuclear AI power sector momentum |
-
----
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 
