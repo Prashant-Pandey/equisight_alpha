@@ -1,0 +1,215 @@
+---
+import { formatCurrency } from '../../utils/formatters';
+
+interface Props {
+  report: any;
+}
+
+const { report } = Astro.props;
+
+// Artificial Inflation & Volume Integrity
+const art = report.artificialInflation || {};
+const isInflated = art.isInflated ?? report.isArtificiallyInflated ?? false;
+const inflationRiskLevel = art.riskLevel || report.artificialInflationRisk || (report.isPennyStock ? 'Moderate' : 'Low');
+const volumeAnomalyRatio = art.volumeAnomalyRatio ?? report.volumeAnomalyRatio ?? null;
+const majorPriceDriver = art.majorPriceDriver || report.majorPriceDriver || 'Organic Market Order Flow';
+const sentimentScore = art.sentimentScore !== undefined ? art.sentimentScore : (art.sentimentScore ?? null);
+const newsImpact = art.newsImpact || report.newsImpact || 'Standard Session Media Flow';
+const socialMediaImpact = art.socialMediaImpact || report.socialMediaImpact || 'Retail Social Media Discourse';
+
+const volumeStatusLabel = volumeAnomalyRatio !== null
+  ? (volumeAnomalyRatio > 1.5 ? 'Unusual Volume Spike' : 'Within Normal Range')
+  : 'N/A';
+const sentimentLabel = sentimentScore !== null
+  ? (sentimentScore >= 0.6 ? 'Constructive / Bullish Skew' : sentimentScore <= 0.4 ? 'Bearish / Defensive Skew' : 'Neutral Skew')
+  : 'N/A';
+
+// Option Gamma Imbalance
+const optionGamma = art.optionGammaImbalance || report.optionGammaImbalance || null;
+const callVolume = optionGamma?.callVolume ?? null;
+const putVolume = optionGamma?.putVolume ?? null;
+const callOI = optionGamma?.callOpenInterest ?? null;
+const putOI = optionGamma?.putOpenInterest ?? null;
+const imbalanceRatio = optionGamma?.imbalanceRatio ?? null;
+const netGamma = optionGamma?.netGammaExposure || 'Balanced Neutral Exposure';
+const gammaRiskLevel = optionGamma?.riskLevel || 'Low';
+
+// Free Float Concentration
+const freeFloat = art.freeFloatConcentration || report.freeFloatConcentration || null;
+const floatShares = freeFloat?.freeFloatShares ?? null;
+const floatPercent = freeFloat?.freeFloatPercent ?? null;
+const floatTurnover = freeFloat?.floatTurnoverRatio ?? null;
+const floatConcentration = freeFloat?.concentrationLevel || 'Low';
+
+const venue = report.moneyMarketTradingVenue || report.exchange || 'National Listed Exchange';
+---
+
+<div class="space-y-8 my-8">
+  <!-- Artificial Inflation & Volume Integrity Analysis -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b border-slate-800">
+      <div>
+        <h2 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Market Microstructure & Volume Integrity Audit</span>
+          <span class={`text-[10px] font-mono px-2 py-0.5 rounded font-bold ${isInflated ? 'bg-rose-950 text-rose-400 border border-rose-800/60' : 'bg-emerald-950 text-emerald-400 border border-emerald-800/60'}`}>
+            {isInflated ? 'Inflation Signals Detected' : 'Organic Market Flow Verified'}
+          </span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Algorithmic surveillance of order book liquidity, promotional activity, and volume anomalies.
+        </p>
+      </div>
+
+      <div class="text-xs font-mono text-slate-400">
+        Inflation Risk: <strong class={`px-2 py-0.5 rounded ${inflationRiskLevel === 'Low' ? 'text-emerald-400 bg-emerald-950/60 border border-emerald-800/40' : inflationRiskLevel === 'Moderate' ? 'text-amber-400 bg-amber-950/60 border border-amber-800/40' : 'text-rose-400 bg-rose-950/60 border border-rose-800/40'}`}>{inflationRiskLevel}</strong>
+      </div>
+    </div>
+
+    <!-- Core Grid Indicators -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Volume Anomaly (RVOL)</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-1">
+          {volumeAnomalyRatio !== null && volumeAnomalyRatio !== undefined ? `${volumeAnomalyRatio.toFixed(2)}x` : '1.00x'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-0.5">{volumeStatusLabel}</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Sentiment Score</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-emerald-400 mt-1">
+          {sentimentScore !== null && sentimentScore !== undefined ? `${(sentimentScore * 100).toFixed(0)} / 100` : '50 / 100'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-0.5">{sentimentLabel}</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Artificial Pump Alert</div>
+        <div class={`text-base sm:text-lg font-bold font-mono mt-1 ${isInflated ? 'text-rose-400' : 'text-emerald-400'}`}>
+          {isInflated ? 'High Alert' : 'Minimal (<5%)'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-0.5">Order Book Wash Audit</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Execution Venue</div>
+        <div class="text-xs sm:text-sm font-bold font-mono text-slate-200 mt-1 truncate" title={venue}>
+          {venue}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-0.5">National Regulated Venue</div>
+      </div>
+    </div>
+
+    <!-- Drivers & Social Sentiment -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-2">
+      <div class="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800">
+        <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1">Primary Price Driver:</div>
+        <div class="text-slate-400 leading-relaxed text-[11px]">{majorPriceDriver}</div>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800">
+        <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1">Session News Impact:</div>
+        <div class="text-slate-400 leading-relaxed text-[11px]">{newsImpact}</div>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800">
+        <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1">Social Discourse Skew:</div>
+        <div class="text-slate-400 leading-relaxed text-[11px]">{socialMediaImpact}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Options Gamma Imbalance & Derivative Positioning -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800">
+      <div>
+        <h3 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Options Gamma Imbalance & Market Maker Hedging</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Surveillance of dealer gamma exposure, call/put volume skews, and reflexivity potential.
+        </p>
+      </div>
+      <span class={`text-xs font-mono font-bold px-2.5 py-1 rounded border ${
+        gammaRiskLevel === 'Severe' || gammaRiskLevel === 'High' ? 'bg-rose-950 text-rose-400 border-rose-800/60' :
+        gammaRiskLevel === 'Moderate' ? 'bg-amber-950 text-amber-400 border-amber-800/60' :
+        'bg-emerald-950 text-emerald-400 border-emerald-800/60'
+      }`}>
+        Gamma Risk: {gammaRiskLevel}
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Call / Put Volume Ratio</div>
+        <div class="text-lg font-bold font-mono text-white mt-1">
+          {imbalanceRatio !== null && imbalanceRatio !== undefined ? `${imbalanceRatio.toFixed(2)}x` : '1.00x'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1">
+          Calls: {callVolume ? callVolume.toLocaleString() : 'N/A'} | Puts: {putVolume ? putVolume.toLocaleString() : 'N/A'}
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Net Gamma Positioning</div>
+        <div class="text-sm font-bold font-mono text-sky-400 mt-1">
+          {netGamma}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1">
+          OI Calls: {callOI ? callOI.toLocaleString() : 'N/A'} | Puts: {putOI ? putOI.toLocaleString() : 'N/A'}
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Market Maker Hedging Reflexivity</div>
+        <div class={`text-sm font-bold font-mono mt-1 ${gammaRiskLevel === 'Severe' || gammaRiskLevel === 'High' ? 'text-rose-400' : 'text-emerald-400'}`}>
+          {gammaRiskLevel === 'Severe' || gammaRiskLevel === 'High' ? 'Accelerated Delta Squeeze' : 'Contained Flow'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1">Dealer inventory secondary purchasing</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Free Float Concentration & Turnover -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800">
+      <div>
+        <h3 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Public Float Structure & Liquidity Concentration</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Share supply distribution, public float availability, and daily float turnover velocity.
+        </p>
+      </div>
+      <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">
+        Concentration: {floatConcentration}
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Free Float Percent</div>
+        <div class="text-lg font-bold font-mono text-white mt-1">
+          {floatPercent !== null && floatPercent !== undefined ? `${floatPercent.toFixed(1)}%` : 'Liquid Float'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1">
+          {floatShares ? `${(floatShares / 1e6).toFixed(1)}M Shares in Free Float` : 'Publicly Tradable Shares'}
+        </div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Daily Float Turnover Ratio</div>
+        <div class="text-lg font-bold font-mono text-sky-400 mt-1">
+          {floatTurnover !== null && floatTurnover !== undefined ? `${(floatTurnover * 100).toFixed(1)}%` : 'Standard Velocity'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1">Share turnover relative to tradable float</div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Float Squeeze Susceptibility</div>
+        <div class={`text-sm font-bold font-mono mt-1 ${floatConcentration === 'Extreme' || floatConcentration === 'High' ? 'text-rose-400' : 'text-emerald-400'}`}>
+          {floatConcentration === 'Extreme' || floatConcentration === 'High' ? 'Elevated Float Constriction' : 'Low Squeeze Risk (Deep Liquidity)'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1">Institutional lockup & insider ownership audit</div>
+      </div>
+    </div>
+  </section>
+</div>

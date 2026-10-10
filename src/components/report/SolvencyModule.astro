@@ -1,0 +1,444 @@
+---
+import { formatCurrency, formatEPS } from '../../utils/formatters';
+import {
+  getDebtLeverageLabel,
+  getManagementQuality,
+  getEconomicMoat,
+  getMoatTrend,
+  getRiskCategory
+} from '../../utils/financialClassification';
+
+interface Props {
+  report: any;
+}
+
+const { report } = Astro.props;
+
+const currentPrice = report.currentPrice || 0;
+const returnOnEquity = report.returnOnEquity ?? null;
+const isPennyStock = report.isPennyStock ?? false;
+const riskScore = report.riskScore ?? null;
+
+// Debt Analysis
+const debt = report.debtAnalysis || {};
+const totalDebt = debt.totalDebt ?? report.totalDebt ?? 0;
+const debtToEquity = debt.debtToEquity ?? report.debtToEquity ?? null;
+const shortTermDebt = debt.shortTermDebt ?? report.shortTermDebt ?? 0;
+const longTermDebt = debt.longTermDebt ?? report.longTermDebt ?? 0;
+const shortVsLongTermRatio = debt.shortVsLongTermRatio || report.shortVsLongTermRatio || 'Not Available';
+const recentChanges = debt.recentChanges || report.recentChangesInDebt || 'Not Available';
+const debtRisks = debt.risks || report.debtRisks || 'Not Available';
+const debtLeverageLabel = getDebtLeverageLabel(debtToEquity);
+
+// Cash Flow
+const operatingCashFlow = report.cashFlow?.operatingCashFlow ?? report.operatingCashFlow ?? null;
+const freeCashFlow = report.cashFlow?.freeCashFlow ?? report.freeCashFlow ?? null;
+const cashFlowStatus = report.cashFlow?.status || (freeCashFlow !== null ? (freeCashFlow >= 0 ? 'Self-funding organic operations' : 'External financing dependent') : 'Not Available');
+const isLongCashFlowStatus = cashFlowStatus.length > 24;
+const trimmedCashFlowStatus = isLongCashFlowStatus ? `${cashFlowStatus.slice(0, 24)}...` : cashFlowStatus;
+
+// 8-Quarter EPS Trend (Past 2 Years)
+const epsObj = report.earningsPerShare || {};
+const currentPE = report.peRatio || report.priceToEarningsRatio?.current || null;
+const currentTTM = epsObj.currentTTM ?? (currentPE && currentPrice ? Number((currentPrice / currentPE).toFixed(2)) : null);
+let quarterlyEPS = (epsObj.quarterlyEPSPast2Years && epsObj.quarterlyEPSPast2Years.length > 0)
+  ? epsObj.quarterlyEPSPast2Years
+  : [];
+
+// Ensure quarterly EPS is in chronological order (oldest -> newest, left -> right)
+let sortedQuarterlyEPS = [...quarterlyEPS];
+if (sortedQuarterlyEPS.length > 1) {
+  const firstQ = sortedQuarterlyEPS[0].quarter || '';
+  const lastQ = sortedQuarterlyEPS[sortedQuarterlyEPS.length - 1].quarter || '';
+  const firstYearMatch = firstQ.match(/\d{2,4}/);
+  const lastYearMatch = lastQ.match(/\d{2,4}/);
+  if (firstYearMatch && lastYearMatch) {
+    const firstYear = parseInt(firstYearMatch[0], 10);
+    const lastYear = parseInt(lastYearMatch[0], 10);
+    if (firstYear > lastYear) {
+      sortedQuarterlyEPS.reverse();
+    }
+  }
+}
+
+// Chart calculations for 8-Quarter EPS
+const epsValues = sortedQuarterlyEPS.map((q: any) => Number(q.eps) || 0);
+const hasPosEPS = epsValues.some((val: number) => val > 0);
+const hasNegEPS = epsValues.some((val: number) => val < 0);
+const maxAbsEPS = Math.max(...epsValues.map((val: number) => Math.abs(val)), 0.01);
+
+let zeroY = 90;
+let maxBarHeight = 55;
+let svgViewBoxHeight = 200;
+let xAxisLabelY = 170;
+
+if (hasNegEPS && !hasPosEPS) {
+  zeroY = 35;
+  maxBarHeight = 90;
+  svgViewBoxHeight = 195;
+  xAxisLabelY = 162;
+} else if (hasPosEPS && !hasNegEPS) {
+  zeroY = 140;
+  maxBarHeight = 90;
+  svgViewBoxHeight = 195;
+  xAxisLabelY = 162;
+} else {
+  zeroY = 90;
+  maxBarHeight = 55;
+  svgViewBoxHeight = 200;
+  xAxisLabelY = 170;
+}
+
+// Management Quality
+const mgmtObj = getManagementQuality({
+  existingRating: report.managementQuality?.rating,
+  existingTrackRecord: report.managementQuality?.trackRecord,
+  isPennyStock,
+  roic: report.roic ?? report.returnOnInvestedCapital ?? null,
+  roe: returnOnEquity,
+  debtToEquity,
+  operatingCashFlow
+});
+const mgmtRating = mgmtObj.rating;
+const trackRecord = mgmtObj.trackRecord;
+
+// Competitor Benchmarking Matrix
+const competitorBenchmarking = report.competitorBenchmarking || null;
+---
+
+<div class="space-y-8 my-8">
+  <!-- Balance Sheet Solvency & Debt Breakdown -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 border-b border-slate-800">
+      <div>
+        <h2 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Balance Sheet Solvency & Debt Maturity Waterfall</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Detailed audit of leverage structure, refinancing maturity risks, and short-term liquidity reserves.
+        </p>
+      </div>
+      <span class="text-xs font-mono text-slate-400 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
+        Leverage Tier: {debtLeverageLabel}
+      </span>
+    </div>
+
+    <!-- 4 Debt Metric Tiles -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Total Debt Obligations</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-1">{formatCurrency(totalDebt)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5">Funded Balance Sheet Debt</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Debt-to-Equity (D/E)</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-amber-400 mt-1">
+          {debtToEquity !== null && debtToEquity !== undefined ? `${debtToEquity.toFixed(2)}x` : 'N/A'}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-0.5">{debtLeverageLabel}</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Short-Term Debt (Due &lt;1Y)</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-1">{formatCurrency(shortTermDebt)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5">Immediate 12-Month Liquidity Drain</div>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Long-Term Debt Notes</div>
+        <div class="text-base sm:text-lg font-bold font-mono text-white mt-1">{formatCurrency(longTermDebt)}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5">Multi-Year Notes & Bank Credit</div>
+      </div>
+    </div>
+
+    <!-- Debt Structure Qualitative Callout -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+      <div class="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800">
+        <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+          <span>Maturity Structure:</span>
+        </div>
+        <div class="text-slate-400 leading-relaxed text-[11px]">{shortVsLongTermRatio}</div>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800">
+        <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>Recent Debt Changes:</span>
+        </div>
+        <div class="text-slate-400 leading-relaxed text-[11px]">{recentChanges}</div>
+      </div>
+      <div class="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800">
+        <div class="font-mono text-slate-300 font-semibold text-[11px] mb-1 flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+          <span>Refinancing & Solvency Risks:</span>
+        </div>
+        <div class="text-slate-400 leading-relaxed text-[11px]">{debtRisks}</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8-Quarter EPS Trend Chart (Past 2 Years) -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+      <div>
+        <h3 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>8-Quarter Earnings Per Share (EPS) Progression</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Quarter-by-quarter bottom line progression showing operational stability and seasonal performance.
+        </p>
+      </div>
+      <div class="flex items-center gap-3 text-xs font-mono">
+        <span class="inline-flex items-center gap-1.5 text-slate-300">
+          <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Positive EPS
+        </span>
+        <span class="inline-flex items-center gap-1.5 text-slate-300">
+          <span class="w-2.5 h-2.5 rounded-sm bg-rose-500 inline-block"></span> Loss Quarter
+        </span>
+        <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700">
+          TTM EPS: <strong class={currentTTM !== null && currentTTM !== undefined ? (currentTTM >= 0 ? "text-emerald-400" : "text-rose-400") : "text-slate-400"}>{formatEPS(currentTTM)}</strong>
+        </span>
+      </div>
+    </div>
+
+    <!-- SVG 8-Quarter Bar Chart -->
+    {sortedQuarterlyEPS.length > 0 ? (
+      <div class="w-full bg-slate-950/70 p-3 sm:p-4 rounded-xl border border-slate-800/70 overflow-x-auto">
+        <svg viewBox={`0 0 540 ${svgViewBoxHeight}`} class="w-full min-w-[460px] h-auto" role="img" aria-label="8-Quarter EPS Progression Chart">
+          <!-- Horizontal Guide Gridlines -->
+          {hasNegEPS && !hasPosEPS ? (
+            <g>
+              <line x1="30" y1="80" x2="520" y2="80" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+              <line x1="30" y1="125" x2="520" y2="125" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+            </g>
+          ) : hasPosEPS && !hasNegEPS ? (
+            <g>
+              <line x1="30" y1="50" x2="520" y2="50" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+              <line x1="30" y1="95" x2="520" y2="95" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+            </g>
+          ) : (
+            <g>
+              <line x1="30" y1="35" x2="520" y2="35" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+              <line x1="30" y1="145" x2="520" y2="145" stroke="#1e293b" stroke-dasharray="2,2" stroke-width="1" />
+            </g>
+          )}
+
+          <!-- Baseline Axis Line -->
+          <line x1="20" y1={zeroY} x2="530" y2={zeroY} stroke="#475569" stroke-width="1.5" />
+
+          <!-- Bars for each quarter -->
+          {sortedQuarterlyEPS.map((item: any, i: number) => {
+            const colX = 40 + i * 62;
+            const val = Number(item.eps) || 0;
+            const isPos = val >= 0;
+            const absVal = Math.abs(val);
+            const barHeight = Math.max(6, Math.round((absVal / maxAbsEPS) * maxBarHeight));
+            const barY = isPos ? (zeroY - barHeight) : zeroY;
+            const barColor = isPos ? '#10b981' : '#f43f5e';
+            const valLabelY = isPos ? (barY - 6) : (barY + barHeight + 12);
+            const quarterStr = String(item.quarter || '').trim();
+            const quarterParts = quarterStr.split(/\s+/);
+            const quarterTop = quarterParts[0] || '';
+            const quarterBottom = quarterParts.slice(1).join(' ');
+
+            return (
+              <g>
+                <rect
+                  x={colX}
+                  y={barY}
+                  width="36"
+                  height={barHeight}
+                  rx="3"
+                  fill={barColor}
+                  opacity="0.9"
+                />
+                <text
+                  x={colX + 18}
+                  y={valLabelY}
+                  text-anchor="middle"
+                  fill={isPos ? '#34d399' : '#fb7185'}
+                  font-size="10"
+                  font-family="monospace"
+                  font-weight="bold"
+                >
+                  {formatEPS(val)}
+                </text>
+                {quarterParts.length > 1 ? (
+                  <g>
+                    <text
+                      x={colX + 18}
+                      y={xAxisLabelY}
+                      text-anchor="middle"
+                      fill="#cbd5e1"
+                      font-size="10"
+                      font-family="monospace"
+                      font-weight="600"
+                    >
+                      {quarterTop}
+                    </text>
+                    <text
+                      x={colX + 18}
+                      y={xAxisLabelY + 13}
+                      text-anchor="middle"
+                      fill="#94a3b8"
+                      font-size="9.5"
+                      font-family="monospace"
+                    >
+                      {quarterBottom}
+                    </text>
+                  </g>
+                ) : (
+                  <text
+                    x={colX + 18}
+                    y={xAxisLabelY + 6}
+                    text-anchor="middle"
+                    fill="#cbd5e1"
+                    font-size="10"
+                    font-family="monospace"
+                  >
+                    {quarterStr}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    ) : (
+      <div class="p-6 text-center text-xs font-mono text-slate-400 italic bg-slate-950/60 rounded-lg border border-slate-800">
+        8-Quarter EPS Historical Progression Not Available
+      </div>
+    )}
+  </section>
+
+  <!-- Cash Flow Health & Capital Allocation -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-800">
+      <div>
+        <h3 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Cash Flow Health & Capital Allocation</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Organic cash conversion capacity after capital expenditures (CapEx) and working capital movements.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Operating Cash Flow</div>
+        <div class="text-lg font-bold font-mono text-white mt-1">{formatCurrency(operatingCashFlow)}</div>
+        <div class="text-[10px] text-slate-500 mt-1">Cash Generated from Core Business</div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Free Cash Flow (FCF)</div>
+        <div class={`text-lg font-bold font-mono mt-1 ${freeCashFlow !== null && freeCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+          {formatCurrency(freeCashFlow)}
+        </div>
+        <div class="text-[10px] text-slate-500 mt-1">Operating Cash Flow minus Capital Expenditures</div>
+      </div>
+
+      <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">
+        <div>
+          <div class="text-[10px] font-mono text-slate-400 uppercase">Cash Flow Profile</div>
+          <div class="text-sm font-bold font-mono text-white mt-1" title={cashFlowStatus}>
+            {trimmedCashFlowStatus}
+          </div>
+        </div>
+        <div class={`text-[10px] font-mono mt-2 ${freeCashFlow !== null && freeCashFlow >= 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
+          {freeCashFlow !== null && freeCashFlow >= 0 ? 'Self-funding organic operations' : 'External financing dependency'}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Management Quality & Governance Standard -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+      <div>
+        <h3 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Management Quality & Capital Stewardship</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Capital allocation track record, balance sheet discipline, and governance assessment.
+        </p>
+      </div>
+      <span class="text-xs font-mono font-bold px-2.5 py-1 rounded bg-blue-950 text-blue-300 border border-blue-800/60">
+        {mgmtRating}
+      </span>
+    </div>
+
+    <p class="text-xs text-slate-300 leading-relaxed bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+      {trackRecord}
+    </p>
+  </section>
+
+  <!-- Competitor Benchmarking Matrix -->
+  {competitorBenchmarking && competitorBenchmarking.peers && competitorBenchmarking.peers.length > 0 && (
+    <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-3 pb-3 border-b border-slate-800">
+        <div>
+          <h3 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+            <span>Competitor Benchmarking & Peer Universe</span>
+            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950 text-indigo-300 border border-indigo-800/60">
+              Sector Peer Universe
+            </span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Cross-sectional comparison of valuation multiples, economic moat, and ROIC capital efficiency.
+          </p>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
+        <table class="w-full min-w-[620px] text-left text-xs font-mono">
+          <thead class="bg-slate-900 text-slate-400 border-b border-slate-800 whitespace-nowrap">
+            <tr>
+              <th class="py-2.5 px-3">Company</th>
+              <th class="py-2.5 px-3">Ticker</th>
+              <th class="py-2.5 px-3">Market Cap</th>
+              <th class="py-2.5 px-3">Trailing P/E</th>
+              <th class="py-2.5 px-3">EV / EBITDA</th>
+              <th class="py-2.5 px-3">Moat Rating</th>
+              <th class="py-2.5 px-3">ROIC</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 text-slate-200">
+            {competitorBenchmarking.peers.map((peer: any, idx: number) => (
+              <tr class={idx === 0 ? "bg-indigo-950/30 font-semibold whitespace-nowrap" : "hover:bg-slate-900/40 whitespace-nowrap"}>
+                <td class="py-2.5 px-3 flex items-center gap-1.5 whitespace-nowrap">
+                  {idx === 0 && <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span>}
+                  <span>{peer.name}</span>
+                </td>
+                <td class="py-2.5 px-3 text-indigo-400 font-bold whitespace-nowrap">{peer.ticker}</td>
+                <td class="py-2.5 px-3 whitespace-nowrap">{formatCurrency(peer.marketCap)}</td>
+                <td class="py-2.5 px-3 whitespace-nowrap">{peer.peRatio !== null && peer.peRatio !== undefined ? `${Number(peer.peRatio).toFixed(1)}x` : 'N/A'}</td>
+                <td class="py-2.5 px-3 whitespace-nowrap">{peer.evToEbitda !== null && peer.evToEbitda !== undefined ? `${Number(peer.evToEbitda).toFixed(1)}x` : 'N/A'}</td>
+                <td class="py-2.5 px-3 whitespace-nowrap">
+                  <span class={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                    peer.moat === 'Wide Moat' || peer.moat === 'Wide' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' :
+                    peer.moat === 'Narrow Moat' || peer.moat === 'Narrow' ? 'bg-sky-950 text-sky-400 border border-sky-800/50' :
+                    'bg-slate-800 text-slate-400 border border-slate-700'
+                  }`}>
+                    {peer.moat}
+                  </span>
+                </td>
+                <td class="py-2.5 px-3 font-semibold text-slate-300 whitespace-nowrap">
+                  {peer.roic !== null && peer.roic !== undefined ? `${Number(peer.roic).toFixed(1)}%` : 'N/A'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {competitorBenchmarking.commentary && (
+        <div class="mt-3 text-xs text-slate-300 bg-slate-950/70 p-3 rounded-xl border border-slate-800 leading-relaxed">
+          <strong class="text-white font-mono">Peer Synthesis:</strong> {competitorBenchmarking.commentary}
+        </div>
+      )}
+    </section>
+  )}
+</div>

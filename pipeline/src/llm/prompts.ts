@@ -18,7 +18,14 @@ ${PUBLISHER_COMPLIANCE_DIRECTIVE}
 DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
 
 1. Title & Executive Summary:
-   - SEO-optimized title"
+   - High-impact, SEO-optimized title adhering to institutional equity research conventions.
+     Preferred title styles and examples:
+     * Deep Dive / Evolution style: "Stock Deep Dive: [Company] - [Key Thesis / Evolution / Structural Story]" (e.g. "Stock Deep Dive: BNP Paribas - From European Bank to Diversified Financial Compounder")
+     * Direct Buy Question style: "[Company] Stock Analysis: Is [TICKER] a Buy?" (e.g. "Microsoft Stock Analysis: Is MSFT a Buy?")
+     * Geography / Cap / Resilience style: "[Company] Stock Analysis: Is This [Geography/Sector/Cap] Still a Buy?" (e.g. "Norbit Stock Analysis: Is This Norwegian Small-Cap Still a Buy?")
+     * Forward Horizon style: "[Company] Stock Analysis: Is [TICKER] a Buy in [Year]?" (e.g. "Alphabet Stock Analysis: Is GOOGL a Buy in 2026?")
+     * Valuation Asymmetry / Quality style: "[Company] Stock Analysis: Quality But Not At The Right Price" (e.g. "Badger Meter Stock Analysis: Quality But Not At The Right Price")
+   - Do NOT use generic or mechanical formulas like "[Company] ([TICKER]) Surges +X%: Fundamental & Valuation Analysis". Pick the most analytically appropriate title style based on valuation verdict, moat quality, and capitalization.
    - Specify the precise Money Market Trading Venue (e.g. Nasdaq Capital Market, NYSE American, OTC Markets) and whether it is classified as a penny stock (< $5.00).
    - Display Morningstar-style Star Rating (1 to 5 Stars: ★★★★★) and Uncertainty Rating (Low, Medium, High, Very High, Extreme).
    - Detail the Fair Value estimate, Price-to-Fair-Value ratio, 5-Star margin-of-safety buy price, and 1-Star overvaluation sell threshold.
@@ -59,7 +66,14 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
    - Competitor Benchmarking Matrix:
      * Present a structured comparison table benchmarking the focal company against 2–3 sector peers across Market Cap, P/E, EV/EBITDA, Moat Rating, and ROIC.
      * Provide institutional commentary explaining relative valuation discounts/premiums and competitive positioning.
-   - Thoroughly answer the 4 Key Company Questions & 3 Key Industry Questions grounded in operational facts.
+   - Thoroughly answer the 4 Key Company Questions & 3 Key Industry Questions grounded in operational facts:
+     * For "How Does <company> Make Money?", you MUST demonstrate using bullet points across business segments with this exact structure:
+       "[Company] makes money through [N] business segments:
+       - [Segment 1 Name]. [Specific products/maritime/technology/services sold, margin profile, and demand drivers/target customer base]
+       - [Segment 2 Name]. [Products/software sold, recurring revenue vs transaction, subscriptions/services]
+       - [Segment 3 Name]. [R&D, manufacturing capacity, or commercial product lines]
+       
+       [Concluding paragraph]: Most activities are cyclical and depend on contracts with limited visibility. However, because there are [N] different activities the cycles do not always move in perfect synchronisation which helps smooth cyclicality."
 
 6. Multi-Model Valuation Engine (Refined 3-Stage DCF with Moat Fade):
    Evaluate the security across 8 recognized valuation methodologies:
@@ -78,6 +92,17 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
    - Synthesize a Consensus Fair Value, Morningstar Star Rating (1–5 Stars), and Margin-of-Safety hurdle price levels.
 
 7. Objective Bull & Bear Theses with Cited Sources & Deduction Chains:
+   - For BOTH Bull Case and Bear Case, retain quantitative/valuation points AND include the core quality thesis points:
+     Core Bullish Thesis MUST include:
+     * Empirical valuation/operating cash flow points (multi-model asymmetry, margin resilience).
+     * Vertical integration: The company develops AND manufactures/operates most of what it sells, giving control over product development, quality, supply chain, capacity management, and reducing lead times from R&D to commercialization.
+     * Great M&A strategy and execution: Acquires companies/assets complementary to its existing portfolio rather than unrelated assets, strengthening its ecosystem, easing integration, and completing transactions at reasonable, accretive valuations.
+     * Capital-efficient growth: Strong organic growth, acquisitions, and disciplined capital return policy while maintaining a clean balance sheet and high returns on capital (ROIC/ROE).
+     Core Bearish Risk Theses MUST include:
+     * Empirical macro and balance sheet points (interest rate sensitivity, refinancing exposure).
+     * Concentration risks: Key vertical (e.g. defense, primary cloud, enterprise) + customer concentration, where a large share of recent growth comes from this vertical and any slowdown has an outsized impact on the revenue mix.
+     * Ambitious targets: Management expects aggressive long-term organic growth targets that outstrip conservative analyst forecasts, creating asymmetric guidance-cut and de-rating risks.
+     * Cyclical revenue: A major part of revenue is project-driven and depends on customer investment cycles, creating quarterly volatility and margin fluctuations across capacity utilization cycles.
    - For every thesis point in BOTH the Bull Case and Bear Case:
      * Cite specific references and sources (SEC 10-K / 10-Q / 8-K filings, earnings calls, clinical trial data, industry reports, Federal Reserve macro releases) along with direct links to the resources.
      * Provide a clear, step-by-step deduction chain explaining exactly how those empirical facts boil down to the thesis conclusion.

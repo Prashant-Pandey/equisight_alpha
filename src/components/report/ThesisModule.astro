@@ -1,0 +1,411 @@
+---
+import { resolveThesisSource } from '../../utils/thesisSource';
+
+interface Props {
+  report: any;
+}
+
+const { report } = Astro.props;
+
+const bullTheses = (report.theses?.bull && report.theses.bull.length > 0) ? report.theses.bull : [];
+const bearTheses = (report.theses?.bear && report.theses.bear.length > 0) ? report.theses.bear : [];
+---
+
+<section class="my-8 p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg" aria-labelledby="theses-heading">
+  <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-6 border-b border-slate-800">
+    <div>
+      <h2 id="theses-heading" class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
+        <span>Investment Theses: Bull vs. Bear Scenarios</span>
+      </h2>
+      <p class="text-xs text-slate-400 mt-0.5">
+        Key operational catalysts, structural tailwinds, and downside risks. Click <span class="text-sky-400 font-mono font-bold">ℹ️</span> to review citations and analytical deduction chains.
+      </p>
+    </div>
+    <span class="text-xs font-mono text-slate-400 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
+      Interactive Citations & Deduction Chains
+    </span>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Bull Theses Column -->
+    <div class="space-y-3">
+      <div class="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider pb-1 border-b border-emerald-900/60">
+        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        </svg>
+        <span>Core Bullish Theses ({bullTheses.length})</span>
+      </div>
+      {bullTheses.length > 0 ? (
+        bullTheses.map((item: any, idx: number) => {
+          const resolvedSources = (item.sources || []).map((s: any) => resolveThesisSource(s, report.ticker));
+          return (
+            <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 hover:border-emerald-700/50 transition-all flex flex-col justify-between gap-3">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <div class="text-[11px] font-mono font-bold text-emerald-400">Bullish Pillar #{idx + 1}</div>
+                  <button
+                    type="button"
+                    class="thesis-info-btn shrink-0 px-2 py-1 rounded-md bg-slate-800 hover:bg-emerald-950 hover:text-emerald-400 text-slate-300 border border-slate-700 hover:border-emerald-600/50 flex items-center gap-1.5 text-xs font-mono transition-all cursor-pointer shadow-sm"
+                    data-type={`Bullish Pillar #${idx + 1}`}
+                    data-point={item.point}
+                    data-sources={JSON.stringify(resolvedSources)}
+                    data-deduction={item.deductionChain}
+                    aria-label={`View sources and reasoning for Bullish Pillar #${idx + 1}`}
+                    title="Click to view reference citations & step-by-step reasoning"
+                  >
+                    <span class="text-xs select-none">ℹ️</span>
+                    <span class="text-[10px] hidden sm:inline">Reasoning & Citations</span>
+                  </button>
+                </div>
+                <h3 class="text-xs sm:text-sm font-semibold text-white leading-snug">{item.point}</h3>
+              </div>
+
+              <!-- Reference Citations Resource Links -->
+              {resolvedSources.length > 0 && (
+                <div class="pt-2.5 border-t border-slate-800/80">
+                  <div class="text-[10px] font-mono uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
+                    <svg class="w-3 h-3 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span>Referenced Resources:</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    {resolvedSources.map((src: any) => (
+                      <a
+                        href={src.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono text-emerald-300/90 hover:text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800/40 hover:border-emerald-700/70 transition-all max-w-full"
+                        title={`Open resource citation: ${src.name}`}
+                      >
+                        <span class="truncate max-w-[200px]">{src.name}</span>
+                        <span class="text-[10px] text-emerald-400/80 shrink-0">↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })
+      ) : (
+        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 text-slate-400 text-xs font-mono italic flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-slate-600 inline-block"></span>
+          <span>No Bullish Pillars Configured</span>
+        </div>
+      )}
+    </div>
+
+    <!-- Bear Theses Column -->
+    <div class="space-y-3">
+      <div class="flex items-center gap-2 text-xs font-mono font-bold text-rose-400 uppercase tracking-wider pb-1 border-b border-rose-900/60">
+        <svg class="w-4 h-4 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+        </svg>
+        <span>Core Bearish Risk Theses ({bearTheses.length})</span>
+      </div>
+      {bearTheses.length > 0 ? (
+        bearTheses.map((item: any, idx: number) => {
+          const resolvedSources = (item.sources || []).map((s: any) => resolveThesisSource(s, report.ticker));
+          return (
+            <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 hover:border-rose-700/50 transition-all flex flex-col justify-between gap-3">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-1.5">
+                  <div class="text-[11px] font-mono font-bold text-rose-400">Downside Risk #{idx + 1}</div>
+                  <button
+                    type="button"
+                    class="thesis-info-btn shrink-0 px-2 py-1 rounded-md bg-slate-800 hover:bg-rose-950 hover:text-rose-400 text-slate-300 border border-slate-700 hover:border-rose-600/50 flex items-center gap-1.5 text-xs font-mono transition-all cursor-pointer shadow-sm"
+                    data-type={`Downside Risk #${idx + 1}`}
+                    data-point={item.point}
+                    data-sources={JSON.stringify(resolvedSources)}
+                    data-deduction={item.deductionChain}
+                    aria-label={`View sources and reasoning for Downside Risk #${idx + 1}`}
+                    title="Click to view reference citations & step-by-step reasoning"
+                  >
+                    <span class="text-xs select-none">ℹ️</span>
+                    <span class="text-[10px] hidden sm:inline">Reasoning & Citations</span>
+                  </button>
+                </div>
+                <h3 class="text-xs sm:text-sm font-semibold text-white leading-snug">{item.point}</h3>
+              </div>
+
+              <!-- Reference Citations Resource Links -->
+              {resolvedSources.length > 0 && (
+                <div class="pt-2.5 border-t border-slate-800/80">
+                  <div class="text-[10px] font-mono uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
+                    <svg class="w-3 h-3 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                    <span>Referenced Resources:</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5">
+                    {resolvedSources.map((src: any) => (
+                      <a
+                        href={src.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono text-rose-300/90 hover:text-rose-200 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 hover:border-rose-700/70 transition-all max-w-full"
+                        title={`Open resource citation: ${src.name}`}
+                      >
+                        <span class="truncate max-w-[200px]">{src.name}</span>
+                        <span class="text-[10px] text-rose-400/80 shrink-0">↗</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })
+      ) : (
+        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 text-slate-400 text-xs font-mono italic flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-slate-600 inline-block"></span>
+          <span>No Downside Risks Configured</span>
+        </div>
+      )}
+    </div>
+  </div>
+
+  <!-- Accessible Thesis Reference Dialog Modal -->
+  <dialog
+    id="thesis-modal"
+    class="fixed inset-0 z-50 bg-transparent p-4 sm:p-6 backdrop:bg-slate-950/85 backdrop:backdrop-blur-sm max-w-2xl w-full m-auto rounded-2xl border border-slate-700 bg-slate-900 text-white shadow-2xl overflow-hidden"
+    aria-labelledby="modal-point-text"
+    aria-modal="true"
+  >
+    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
+      <div class="flex items-center gap-2">
+        <span id="modal-type-badge" class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/60">
+          Thesis Analysis
+        </span>
+        <h4 class="text-xs font-mono text-slate-400">Institutional Reference Citations & Reasoning</h4>
+      </div>
+      <button
+        id="modal-close-btn"
+        type="button"
+        class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-sm font-bold transition-colors cursor-pointer"
+        aria-label="Close dialog"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+      <!-- Point Title -->
+      <div>
+        <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Core Analytical Argument</div>
+        <div id="modal-point-text" class="text-base sm:text-lg font-bold text-white mt-1"></div>
+      </div>
+
+      <!-- Sources Section -->
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-2.5 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            <span>Referenced Documentation & Resource Links</span>
+          </div>
+          <span class="text-[10px] font-mono text-slate-400">Click links below to view resources</span>
+        </div>
+        <ul id="modal-sources-list" class="space-y-2 text-xs">
+        </ul>
+      </div>
+
+      <!-- Deduction Chain Section -->
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+          <svg class="w-4 h-4 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span>Step-by-Step Deductive Reasoning Chain</span>
+        </div>
+        <div id="modal-deduction-steps" class="space-y-2 text-xs text-slate-300 leading-relaxed">
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 pt-3 border-t border-slate-800 flex justify-end">
+      <button
+        id="modal-close-footer-btn"
+        type="button"
+        class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold text-slate-200 transition-colors cursor-pointer"
+      >
+        Close Modal (Esc)
+      </button>
+    </div>
+  </dialog>
+</section>
+
+<script>
+  function setupThesisModal() {
+    const modal = document.getElementById('thesis-modal') as HTMLDialogElement | null;
+    const closeBtn = document.getElementById('modal-close-btn');
+    const closeFooterBtn = document.getElementById('modal-close-footer-btn');
+    const typeBadge = document.getElementById('modal-type-badge');
+    const pointText = document.getElementById('modal-point-text');
+    const sourcesList = document.getElementById('modal-sources-list');
+    const deductionSteps = document.getElementById('modal-deduction-steps');
+
+    function escapeHtml(str: string): string {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    if (!modal) return;
+
+    function openModal(button: HTMLElement) {
+      const type = button.dataset.type || 'Thesis Analysis';
+      const point = button.dataset.point || '';
+      let sources: any[] = [];
+      try {
+        sources = JSON.parse(button.dataset.sources || '[]');
+      } catch (e) {
+        sources = button.dataset.sources ? [button.dataset.sources] : [];
+      }
+      const deduction = button.dataset.deduction || '';
+
+      if (typeBadge) {
+        typeBadge.textContent = type;
+        if (type.includes('Bullish')) {
+          typeBadge.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/60';
+        } else {
+          typeBadge.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-950 text-rose-400 border border-rose-800/60';
+        }
+      }
+
+      if (pointText) {
+        pointText.textContent = point;
+      }
+
+      if (sourcesList) {
+        sourcesList.innerHTML = '';
+        if (sources.length === 0) {
+          const li = document.createElement('li');
+          li.className = 'text-slate-400 font-mono text-xs';
+          li.textContent = 'SEC Disclosures & Institutional Market Intelligence';
+          sourcesList.appendChild(li);
+        } else {
+          const isBull = type.includes('Bullish');
+          const borderHoverClass = isBull ? 'hover:border-emerald-600/60' : 'hover:border-rose-600/60';
+          const linkHoverClass = isBull ? 'text-emerald-300 hover:text-emerald-200' : 'text-rose-300 hover:text-rose-200';
+          const iconColorClass = isBull ? 'text-emerald-400' : 'text-rose-400';
+          const btnHoverClass = isBull 
+            ? 'hover:bg-emerald-950 hover:text-emerald-300 hover:border-emerald-700/60' 
+            : 'hover:bg-rose-950 hover:text-rose-300 hover:border-rose-700/60';
+
+          sources.forEach((src: any) => {
+            const li = document.createElement('li');
+            li.className = `p-3 rounded-xl bg-slate-900/90 border border-slate-800 ${borderHoverClass} transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3`;
+            
+            const name = typeof src === 'object' && src !== null ? (src.name || src.title || 'Resource Link') : String(src);
+            const url = typeof src === 'object' && src !== null ? (src.url || '') : '';
+            const domain = typeof src === 'object' && src !== null && src.domain ? src.domain : '';
+
+            if (url) {
+              li.innerHTML = `
+                <div class="flex items-start gap-2.5 min-w-0 flex-1">
+                  <span class="${iconColorClass} text-sm select-none shrink-0 mt-0.5">📄</span>
+                  <div class="min-w-0">
+                    <a
+                      href="${escapeHtml(url)}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="${linkHoverClass} font-semibold text-xs leading-snug hover:underline inline-flex items-center gap-1.5 break-words"
+                    >
+                      <span>${escapeHtml(name)}</span>
+                      <svg class="w-3.5 h-3.5 shrink-0 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                    </a>
+                    ${domain ? `<div class="text-[10px] text-slate-400 font-mono mt-1 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-slate-600 inline-block"></span><span>${escapeHtml(domain)}</span></div>` : ''}
+                  </div>
+                </div>
+                <a
+                  href="${escapeHtml(url)}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="shrink-0 self-start sm:self-center px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 ${btnHoverClass} text-xs font-mono font-medium flex items-center gap-1.5 transition-all shadow-sm"
+                  aria-label="Open citation link for ${escapeHtml(name)} in a new tab"
+                >
+                  <span>Open Resource</span>
+                  <span class="text-xs">↗</span>
+                </a>
+              `;
+            } else {
+              li.innerHTML = `
+                <div class="flex items-start gap-2 text-slate-300 font-mono text-xs">
+                  <span class="${iconColorClass} select-none">&bull;</span>
+                  <span>${escapeHtml(name)}</span>
+                </div>
+              `;
+            }
+            sourcesList.appendChild(li);
+          });
+        }
+      }
+
+      if (deductionSteps) {
+        deductionSteps.innerHTML = '';
+        const parts = deduction.split(/(?=\d+\.\s|\s->\s)/).filter(Boolean);
+        if (parts.length > 0) {
+          parts.forEach((step: string, idx: number) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'p-2.5 rounded-lg bg-slate-900 border border-slate-800/70 flex items-start gap-2.5';
+            const cleanText = step.replace(/^\s*->\s*/, '').trim();
+            stepDiv.innerHTML = `
+              <span class="w-5 h-5 rounded-full bg-slate-800 text-sky-400 flex items-center justify-center font-mono font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
+              <span class="text-slate-300 text-xs">${cleanText}</span>
+            `;
+            deductionSteps.appendChild(stepDiv);
+          });
+        } else {
+          deductionSteps.textContent = deduction;
+        }
+      }
+
+      if (typeof modal.showModal === 'function') {
+        modal.showModal();
+      }
+    }
+
+    function closeModal() {
+      if (typeof modal.close === 'function') {
+        modal.close();
+      }
+    }
+
+    document.querySelectorAll<HTMLElement>('.thesis-info-btn').forEach((btn) => {
+      btn.addEventListener('click', () => openModal(btn));
+    });
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (closeFooterBtn) closeFooterBtn.addEventListener('click', closeModal);
+
+    // Close on backdrop click
+    modal.addEventListener('click', (e) => {
+      const rect = modal.getBoundingClientRect();
+      const isInDialog = (
+        rect.top <= e.clientY &&
+        e.clientY <= rect.top + rect.height &&
+        rect.left <= e.clientX &&
+        e.clientX <= rect.left + rect.width
+      );
+      if (!isInDialog) {
+        closeModal();
+      }
+    });
+
+    // Close on Escape key
+    modal.addEventListener('cancel', () => {
+      closeModal();
+    });
+  }
+
+  setupThesisModal();
+  document.addEventListener('astro:page-load', setupThesisModal);
+</script>

@@ -1,0 +1,869 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const reports = await getCollection('reports');
+  return reports.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry }
+  }));
+}
+
+import { formatCurrency, formatEPS, formatPriceTimestamp } from '../../../utils/formatters';
+import {
+  getEconomicMoat,
+  getMoatTrend,
+  getManagementQuality,
+  getConsensusVerdict,
+  getStarRatingString,
+  getDebtLeverageLabel
+} from '../../../utils/financialClassification';
+import { path } from '../../../utils/paths';
+
+const { entry } = Astro.props;
+const report = entry.data;
+
+const P = report.currentPrice || 10;
+const publishDateIso = typeof report.publishDate === 'string' ? report.publishDate : report.publishDate.toISOString();
+const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+const priceDisplayLabel = formatPriceTimestamp(report.publishDate, report.priceTimestamp);
+
+// Star Rating & Valuation
+const starRating = report.starRating || report.morningstarRating?.starRating || 3;
+const starRatingString = getStarRatingString(
+  report.starRatingString || report.morningstarRating?.starRatingString,
+  starRating
+);
+const uncertaintyRating = report.uncertaintyRating || report.morningstarRating?.uncertaintyRating || 'Medium';
+const fiveStarPrice = report.fiveStarPrice || report.morningstarRating?.fiveStarPrice || null;
+const oneStarPrice = report.oneStarPrice || report.morningstarRating?.oneStarPrice || null;
+
+function getValuationDetails(val: number | null | undefined, p: number) {
+  if (val === null || val === undefined || isNaN(val)) {
+    return { val: null, upside: null, isPositive: false, status: 'N/A' };
+  }
+  const upside = Number((((val - p) / p) * 100).toFixed(1));
+  const isPositive = upside >= 0;
+  const status = upside > 10 ? 'Undervalued' : upside < -5 ? 'Overvalued' : 'Fair Value';
+  return { val, upside, isPositive, status };
+}
+
+const dcf = getValuationDetails(report.valuationModels?.dcf?.intrinsicValue, P);
+const isDDMApplicable = (report.valuationModels?.ddm?.applicable !== undefined) ? report.valuationModels.ddm.applicable : (report.dividendYield > 0);
+const ddm = getValuationDetails(isDDMApplicable ? report.valuationModels?.ddm?.intrinsicValue : null, P);
+const rel = getValuationDetails(report.valuationModels?.relativeValuation?.intrinsicValue, P);
+const rapid = getValuationDetails(report.valuationModels?.rapidStockValuation?.intrinsicValue, P);
+const rim = getValuationDetails(report.valuationModels?.residualIncomeModel?.intrinsicValue, P);
+const asset = getValuationDetails(report.valuationModels?.assetBasedValuation?.netAssetValue, P);
+const excess = getValuationDetails(report.valuationModels?.excessReturnModel?.intrinsicValue, P);
+
+let industryModelName = "Sector EV/EBITDA Multiplier";
+if (report.sector === "Technology") industryModelName = "ARR Multiplier & Rule-of-40 Valuation";
+else if (report.sector === "Financial Services") industryModelName = "Tangible Book Value (P/TBV) Model";
+else if (report.sector === "Healthcare") industryModelName = "Risk-Adjusted Pipeline NPV (rNPV)";
+else if (report.sector === "Consumer Discretionary") industryModelName = "Mid-Cycle Operating Multiple";
+
+const ind = getValuationDetails(report.valuationModels?.industrySpecificModel?.intrinsicValue, P);
+
+const validVals = [dcf.val, rel.val, rapid.val, rim.val, asset.val, excess.val, ind.val, ddm.val].filter((v): v is number => v !== null && !isNaN(v));
+const consensusFairValue = report.valuationModels?.consensusFairValue ?? (validVals.length > 0 ? Number((validVals.reduce((a, b) => a + b, 0) / validVals.length).toFixed(2)) : null);
+const consensusUpside = consensusFairValue !== null ? Number((((consensusFairValue - P) / P) * 100).toFixed(1)) : null;
+const priceToFairValue = consensusFairValue !== null && consensusFairValue > 0 ? (P / consensusFairValue).toFixed(2) : 'N/A';
+const consensusVerdict = getConsensusVerdict(report.valuationModels?.verdict, consensusUpside);
+
+// Moat Analysis
+const moatResult = getEconomicMoat({
+  existingRating: report.competitiveMoat?.rating || report.morningstarRating?.economicMoat,
+  existingSummary: report.competitiveMoat?.summary,
+  isPennyStock: report.isPennyStock
+});
+const moatRating = moatResult.rating;
+const moatTrend = getMoatTrend({
+  existingTrend: report.moatTrend || report.competitiveMoat?.trend,
+  revenueGrowthYoY: report.revenueGrowthYoY,
+  roic: report.roic ?? report.returnOnInvestedCapital ?? null
+});
+const moatSources = report.moatSources || report.competitiveMoat?.sources || null;
+
+// Management Quality & Capital Allocation
+const debt = report.debtAnalysis || {};
+const totalDebt = debt.totalDebt ?? report.totalDebt ?? 0;
+const debtToEquity = debt.debtToEquity ?? report.debtToEquity ?? null;
+const shortTermDebt = debt.shortTermDebt ?? report.shortTermDebt ?? 0;
+const longTermDebt = debt.longTermDebt ?? report.longTermDebt ?? 0;
+const shortVsLongTermRatio = debt.shortVsLongTermRatio || report.shortVsLongTermRatio || 'Balanced structure';
+const recentChanges = debt.recentChanges || report.recentChangesInDebt || 'No debt defaults reported';
+const debtRisks = debt.risks || report.debtRisks || 'Standard operating leverage';
+const debtLeverageLabel = getDebtLeverageLabel(debtToEquity);
+
+const operatingCashFlow = report.cashFlow?.operatingCashFlow ?? report.operatingCashFlow ?? null;
+const freeCashFlow = report.cashFlow?.freeCashFlow ?? report.freeCashFlow ?? null;
+
+const mgmtObj = getManagementQuality({
+  existingRating: report.managementQuality?.rating,
+  existingTrackRecord: report.managementQuality?.trackRecord,
+  isPennyStock: report.isPennyStock,
+  roic: report.roic ?? report.returnOnInvestedCapital ?? null,
+  roe: report.returnOnEquity ?? null,
+  debtToEquity,
+  operatingCashFlow
+});
+
+// Theses
+const bullTheses = report.theses?.bull || [];
+const bearTheses = report.theses?.bear || [];
+
+// Competitors
+const competitorBenchmarking = report.competitorBenchmarking || null;
+
+// EPS Data
+const epsObj = report.earningsPerShare || {};
+const currentPE = report.peRatio || report.priceToEarningsRatio?.current || null;
+const currentTTM = epsObj.currentTTM ?? (currentPE && P ? Number((P / currentPE).toFixed(2)) : null);
+const quarterlyEPS = epsObj.quarterlyEPSPast2Years || [];
+
+// Company Deep Dives
+const companyMakesMoney = report.companyDeepDive?.howCompanyMakesMoney ||
+  `${report.companyName} generates enterprise revenue through commercial deployment of its specialized ${report.sector.toLowerCase()} products and services within the ${report.industry} market.`;
+
+function parseBulletSection(text: string) {
+  if (!text) return { intro: '', bullets: [], outro: '' };
+  const clean = text.replace(/^Title:\s*How Does .* Make Money\??\s*\n+/i, '').trim();
+  const lines = clean.split('\n');
+  const bulletLines: string[] = [];
+  const introLines: string[] = [];
+  const outroLines: string[] = [];
+  let foundFirstBullet = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.startsWith('• ')) {
+      foundFirstBullet = true;
+      bulletLines.push(trimmed.replace(/^[-*•]\s*/, '').trim());
+    } else if (!foundFirstBullet) {
+      introLines.push(trimmed);
+    } else {
+      outroLines.push(trimmed);
+    }
+  }
+
+  if (bulletLines.length === 0) {
+    return { intro: clean, bullets: [], outro: '' };
+  }
+
+  return {
+    intro: introLines.join(' ').trim(),
+    bullets: bulletLines,
+    outro: outroLines.join(' ').trim()
+  };
+}
+
+const parsedMakesMoney = parseBulletSection(companyMakesMoney);
+
+const demandAndWhy = report.companyDeepDive?.productsDemandAndWhy ||
+  `Demand for ${report.companyName}'s offerings is driven by non-discretionary operational requirements, regulatory compliance mandates, and mission-critical enterprise client workflows.`;
+
+// Catalyst & Notes
+const execSummary = report.executiveSummaryData || {};
+const catalystHeadline = execSummary.catalystHeadline || report.catalystSynthesis || report.title;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{report.companyName} ({report.ticker}) - Institutional Equity Research Report</title>
+  <style>
+    @page {
+      size: letter portrait;
+      margin: 14mm 16mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, serif;
+      color: #0f172a;
+      background: #ffffff;
+      line-height: 1.45;
+      font-size: 11pt;
+      margin: 0;
+      padding: 0;
+    }
+
+    .no-print {
+      display: block;
+    }
+
+    .print-page {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 24px 0;
+    }
+
+    .page-break {
+      page-break-after: always;
+      break-after: page;
+      height: 0;
+      margin: 0;
+    }
+
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+      .print-page {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      body {
+        font-size: 10pt;
+      }
+    }
+
+    /* Header Styling */
+    .mstar-header {
+      border-bottom: 2.5px solid #0f172a;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+    .mstar-metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-top: 10px;
+    }
+    .mstar-metric-tile {
+      font-family: monospace;
+      font-size: 8.5pt;
+    }
+    .mstar-metric-label {
+      color: #64748b;
+      text-transform: uppercase;
+      font-size: 7.5pt;
+      letter-spacing: 0.5px;
+    }
+    .mstar-metric-val {
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 11pt;
+      margin-top: 2px;
+    }
+
+    /* Modules */
+    .module-heading {
+      font-size: 12pt;
+      font-weight: 800;
+      color: #0f172a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1.5px solid #0f172a;
+      padding-bottom: 4px;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .module-subheading {
+      font-size: 10pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 12px;
+      margin-bottom: 4px;
+    }
+
+    table.inst-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: monospace;
+      font-size: 8.5pt;
+      margin: 10px 0;
+    }
+    table.inst-table th {
+      background: #f1f5f9;
+      color: #1e293b;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 6px 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 8pt;
+    }
+    table.inst-table td {
+      padding: 6px 8px;
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
+    }
+    table.inst-table tr:nth-child(even) td {
+      background: #f8fafc;
+    }
+
+    .badge-star {
+      color: #b45309;
+      font-weight: 800;
+      font-size: 13pt;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Screen-Only Institutional Control Toolbar -->
+  <div class="no-print bg-slate-900 border-b border-slate-800 text-white py-3 px-4 sticky top-0 z-50 shadow-md">
+    <div class="max-w-4xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+      <div class="flex items-center gap-3">
+        <span class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/80 font-bold uppercase">
+          Institutional PDF Engine
+        </span>
+        <span class="text-slate-300 font-sans hidden sm:inline">
+          Morningstar 7-Module Equity Research Format
+        </span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <a
+          href={path(`/reports/${entry.slug}`)}
+          class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors"
+        >
+          &larr; Back to Web Report
+        </a>
+        <button
+          type="button"
+          id="print-btn"
+          class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow cursor-pointer flex items-center gap-1.5"
+        >
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/>
+          </svg>
+          <span>Print / Save as PDF (Cmd+P)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <main class="print-page px-4 sm:px-6">
+
+    <!-- PAGE 1: PERSISTENT HEADER & MODULE 1 -->
+    <header class="mstar-header">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <div style="font-family: monospace; font-size: 8pt; color: #64748b; text-transform: uppercase;">
+            EquiSight Alpha Institutional Equity Research &bull; Coverage Initiation
+          </div>
+          <h1 style="font-size: 20pt; font-weight: 900; margin: 4px 0 2px 0; color: #0f172a;">
+            {report.companyName} <span style="font-family: monospace; font-weight: 700; color: #0284c7;">({report.ticker}: {report.exchange})</span>
+          </h1>
+          <div style="font-size: 9pt; color: #475569;">
+            Sector: <strong>{report.sector}</strong> &bull; Industry: <strong>{report.industry}</strong> &bull; Currency: <strong>{report.currency}</strong>
+          </div>
+        </div>
+        <div style="text-align: right; font-family: monospace; font-size: 8pt; color: #64748b;">
+          <div>Report Published: <strong>{formattedDate}</strong></div>
+          <div>{priceDisplayLabel}</div>
+          <div style="margin-top: 4px;">
+            Rating: <span class="badge-star">{starRatingString}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Persistent 8-Tile Metric Bar -->
+      <div class="mstar-metric-strip">
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Last Price</div>
+          <div class="mstar-metric-val">${P.toFixed(2)}</div>
+        </div>
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Fair Value (FVE)</div>
+          <div class="mstar-metric-val">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</div>
+        </div>
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Price / FVE</div>
+          <div class="mstar-metric-val">{priceToFairValue}x</div>
+        </div>
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Market Cap</div>
+          <div class="mstar-metric-val">{formatCurrency(report.marketCap)}</div>
+        </div>
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Economic Moat</div>
+          <div class="mstar-metric-val">{moatRating}</div>
+        </div>
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Moat Trend</div>
+          <div class="mstar-metric-val">{moatTrend}</div>
+        </div>
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Uncertainty</div>
+          <div class="mstar-metric-val">{uncertaintyRating}</div>
+        </div>
+        <div class="mstar-metric-tile">
+          <div class="mstar-metric-label">Capital Allocation</div>
+          <div class="mstar-metric-val">{mgmtObj.rating}</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MODULE 1: EXECUTIVE SUMMARY & PROFILE -->
+    <section>
+      <div class="module-heading">
+        <span>Module 1 &bull; Executive Summary & Valuation Triage</span>
+        <span style="font-size: 8pt; font-family: monospace; font-weight: normal; color: #64748b;">Chronology 1 of 7</span>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 14px; margin-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="font-size: 10pt; color: #0f172a;">Intrinsic Valuation & Margin of Safety Consensus</strong>
+          <span style="font-family: monospace; font-size: 9pt; font-weight: 800; padding: 2px 8px; border-radius: 4px; background: #e2e8f0;">
+            Verdict: {consensusVerdict}
+          </span>
+        </div>
+        <div style="font-size: 9pt; color: #334155; line-height: 1.4;">
+          At the closing price of <strong>${P.toFixed(2)}</strong>, {report.companyName} trades at a 
+          <strong>{consensusUpside !== null ? `${Math.abs(consensusUpside)}% ${consensusUpside >= 0 ? 'discount to' : 'premium over'}` : 'benchmark spread vs'}</strong> 
+          its synthesized Consensus Fair Value of <strong>{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>.
+          Under Morningstar's margin-of-safety framework with {uncertaintyRating} uncertainty, a 5-Star buy threshold stands at 
+          <strong>{fiveStarPrice ? `$${fiveStarPrice.toFixed(2)}` : 'N/A'}</strong>, while a 1-Star trim hurdle begins at 
+          <strong>{oneStarPrice ? `$${oneStarPrice.toFixed(2)}` : 'N/A'}</strong>.
+        </div>
+      </div>
+
+      <div class="module-subheading">Business Profile & Operational Architecture</div>
+      {parsedMakesMoney.intro && (
+        <p style="font-size: 9pt; color: #334155; margin-bottom: 6px;">
+          {parsedMakesMoney.intro}
+        </p>
+      )}
+      {parsedMakesMoney.bullets.length > 0 && (
+        <ul style="margin: 4px 0 6px 18px; padding: 0; font-size: 8.5pt; color: #334155; line-height: 1.45;">
+          {parsedMakesMoney.bullets.map((b: string) => (
+            <li style="margin-bottom: 3px;">{b}</li>
+          ))}
+        </ul>
+      )}
+      {parsedMakesMoney.outro && (
+        <p style="font-size: 9pt; color: #334155; margin-bottom: 8px;">
+          {parsedMakesMoney.outro}
+        </p>
+      )}
+      <p style="font-size: 9pt; color: #334155; margin-bottom: 8px;">
+        {demandAndWhy}
+      </p>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- MODULE 2: DEEP QUALITATIVE DISSECTION -->
+    <section>
+      <div class="module-heading">
+        <span>Module 2 &bull; Deep Qualitative Dissection: Strategy & Theses</span>
+        <span style="font-size: 8pt; font-family: monospace; font-weight: normal; color: #64748b;">Chronology 2 of 7</span>
+      </div>
+
+      <!-- Bulls Say / Bears Say 2-Column Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+        <!-- Bulls Say -->
+        <div style="border: 1px solid #a7f3d0; background: #f0fdf4; border-radius: 6px; padding: 10px 12px;">
+          <div style="font-size: 9pt; font-weight: 800; color: #065f46; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid #6ee7b7; padding-bottom: 4px;">
+            Bulls Say ({bullTheses.length} Pillars)
+          </div>
+          {bullTheses.length > 0 ? (
+            bullTheses.map((b: any, idx: number) => (
+              <div style="margin-bottom: 8px; font-size: 8.5pt;">
+                <div style="font-weight: 700; color: #047857;">#{idx + 1}. {b.point}</div>
+                {b.deductionChain && (
+                  <div style="font-size: 7.5pt; color: #064e3b; margin-top: 2px; font-family: monospace;">
+                    &bull; Logic: {b.deductionChain}
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div style="font-size: 8pt; color: #64748b; font-style: italic;">No explicit bull theses reported.</div>
+          )}
+        </div>
+
+        <!-- Bears Say -->
+        <div style="border: 1px solid #fecdd3; background: #fff1f2; border-radius: 6px; padding: 10px 12px;">
+          <div style="font-size: 9pt; font-weight: 800; color: #9f1239; text-transform: uppercase; margin-bottom: 6px; border-bottom: 1px solid #fda4af; padding-bottom: 4px;">
+            Bears Say ({bearTheses.length} Downside Risks)
+          </div>
+          {bearTheses.length > 0 ? (
+            bearTheses.map((br: any, idx: number) => (
+              <div style="margin-bottom: 8px; font-size: 8.5pt;">
+                <div style="font-weight: 700; color: #be123c;">#{idx + 1}. {br.point}</div>
+                {br.deductionChain && (
+                  <div style="font-size: 7.5pt; color: #881337; margin-top: 2px; font-family: monospace;">
+                    &bull; Risk Vector: {br.deductionChain}
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div style="font-size: 8pt; color: #64748b; font-style: italic;">No explicit bear risks reported.</div>
+          )}
+        </div>
+      </div>
+
+      <!-- Economic Moat & 5 Moat Pillars -->
+      <div class="module-subheading" style="margin-top: 14px;">Economic Moat & Competitive Barrier Evaluation</div>
+      <p style="font-size: 9pt; color: #334155; margin-bottom: 8px;">
+        {moatResult.summary}
+      </p>
+
+      {moatSources && (
+        <table class="inst-table">
+          <thead>
+            <tr>
+              <th>Moat Source</th>
+              <th>Rating Tier</th>
+              <th>Competitive Impact & Structural Hurdle</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Intangible Assets (Patents, Brand)</td>
+              <td><strong>{moatSources.intangibleAssets?.rating || 'None'}</strong></td>
+              <td>Proprietary intellectual property, brand pricing power, and regulatory exclusivity.</td>
+            </tr>
+            <tr>
+              <td>Switching Costs</td>
+              <td><strong>{moatSources.switchingCosts?.rating || 'None'}</strong></td>
+              <td>Operational disruption friction, software integration lock-in, and migration expenses.</td>
+            </tr>
+            <tr>
+              <td>Network Effect</td>
+              <td><strong>{moatSources.networkEffect?.rating || 'None'}</strong></td>
+              <td>Platform utility compounding proportionally with user ecosystem density.</td>
+            </tr>
+            <tr>
+              <td>Cost Advantage</td>
+              <td><strong>{moatSources.costAdvantage?.rating || 'None'}</strong></td>
+              <td>Structural input cost discounts, scale procurement, and proprietary process yield.</td>
+            </tr>
+            <tr>
+              <td>Efficient Scale</td>
+              <td><strong>{moatSources.efficientScale?.rating || 'None'}</strong></td>
+              <td>Natural geographic or infrastructure oligopoly discouraging rational entry.</td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- MODULE 3: COMPETITOR BENCHMARKING -->
+    <section>
+      <div class="module-heading">
+        <span>Module 3 &bull; Peer Benchmarking Matrix & Competitors</span>
+        <span style="font-size: 8pt; font-family: monospace; font-weight: normal; color: #64748b;">Chronology 3 of 7</span>
+      </div>
+
+      <p style="font-size: 9pt; color: #334155; margin-bottom: 8px;">
+        Cross-sectional comparison of {report.companyName} relative to primary competitors across market capitalization, valuation multiples, competitive moat rating, and return on invested capital (ROIC).
+      </p>
+
+      {competitorBenchmarking && competitorBenchmarking.peers && competitorBenchmarking.peers.length > 0 ? (
+        <table class="inst-table">
+          <thead>
+            <tr>
+              <th>Company Name</th>
+              <th>Ticker</th>
+              <th>Market Cap</th>
+              <th>Trailing P/E</th>
+              <th>EV / EBITDA</th>
+              <th>Moat Rating</th>
+              <th>ROIC</th>
+            </tr>
+          </thead>
+          <tbody>
+            {competitorBenchmarking.peers.map((peer: any, idx: number) => (
+              <tr style={idx === 0 ? "font-weight: bold; background: #eff6ff;" : ""}>
+                <td>{peer.name} {idx === 0 ? '(Subject Company)' : ''}</td>
+                <td>{peer.ticker}</td>
+                <td>{formatCurrency(peer.marketCap)}</td>
+                <td>{peer.peRatio !== null && peer.peRatio !== undefined ? `${Number(peer.peRatio).toFixed(1)}x` : 'N/A'}</td>
+                <td>{peer.evToEbitda !== null && peer.evToEbitda !== undefined ? `${Number(peer.evToEbitda).toFixed(1)}x` : 'N/A'}</td>
+                <td>{peer.moat}</td>
+                <td>{peer.roic !== null && peer.roic !== undefined ? `${Number(peer.roic).toFixed(1)}%` : 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <div style="font-size: 8.5pt; color: #64748b; font-style: italic; padding: 12px; border: 1px solid #cbd5e1; border-radius: 4px;">
+          Peer universe metrics compiled under industry classification standards.
+        </div>
+      )}
+
+      {competitorBenchmarking?.commentary && (
+        <div style="margin-top: 10px; padding: 10px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 8.5pt; color: #334155;">
+          <strong>Peer Synthesized Commentary:</strong> {competitorBenchmarking.commentary}
+        </div>
+      )}
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- MODULE 4 & 5: FINANCIALS & SOLVENCY -->
+    <section>
+      <div class="module-heading">
+        <span>Module 4 & 5 &bull; Financial Health, Debt & 8-Quarter EPS</span>
+        <span style="font-size: 8pt; font-family: monospace; font-weight: normal; color: #64748b;">Chronology 4 & 5 of 7</span>
+      </div>
+
+      <!-- Balance Sheet Debt Waterfall -->
+      <div class="module-subheading">Balance Sheet Solvency & Leverage Structure</div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 8px 0;">
+        <div style="padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-family: monospace; font-size: 8pt;">
+          <div style="color: #64748b;">Total Debt:</div>
+          <div style="font-weight: 800; font-size: 10pt; color: #0f172a;">{formatCurrency(totalDebt)}</div>
+        </div>
+        <div style="padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-family: monospace; font-size: 8pt;">
+          <div style="color: #64748b;">Debt / Equity:</div>
+          <div style="font-weight: 800; font-size: 10pt; color: #0f172a;">{debtToEquity !== null ? `${debtToEquity.toFixed(2)}x` : 'N/A'}</div>
+        </div>
+        <div style="padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-family: monospace; font-size: 8pt;">
+          <div style="color: #64748b;">Short-Term Debt:</div>
+          <div style="font-weight: 800; font-size: 10pt; color: #0f172a;">{formatCurrency(shortTermDebt)}</div>
+        </div>
+        <div style="padding: 8px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 4px; font-family: monospace; font-size: 8pt;">
+          <div style="color: #64748b;">Free Cash Flow:</div>
+          <div style={`font-weight: 800; font-size: 10pt; ${freeCashFlow >= 0 ? 'color: #059669;' : 'color: #e11d48;'}`}>{formatCurrency(freeCashFlow)}</div>
+        </div>
+      </div>
+
+      <div style="font-size: 8.5pt; color: #475569; margin-bottom: 12px;">
+        <strong>Maturity & Refinancing Audit:</strong> {shortVsLongTermRatio}. {debtRisks}
+      </div>
+
+      <!-- 8-Quarter Historical EPS Progression Table -->
+      <div class="module-subheading">8-Quarter Historical EPS Progression (Past 2 Years)</div>
+      {quarterlyEPS.length > 0 ? (
+        <table class="inst-table">
+          <thead>
+            <tr>
+              {quarterlyEPS.map((q: any) => (
+                <th style="text-align: center;">{q.quarter}</th>
+              ))}
+              <th style="text-align: center; background: #e2e8f0;">TTM EPS</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              {quarterlyEPS.map((q: any) => (
+                <td style={`text-align: center; font-weight: bold; ${Number(q.eps) >= 0 ? 'color: #059669;' : 'color: #e11d48;'}`}>
+                  {formatEPS(Number(q.eps))}
+                </td>
+              ))}
+              <td style={`text-align: center; font-weight: 800; background: #f1f5f9; ${currentTTM >= 0 ? 'color: #059669;' : 'color: #e11d48;'}`}>
+                {formatEPS(currentTTM)}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      ) : (
+        <div style="font-size: 8pt; color: #64748b; font-style: italic;">8-Quarter EPS historical progression data not available.</div>
+      )}
+
+      <!-- Event Note / Catalyst Headline -->
+      <div class="module-subheading" style="margin-top: 14px;">Analyst Notes: Primary Session Catalyst & Dynamics</div>
+      <div style="padding: 10px 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 8.5pt; color: #334155; line-height: 1.45;">
+        <div style="font-weight: 800; color: #0f172a; margin-bottom: 4px;">"{catalystHeadline}"</div>
+        {execSummary.sessionDynamics && (
+          <div style="margin-top: 4px;">{execSummary.sessionDynamics}</div>
+        )}
+      </div>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- MODULE 6: VALUATION METHODOLOGY -->
+    <section>
+      <div class="module-heading">
+        <span>Module 6 &bull; Valuation Methodology & 8-Model Intrinsic Matrix</span>
+        <span style="font-size: 8pt; font-family: monospace; font-weight: normal; color: #64748b;">Chronology 6 of 7</span>
+      </div>
+
+      <p style="font-size: 9pt; color: #334155; margin-bottom: 8px;">
+        Synthesis of eight standardized equity valuation frameworks assessing intrinsic target fair value relative to prevailing market pricing (${P.toFixed(2)}).
+      </p>
+
+      <table class="inst-table">
+        <thead>
+          <tr>
+            <th>Valuation Framework</th>
+            <th>Key Parameter Assumptions</th>
+            <th style="text-align: right;">Target Value</th>
+            <th style="text-align: right;">Spread vs Price</th>
+            <th style="text-align: center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>3-Stage DCF (Moat Fade)</strong></td>
+            <td>Stage I Forecast, Stage II Competitive Fade ({report.valuationModels?.dcf?.fadeYears || 10}Y), Stage III Perpetuity</td>
+            <td style="text-align: right; font-weight: bold;">{dcf.val ? `$${dcf.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${dcf.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{dcf.upside ? `${dcf.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{dcf.status}</td>
+          </tr>
+          <tr>
+            <td><strong>Dividend Discount Model (DDM)</strong></td>
+            <td>Cost of Equity 9.8%, Dividend Growth Rate 4.0%</td>
+            <td style="text-align: right; font-weight: bold;">{ddm.val ? `$${ddm.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${ddm.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{ddm.upside ? `${ddm.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{ddm.status}</td>
+          </tr>
+          <tr>
+            <td><strong>Relative Valuation (Peer Multiples)</strong></td>
+            <td>Sector Peer Median P/E & EV/EBITDA</td>
+            <td style="text-align: right; font-weight: bold;">{rel.val ? `$${rel.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${rel.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{rel.upside ? `${rel.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{rel.status}</td>
+          </tr>
+          <tr>
+            <td><strong>Rapid Stock Valuation (Benjamin Graham)</strong></td>
+            <td>Normalized EPS × (8.5 + 2g) with Treasury Rate Baseline</td>
+            <td style="text-align: right; font-weight: bold;">{rapid.val ? `$${rapid.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${rapid.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{rapid.upside ? `${rapid.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{rapid.status}</td>
+          </tr>
+          <tr>
+            <td><strong>Residual Income Model (RIM)</strong></td>
+            <td>Book Value + PV of Residual Income above Cost of Equity</td>
+            <td style="text-align: right; font-weight: bold;">{rim.val ? `$${rim.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${rim.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{rim.upside ? `${rim.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{rim.status}</td>
+          </tr>
+          <tr>
+            <td><strong>Asset-Based Valuation (Tangible NAV)</strong></td>
+            <td>Tangible Liquidation Floor & Net Adjusted Asset Value</td>
+            <td style="text-align: right; font-weight: bold;">{asset.val ? `$${asset.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${asset.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{asset.upside ? `${asset.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{asset.status}</td>
+          </tr>
+          <tr>
+            <td><strong>Excess Return Model (EVA)</strong></td>
+            <td>Spread between ROIC and WACC capital charge</td>
+            <td style="text-align: right; font-weight: bold;">{excess.val ? `$${excess.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${excess.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{excess.upside ? `${excess.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{excess.status}</td>
+          </tr>
+          <tr>
+            <td><strong>{industryModelName}</strong></td>
+            <td>Sector specialized operational multiples</td>
+            <td style="text-align: right; font-weight: bold;">{ind.val ? `$${ind.val.toFixed(2)}` : 'N/A'}</td>
+            <td style={`text-align: right; font-weight: bold; ${ind.isPositive ? 'color: #059669;' : 'color: #e11d48;'}`}>{ind.upside ? `${ind.upside}%` : 'N/A'}</td>
+            <td style="text-align: center;">{ind.status}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Margin of Safety Table -->
+      <div class="module-subheading" style="margin-top: 14px;">Uncertainty Rating & Required Margin-of-Safety Discount</div>
+      <table class="inst-table">
+        <thead>
+          <tr>
+            <th>Uncertainty Tier</th>
+            <th>5-Star Buy Discount</th>
+            <th>1-Star Trim Premium</th>
+            <th>Current Asset Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Low Uncertainty</td>
+            <td>20% Below FVE</td>
+            <td>25% Above FVE</td>
+            <td>{uncertaintyRating === 'Low' ? 'Active Hurdle' : '—'}</td>
+          </tr>
+          <tr style={uncertaintyRating === 'Medium' ? 'background: #eff6ff; font-weight: bold;' : ''}>
+            <td>Medium Uncertainty</td>
+            <td>30% Below FVE</td>
+            <td>35% Above FVE</td>
+            <td>{uncertaintyRating === 'Medium' ? 'Active Hurdle' : '—'}</td>
+          </tr>
+          <tr style={uncertaintyRating === 'High' ? 'background: #eff6ff; font-weight: bold;' : ''}>
+            <td>High Uncertainty</td>
+            <td>40% Below FVE</td>
+            <td>45% Above FVE</td>
+            <td>{uncertaintyRating === 'High' ? 'Active Hurdle' : '—'}</td>
+          </tr>
+          <tr style={uncertaintyRating === 'Very High' || uncertaintyRating === 'Extreme' ? 'background: #eff6ff; font-weight: bold;' : ''}>
+            <td>Very High / Extreme</td>
+            <td>50% Below FVE</td>
+            <td>75% Above FVE</td>
+            <td>{uncertaintyRating === 'Very High' || uncertaintyRating === 'Extreme' ? 'Active Hurdle' : '—'}</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- MODULE 7: COMPLIANCE & DISCLOSURES -->
+    <section>
+      <div class="module-heading">
+        <span>Module 7 &bull; Compliance, Governance & Disclosures</span>
+        <span style="font-size: 8pt; font-family: monospace; font-weight: normal; color: #64748b;">Chronology 7 of 7</span>
+      </div>
+
+      <div style="font-size: 8pt; color: #475569; line-height: 1.5; margin-top: 10px; padding: 12px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;">
+        <p style="margin-top: 0; font-weight: bold; color: #0f172a;">
+          EQUISIGHT ALPHA INSTITUTIONAL EQUITY RESEARCH &bull; PUBLISHER'S EXEMPTION & COMPLIANCE DISCLOSURE
+        </p>
+        <p>
+          This equity research report is prepared and published strictly for general information and educational purposes under the publisher's exemption to investment adviser registration under Section 202(a)(11)(D) of the Investment Advisers Act of 1940 and corresponding state statutes.
+        </p>
+        <p>
+          <strong>Conflicts of Interest & Analyst Independence:</strong> Neither EquiSight Alpha nor its principal analysts hold direct equity positions, option contracts, or debt instruments in {report.companyName} (${report.ticker}) at the time of report dissemination. Analysts are compensated strictly on baseline operational quality and independent analytical rigor, with no compensation tethered to investment banking, corporate underwriting, brokerage execution, or client trading activity.
+        </p>
+        <p>
+          <strong>No Tailored Advice:</strong> The valuation models, scenario probability matrices, and star rating evaluations contained herein do not constitute individualized investment advice, financial planning, or fiduciary recommendations tailored to the financial situation, risk tolerance, or tax circumstances of any specific investor. Past financial performance is not indicative of future returns.
+        </p>
+        <p style="margin-bottom: 0;">
+          <strong>Data Sources:</strong> Historical financial data, earnings per share metrics, and debt figures are sourced from audited Form 10-K, 10-Q, and 8-K regulatory filings via the SEC EDGAR system. Market price data reflects trading on {report.exchange}.
+        </p>
+      </div>
+
+      <div style="margin-top: 20px; text-align: center; font-family: monospace; font-size: 8pt; color: #94a3b8;">
+        &bull; EquiSight Alpha Institutional Research &bull; End of Formal 7-Module Report &bull;
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Trigger print if ?autoprint=true in query param
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('autoprint') === 'true') {
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          window.print();
+        }, 300);
+      });
+    }
+
+    const printBtn = document.getElementById('print-btn');
+    if (printBtn) {
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+  </script>
+</body>
+</html>

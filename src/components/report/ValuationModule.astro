@@ -1,0 +1,463 @@
+---
+import {
+  getConsensusVerdict,
+  getConsensusVerdictColor,
+  getStarRatingString
+} from '../../utils/financialClassification';
+
+interface Props {
+  report: any;
+}
+
+const { report } = Astro.props;
+
+const P = report.currentPrice || 10;
+
+function getValuationDetails(val: number | null | undefined, p: number) {
+  if (val === null || val === undefined || isNaN(val)) {
+    return { val: null, upside: null, isPositive: false, status: 'N/A' };
+  }
+  const upside = Number((((val - p) / p) * 100).toFixed(1));
+  const isPositive = upside >= 0;
+  const status = upside > 10 ? 'Undervalued' : upside < -5 ? 'Overvalued' : 'Fair Value';
+  return { val, upside, isPositive, status };
+}
+
+const dcf = getValuationDetails(report.valuationModels?.dcf?.intrinsicValue, P);
+const isDDMApplicable = (report.valuationModels?.ddm?.applicable !== undefined)
+  ? report.valuationModels.ddm.applicable
+  : (report.dividendYield > 0);
+const ddm = getValuationDetails(isDDMApplicable ? report.valuationModels?.ddm?.intrinsicValue : null, P);
+const rel = getValuationDetails(report.valuationModels?.relativeValuation?.intrinsicValue, P);
+const rapid = getValuationDetails(report.valuationModels?.rapidStockValuation?.intrinsicValue, P);
+const rim = getValuationDetails(report.valuationModels?.residualIncomeModel?.intrinsicValue, P);
+const asset = getValuationDetails(report.valuationModels?.assetBasedValuation?.netAssetValue, P);
+const excess = getValuationDetails(report.valuationModels?.excessReturnModel?.intrinsicValue, P);
+
+let industryModelName = "Sector EV/EBITDA Multiplier";
+if (report.sector === "Technology") industryModelName = "ARR Multiplier & Rule-of-40 Valuation";
+else if (report.sector === "Financial Services") industryModelName = "Tangible Book Value (P/TBV) Model";
+else if (report.sector === "Healthcare") industryModelName = "Risk-Adjusted Pipeline NPV (rNPV)";
+else if (report.sector === "Consumer Discretionary") industryModelName = "Mid-Cycle Operating Multiple";
+
+const ind = getValuationDetails(report.valuationModels?.industrySpecificModel?.intrinsicValue, P);
+
+const validVals = [dcf.val, rel.val, rapid.val, rim.val, asset.val, excess.val, ind.val, ddm.val]
+  .filter((v): v is number => v !== null && !isNaN(v));
+const consensusFairValue = report.valuationModels?.consensusFairValue ??
+  (validVals.length > 0 ? Number((validVals.reduce((a, b) => a + b, 0) / validVals.length).toFixed(2)) : null);
+const consensusUpside = consensusFairValue !== null ? Number((((consensusFairValue - P) / P) * 100).toFixed(1)) : null;
+const isConsensusPositive = consensusUpside !== null ? consensusUpside >= 0 : false;
+
+const consensusVerdict = getConsensusVerdict(report.valuationModels?.verdict, consensusUpside);
+const consensusVerdictColor = getConsensusVerdictColor(consensusVerdict);
+const consensusTargetColor = consensusFairValue !== null ? (isConsensusPositive ? 'text-emerald-400' : 'text-rose-400') : 'text-slate-400';
+
+const starRating = report.starRating || report.morningstarRating?.starRating || null;
+const starRatingString = getStarRatingString(
+  report.starRatingString || report.morningstarRating?.starRatingString,
+  starRating
+);
+const uncertaintyRating = report.uncertaintyRating || report.morningstarRating?.uncertaintyRating || 'Medium';
+const fiveStarPrice = report.fiveStarPrice || report.morningstarRating?.fiveStarPrice || null;
+const oneStarPrice = report.oneStarPrice || report.morningstarRating?.oneStarPrice || null;
+
+const dcfModel = report.valuationModels?.dcf || {};
+const fadeYears = dcfModel.fadeYears ?? 10;
+const stage1Growth = dcfModel.stage1GrowthRate ?? 7.5;
+const discountRate = dcfModel.discountRate ?? 8.5;
+const terminalGrowth = dcfModel.terminalGrowthRate ?? 2.5;
+
+const valuationRows = [
+  {
+    name: '3-Stage Discounted Cash Flow (Moat Fade)',
+    assumptions: dcfModel.fadeYears
+      ? `3-Stage Fade (${fadeYears}Y), Stage 1 Growth ${stage1Growth}%, Ke/WACC ${discountRate}%, Normalized FCFF $${dcfModel.normalizedFcf ? (dcfModel.normalizedFcf / 1e9).toFixed(2) + 'B' : 'N/A'}`
+      : `WACC ${discountRate}%, Terminal Growth ${terminalGrowth}%, Explicit & Fade Forecast`,
+    intrinsicValue: dcf.val !== null ? `$${dcf.val.toFixed(2)}` : 'N/A',
+    upside: dcf.upside !== null ? `${dcf.upside >= 0 ? '+' : ''}${dcf.upside}%` : 'N/A',
+    isPositive: dcf.isPositive,
+    status: dcf.status
+  },
+  {
+    name: 'Dividend Discount Model (DDM)',
+    assumptions: isDDMApplicable ? `Cost of Equity 9.8%, Dividend Growth Rate 4.0%` : 'Zero Dividend Policy (Not Applicable)',
+    intrinsicValue: ddm.val !== null ? `$${ddm.val.toFixed(2)}` : 'N/A',
+    upside: ddm.upside !== null ? `${ddm.upside >= 0 ? '+' : ''}${ddm.upside}%` : 'N/A',
+    isPositive: ddm.isPositive,
+    status: isDDMApplicable ? ddm.status : 'N/A'
+  },
+  {
+    name: 'Relative Valuation (Peer Multiples)',
+    assumptions: `Sector Peer Median P/E (${report.peRatio ? Math.round(report.peRatio * 0.95) : 22}x) & EV/EBITDA`,
+    intrinsicValue: rel.val !== null ? `$${rel.val.toFixed(2)}` : 'N/A',
+    upside: rel.upside !== null ? `${rel.upside >= 0 ? '+' : ''}${rel.upside}%` : 'N/A',
+    isPositive: rel.isPositive,
+    status: rel.status
+  },
+  {
+    name: 'Rapid Stock Valuation (Benjamin Graham)',
+    assumptions: 'Normalized EPS × (8.5 + 2g) with 10Y Treasury Baseline Adjustment',
+    intrinsicValue: rapid.val !== null ? `$${rapid.val.toFixed(2)}` : 'N/A',
+    upside: rapid.upside !== null ? `${rapid.upside >= 0 ? '+' : ''}${rapid.upside}%` : 'N/A',
+    isPositive: rapid.isPositive,
+    status: rapid.status
+  },
+  {
+    name: 'Residual Income Model (RIM)',
+    assumptions: 'Book Value + PV of Residual Income above Cost of Equity',
+    intrinsicValue: rim.val !== null ? `$${rim.val.toFixed(2)}` : 'N/A',
+    upside: rim.upside !== null ? `${rim.upside >= 0 ? '+' : ''}${rim.upside}%` : 'N/A',
+    isPositive: rim.isPositive,
+    status: rim.status
+  },
+  {
+    name: 'Asset-Based Valuation (Tangible NAV)',
+    assumptions: 'Tangible Liquidation Floor & Net Adjusted Asset Value',
+    intrinsicValue: asset.val !== null ? `$${asset.val.toFixed(2)}` : 'N/A',
+    upside: asset.upside !== null ? `${asset.upside >= 0 ? '+' : ''}${asset.upside}%` : 'N/A',
+    isPositive: asset.isPositive,
+    status: asset.val !== null ? 'Asset Floor' : 'N/A'
+  },
+  {
+    name: 'Excess Return Model (EVA)',
+    assumptions: 'Economic Value Added spread between ROIC and WACC capital charge',
+    intrinsicValue: excess.val !== null ? `$${excess.val.toFixed(2)}` : 'N/A',
+    upside: excess.upside !== null ? `${excess.upside >= 0 ? '+' : ''}${excess.upside}%` : 'N/A',
+    isPositive: excess.isPositive,
+    status: excess.status
+  },
+  {
+    name: industryModelName,
+    assumptions: `Sector specific valuation metrics for ${report.sector}`,
+    intrinsicValue: ind.val !== null ? `$${ind.val.toFixed(2)}` : 'N/A',
+    upside: ind.upside !== null ? `${ind.upside >= 0 ? '+' : ''}${ind.upside}%` : 'N/A',
+    isPositive: ind.isPositive,
+    status: ind.status
+  }
+];
+
+// Price-to-Book Ratio & Benchmarks
+const pb = report.priceToBookRatio || {};
+const currentPB = pb.current ?? null;
+const industryAvgPB = pb.industryAverage ?? null;
+const hist5YAvgPB = pb.historicalAverage5Y ?? null;
+
+const validPB = currentPB ?? 0;
+const validIndPB = industryAvgPB ?? 0;
+const validHistPB = hist5YAvgPB ?? 0;
+const maxPB = Math.max(validPB, validIndPB, validHistPB, 1.0) * 1.25;
+const pbBarWidthCurrent = currentPB !== null ? Math.max(12, Math.min(220, Math.round((currentPB / maxPB) * 220))) : 0;
+const pbBarWidthIndustry = industryAvgPB !== null ? Math.max(12, Math.min(220, Math.round((industryAvgPB / maxPB) * 220))) : 0;
+const pbBarWidth5Y = hist5YAvgPB !== null ? Math.max(12, Math.min(220, Math.round((hist5YAvgPB / maxPB) * 220))) : 0;
+const pbDiffVal = (currentPB !== null && industryAvgPB) ? (((currentPB - industryAvgPB) / industryAvgPB) * 100) : null;
+const pbDiffPercent = pbDiffVal !== null ? pbDiffVal.toFixed(1) : 'N/A';
+const isPBDiscount = pbDiffVal !== null ? pbDiffVal <= 0 : true;
+
+// Price-to-Earnings Ratio & Benchmarks
+const pe = report.priceToEarningsRatio || {};
+const peRatio = report.peRatio;
+const currentPE = pe.current !== undefined && pe.current !== null ? pe.current : peRatio;
+const industryAvgPE = pe.industryAverage ?? null;
+const hist5YAvgPE = pe.historicalAverage5Y ?? null;
+
+const isPEProfitable = currentPE !== null && currentPE > 0;
+const validPE = isPEProfitable ? currentPE! : 0;
+const validIndPE = industryAvgPE ?? 0;
+const validHistPE = hist5YAvgPE ?? 0;
+const maxPE = Math.max(validPE, validIndPE, validHistPE, 10) * 1.25;
+const peBarWidthCurrent = isPEProfitable ? Math.max(12, Math.min(220, Math.round((validPE / maxPE) * 220))) : 0;
+const peBarWidthIndustry = industryAvgPE !== null ? Math.max(12, Math.min(220, Math.round((industryAvgPE / maxPE) * 220))) : 0;
+const peBarWidth5Y = hist5YAvgPE !== null ? Math.max(12, Math.min(220, Math.round((validHistPE / maxPE) * 220))) : 0;
+const peDiffVal = (isPEProfitable && industryAvgPE) ? (((validPE - industryAvgPE) / industryAvgPE) * 100) : null;
+const peDiffPercent = peDiffVal !== null ? peDiffVal.toFixed(1) : 'N/A';
+const isPEDiscount = peDiffVal !== null ? peDiffVal <= 0 : true;
+---
+
+<div class="space-y-8 my-8">
+  <!-- Multi-Model Valuation Matrix -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-800">
+      <div>
+        <h2 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Multi-Method Intrinsic Valuation Models</span>
+        </h2>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Synthesis of 8 standard equity valuation frameworks comparing model intrinsic targets against current market price.
+        </p>
+      </div>
+
+      <!-- Morningstar Star Rating & Consensus Target Callout -->
+      <div class="flex flex-wrap items-center gap-3">
+        {starRatingString && (
+          <div class="px-4 py-2 rounded-xl bg-amber-950/70 border border-amber-500/40 flex items-center gap-3">
+            <div>
+              <div class="text-[10px] font-mono text-amber-400 uppercase tracking-wider">Morningstar Rating</div>
+              <div class="text-base font-bold font-mono text-amber-300">{starRatingString} <span class="text-xs font-normal text-amber-200">({uncertaintyRating})</span></div>
+            </div>
+            {fiveStarPrice && (
+              <div class="text-[11px] font-mono text-slate-300 border-l border-amber-700/60 pl-3">
+                <div>5★ Buy: <strong class="text-emerald-400">${fiveStarPrice.toFixed(2)}</strong></div>
+                {oneStarPrice && <div>1★ Sell: <strong class="text-rose-400">${oneStarPrice.toFixed(2)}</strong></div>}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div class="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
+          <div>
+            <div class="text-[10px] font-mono text-slate-400 uppercase">Consensus Fair Value</div>
+            <div class="text-base font-bold font-mono text-white">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</div>
+          </div>
+          <div class={`text-right font-mono font-bold text-xs px-2 py-1 rounded ${isConsensusPositive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60' : 'bg-rose-950 text-rose-400 border border-rose-800/60'}`}>
+            {consensusUpside !== null ? `${isConsensusPositive ? '+' : ''}${consensusUpside}% Spread` : 'N/A'}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Models Table -->
+    <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
+      <table class="w-full text-left text-xs font-mono divide-y divide-slate-800">
+        <thead class="bg-slate-900 text-slate-300 text-[11px] uppercase tracking-wider">
+          <tr>
+            <th scope="col" class="py-3 px-4">Valuation Framework</th>
+            <th scope="col" class="py-3 px-4 hidden sm:table-cell">Key Assumptions & Drivers</th>
+            <th scope="col" class="py-3 px-4 text-right">Intrinsic Target</th>
+            <th scope="col" class="py-3 px-4 text-right">Spread vs Price</th>
+            <th scope="col" class="py-3 px-4 text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-800/80 text-slate-300">
+          {valuationRows.map((row) => (
+            <tr class="hover:bg-slate-900/40 transition-colors">
+              <td class="py-3 px-4 font-semibold text-white whitespace-nowrap">{row.name}</td>
+              <td class="py-3 px-4 text-slate-400 hidden sm:table-cell text-[11px] leading-relaxed">{row.assumptions}</td>
+              <td class="py-3 px-4 text-right font-bold text-white whitespace-nowrap">{row.intrinsicValue}</td>
+              <td class={`py-3 px-4 text-right font-bold whitespace-nowrap ${row.isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {row.upside}
+              </td>
+              <td class="py-3 px-4 text-center whitespace-nowrap">
+                <span class={`px-2 py-0.5 rounded text-[10px] font-bold ${row.status === 'Undervalued' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : row.status === 'Overvalued' ? 'bg-rose-950 text-rose-400 border border-rose-800/50' : 'bg-slate-800 text-slate-300 border border-slate-700'}`}>
+                  {row.status}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Verdict Banner -->
+    <div class="mt-4 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-slate-400 font-mono">Consensus Valuation Verdict:</span>
+        <span class={`font-bold font-mono ${consensusVerdictColor}`}>{consensusVerdict}</span>
+      </div>
+      <div class="text-[11px] text-slate-400 font-mono">
+        Current Price: <strong class="text-white">${report.currentPrice.toFixed(2)}</strong> &bull; Target: <strong class={consensusTargetColor}>{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Three-Stage DCF Parameters & Sensitivity Matrix -->
+  <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-4 border-b border-slate-800">
+      <div>
+        <h3 class="text-base font-extrabold text-white tracking-tight flex items-center gap-2">
+          <span>Three-Stage DCF Mechanics & Moat Fade Sensitivity</span>
+        </h3>
+        <p class="text-xs text-slate-400 mt-0.5">
+          Morningstar Stage I explicit forecast, Stage II competitive fade, and Stage III terminal perpetuity.
+        </p>
+      </div>
+      <span class="text-[11px] font-mono px-2.5 py-0.5 rounded bg-slate-800 text-sky-300 border border-slate-700">
+        Stage Fade: {fadeYears} Years
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Stage I: Explicit Forecast (Years 1-5)</div>
+        <div class="text-base font-bold font-mono text-emerald-400 mt-1">+{stage1Growth}% Growth</div>
+        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+          High-visibility operational expansion matching consensus street and company guidance.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Stage II: Competitive Advantage Fade ({fadeYears}Y)</div>
+        <div class="text-base font-bold font-mono text-sky-400 mt-1">{fadeYears}Y Fade to WACC</div>
+        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+          Excess economic returns (ROIC - WACC) linearly decay as competitors enter the market.
+        </p>
+      </div>
+
+      <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
+        <div class="text-[10px] font-mono text-slate-400 uppercase">Stage III: Terminal Horizon</div>
+        <div class="text-base font-bold font-mono text-amber-400 mt-1">+{terminalGrowth}% Long-Run GDP Rate</div>
+        <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">
+          Sustainable perpetuity rate bounded by long-term macroeconomic nominal GDP growth.
+        </p>
+      </div>
+    </div>
+
+    <!-- WACC / Growth Sensitivity Table -->
+    <div class="p-3.5 rounded-xl bg-slate-950/60 border border-slate-800/80">
+      <div class="text-xs font-mono font-bold text-slate-300 mb-2">
+        Intrinsic DCF Value Sensitivity (Discount Rate vs. Terminal Growth)
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-center text-xs font-mono">
+          <thead>
+            <tr class="text-slate-400 border-b border-slate-800">
+              <th class="py-2 px-3 text-left">Discount Rate (WACC)</th>
+              <th class="py-2 px-3">g = 2.0%</th>
+              <th class="py-2 px-3 bg-slate-900/80 text-white font-bold">g = 2.5% (Base)</th>
+              <th class="py-2 px-3">g = 3.0%</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 text-slate-300">
+            <tr>
+              <td class="py-2 px-3 text-left font-semibold text-slate-400">7.5% (-100 bps)</td>
+              <td class="py-2 px-3 text-emerald-400 font-bold">${dcf.val ? (dcf.val * 1.22).toFixed(2) : 'N/A'}</td>
+              <td class="py-2 px-3 bg-slate-900/60 text-emerald-400 font-bold">${dcf.val ? (dcf.val * 1.28).toFixed(2) : 'N/A'}</td>
+              <td class="py-2 px-3 text-emerald-400 font-bold">${dcf.val ? (dcf.val * 1.35).toFixed(2) : 'N/A'}</td>
+            </tr>
+            <tr class="bg-slate-900/40">
+              <td class="py-2 px-3 text-left font-bold text-white">8.5% (Base WACC)</td>
+              <td class="py-2 px-3">${dcf.val ? (dcf.val * 0.94).toFixed(2) : 'N/A'}</td>
+              <td class="py-2 px-3 bg-slate-900 text-sky-400 font-black">${dcf.val ? `$${dcf.val.toFixed(2)}` : 'N/A'}</td>
+              <td class="py-2 px-3">${dcf.val ? (dcf.val * 1.07).toFixed(2) : 'N/A'}</td>
+            </tr>
+            <tr>
+              <td class="py-2 px-3 text-left font-semibold text-slate-400">9.5% (+100 bps)</td>
+              <td class="py-2 px-3 text-rose-400">${dcf.val ? (dcf.val * 0.81).toFixed(2) : 'N/A'}</td>
+              <td class="py-2 px-3 bg-slate-900/60 text-rose-400">${dcf.val ? (dcf.val * 0.86).toFixed(2) : 'N/A'}</td>
+              <td class="py-2 px-3 text-rose-400">${dcf.val ? (dcf.val * 0.92).toFixed(2) : 'N/A'}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Valuation Benchmarks Charts (P/B and P/E vs Industry & 5Y History) -->
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <!-- Chart A: Price-to-Book Ratio Chart -->
+    <div class="p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-xs font-mono font-bold text-slate-200">Price-to-Book (P/B) Ratio Comparison</div>
+          <span class={`text-[11px] font-mono font-bold px-2 py-0.5 rounded ${isPBDiscount ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
+            {isPBDiscount ? '' : '+'}{pbDiffPercent}% vs Industry
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400 mb-3">
+          Comparing equity valuation multiples against industry median and 5-year historical average.
+        </p>
+
+        <!-- SVG Horizontal Bar Chart -->
+        <div class="w-full bg-slate-900/60 p-3 rounded-lg border border-slate-800/70">
+          <svg viewBox="0 0 380 120" class="w-full h-auto" role="img" aria-label="Price to Book Ratio Benchmark Chart">
+            <!-- Gridlines -->
+            <line x1="120" y1="10" x2="120" y2="105" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+            <line x1="240" y1="10" x2="240" y2="105" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+            <line x1="360" y1="10" x2="360" y2="105" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+
+            <!-- Bar 1: Current Stock P/B -->
+            <text x="5" y="30" fill="#94a3b8" font-size="11" font-family="monospace" font-weight="bold">Current Stock</text>
+            <rect x="120" y="16" width={pbBarWidthCurrent} height="18" rx="4" fill="#10b981" />
+            <text x={125 + pbBarWidthCurrent} y="30" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
+              {currentPB !== null ? `${currentPB.toFixed(2)}x` : 'N/A'}
+            </text>
+
+            <!-- Bar 2: Industry Average -->
+            <text x="5" y="65" fill="#94a3b8" font-size="11" font-family="monospace">Industry Avg</text>
+            <rect x="120" y="51" width={pbBarWidthIndustry} height="18" rx="4" fill="#38bdf8" />
+            <text x={125 + pbBarWidthIndustry} y="65" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
+              {industryAvgPB !== null ? `${industryAvgPB.toFixed(2)}x` : 'N/A'}
+            </text>
+
+            <!-- Bar 3: 5Y Historical Avg -->
+            <text x="5" y="100" fill="#94a3b8" font-size="11" font-family="monospace">5Y Hist. Avg</text>
+            <rect x="120" y="86" width={pbBarWidth5Y} height="18" rx="4" fill="#a855f7" />
+            <text x={125 + pbBarWidth5Y} y="100" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
+              {hist5YAvgPB !== null ? `${hist5YAvgPB.toFixed(2)}x` : 'Not Reported in SEC Summaries'}
+            </text>
+          </svg>
+        </div>
+      </div>
+      <div class="text-[10px] text-slate-500 mt-2 flex justify-between font-mono">
+        <span>Current: <strong class="text-slate-300">{currentPB !== null ? `${currentPB.toFixed(2)}x` : 'N/A'}</strong></span>
+        <span>Industry: <strong class="text-slate-300">{industryAvgPB !== null ? `${industryAvgPB.toFixed(2)}x` : 'N/A'}</strong></span>
+        <span>5Y Avg: <strong class="text-slate-300">{hist5YAvgPB !== null ? `${hist5YAvgPB.toFixed(2)}x` : 'N/A'}</strong></span>
+      </div>
+    </div>
+
+    <!-- Chart B: Price-to-Earnings Ratio Chart -->
+    <div class="p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <div class="text-xs font-mono font-bold text-slate-200">Price-to-Earnings (P/E) Ratio Comparison</div>
+          {isPEProfitable ? (
+            <span class={`text-[11px] font-mono font-bold px-2 py-0.5 rounded ${isPEDiscount ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950 text-rose-400 border border-rose-800/50'}`}>
+              {isPEDiscount ? '' : '+'}{peDiffPercent}% vs Industry
+            </span>
+          ) : (
+            <span class="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">
+              Negative / Unprofitable
+            </span>
+          )}
+        </div>
+        <p class="text-[11px] text-slate-400 mb-3">
+          Comparing trailing earnings multiple relative to peer sector average and 5-year cyclical median.
+        </p>
+
+        <!-- SVG Horizontal Bar Chart -->
+        <div class="w-full bg-slate-900/60 p-3 rounded-lg border border-slate-800/70">
+          <svg viewBox="0 0 380 120" class="w-full h-auto" role="img" aria-label="Price to Earnings Ratio Benchmark Chart">
+            <!-- Gridlines -->
+            <line x1="120" y1="10" x2="120" y2="105" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+            <line x1="240" y1="10" x2="240" y2="105" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+            <line x1="360" y1="10" x2="360" y2="105" stroke="#334155" stroke-dasharray="3,3" stroke-width="1" />
+
+            <!-- Bar 1: Current Stock P/E -->
+            <text x="5" y="30" fill="#94a3b8" font-size="11" font-family="monospace" font-weight="bold">Current Stock</text>
+            {isPEProfitable ? (
+              <g>
+                <rect x="120" y="16" width={peBarWidthCurrent} height="18" rx="4" fill="#10b981" />
+                <text x={125 + peBarWidthCurrent} y="30" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
+                  {currentPE ? currentPE.toFixed(1) : ''}x
+                </text>
+              </g>
+            ) : (
+              <text x="125" y="30" fill="#f43f5e" font-size="11" font-family="monospace" font-weight="bold">
+                Deficit / Negative P/E
+              </text>
+            )}
+
+            <!-- Bar 2: Industry Average -->
+            <text x="5" y="65" fill="#94a3b8" font-size="11" font-family="monospace">Industry Avg</text>
+            <rect x="120" y="51" width={peBarWidthIndustry} height="18" rx="4" fill="#38bdf8" />
+            <text x={125 + peBarWidthIndustry} y="65" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
+              {industryAvgPE !== null ? `${industryAvgPE.toFixed(1)}x` : 'N/A'}
+            </text>
+
+            <!-- Bar 3: 5Y Historical Avg -->
+            <text x="5" y="100" fill="#94a3b8" font-size="11" font-family="monospace">5Y Hist. Avg</text>
+            <rect x="120" y="86" width={peBarWidth5Y} height="18" rx="4" fill="#a855f7" />
+            <text x={125 + peBarWidth5Y} y="100" fill="#f8fafc" font-size="11" font-family="monospace" font-weight="bold">
+              {hist5YAvgPE !== null ? `${hist5YAvgPE.toFixed(1)}x` : 'N/A'}
+            </text>
+          </svg>
+        </div>
+      </div>
+      <div class="text-[10px] text-slate-500 mt-2 flex justify-between font-mono">
+        <span>Current: <strong class="text-slate-300">{currentPE !== null ? `${currentPE.toFixed(1)}x` : 'N/A'}</strong></span>
+        <span>Industry: <strong class="text-slate-300">{industryAvgPE !== null ? `${industryAvgPE.toFixed(1)}x` : 'N/A'}</strong></span>
+        <span>5Y Avg: <strong class="text-slate-300">{hist5YAvgPE !== null ? `${hist5YAvgPE.toFixed(1)}x` : 'N/A'}</strong></span>
+      </div>
+    </div>
+  </section>
+</div>

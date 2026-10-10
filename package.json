@@ -15,7 +15,8 @@
     "pipeline:stop-cron": "tsx pipeline/src/stopCron.ts",
     "pipeline:stopcron": "tsx pipeline/src/stopCron.ts",
     "pipeline:distribute": "tsx pipeline/src/distribution/socialPublisher.ts",
-    "pipeline:test": "tsx tests/pipeline.test.ts"
+    "pipeline:test": "tsx tests/pipeline.test.ts",
+    "test": "tsx tests/centralized_definitions.test.ts && tsx tests/report_structure_improvements.test.ts && tsx tests/report_feedback_improvements.test.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",

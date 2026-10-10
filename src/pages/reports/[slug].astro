@@ -10,14 +10,18 @@ export async function getStaticPaths() {
 }
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import FinancialMetricsTable from '../../components/FinancialMetricsTable.astro';
+import QuickViewDashboard from '../../components/report/QuickViewDashboard.astro';
+import ReportTabsNav from '../../components/report/ReportTabsNav.astro';
+import ThesisModule from '../../components/report/ThesisModule.astro';
+import ValuationModule from '../../components/report/ValuationModule.astro';
+import SolvencyModule from '../../components/report/SolvencyModule.astro';
+import MicrostructureModule from '../../components/report/MicrostructureModule.astro';
 import ComplianceDisclaimer from '../../components/ComplianceDisclaimer.astro';
 import AffiliateBanner from '../../components/AffiliateBanner.astro';
 import AdSlot from '../../components/AdSlot.astro';
 import { path } from '../../utils/paths';
-import { resolveThesisSource } from '../../utils/thesisSource';
 import { formatPriceTimestamp } from '../../utils/formatters';
-import { getConsensusVerdict, getConsensusVerdictColor, getStarRatingString } from '../../utils/financialClassification';
+import { getStarRatingString } from '../../utils/financialClassification';
 
 const { entry } = Astro.props;
 
@@ -65,16 +69,55 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
 const priceDisplayLabel = formatPriceTimestamp(report.publishDate, report.priceTimestamp);
 
 const reportUrl = new URL(Astro.url.pathname, Astro.site || 'https://equisight-alpha.com').href;
+const printUrl = path(`/reports/${entry.slug}/print`);
 const xShareText = report.socialHooks?.twitter?.[0] || `${report.companyName} ($${report.ticker}) ${isPositive ? 'surged' : 'dropped'} ${isPositive ? '+' : ''}${report.movePercent.toFixed(1)}% today. Read our institutional fundamental research deep dive:`;
 const redditShareTitle = report.socialHooks?.redditTitle || report.title;
 const telegramShareText = report.socialHooks?.telegram || `🚨 $${report.ticker} Research: ${report.title}`;
 
-const bullTheses = (report.theses?.bull && report.theses.bull.length > 0) ? report.theses.bull : [];
-const bearTheses = (report.theses?.bear && report.theses.bear.length > 0) ? report.theses.bear : [];
+const starRating = report.starRating || report.morningstarRating?.starRating || null;
+const starRatingString = getStarRatingString(
+  report.starRatingString || report.morningstarRating?.starRatingString,
+  starRating
+);
 
 // Company Deep Dive Texts
 const companyMakesMoney = report.companyDeepDive?.howCompanyMakesMoney ||
   `${report.companyName} generates enterprise revenue through commercial deployment of its specialized ${report.sector.toLowerCase()} products and services within the ${report.industry} market. Its financial model relies on long-term institutional contracts, volume-based client transactions, recurring software or maintenance subscriptions, and professional service engagements, ensuring predictable recurring baseline revenues.`;
+
+function parseBulletSection(text: string) {
+  if (!text) return { intro: '', bullets: [], outro: '' };
+  const clean = text.replace(/^Title:\s*How Does .* Make Money\??\s*\n+/i, '').trim();
+  const lines = clean.split('\n');
+  const bulletLines: string[] = [];
+  const introLines: string[] = [];
+  const outroLines: string[] = [];
+  let foundFirstBullet = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.startsWith('• ')) {
+      foundFirstBullet = true;
+      bulletLines.push(trimmed.replace(/^[-*•]\s*/, '').trim());
+    } else if (!foundFirstBullet) {
+      introLines.push(trimmed);
+    } else {
+      outroLines.push(trimmed);
+    }
+  }
+
+  if (bulletLines.length === 0) {
+    return { intro: clean, bullets: [], outro: '' };
+  }
+
+  return {
+    intro: introLines.join(' ').trim(),
+    bullets: bulletLines,
+    outro: outroLines.join(' ').trim()
+  };
+}
+
+const parsedMakesMoney = parseBulletSection(companyMakesMoney);
 
 const demandAndWhy = report.companyDeepDive?.productsDemandAndWhy ||
   `Demand for ${report.companyName}'s offerings is driven by non-discretionary operational requirements, regulatory compliance mandates, and mission-critical workflows across enterprise clients. Customers adopt ${report.ticker}'s solutions because alternative substitutes present prohibitive switching friction, high integration costs, and operational disruption risks.`;
@@ -94,123 +137,6 @@ const obstaclesAndChallenges = report.industryDeepDive?.obstaclesAndChallenges |
 
 const politicalCulturalRisks = report.industryDeepDive?.economicPoliticalCulturalRisks ||
   `Broader macroeconomic and geopolitical vulnerabilities encompass interest rate volatility, evolving cross-border trade tariffs, antitrust and data privacy scrutiny, and corporate sustainability requirements that necessitate ongoing capital expenditures to maintain regulatory standing.`;
-
-// Valuation Models Data
-const P = report.currentPrice || 10;
-
-function getValuationDetails(val: number | null | undefined, p: number) {
-  if (val === null || val === undefined || isNaN(val)) {
-    return { val: null, upside: null, isPositive: false, status: 'N/A' };
-  }
-  const upside = Number((((val - p) / p) * 100).toFixed(1));
-  const isPositive = upside >= 0;
-  const status = upside > 10 ? 'Undervalued' : upside < -5 ? 'Overvalued' : 'Fair Value';
-  return { val, upside, isPositive, status };
-}
-
-const dcf = getValuationDetails(report.valuationModels?.dcf?.intrinsicValue, P);
-const isDDMApplicable = (report.valuationModels?.ddm?.applicable !== undefined) ? report.valuationModels.ddm.applicable : (report.dividendYield > 0);
-const ddm = getValuationDetails(isDDMApplicable ? report.valuationModels?.ddm?.intrinsicValue : null, P);
-const rel = getValuationDetails(report.valuationModels?.relativeValuation?.intrinsicValue, P);
-const rapid = getValuationDetails(report.valuationModels?.rapidStockValuation?.intrinsicValue, P);
-const rim = getValuationDetails(report.valuationModels?.residualIncomeModel?.intrinsicValue, P);
-const asset = getValuationDetails(report.valuationModels?.assetBasedValuation?.netAssetValue, P);
-const excess = getValuationDetails(report.valuationModels?.excessReturnModel?.intrinsicValue, P);
-
-let industryModelName = "Sector EV/EBITDA Multiplier";
-if (report.sector === "Technology") industryModelName = "ARR Multiplier & Rule-of-40 Valuation";
-else if (report.sector === "Financial Services") industryModelName = "Tangible Book Value (P/TBV) Model";
-else if (report.sector === "Healthcare") industryModelName = "Risk-Adjusted Pipeline NPV (rNPV)";
-else if (report.sector === "Consumer Discretionary") industryModelName = "Mid-Cycle Operating Multiple";
-
-const ind = getValuationDetails(report.valuationModels?.industrySpecificModel?.intrinsicValue, P);
-
-const validVals = [dcf.val, rel.val, rapid.val, rim.val, asset.val, excess.val, ind.val, ddm.val].filter((v): v is number => v !== null && !isNaN(v));
-const consensusFairValue = report.valuationModels?.consensusFairValue ?? (validVals.length > 0 ? Number((validVals.reduce((a, b) => a + b, 0) / validVals.length).toFixed(2)) : null);
-const consensusUpside = consensusFairValue !== null ? Number((((consensusFairValue - P) / P) * 100).toFixed(1)) : null;
-const isConsensusPositive = consensusUpside !== null ? consensusUpside >= 0 : false;
-
-const consensusVerdict = getConsensusVerdict(report.valuationModels?.verdict, consensusUpside);
-const consensusVerdictColor = getConsensusVerdictColor(consensusVerdict);
-const consensusTargetColor = consensusFairValue !== null ? (isConsensusPositive ? 'text-emerald-400' : 'text-rose-400') : 'text-slate-400';
-
-const starRating = report.starRating || report.morningstarRating?.starRating || null;
-const starRatingString = getStarRatingString(
-  report.starRatingString || report.morningstarRating?.starRatingString,
-  starRating
-);
-const uncertaintyRating = report.uncertaintyRating || report.morningstarRating?.uncertaintyRating || 'Medium';
-const fiveStarPrice = report.fiveStarPrice || report.morningstarRating?.fiveStarPrice || null;
-const oneStarPrice = report.oneStarPrice || report.morningstarRating?.oneStarPrice || null;
-
-const valuationRows = [
-  {
-    name: '3-Stage Discounted Cash Flow (Moat Fade)',
-    assumptions: report.valuationModels?.dcf?.fadeYears
-      ? `3-Stage Fade (${report.valuationModels.dcf.fadeYears}Y), Stage 1 Growth ${report.valuationModels.dcf.stage1GrowthRate ?? 5}%, Ke/WACC ${report.valuationModels.dcf.discountRate ?? 8}%, Normalized FCFF $${report.valuationModels.dcf.normalizedFcf ? (report.valuationModels.dcf.normalizedFcf / 1e9).toFixed(2) + 'B' : 'N/A'}`
-      : 'WACC 9.2%, Terminal Growth 2.5%, 5Y Free Cash Flow Projections',
-    intrinsicValue: dcf.val !== null ? `$${dcf.val.toFixed(2)}` : 'N/A',
-    upside: dcf.upside !== null ? `${dcf.upside >= 0 ? '+' : ''}${dcf.upside}%` : 'N/A',
-    isPositive: dcf.isPositive,
-    status: dcf.status
-  },
-  {
-    name: 'Dividend Discount Model (DDM)',
-    assumptions: isDDMApplicable ? `Cost of Equity 9.8%, Dividend Growth Rate 4.0%` : 'Zero Dividend Policy (Not Applicable)',
-    intrinsicValue: ddm.val !== null ? `$${ddm.val.toFixed(2)}` : 'N/A',
-    upside: ddm.upside !== null ? `${ddm.upside >= 0 ? '+' : ''}${ddm.upside}%` : 'N/A',
-    isPositive: ddm.isPositive,
-    status: isDDMApplicable ? ddm.status : 'N/A'
-  },
-  {
-    name: 'Relative Valuation (Peer Multiples)',
-    assumptions: `Sector Peer Median P/E (${report.peRatio ? Math.round(report.peRatio * 0.95) : 22}x) & EV/EBITDA`,
-    intrinsicValue: rel.val !== null ? `$${rel.val.toFixed(2)}` : 'N/A',
-    upside: rel.upside !== null ? `${rel.upside >= 0 ? '+' : ''}${rel.upside}%` : 'N/A',
-    isPositive: rel.isPositive,
-    status: rel.status
-  },
-  {
-    name: 'Rapid Stock Valuation (Benjamin Graham)',
-    assumptions: 'Normalized EPS × (8.5 + 2g) with 10Y Treasury Baseline Adjustment',
-    intrinsicValue: rapid.val !== null ? `$${rapid.val.toFixed(2)}` : 'N/A',
-    upside: rapid.upside !== null ? `${rapid.upside >= 0 ? '+' : ''}${rapid.upside}%` : 'N/A',
-    isPositive: rapid.isPositive,
-    status: rapid.status
-  },
-  {
-    name: 'Residual Income Model (RIM)',
-    assumptions: 'Book Value + PV of Residual Income above Cost of Equity',
-    intrinsicValue: rim.val !== null ? `$${rim.val.toFixed(2)}` : 'N/A',
-    upside: rim.upside !== null ? `${rim.upside >= 0 ? '+' : ''}${rim.upside}%` : 'N/A',
-    isPositive: rim.isPositive,
-    status: rim.status
-  },
-  {
-    name: 'Asset-Based Valuation (Tangible NAV)',
-    assumptions: 'Tangible Liquidation Floor & Net Adjusted Asset Value',
-    intrinsicValue: asset.val !== null ? `$${asset.val.toFixed(2)}` : 'N/A',
-    upside: asset.upside !== null ? `${asset.upside >= 0 ? '+' : ''}${asset.upside}%` : 'N/A',
-    isPositive: asset.isPositive,
-    status: asset.val !== null ? 'Asset Floor' : 'N/A'
-  },
-  {
-    name: 'Excess Return Model (EVA)',
-    assumptions: 'Economic Value Added spread between ROIC and WACC capital charge',
-    intrinsicValue: excess.val !== null ? `$${excess.val.toFixed(2)}` : 'N/A',
-    upside: excess.upside !== null ? `${excess.upside >= 0 ? '+' : ''}${excess.upside}%` : 'N/A',
-    isPositive: excess.isPositive,
-    status: excess.status
-  },
-  {
-    name: industryModelName,
-    assumptions: `Sector specific valuation metrics for ${report.sector}`,
-    intrinsicValue: ind.val !== null ? `$${ind.val.toFixed(2)}` : 'N/A',
-    upside: ind.upside !== null ? `${ind.upside >= 0 ? '+' : ''}${ind.upside}%` : 'N/A',
-    isPositive: ind.isPositive,
-    status: ind.status
-  }
-];
 ---
 
 <BaseLayout
@@ -223,9 +149,68 @@ const valuationRows = [
   sector={report.sector}
   keywords={report.keywords}
 >
-  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <!-- [SECTION 1] STICKY ACTION & METADATA BAR -->
+  <aside
+    class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800 shadow-lg px-4 sm:px-6 py-2 transition-all no-print"
+    id="sticky-action-bar"
+    aria-label="Institutional Quick Action Bar"
+  >
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+      <!-- Left: Ticker & Price Snapshot -->
+      <div class="flex items-center gap-2.5 min-w-0">
+        <a
+          href={path(`/tickers/${report.ticker.toLowerCase()}`)}
+          class="font-mono font-black text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-900 transition-colors shrink-0"
+        >
+          ${report.ticker}
+        </a>
+        <div class="flex items-baseline gap-1.5 font-mono">
+          <span class="text-sm font-black text-white">${report.currentPrice.toFixed(2)}</span>
+          <span class={`font-bold text-[11px] ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+            {isPositive ? '+' : ''}{report.movePercent.toFixed(2)}%
+          </span>
+        </div>
+        {starRatingString && (
+          <span class="hidden sm:inline-block font-mono text-[11px] text-amber-300 font-bold px-2 py-0.5 rounded bg-amber-950/70 border border-amber-700/50">
+            {starRatingString}
+          </span>
+        )}
+      </div>
+
+      <!-- Right: Action Buttons & Institutional PDF Export -->
+      <div class="flex items-center gap-2">
+        <!-- PDF Export Button -->
+        <a
+          href={`${printUrl}?autoprint=true`}
+          target="_blank"
+          rel="noopener"
+          id="export-pdf-action-btn"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition-all shadow-md cursor-pointer border border-emerald-400/30"
+          title="Download institutional research PDF formatted to Morningstar 7-Module standards (Shortcut: Cmd+P / Ctrl+P)"
+        >
+          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 2l3 3h-3V4zm-1 9V9h-2v4H6l4 4 4-4h-2z" clip-rule="evenodd"/>
+          </svg>
+          <span>Export Institutional PDF</span>
+          <span class="hidden md:inline-block text-[10px] text-emerald-200 font-normal px-1 rounded bg-emerald-700/50">⌘P</span>
+        </a>
+
+        <!-- Copy Link Quick Button -->
+        <button
+          type="button"
+          class="copy-report-link-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-mono transition-all cursor-pointer"
+          title="Copy report URL"
+        >
+          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+          <span class="copy-btn-label hidden sm:inline">Copy</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumb Bar -->
-    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6 font-mono" aria-label="Breadcrumbs">
+    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6 font-mono no-print" aria-label="Breadcrumbs">
       <a href={path('/')} class="hover:text-emerald-400 transition-colors">Home</a>
       <span>&rsaquo;</span>
       <a href={path('/reports')} class="hover:text-emerald-400 transition-colors">Reports</a>
@@ -239,8 +224,8 @@ const valuationRows = [
     <ComplianceDisclaimer variant="banner" />
 
     <!-- Article Header -->
-    <header class="my-8">
-      <div class="flex flex-wrap items-center gap-2.5 mb-4">
+    <header class="my-6">
+      <div class="flex flex-wrap items-center gap-2.5 mb-3">
         <a
           href={path(`/tickers/${report.ticker.toLowerCase()}`)}
           class="font-mono font-black text-lg px-2.5 py-0.5 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-900 transition-colors"
@@ -263,7 +248,7 @@ const valuationRows = [
       </h1>
 
       <!-- Executive Price Callout: "Price on <date and time and zone>" -->
-      <div class="mt-6 p-4 sm:p-5 rounded-xl border border-slate-800 bg-slate-900/70 flex flex-wrap items-center justify-between gap-4">
+      <div class="mt-4 p-4 rounded-xl border border-slate-800 bg-slate-900/70 flex flex-wrap items-center justify-between gap-4">
         <div>
           <div class="text-[11px] uppercase tracking-wider text-slate-400 font-mono font-semibold">
             {priceDisplayLabel}
@@ -282,939 +267,352 @@ const valuationRows = [
       </div>
     </header>
 
-    <!-- Social Distribution Quick Action Bar -->
-    <div class="my-6 p-3.5 sm:p-4 rounded-xl border border-slate-700 bg-slate-900/90 shadow-md flex flex-wrap items-center justify-between gap-3" id="social-distribution-top">
-      <div class="flex items-center gap-2">
-        <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span class="text-xs font-bold uppercase tracking-wider text-white">Social Distribution</span>
-        <span class="text-xs text-slate-400 hidden sm:inline">&bull; Syndicate Research</span>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-2">
-        <!-- X / Twitter -->
-        <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(xShareText)}&url=${encodeURIComponent(reportUrl)}`}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black hover:bg-slate-900 text-white border border-slate-700 hover:border-slate-500 text-xs font-semibold transition-all shadow-sm"
-          title="Share research thread on X (Twitter)"
-        >
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          <span>Share on X</span>
-        </a>
-
-        <!-- Reddit -->
-        <a
-          href={`https://www.reddit.com/submit?url=${encodeURIComponent(reportUrl)}&title=${encodeURIComponent(redditShareTitle)}`}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#FF4500]/20 hover:bg-[#FF4500]/30 text-orange-300 hover:text-white border border-[#FF4500]/50 hover:border-[#FF4500] text-xs font-semibold transition-all shadow-sm"
-          title="Submit deep dive to Reddit r/stocks"
-        >
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.609a1.246 1.246 0 0 1 1.108-.693zM9.5 13.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
-          <span>Reddit DD</span>
-        </a>
-
-        <!-- Telegram -->
-        <a
-          href={`https://t.me/share/url?url=${encodeURIComponent(reportUrl)}&text=${encodeURIComponent(telegramShareText)}`}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#229ED9]/20 hover:bg-[#229ED9]/30 text-sky-300 hover:text-white border border-[#229ED9]/50 hover:border-[#229ED9] text-xs font-semibold transition-all shadow-sm"
-          title="Broadcast research alert on Telegram"
-        >
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.87 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.535-.194 1.006.128.832.923z"/></svg>
-          <span>Telegram</span>
-        </a>
-
-        <!-- LinkedIn -->
-        <a
-          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(reportUrl)}`}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#0A66C2]/20 hover:bg-[#0A66C2]/30 text-blue-300 hover:text-white border border-[#0A66C2]/50 hover:border-[#0A66C2] text-xs font-semibold transition-all shadow-sm"
-          title="Publish report to LinkedIn"
-        >
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-          <span>LinkedIn</span>
-        </a>
-
-        <!-- StockTwits -->
-        <a
-          href={`https://stocktwits.com/symbol/${report.ticker}`}
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-300 hover:text-white border border-emerald-500/50 hover:border-emerald-400 text-xs font-semibold transition-all shadow-sm"
-          title={`View $${report.ticker} stream on StockTwits`}
-        >
-          <span class="font-bold font-mono text-[11px]">$ST</span>
-          <span>${report.ticker}</span>
-        </a>
-
-        <!-- Copy Link Button -->
-        <button
-          type="button"
-          class="copy-report-link-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600 text-xs font-semibold transition-all shadow-sm cursor-pointer"
-          title="Copy research URL to clipboard"
-        >
-          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-          <span class="copy-btn-label">Copy URL</span>
-        </button>
-      </div>
-    </div>
+    <!-- [SECTION 2] FIRST-GLANCE QUICK-VIEW DASHBOARD (< 5-Sec Scan) -->
+    <QuickViewDashboard report={report} />
 
     <!-- Top Programmatic Ad Slot -->
     {report.adSlots.topBanner && (
-      <AdSlot slotId="report-top-ad" format="horizontal" minHeight="120px" />
+      <div class="my-4 no-print">
+        <AdSlot slotId="report-top-ad" format="horizontal" minHeight="100px" />
+      </div>
     )}
 
-    <!-- Comprehensive Stock Analytics Component (Fundamentals, Debt, P/B & P/E Charts, 8-Q EPS, Moat, Venue, Inflation) -->
-    <FinancialMetricsTable report={report} />
+    <!-- [SECTION 3] INTERACTIVE TABBED DEEP-DIVE WORKSPACE -->
+    <div class="no-print">
+      <ReportTabsNav defaultTab="overview" />
+    </div>
 
-    <!-- Bull & Bear Theses Section with Interactive Info Modal -->
-    <section class="my-10 p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
-      <div class="flex flex-wrap items-center justify-between gap-2 pb-4 mb-6 border-b border-slate-800">
-        <div>
-          <h2 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
-            <span>Investment Theses: Bull vs. Bear Scenarios</span>
-          </h2>
-          <p class="text-xs text-slate-400 mt-0.5">
-            Key operational catalysts, structural tailwinds, and asymmetric downside risk vectors. Click <span class="text-sky-400 font-mono font-bold">ℹ️</span> to view citations and analytical deduction chains.
-          </p>
-        </div>
-        <span class="text-xs font-mono text-slate-400 bg-slate-800 px-2.5 py-1 rounded-md border border-slate-700">
-          Interactive Research Citations
-        </span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Bull Theses Column -->
-        <div class="space-y-3">
-          <div class="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider pb-1 border-b border-emerald-900/60">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
-            <span>Core Bullish Theses ({bullTheses.length})</span>
-          </div>
-          {bullTheses.length > 0 ? (
-            bullTheses.map((item: any, idx: number) => {
-              const resolvedSources = (item.sources || []).map((s: any) => resolveThesisSource(s, report.ticker));
-              return (
-                <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 hover:border-emerald-700/50 transition-all flex flex-col justify-between gap-3">
-                  <div>
-                    <div class="flex items-center justify-between gap-2 mb-1.5">
-                      <div class="text-[11px] font-mono font-bold text-emerald-400">Bullish Pillar #{idx + 1}</div>
-                      <button
-                        type="button"
-                        class="thesis-info-btn shrink-0 px-2 py-1 rounded-md bg-slate-800 hover:bg-emerald-950 hover:text-emerald-400 text-slate-300 border border-slate-700 hover:border-emerald-600/50 flex items-center gap-1.5 text-xs font-mono transition-all cursor-pointer shadow-sm"
-                        data-type={`Bullish Pillar #${idx + 1}`}
-                        data-point={item.point}
-                        data-sources={JSON.stringify(resolvedSources)}
-                        data-deduction={item.deductionChain}
-                        aria-label={`View sources and reasoning for Bullish Pillar #${idx + 1}`}
-                        title="Click to view reference citations & step-by-step reasoning"
-                      >
-                        <span class="text-xs select-none">ℹ️</span>
-                        <span class="text-[10px] hidden sm:inline">Reasoning & Citations</span>
-                      </button>
-                    </div>
-                    <h3 class="text-xs sm:text-sm font-semibold text-white leading-snug">{item.point}</h3>
-                  </div>
-
-                  <!-- Reference Citations Resource Links -->
-                  {resolvedSources.length > 0 && (
-                    <div class="pt-2.5 border-t border-slate-800/80">
-                      <div class="text-[10px] font-mono uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
-                        <svg class="w-3 h-3 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        <span>Referenced Resources:</span>
-                      </div>
-                      <div class="flex flex-wrap gap-1.5">
-                        {resolvedSources.map((src: any) => (
-                          <a
-                            href={src.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono text-emerald-300/90 hover:text-emerald-200 bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-800/40 hover:border-emerald-700/70 transition-all max-w-full"
-                            title={`Open resource citation: ${src.name}`}
-                          >
-                            <span class="truncate max-w-[200px]">{src.name}</span>
-                            <span class="text-[10px] text-emerald-400/80 shrink-0">↗</span>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          ) : (
-            <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 text-slate-400 text-xs font-mono italic flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-slate-600 inline-block"></span>
-              <span>Not Available</span>
-            </div>
-          )}
-        </div>
-
-        <!-- Bear Theses Column -->
-        <div class="space-y-3">
-          <div class="flex items-center gap-2 text-xs font-mono font-bold text-rose-400 uppercase tracking-wider pb-1 border-b border-rose-900/60">
-            <svg class="w-4 h-4 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-            </svg>
-            <span>Core Bearish Risk Theses ({bearTheses.length})</span>
-          </div>
-          {bearTheses.length > 0 ? (
-            bearTheses.map((item: any, idx: number) => {
-              const resolvedSources = (item.sources || []).map((s: any) => resolveThesisSource(s, report.ticker));
-              return (
-                <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 hover:border-rose-700/50 transition-all flex flex-col justify-between gap-3">
-                  <div>
-                    <div class="flex items-center justify-between gap-2 mb-1.5">
-                      <div class="text-[11px] font-mono font-bold text-rose-400">Downside Risk #{idx + 1}</div>
-                      <button
-                        type="button"
-                        class="thesis-info-btn shrink-0 px-2 py-1 rounded-md bg-slate-800 hover:bg-rose-950 hover:text-rose-400 text-slate-300 border border-slate-700 hover:border-rose-600/50 flex items-center gap-1.5 text-xs font-mono transition-all cursor-pointer shadow-sm"
-                        data-type={`Downside Risk #${idx + 1}`}
-                        data-point={item.point}
-                        data-sources={JSON.stringify(resolvedSources)}
-                        data-deduction={item.deductionChain}
-                        aria-label={`View sources and reasoning for Downside Risk #${idx + 1}`}
-                        title="Click to view reference citations & step-by-step reasoning"
-                      >
-                        <span class="text-xs select-none">ℹ️</span>
-                        <span class="text-[10px] hidden sm:inline">Reasoning & Citations</span>
-                      </button>
-                    </div>
-                    <h3 class="text-xs sm:text-sm font-semibold text-white leading-snug">{item.point}</h3>
-                  </div>
-
-                  <!-- Reference Citations Resource Links -->
-                  {resolvedSources.length > 0 && (
-                    <div class="pt-2.5 border-t border-slate-800/80">
-                      <div class="text-[10px] font-mono uppercase text-slate-400 mb-1.5 flex items-center gap-1.5">
-                        <svg class="w-3 h-3 text-rose-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                        </svg>
-                        <span>Referenced Resources:</span>
-                      </div>
-                      <div class="flex flex-wrap gap-1.5">
-                        {resolvedSources.map((src: any) => (
-                          <a
-                            href={src.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-mono text-rose-300/90 hover:text-rose-200 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/40 hover:border-rose-700/70 transition-all max-w-full"
-                            title={`Open resource citation: ${src.name}`}
-                          >
-                            <span class="truncate max-w-[200px]">{src.name}</span>
-                            <span class="text-[10px] text-rose-400/80 shrink-0">↗</span>
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          ) : (
-            <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 text-slate-400 text-xs font-mono italic flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-slate-600 inline-block"></span>
-              <span>Not Available</span>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-
-    <!-- Accessible Thesis Reference Dialog Modal -->
-    <dialog
-      id="thesis-modal"
-      class="fixed inset-0 z-50 bg-transparent p-4 sm:p-6 backdrop:bg-slate-950/85 backdrop:backdrop-blur-sm max-w-2xl w-full m-auto rounded-2xl border border-slate-700 bg-slate-900 text-white shadow-2xl overflow-hidden"
-      aria-labelledby="modal-point-text"
-      aria-modal="true"
-    >
-      <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
-        <div class="flex items-center gap-2">
-          <span id="modal-type-badge" class="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/60">
-            Thesis Analysis
-          </span>
-          <h4 class="text-xs font-mono text-slate-400">Institutional Reference Citations & Reasoning</h4>
-        </div>
-        <button
-          id="modal-close-btn"
-          type="button"
-          class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center text-sm font-bold transition-colors cursor-pointer"
-          aria-label="Close dialog"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-        <!-- Point Title -->
-        <div>
-          <div class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Core Analytical Argument</div>
-          <div id="modal-point-text" class="text-base sm:text-lg font-bold text-white mt-1"></div>
-        </div>
-
-        <!-- Sources Section -->
-        <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-          <div class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-2.5 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-              <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              <span>Referenced Documentation & Resource Links</span>
-            </div>
-            <span class="text-[10px] font-mono text-slate-400">Click links below to view resources</span>
-          </div>
-          <ul id="modal-sources-list" class="space-y-2 text-xs">
-          </ul>
-        </div>
-
-        <!-- Deduction Chain Section -->
-        <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
-          <div class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-2">
-            <svg class="w-4 h-4 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            <span>Step-by-Step Deductive Reasoning Chain</span>
-          </div>
-          <div id="modal-deduction-steps" class="space-y-2 text-xs text-slate-300 leading-relaxed">
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-5 pt-3 border-t border-slate-800 flex justify-end">
-        <button
-          id="modal-close-footer-btn"
-          type="button"
-          class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono font-bold text-slate-200 transition-colors cursor-pointer"
-        >
-          Close Modal (Esc)
-        </button>
-      </div>
-    </dialog>
-
-    <!-- Multi-Model Valuation Matrix -->
-    <section class="my-10 p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
-      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-800">
-        <div>
+    <!-- TAB PANEL 1: OVERVIEW & OUTLOOK -->
+    <div id="tab-panel-overview" class="report-tab-panel space-y-8 my-6">
+      
+      <!-- Company Research Deep Dive: 4 Key Core Questions -->
+      <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg space-y-4">
+        <div class="pb-3 border-b border-slate-800">
           <h2 class="text-lg font-extrabold text-white tracking-tight">
-            Multi-Method Intrinsic Valuation Models
+            Company Research Deep-Dive: Core Business Architecture
           </h2>
           <p class="text-xs text-slate-400 mt-0.5">
-            Synthesis of 8 standard equity valuation frameworks comparing model intrinsic targets against current market price.
+            Fundamental dissection of monetization, resilient demand drivers, execution history, and operating roadmap.
           </p>
         </div>
 
-        <!-- Morningstar Star Rating & Consensus Target Callout -->
-        <div class="flex flex-wrap items-center gap-3">
-          {starRatingString && (
-            <div class="px-4 py-2 rounded-xl bg-amber-950/70 border border-amber-500/40 flex items-center gap-3">
-              <div>
-                <div class="text-[10px] font-mono text-amber-400 uppercase tracking-wider">Morningstar Rating</div>
-                <div class="text-base font-bold font-mono text-amber-300">{starRatingString} <span class="text-xs font-normal text-amber-200">({uncertaintyRating})</span></div>
-              </div>
-              {fiveStarPrice && (
-                <div class="text-[11px] font-mono text-slate-300 border-l border-amber-700/60 pl-3">
-                  <div>5★ Buy: <strong class="text-emerald-400">${fiveStarPrice.toFixed(2)}</strong></div>
-                  {oneStarPrice && <div>1★ Sell: <strong class="text-rose-400">${oneStarPrice.toFixed(2)}</strong></div>}
-                </div>
-              )}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Question 1 -->
+          <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
+            <div class="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1.5 uppercase">
+              <span>01</span> &bull; <span>How Does {report.companyName} Make Money?</span>
             </div>
-          )}
+            {parsedMakesMoney.intro && (
+              <p class="text-xs text-slate-300 leading-relaxed">
+                {parsedMakesMoney.intro}
+              </p>
+            )}
+            {parsedMakesMoney.bullets.length > 0 && (
+              <ul class="space-y-1.5 my-2 pl-1">
+                {parsedMakesMoney.bullets.map((bullet) => (
+                  <li class="text-xs text-slate-300 leading-relaxed flex items-start gap-2">
+                    <span class="text-emerald-400 font-bold shrink-0 mt-0.5">&bull;</span>
+                    <span>{bullet}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {parsedMakesMoney.outro && (
+              <p class="text-xs text-slate-300 leading-relaxed">
+                {parsedMakesMoney.outro}
+              </p>
+            )}
+          </div>
 
-          <div class="px-4 py-2 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-3">
-            <div>
-              <div class="text-[10px] font-mono text-slate-400 uppercase">Consensus Fair Value</div>
-              <div class="text-base font-bold font-mono text-white">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</div>
+          <!-- Question 2 -->
+          <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
+            <div class="text-xs font-mono font-bold text-sky-400 flex items-center gap-1.5 uppercase">
+              <span>02</span> &bull; <span>Core Products & Resilient Demand Rationale</span>
             </div>
-            <div class={`text-right font-mono font-bold text-xs px-2 py-1 rounded ${isConsensusPositive ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/60' : 'bg-rose-950 text-rose-400 border border-rose-800/60'}`}>
-              {consensusUpside !== null ? `${isConsensusPositive ? '+' : ''}${consensusUpside}% Spread` : 'N/A'}
+            <p class="text-xs text-slate-300 leading-relaxed">
+              {demandAndWhy}
+            </p>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
+            <div class="text-xs font-mono font-bold text-amber-400 flex items-center gap-1.5 uppercase">
+              <span>03</span> &bull; <span>Historical Operational & Financial Performance</span>
             </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              {pastPerformance}
+            </p>
           </div>
-        </div>
-      </div>
 
-      <!-- Models Table -->
-      <div class="overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/60">
-        <table class="w-full text-left text-xs font-mono divide-y divide-slate-800">
-          <thead class="bg-slate-900 text-slate-300 text-[11px] uppercase tracking-wider">
-            <tr>
-              <th scope="col" class="py-3 px-4">Valuation Framework</th>
-              <th scope="col" class="py-3 px-4 hidden sm:table-cell">Key Assumptions & Drivers</th>
-              <th scope="col" class="py-3 px-4 text-right">Intrinsic Target</th>
-              <th scope="col" class="py-3 px-4 text-right">Spread vs Price</th>
-              <th scope="col" class="py-3 px-4 text-center">Status</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-800/80 text-slate-300">
-            {valuationRows.map((row) => (
-              <tr class="hover:bg-slate-900/40 transition-colors">
-                <td class="py-3 px-4 font-semibold text-white whitespace-nowrap">{row.name}</td>
-                <td class="py-3 px-4 text-slate-400 hidden sm:table-cell text-[11px] leading-relaxed">{row.assumptions}</td>
-                <td class="py-3 px-4 text-right font-bold text-white whitespace-nowrap">{row.intrinsicValue}</td>
-                <td class={`py-3 px-4 text-right font-bold whitespace-nowrap ${row.isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {row.upside}
-                </td>
-                <td class="py-3 px-4 text-center whitespace-nowrap">
-                  <span class={`px-2 py-0.5 rounded text-[10px] font-bold ${row.status === 'Undervalued' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : row.status === 'Overvalued' ? 'bg-rose-950 text-rose-400 border border-rose-800/50' : 'bg-slate-800 text-slate-300 border border-slate-700'}`}>
-                    {row.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Verdict Banner -->
-      <div class="mt-4 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div class="flex items-center gap-2">
-          <span class="text-slate-400 font-mono">Consensus Valuation Verdict:</span>
-          <span class={`font-bold font-mono ${consensusVerdictColor}`}>{consensusVerdict}</span>
-        </div>
-        <div class="text-[11px] text-slate-400 font-mono">
-          Current Price: <strong class="text-white">${report.currentPrice.toFixed(2)}</strong> &bull; Target: <strong class={consensusTargetColor}>{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
-        </div>
-      </div>
-    </section>
-
-    <!-- Company Research Deep Dive: 4 Key Core Questions -->
-    <section class="my-10 p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg space-y-4">
-      <div class="pb-3 border-b border-slate-800">
-        <h2 class="text-lg font-extrabold text-white tracking-tight">
-          Company Research Deep-Dive: Core Business Architecture
-        </h2>
-        <p class="text-xs text-slate-400 mt-0.5">
-          Fundamental dissection of business monetization, demand drivers, multi-year execution, and profitability roadmap.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Question 1 -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
-          <div class="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1.5 uppercase">
-            <span>01</span> &bull; <span>How Does {report.companyName} Make Money?</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            {companyMakesMoney}
-          </p>
-        </div>
-
-        <!-- Question 2 -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
-          <div class="text-xs font-mono font-bold text-sky-400 flex items-center gap-1.5 uppercase">
-            <span>02</span> &bull; <span>Core Products & Why Customer Demand Is Resilient</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            {demandAndWhy}
-          </p>
-        </div>
-
-        <!-- Question 3 -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
-          <div class="text-xs font-mono font-bold text-amber-400 flex items-center gap-1.5 uppercase">
-            <span>03</span> &bull; <span>Historical Operational & Financial Performance</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            {pastPerformance}
-          </p>
-        </div>
-
-        <!-- Question 4 -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
-          <div class="text-xs font-mono font-bold text-indigo-400 flex items-center gap-1.5 uppercase">
-            <span>04</span> &bull; <span>Medium-Term Growth & Profitability Outlook</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            {growthOutlook}
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Industry Research Deep Dive: 3 Key Sector Questions -->
-    <section class="my-10 p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg space-y-4">
-      <div class="pb-3 border-b border-slate-800">
-        <h2 class="text-lg font-extrabold text-white tracking-tight">
-          Industry Research Deep-Dive: Sector Dynamics & Headwinds
-        </h2>
-        <p class="text-xs text-slate-400 mt-0.5">
-          Macro environment analysis, structural operational barriers, and political/regulatory risk exposures.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Industry Q1 -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
-          <div class="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1.5 uppercase">
-            <span>A</span> &bull; <span>Industry Condition as a Whole</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            {industryCondition}
-          </p>
-        </div>
-
-        <!-- Industry Q2 -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
-          <div class="text-xs font-mono font-bold text-amber-400 flex items-center gap-1.5 uppercase">
-            <span>B</span> &bull; <span>Structural Sector Obstacles</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            {obstaclesAndChallenges}
-          </p>
-        </div>
-
-        <!-- Industry Q3 -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
-          <div class="text-xs font-mono font-bold text-rose-400 flex items-center gap-1.5 uppercase">
-            <span>C</span> &bull; <span>Economic, Political & Cultural Risks</span>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed">
-            {politicalCulturalRisks}
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Main Markdown Body (Typography-styled) -->
-    <div class="prose prose-invert prose-emerald max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-emerald-400 hover:prose-a:text-emerald-300 prose-table:border prose-table:border-slate-800 prose-th:bg-slate-900 prose-th:p-3 prose-td:p-3 prose-td:border prose-td:border-slate-800">
-      <ContentComponent />
-    </div>
-
-    <!-- Permanent Ticker Hub Cross-Link Callout -->
-    <div class="my-8 p-4 rounded-xl border border-slate-800 bg-slate-900/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <div>
-        <h4 class="text-sm font-bold text-white">Tracking ${report.ticker} ({report.companyName})?</h4>
-        <p class="text-xs text-slate-400 mt-0.5">Explore the historical coverage hub with multi-quarter valuation trends and solvency stress tests.</p>
-      </div>
-      <a
-        href={path(`/tickers/${report.ticker.toLowerCase()}`)}
-        class="inline-flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-900 transition-colors text-xs font-semibold"
-      >
-        <span>View ${report.ticker} Research Hub</span>
-        <span>&rarr;</span>
-      </a>
-    </div>
-
-    <!-- Contextual Affiliate Offer -->
-    {primaryAffiliate && (
-      <div class="my-10">
-        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3">Contextual Market Resources</h3>
-        <AffiliateBanner affiliate={primaryAffiliate} />
-      </div>
-    )}
-
-    <!-- Bottom Native Ad Slot -->
-    {report.adSlots.bottomBanner && (
-      <AdSlot slotId="report-bottom-ad" format="rectangle" minHeight="250px" />
-    )}
-
-    <!-- Related Market Research (High-Value Internal Linking) -->
-    {relatedReports.length > 0 && (
-      <section class="my-12 border-t border-slate-800/80 pt-8">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-base font-bold text-white">Related Equity Deep Dives</h3>
-          <a href={path('/reports')} class="text-xs text-emerald-400 hover:text-emerald-300">View Archive &rarr;</a>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {relatedReports.map((rel) => (
-            <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between text-xs mb-1.5">
-                  <span class="font-mono font-bold text-emerald-400">${rel.data.ticker}</span>
-                  <span class={`font-mono text-[11px] ${rel.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {rel.data.movePercent >= 0 ? '+' : ''}{rel.data.movePercent.toFixed(1)}%
-                  </span>
-                </div>
-                <h4 class="text-xs font-semibold text-white hover:text-emerald-400 transition-colors line-clamp-2">
-                  <a href={path(`/reports/${rel.slug}`)}>{rel.data.title}</a>
-                </h4>
-              </div>
-              <a
-                href={path(`/reports/${rel.slug}`)}
-                class="mt-3 text-[11px] text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1"
-              >
-                Read Deep Dive &rarr;
-              </a>
+          <!-- Question 4 -->
+          <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
+            <div class="text-xs font-mono font-bold text-indigo-400 flex items-center gap-1.5 uppercase">
+              <span>04</span> &bull; <span>Medium-Term Growth & Profitability Roadmap</span>
             </div>
-          ))}
+            <p class="text-xs text-slate-300 leading-relaxed">
+              {growthOutlook}
+            </p>
+          </div>
         </div>
       </section>
-    )}
 
-    <!-- Social Distribution & Network Syndication Section -->
-    <section class="my-12 p-6 rounded-2xl border border-slate-700 bg-gradient-to-b from-slate-900/90 to-slate-950 shadow-xl" id="social-distribution">
-      <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-800">
-        <div>
-          <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-[11px] font-mono font-semibold text-emerald-400 mb-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Institutional Syndication Hub
-          </div>
-          <h3 class="text-lg font-extrabold text-white tracking-tight">Social Distribution & Network Syndication</h3>
-          <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
-            Distribute verified equity research, multi-model valuation figures, and balance sheet stress tests directly to active market participants and professional communities.
+      <!-- Industry Research Deep Dive: 3 Key Sector Questions -->
+      <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg space-y-4">
+        <div class="pb-3 border-b border-slate-800">
+          <h2 class="text-lg font-extrabold text-white tracking-tight">
+            Industry Research Deep-Dive: Sector Dynamics & Headwinds
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Macro landscape, structural industry bottlenecks, and regulatory/geopolitical vulnerabilities.
           </p>
         </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Industry Q1 -->
+          <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
+            <div class="text-xs font-mono font-bold text-emerald-400 flex items-center gap-1.5 uppercase">
+              <span>A</span> &bull; <span>Industry Macro Condition</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              {industryCondition}
+            </p>
+          </div>
+
+          <!-- Industry Q2 -->
+          <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
+            <div class="text-xs font-mono font-bold text-amber-400 flex items-center gap-1.5 uppercase">
+              <span>B</span> &bull; <span>Structural Obstacles</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              {obstaclesAndChallenges}
+            </p>
+          </div>
+
+          <!-- Industry Q3 -->
+          <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-950/60 space-y-2">
+            <div class="text-xs font-mono font-bold text-rose-400 flex items-center gap-1.5 uppercase">
+              <span>C</span> &bull; <span>Economic & Policy Risks</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              {politicalCulturalRisks}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Markdown Body (Typography-styled) -->
+      <div class="prose prose-invert prose-emerald max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-emerald-400 hover:prose-a:text-emerald-300 prose-table:border prose-table:border-slate-800 prose-th:bg-slate-900 prose-th:p-3 prose-td:p-3 prose-td:border prose-td:border-slate-800">
+        <ContentComponent />
       </div>
 
-      <!-- Visible Primary Distribution Anchor Tags -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
-        <!-- X / Twitter -->
+      <!-- Permanent Ticker Hub Cross-Link Callout -->
+      <div class="my-8 p-4 rounded-xl border border-slate-800 bg-slate-900/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h4 class="text-sm font-bold text-white">Tracking ${report.ticker} ({report.companyName})?</h4>
+          <p class="text-xs text-slate-400 mt-0.5">Explore the historical coverage hub with multi-quarter valuation trends and balance sheet tests.</p>
+        </div>
         <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(xShareText)}&url=${encodeURIComponent(reportUrl)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="p-3.5 rounded-xl bg-black hover:bg-slate-900 border border-slate-700 hover:border-slate-500 transition-all group flex items-center justify-between shadow-sm"
+          href={path(`/tickers/${report.ticker.toLowerCase()}`)}
+          class="inline-flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-900 transition-colors text-xs font-semibold"
         >
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">Share on X</div>
-              <div class="text-[10px] text-slate-400">Post 3-Tweet Analysis</div>
-            </div>
-          </div>
-          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+          <span>View ${report.ticker} Research Hub</span>
+          <span>&rarr;</span>
         </a>
-
-        <!-- Reddit -->
-        <a
-          href={`https://www.reddit.com/submit?url=${encodeURIComponent(reportUrl)}&title=${encodeURIComponent(redditShareTitle)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="p-3.5 rounded-xl bg-[#FF4500]/15 hover:bg-[#FF4500]/25 border border-[#FF4500]/40 hover:border-[#FF4500] transition-all group flex items-center justify-between shadow-sm"
-        >
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-[#FF4500]/20 flex items-center justify-center text-[#FF4500] shrink-0 group-hover:scale-105 transition-transform">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.609a1.246 1.246 0 0 1 1.108-.693zM9.5 13.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white group-hover:text-orange-400 transition-colors">Submit to Reddit</div>
-              <div class="text-[10px] text-slate-400">Post to r/stocks</div>
-            </div>
-          </div>
-          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
-        </a>
-
-        <!-- Telegram -->
-        <a
-          href={`https://t.me/share/url?url=${encodeURIComponent(reportUrl)}&text=${encodeURIComponent(telegramShareText)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="p-3.5 rounded-xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 hover:border-[#229ED9] transition-all group flex items-center justify-between shadow-sm"
-        >
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-[#229ED9]/20 flex items-center justify-center text-[#229ED9] shrink-0 group-hover:scale-105 transition-transform">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.87 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.535-.194 1.006.128.832.923z"/></svg>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white group-hover:text-sky-400 transition-colors">Telegram Alert</div>
-              <div class="text-[10px] text-slate-400">Broadcast Channel Link</div>
-            </div>
-          </div>
-          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
-        </a>
-
-        <!-- LinkedIn -->
-        <a
-          href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(reportUrl)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="p-3.5 rounded-xl bg-[#0A66C2]/15 hover:bg-[#0A66C2]/25 border border-[#0A66C2]/40 hover:border-[#0A66C2] transition-all group flex items-center justify-between shadow-sm"
-        >
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-[#0A66C2]/20 flex items-center justify-center text-[#0A66C2] shrink-0 group-hover:scale-105 transition-transform">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white group-hover:text-blue-400 transition-colors">LinkedIn Network</div>
-              <div class="text-[10px] text-slate-400">Institutional Feed</div>
-            </div>
-          </div>
-          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
-        </a>
-
-        <!-- StockTwits -->
-        <a
-          href={`https://stocktwits.com/symbol/${report.ticker}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="p-3.5 rounded-xl bg-emerald-950/40 hover:bg-emerald-900/60 border border-emerald-500/40 hover:border-emerald-400 transition-all group flex items-center justify-between shadow-sm"
-        >
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-emerald-900/60 flex items-center justify-center text-emerald-300 shrink-0 font-bold font-mono text-xs group-hover:scale-105 transition-transform">
-              $ST
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">${report.ticker} Stream</div>
-              <div class="text-[10px] text-slate-400">Real-time Retail Stream</div>
-            </div>
-          </div>
-          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
-        </a>
-
-        <!-- Copy Direct URL -->
-        <button
-          type="button"
-          class="copy-report-link-btn p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-slate-500 transition-all group flex items-center justify-between shadow-sm cursor-pointer text-left"
-        >
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-slate-200 shrink-0 group-hover:scale-105 transition-transform">
-              <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-            </div>
-            <div>
-              <div class="text-xs font-bold text-white copy-btn-label">Copy Direct Link</div>
-              <div class="text-[10px] text-slate-400">Canonical Research URL</div>
-            </div>
-          </div>
-          <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
-        </button>
       </div>
 
-      <!-- Pre-Drafted Social Hooks Preview Box -->
-      {report.socialHooks?.twitter && report.socialHooks.twitter.length > 0 && (
-        <details class="group mt-4 rounded-xl border border-slate-800 bg-slate-950/60 p-4 transition-all">
-          <summary class="flex items-center justify-between cursor-pointer text-xs font-semibold text-slate-300 hover:text-white">
-            <div class="flex items-center gap-2">
-              <span class="font-mono text-emerald-400">🧵</span>
-              <span>View Pre-Composed Twitter / X Thread ({report.socialHooks.twitter.length} Tweets)</span>
-            </div>
-            <span class="text-slate-400 group-open:rotate-180 transition-transform">&darr;</span>
-          </summary>
-          <div class="mt-4 space-y-3 pt-3 border-t border-slate-800/80">
-            {report.socialHooks.twitter.map((tweet: string) => (
-              <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 text-xs text-slate-300 font-sans leading-relaxed flex items-start justify-between gap-3">
-                <span class="flex-1">{tweet}</span>
-                <button
-                  type="button"
-                  class="copy-raw-text-btn shrink-0 px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono text-slate-300 hover:text-white border border-slate-700 transition-colors cursor-pointer"
-                  data-raw={tweet}
+      <!-- Contextual Affiliate Offer -->
+      {primaryAffiliate && (
+        <div class="my-8 no-print">
+          <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3">Contextual Market Resources</h3>
+          <AffiliateBanner affiliate={primaryAffiliate} />
+        </div>
+      )}
+
+      <!-- Bottom Native Ad Slot -->
+      {report.adSlots.bottomBanner && (
+        <div class="no-print">
+          <AdSlot slotId="report-bottom-ad" format="rectangle" minHeight="250px" />
+        </div>
+      )}
+
+      <!-- Related Market Research (High-Value Internal Linking) -->
+      {relatedReports.length > 0 && (
+        <section class="my-10 border-t border-slate-800/80 pt-8 no-print">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white">Related Equity Deep Dives</h3>
+            <a href={path('/reports')} class="text-xs text-emerald-400 hover:text-emerald-300">View Archive &rarr;</a>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {relatedReports.map((rel) => (
+              <div class="p-4 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between text-xs mb-1.5">
+                    <span class="font-mono font-bold text-emerald-400">${rel.data.ticker}</span>
+                    <span class={`font-mono text-[11px] ${rel.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                      {rel.data.movePercent >= 0 ? '+' : ''}{rel.data.movePercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <h4 class="text-xs font-semibold text-white hover:text-emerald-400 transition-colors line-clamp-2">
+                    <a href={path(`/reports/${rel.slug}`)}>{rel.data.title}</a>
+                  </h4>
+                </div>
+                <a
+                  href={path(`/reports/${rel.slug}`)}
+                  class="mt-3 text-[11px] text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center gap-1"
                 >
-                  Copy
-                </button>
+                  Read Deep Dive &rarr;
+                </a>
               </div>
             ))}
           </div>
-        </details>
+        </section>
       )}
-    </section>
+
+      <!-- Social Distribution & Network Syndication Section -->
+      <section class="my-10 p-6 rounded-2xl border border-slate-700 bg-gradient-to-b from-slate-900/90 to-slate-950 shadow-xl no-print" id="social-distribution">
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-800">
+          <div>
+            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-[11px] font-mono font-semibold text-emerald-400 mb-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Institutional Syndication Hub
+            </div>
+            <h3 class="text-lg font-extrabold text-white tracking-tight">Social Distribution & Network Syndication</h3>
+            <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+              Distribute verified equity research, multi-model valuation figures, and balance sheet stress tests directly to active market participants and professional communities.
+            </p>
+          </div>
+        </div>
+
+        <!-- Social Links Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+          <a
+            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(xShareText)}&url=${encodeURIComponent(reportUrl)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-3.5 rounded-xl bg-black hover:bg-slate-900 border border-slate-700 hover:border-slate-500 transition-all group flex items-center justify-between shadow-sm"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">Share on X</div>
+                <div class="text-[10px] text-slate-400">Post Analysis Thread</div>
+              </div>
+            </div>
+            <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+          </a>
+
+          <a
+            href={`https://www.reddit.com/submit?url=${encodeURIComponent(reportUrl)}&title=${encodeURIComponent(redditShareTitle)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-3.5 rounded-xl bg-[#FF4500]/15 hover:bg-[#FF4500]/25 border border-[#FF4500]/40 hover:border-[#FF4500] transition-all group flex items-center justify-between shadow-sm"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#FF4500]/20 flex items-center justify-center text-[#FF4500] shrink-0 group-hover:scale-105 transition-transform">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.609a1.246 1.246 0 0 1 1.108-.693zM9.5 13.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white group-hover:text-orange-400 transition-colors">Submit to Reddit</div>
+                <div class="text-[10px] text-slate-400">Post to r/stocks</div>
+              </div>
+            </div>
+            <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+          </a>
+
+          <a
+            href={`https://t.me/share/url?url=${encodeURIComponent(reportUrl)}&text=${encodeURIComponent(telegramShareText)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="p-3.5 rounded-xl bg-[#229ED9]/15 hover:bg-[#229ED9]/25 border border-[#229ED9]/40 hover:border-[#229ED9] transition-all group flex items-center justify-between shadow-sm"
+          >
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-[#229ED9]/20 flex items-center justify-center text-[#229ED9] shrink-0 group-hover:scale-105 transition-transform">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.121l-6.87 4.326-2.96-.924c-.643-.204-.657-.643.136-.953l11.57-4.458c.535-.194 1.006.128.832.923z"/></svg>
+              </div>
+              <div>
+                <div class="text-xs font-bold text-white group-hover:text-sky-400 transition-colors">Telegram Alert</div>
+                <div class="text-[10px] text-slate-400">Broadcast Channel Link</div>
+              </div>
+            </div>
+            <span class="text-xs text-slate-400 group-hover:text-white transition-colors">&rarr;</span>
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- TAB PANEL 2: THESES & CITATIONS -->
+    <div id="tab-panel-thesis" class="report-tab-panel hidden" hidden>
+      <ThesisModule report={report} />
+    </div>
+
+    <!-- TAB PANEL 3: VALUATION MODELS -->
+    <div id="tab-panel-valuation" class="report-tab-panel hidden" hidden>
+      <ValuationModule report={report} />
+    </div>
+
+    <!-- TAB PANEL 4: FINANCIAL HEALTH & SOLVENCY -->
+    <div id="tab-panel-solvency" class="report-tab-panel hidden" hidden>
+      <SolvencyModule report={report} />
+    </div>
+
+    <!-- TAB PANEL 5: MARKET FLOW & MICROSTRUCTURE -->
+    <div id="tab-panel-microstructure" class="report-tab-panel hidden" hidden>
+      <MicrostructureModule report={report} />
+    </div>
+
   </article>
 </BaseLayout>
 
-<!-- Client Script for Accessible Thesis Modal Dialog -->
-<script>
-  function setupThesisModal() {
-    const modal = document.getElementById('thesis-modal') as HTMLDialogElement | null;
-    const closeBtn = document.getElementById('modal-close-btn');
-    const closeFooterBtn = document.getElementById('modal-close-footer-btn');
-    const typeBadge = document.getElementById('modal-type-badge');
-    const pointText = document.getElementById('modal-point-text');
-    const sourcesList = document.getElementById('modal-sources-list');
-    const deductionSteps = document.getElementById('modal-deduction-steps');
-
-    function escapeHtml(str: string): string {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+<style>
+  @media print {
+    .no-print {
+      display: none !important;
     }
-
-    if (!modal) return;
-
-    function openModal(button: HTMLElement) {
-      const type = button.dataset.type || 'Thesis Analysis';
-      const point = button.dataset.point || '';
-      let sources: any[] = [];
-      try {
-        sources = JSON.parse(button.dataset.sources || '[]');
-      } catch (e) {
-        sources = button.dataset.sources ? [button.dataset.sources] : [];
-      }
-      const deduction = button.dataset.deduction || '';
-
-      if (typeBadge) {
-        typeBadge.textContent = type;
-        if (type.includes('Bullish')) {
-          typeBadge.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/60';
-        } else {
-          typeBadge.className = 'px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-rose-950 text-rose-400 border border-rose-800/60';
-        }
-      }
-
-      if (pointText) {
-        pointText.textContent = point;
-      }
-
-      if (sourcesList) {
-        sourcesList.innerHTML = '';
-        if (sources.length === 0) {
-          const li = document.createElement('li');
-          li.className = 'text-slate-400 font-mono text-xs';
-          li.textContent = 'SEC Disclosures & Institutional Market Intelligence';
-          sourcesList.appendChild(li);
-        } else {
-          const isBull = type.includes('Bullish');
-          const borderHoverClass = isBull ? 'hover:border-emerald-600/60' : 'hover:border-rose-600/60';
-          const linkHoverClass = isBull ? 'text-emerald-300 hover:text-emerald-200' : 'text-rose-300 hover:text-rose-200';
-          const iconColorClass = isBull ? 'text-emerald-400' : 'text-rose-400';
-          const btnHoverClass = isBull 
-            ? 'hover:bg-emerald-950 hover:text-emerald-300 hover:border-emerald-700/60' 
-            : 'hover:bg-rose-950 hover:text-rose-300 hover:border-rose-700/60';
-
-          sources.forEach((src: any) => {
-            const li = document.createElement('li');
-            li.className = `p-3 rounded-xl bg-slate-900/90 border border-slate-800 ${borderHoverClass} transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3`;
-            
-            const name = typeof src === 'object' && src !== null ? (src.name || src.title || 'Resource Link') : String(src);
-            const url = typeof src === 'object' && src !== null ? (src.url || '') : '';
-            const domain = typeof src === 'object' && src !== null && src.domain ? src.domain : '';
-
-            if (url) {
-              li.innerHTML = `
-                <div class="flex items-start gap-2.5 min-w-0 flex-1">
-                  <span class="${iconColorClass} text-sm select-none shrink-0 mt-0.5">📄</span>
-                  <div class="min-w-0">
-                    <a
-                      href="${escapeHtml(url)}"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="${linkHoverClass} font-semibold text-xs leading-snug hover:underline inline-flex items-center gap-1.5 break-words"
-                    >
-                      <span>${escapeHtml(name)}</span>
-                      <svg class="w-3.5 h-3.5 shrink-0 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                      </svg>
-                    </a>
-                    ${domain ? `<div class="text-[10px] text-slate-400 font-mono mt-1 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-slate-600 inline-block"></span><span>${escapeHtml(domain)}</span></div>` : ''}
-                  </div>
-                </div>
-                <a
-                  href="${escapeHtml(url)}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="shrink-0 self-start sm:self-center px-2.5 py-1 rounded-lg bg-slate-800 text-slate-200 border border-slate-700 ${btnHoverClass} text-xs font-mono font-medium flex items-center gap-1.5 transition-all shadow-sm"
-                  aria-label="Open citation link for ${escapeHtml(name)} in a new tab"
-                >
-                  <span>Open Resource</span>
-                  <span class="text-xs">↗</span>
-                </a>
-              `;
-            } else {
-              li.innerHTML = `
-                <div class="flex items-start gap-2 text-slate-300 font-mono text-xs">
-                  <span class="${iconColorClass} select-none">&bull;</span>
-                  <span>${escapeHtml(name)}</span>
-                </div>
-              `;
-            }
-            sourcesList.appendChild(li);
-          });
-        }
-      }
-
-      if (deductionSteps) {
-        deductionSteps.innerHTML = '';
-        const parts = deduction.split(/(?=\d+\.\s|\s->\s)/).filter(Boolean);
-        if (parts.length > 0) {
-          parts.forEach((step, idx) => {
-            const stepDiv = document.createElement('div');
-            stepDiv.className = 'p-2.5 rounded-lg bg-slate-900 border border-slate-800/70 flex items-start gap-2.5';
-            const cleanText = step.replace(/^\s*->\s*/, '').trim();
-            stepDiv.innerHTML = `
-              <span class="w-5 h-5 rounded-full bg-slate-800 text-sky-400 flex items-center justify-center font-mono font-bold text-[10px] shrink-0 mt-0.5">${idx + 1}</span>
-              <span class="text-slate-300 text-xs">${cleanText}</span>
-            `;
-            deductionSteps.appendChild(stepDiv);
-          });
-        } else {
-          deductionSteps.textContent = deduction;
-        }
-      }
-
-      if (typeof modal.showModal === 'function') {
-        modal.showModal();
-      }
-    }
-
-    function closeModal() {
-      if (typeof modal.close === 'function') {
-        modal.close();
-      }
-    }
-
-    document.querySelectorAll<HTMLElement>('.thesis-info-btn').forEach((btn) => {
-      btn.addEventListener('click', () => openModal(btn));
-    });
-
-    if (closeBtn) closeBtn.addEventListener('click', closeModal);
-    if (closeFooterBtn) closeFooterBtn.addEventListener('click', closeModal);
-
-    // Close on backdrop click
-    modal.addEventListener('click', (e) => {
-      const rect = modal.getBoundingClientRect();
-      const isInDialog = (
-        rect.top <= e.clientY &&
-        e.clientY <= rect.top + rect.height &&
-        rect.left <= e.clientX &&
-        e.clientX <= rect.left + rect.width
-      );
-      if (!isInDialog) {
-        closeModal();
-      }
-    });
-
-    // Close on Escape key
-    modal.addEventListener('cancel', () => {
-      closeModal();
-    });
   }
 
-  function setupSocialShareButtons() {
+  /* Make markdown tables horizontally scrollable on mobile/smaller screens */
+  :global(.prose table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+</style>
+
+<script>
+  function setupGlobalShortcuts() {
+    // Keyboard shortcut for exporting institutional PDF
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'p') {
+        const btn = document.getElementById('export-pdf-action-btn') as HTMLAnchorElement | null;
+        if (btn && btn.href) {
+          e.preventDefault();
+          window.open(btn.href, '_blank');
+        }
+      }
+    });
+
+    // Copy report URL handler
     document.querySelectorAll<HTMLElement>('.copy-report-link-btn').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        const url = window.location.href;
         try {
-          await navigator.clipboard.writeText(url);
+          await navigator.clipboard.writeText(window.location.href);
           const label = btn.querySelector('.copy-btn-label');
           if (label) {
-            const original = label.textContent;
-            label.textContent = 'Link Copied!';
-            setTimeout(() => { label.textContent = original; }, 2000);
+            const orig = label.textContent;
+            label.textContent = 'Copied!';
+            setTimeout(() => { label.textContent = orig; }, 2000);
           }
         } catch (e) {
-          console.warn('Failed to copy to clipboard', e);
-        }
-      });
-    });
-
-    document.querySelectorAll<HTMLElement>('.copy-raw-text-btn').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const raw = btn.dataset.raw || '';
-        try {
-          await navigator.clipboard.writeText(raw);
-          const original = btn.textContent;
-          btn.textContent = 'Copied!';
-          setTimeout(() => { btn.textContent = original; }, 2000);
-        } catch (e) {
-          console.warn('Failed to copy text', e);
+          console.warn('Clipboard write failed', e);
         }
       });
     });
   }
 
-  // Initialize on page load
-  setupThesisModal();
-  setupSocialShareButtons();
-  document.addEventListener('astro:page-load', () => {
-    setupThesisModal();
-    setupSocialShareButtons();
-  });
+  setupGlobalShortcuts();
+  document.addEventListener('astro:page-load', setupGlobalShortcuts);
 </script>

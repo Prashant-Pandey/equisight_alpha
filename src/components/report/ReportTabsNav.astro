@@ -1,0 +1,149 @@
+---
+interface Props {
+  defaultTab?: string;
+}
+
+const { defaultTab = 'overview' } = Astro.props;
+
+const tabs = [
+  {
+    id: 'overview',
+    label: 'Overview & Outlook',
+    shortLabel: 'Overview',
+    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+  },
+  {
+    id: 'thesis',
+    label: 'Thesis & Citations',
+    shortLabel: 'Thesis',
+    icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'
+  },
+  {
+    id: 'valuation',
+    label: 'Valuation Models',
+    shortLabel: 'Valuation',
+    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
+  },
+  {
+    id: 'solvency',
+    label: 'Financial Health & Solvency',
+    shortLabel: 'Solvency',
+    icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
+  },
+  {
+    id: 'microstructure',
+    label: 'Market Flow & Microstructure',
+    shortLabel: 'Order Flow',
+    icon: 'M13 10V3L4 14h7v7l9-11h-7z'
+  }
+];
+---
+
+<div class="sticky top-14 z-30 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-2.5 bg-slate-950/90 backdrop-blur-md border-y border-slate-800/90 shadow-md">
+  <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
+    <!-- Scrollable Tab Container -->
+    <div
+      class="report-tabs-nav flex flex-wrap items-center gap-1.5"
+      role="tablist"
+      aria-label="Report Modules Navigation"
+    >
+      {tabs.map((tab) => (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-btn-${tab.id}`}
+          data-tab-target={tab.id}
+          aria-selected={tab.id === defaultTab ? 'true' : 'false'}
+          aria-controls={`tab-panel-${tab.id}`}
+          class={`tab-trigger flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap cursor-pointer border ${
+            tab.id === defaultTab
+              ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/50 shadow-sm'
+              : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:bg-slate-800/80 hover:text-slate-200 hover:border-slate-700'
+          }`}
+        >
+          <svg class="w-3.5 h-3.5 shrink-0 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={tab.icon} />
+          </svg>
+          <span class="hidden md:inline">{tab.label}</span>
+          <span class="md:hidden">{tab.shortLabel}</span>
+        </button>
+      ))}
+    </div>
+
+    <!-- Quick Jump to PDF / Actions indicator -->
+    <div class="hidden sm:flex items-center gap-2 shrink-0">
+      <span class="text-[10px] font-mono text-slate-500">Tab navigation saved to URL hash</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function setupReportTabs() {
+    const tabButtons = document.querySelectorAll<HTMLButtonElement>('.tab-trigger');
+    const tabPanels = document.querySelectorAll<HTMLElement>('.report-tab-panel');
+
+    if (!tabButtons.length || !tabPanels.length) return;
+
+    function activateTab(targetId: string, updateHash = true) {
+      let matched = false;
+
+      tabButtons.forEach((btn) => {
+        const isTarget = btn.dataset.tabTarget === targetId;
+        if (isTarget) matched = true;
+        btn.setAttribute('aria-selected', isTarget ? 'true' : 'false');
+
+        if (isTarget) {
+          btn.className = 'tab-trigger flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap cursor-pointer border bg-emerald-950/90 text-emerald-300 border-emerald-500/50 shadow-sm';
+          // Ensure button is scrolled into view in mobile scrollbar
+          btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          btn.className = 'tab-trigger flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap cursor-pointer border bg-slate-900/60 text-slate-400 border-slate-800 hover:bg-slate-800/80 hover:text-slate-200 hover:border-slate-700';
+        }
+      });
+
+      if (!matched && tabButtons.length > 0) {
+        // Fallback to first tab
+        activateTab(tabButtons[0].dataset.tabTarget || 'overview', false);
+        return;
+      }
+
+      tabPanels.forEach((panel) => {
+        const isTarget = panel.id === `tab-panel-${targetId}`;
+        if (isTarget) {
+          panel.classList.remove('hidden');
+          panel.removeAttribute('hidden');
+        } else {
+          panel.classList.add('hidden');
+          panel.setAttribute('hidden', '');
+        }
+      });
+
+      if (updateHash && window.location.hash !== `#${targetId}`) {
+        history.replaceState(null, '', `#${targetId}`);
+      }
+    }
+
+    // Attach click listeners
+    tabButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.dataset.tabTarget;
+        if (targetId) activateTab(targetId, true);
+      });
+    });
+
+    // Handle initial hash on load
+    function syncFromHash() {
+      const hash = window.location.hash.replace(/^#/, '');
+      if (hash && document.getElementById(`tab-panel-${hash}`)) {
+        activateTab(hash, false);
+      }
+    }
+
+    window.addEventListener('hashchange', syncFromHash);
+    syncFromHash();
+  }
+
+  // Initialize immediately and on Astro page transitions
+  setupReportTabs();
+  document.addEventListener('astro:page-load', setupReportTabs);
+</script>

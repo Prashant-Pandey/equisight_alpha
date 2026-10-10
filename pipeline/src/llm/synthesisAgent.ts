@@ -21,6 +21,7 @@ import {
   getMoatTrend,
   getEconomicMoat
 } from '../../../src/utils/financialClassification.js';
+import { generateImprovedTitle, improveExistingTitle, cleanCompanyName } from '../../../src/utils/titleGenerator.js';
 import type {
   MarketMover,
   FundamentalMetrics,
@@ -108,9 +109,22 @@ export class LLMSynthesisAgent {
       rawOutput.markdownBody = verification.correctedContent;
     }
 
-    // Guarantee theses presence with sources and deduction chains
-    if (!rawOutput.theses || !rawOutput.theses.bull || rawOutput.theses.bull.length === 0) {
-      rawOutput.theses = buildTheses(mover, fundamentals, rawOutput);
+    // Guarantee theses presence with sources and deduction chains (preserving existing points and adding quality theses)
+    rawOutput.theses = buildTheses(mover, fundamentals, rawOutput);
+
+    // Ensure title conforms to improved institutional equity research standards
+    if (rawOutput.title) {
+      rawOutput.title = improveExistingTitle(rawOutput.title, {
+        companyName: fundamentals.companyName,
+        ticker: mover.ticker,
+        verdict: fundamentals.valuationModels?.verdict,
+        isPennyStock: mover.isPennyStock,
+        marketCap: fundamentals.marketCap,
+        region: mover.region,
+        sector: fundamentals.sector,
+        industry: fundamentals.industry,
+        moatRating: fundamentals.competitiveMoat?.rating
+      });
     }
 
     return rawOutput;
@@ -632,8 +646,61 @@ ${expectationsVsReality}
 
     const execSummaryData = this.generateDeterministicExecutiveSummary(mover, f, macro, s);
 
-    const title = `${f.companyName} (${cleanTicker}) ${actionVerb} ${moveStr}: Fundamental & Valuation Analysis`;
+    const title = generateImprovedTitle({
+      companyName: f.companyName,
+      ticker: cleanTicker,
+      verdict,
+      isPennyStock,
+      marketCap: f.marketCap,
+      region: mover.region,
+      sector: f.sector,
+      industry: f.industry,
+      moatRating: competitiveMoat.rating,
+      year: new Date().getFullYear(),
+      currentPrice: mover.price,
+      fairValue: consensusFairValue ?? undefined
+    });
     const seoDescription = `Evidence-based financial analysis of ${f.companyName} (${cleanTicker}) following today's ${moveStr} move on ${venue}. Valuation models, debt breakdown, and macro impact.`;
+
+    const initialBullTheses: ThesisPoint[] = [
+      {
+        point: 'Multi-Model Valuation Asymmetry',
+        sources: [`Consensus 8-Model Valuation Suite (${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)} target` : 'qualitative fundamental assessment'}) and SEC Form 10-K reported balance sheet asset base.`],
+        deductionChain: `Market price of $${mover.price.toFixed(2)} ${dcfIntrinsic !== null ? `trades relative to intrinsic DCF ($${dcfIntrinsic.toFixed(2)})` : 'reflects current risk-adjusted discount'} -> Potential margin of safety -> Multiple stabilization potential.`
+      },
+      {
+        point: 'Operating Resilience & Margins',
+        sources: [`SEC Form 10-Q Operating Statement showing ${f.grossMargin !== null && f.grossMargin !== undefined ? `${f.grossMargin.toFixed(1)}% gross margin` : 'reported operating margins'}${cashFlow.freeCashFlow !== null && cashFlow.freeCashFlow !== undefined ? ` and $${(cashFlow.freeCashFlow / 1e9).toFixed(2)}B Free Cash Flow` : ''}.`],
+        deductionChain: 'Positive operational cash generation -> Minimal reliance on dilutive capital raises -> Flexibility to fund organic pipeline and service short-term debt obligations.'
+      },
+      {
+        point: 'Competitive Moat Protection',
+        sources: ['Industry IP registries and commercial customer retention filings.'],
+        deductionChain: `${competitiveMoat.summary.slice(0, 100)}... -> Sticky customer relationships and barrier to entry -> Long-term capital returns defense.`
+      }
+    ];
+
+    const initialBearTheses: ThesisPoint[] = [
+      {
+        point: 'Macro & Multiple Friction',
+        sources: [`Federal Reserve policy rate (${macro.fedFundsRate.toFixed(2)}%) and US 10-Year Sovereign Yield (${macro.us10YearYield.toFixed(2)}%).`],
+        deductionChain: 'Risk-free sovereign yields above 4% -> Elevated hurdle rates for long-duration cash flows -> Multiple compression vulnerability if top-line growth decelerates.'
+      },
+      {
+        point: 'Short-Term Debt Maturity Exposure',
+        sources: [`Balance sheet liabilities schedule indicating ${shortTermDebt !== null ? `$${(shortTermDebt / 1e6).toFixed(1)}M in short-term debt obligations` : 'debt maturities schedule'}.`],
+        deductionChain: 'Short-term maturity schedule -> Requires rollover or refinancing at higher prevailing interest rates -> Heightened annual interest expense burden.'
+      },
+      {
+        point: 'Execution & Industry Challenges',
+        sources: ['Sector regulatory filing audits and competitive landscape review.'],
+        deductionChain: `${industryDeepDive.obstaclesAndChallenges.slice(0, 100)}... -> Margin pressure risks -> Heightened downside equity volatility upon guidance revision.`
+      }
+    ];
+
+    const compiledTheses = buildTheses(mover, f, {
+      theses: { bull: initialBullTheses, bear: initialBearTheses }
+    } as any);
 
     const markdownBody = `
 ${execSummaryData.formattedMarkdown}
@@ -793,26 +860,10 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
 ## 9. Evidence-Based Bull & Bear Theses (with Deductive Chains)
 
 ### The Objective Bull Thesis
-1. **Multi-Model Valuation Asymmetry:**
-   * **Cited References:** Consensus 8-Model Valuation Suite (${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)} target` : 'qualitative fundamental assessment'}) and SEC Form 10-K reported balance sheet asset base.
-   * **Deduction Chain:** Market price of $${mover.price.toFixed(2)} ${dcfIntrinsic !== null ? `trades relative to intrinsic DCF ($${dcfIntrinsic.toFixed(2)})` : 'reflects current risk-adjusted discount'} -> Potential margin of safety -> Multiple stabilization potential.
-2. **Operating Resilience & Margins:**
-   * **Cited References:** SEC Form 10-Q Operating Statement showing ${f.grossMargin !== null && f.grossMargin !== undefined ? `${f.grossMargin.toFixed(1)}% gross margin` : 'reported operating margins'}${cashFlow.freeCashFlow !== null && cashFlow.freeCashFlow !== undefined ? ` and $${(cashFlow.freeCashFlow / 1e9).toFixed(2)}B Free Cash Flow` : ''}.
-   * **Deduction Chain:** Positive operational cash generation -> Minimal reliance on dilutive capital raises -> Flexibility to fund organic pipeline and service short-term debt obligations.
-3. **Competitive Moat Protection:**
-   * **Cited References:** Industry IP registries and commercial customer retention filings.
-   * **Deduction Chain:** ${competitiveMoat.summary.slice(0, 100)}... -> Sticky customer relationships and barrier to entry -> Long-term capital returns defense.
+${compiledTheses.bull.map((b, idx) => `${idx + 1}. **${b.point.split('.')[0]}:**\n   * **Point:** ${b.point}\n   * **Cited References:** ${(b.sources || []).map(s => typeof s === 'string' ? s : s.name).join(', ')}\n   * **Deduction Chain:** ${b.deductionChain}`).join('\n\n')}
 
 ### The Objective Bear Thesis
-1. **Macro & Multiple Friction:**
-   * **Cited References:** Federal Reserve policy rate (${macro.fedFundsRate.toFixed(2)}%) and US 10-Year Sovereign Yield (${macro.us10YearYield.toFixed(2)}%).
-   * **Deduction Chain:** Risk-free sovereign yields above 4% -> Elevated hurdle rates for long-duration cash flows -> Multiple compression vulnerability if top-line growth decelerates.
-2. **Short-Term Debt Maturity Exposure:**
-   * **Cited References:** Balance sheet liabilities schedule indicating ${shortTermDebt !== null ? `$${(shortTermDebt / 1e6).toFixed(1)}M in short-term debt obligations` : 'debt maturities schedule'}.
-   * **Deduction Chain:** Short-term maturity schedule -> Requires rollover or refinancing at higher prevailing interest rates -> Heightened annual interest expense burden.
-3. **Execution & Industry Challenges:**
-   * **Cited References:** Sector regulatory filing audits and competitive landscape review.
-   * **Deduction Chain:** ${industryDeepDive.obstaclesAndChallenges.slice(0, 100)}... -> Margin pressure risks -> Heightened downside equity volatility upon guidance revision.
+${compiledTheses.bear.map((b, idx) => `${idx + 1}. **${b.point.split('.')[0]}:**\n   * **Point:** ${b.point}\n   * **Cited References:** ${(b.sources || []).map(s => typeof s === 'string' ? s : s.name).join(', ')}\n   * **Deduction Chain:** ${b.deductionChain}`).join('\n\n')}
 `;
 
     const mockOutput: LLMAnalysisOutput = {
@@ -832,17 +883,7 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
         netDebt: f.netDebt,
         movePercent: mover.changePercent
       },
-      theses: buildTheses(mover, f, {
-        title,
-        seoDescription,
-        slug,
-        primaryKeywords: [],
-        secondaryKeywords: [],
-        catalystSummary: '',
-        markdownBody: '',
-        extractedFigures: {},
-        socialHooks: { twitterThread: [], redditPost: { title: '', bodyMarkdown: '' }, telegramAlert: '' }
-      }),
+      theses: compiledTheses,
       isPennyStock,
       moneyMarketTradingVenue: venue,
       priceTimestamp,
