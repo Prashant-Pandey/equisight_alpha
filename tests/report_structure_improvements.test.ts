@@ -42,27 +42,30 @@ assert(fslyWebContent.includes('5 Competitive Moat Pillars:'), 'Quick-View must 
 console.log('✓ First-Glance Quick-View Dashboard verified with 3-tile triage layout.');
 
 // Test 4: Tabbed Workspace Navigation & Modules
+assert(fslyWebContent.includes('tab-btn-executive-summary'), 'Tab navigation must contain executive summary tab');
 assert(fslyWebContent.includes('tab-btn-overview'), 'Tab navigation must contain overview tab');
 assert(fslyWebContent.includes('tab-btn-thesis'), 'Tab navigation must contain thesis tab');
 assert(fslyWebContent.includes('tab-btn-valuation'), 'Tab navigation must contain valuation tab');
 assert(fslyWebContent.includes('tab-btn-solvency'), 'Tab navigation must contain solvency tab');
 assert(fslyWebContent.includes('tab-btn-microstructure'), 'Tab navigation must contain microstructure tab');
 
+assert(fslyWebContent.includes('tab-panel-executive-summary'), 'Tab panel executive summary must exist');
 assert(fslyWebContent.includes('tab-panel-overview'), 'Tab panel overview must exist');
 assert(fslyWebContent.includes('tab-panel-thesis'), 'Tab panel thesis must exist');
 assert(fslyWebContent.includes('tab-panel-valuation'), 'Tab panel valuation must exist');
 assert(fslyWebContent.includes('tab-panel-solvency'), 'Tab panel solvency must exist');
 assert(fslyWebContent.includes('tab-panel-microstructure'), 'Tab panel microstructure must exist');
-console.log('✓ Tabbed Deep-Dive Workspace verified with all 5 functional tab panels.');
+console.log('✓ Tabbed Deep-Dive Workspace verified with all 6 functional tab panels.');
 
 // Test 5: Reusable Modular Components Rendered
+assert(fslyWebContent.includes('Executive Summary &amp; Session Catalyst') || fslyWebContent.includes('Executive Summary & Session Catalyst'), 'ExecutiveSummaryModule must be included in separate tab');
 assert(fslyWebContent.includes('thesis-modal'), 'ThesisModule dialog modal must be included');
 assert(fslyWebContent.includes('Multi-Method Intrinsic Valuation Models'), 'ValuationModule 8-model matrix must be included');
 assert(fslyWebContent.includes('Three-Stage DCF Mechanics &amp; Moat Fade Sensitivity') || fslyWebContent.includes('Three-Stage DCF Mechanics & Moat Fade Sensitivity'), 'ValuationModule DCF sensitivity matrix must be included');
 assert(fslyWebContent.includes('8-Quarter Earnings Per Share (EPS) Progression'), 'SolvencyModule 8-quarter EPS SVG chart must be included');
 assert(fslyWebContent.includes('Balance Sheet Solvency &amp; Debt Maturity Waterfall') || fslyWebContent.includes('Balance Sheet Solvency & Debt Maturity Waterfall'), 'SolvencyModule debt waterfall must be included');
 assert(fslyWebContent.includes('Market Microstructure &amp; Volume Integrity Audit') || fslyWebContent.includes('Market Microstructure & Volume Integrity Audit'), 'MicrostructureModule audit must be included');
-console.log('✓ Modular report subcomponents (ThesisModule, ValuationModule, SolvencyModule, MicrostructureModule) successfully rendered.');
+console.log('✓ Modular report subcomponents (ExecutiveSummaryModule, ThesisModule, ValuationModule, SolvencyModule, MicrostructureModule) successfully rendered.');
 
 // Test 6: Morningstar 7-Module Chronology on Institutional Print Page
 assert(fslyPrintContent.includes('Module 1 &bull; Executive Summary &amp; Valuation Triage') || fslyPrintContent.includes('Module 1 &bull; Executive Summary & Valuation Triage'), 'Print view must include Module 1');

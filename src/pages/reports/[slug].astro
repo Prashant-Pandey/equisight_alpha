@@ -155,7 +155,7 @@ const politicalCulturalRisks = report.industryDeepDive?.economicPoliticalCultura
     id="sticky-action-bar"
     aria-label="Institutional Quick Action Bar"
   >
-    <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
       <!-- Left: Ticker & Price Snapshot -->
       <div class="flex items-center gap-2.5 min-w-0">
         <a
@@ -164,17 +164,13 @@ const politicalCulturalRisks = report.industryDeepDive?.economicPoliticalCultura
         >
           ${report.ticker}
         </a>
-        <div class="flex items-baseline gap-1.5 font-mono">
-          <span class="text-sm font-black text-white">${report.currentPrice.toFixed(2)}</span>
-          <span class={`font-bold text-[11px] ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-            {isPositive ? '+' : ''}{report.movePercent.toFixed(2)}%
-          </span>
-        </div>
-        {starRatingString && (
-          <span class="hidden sm:inline-block font-mono text-[11px] text-amber-300 font-bold px-2 py-0.5 rounded bg-amber-950/70 border border-amber-700/50">
-            {starRatingString}
-          </span>
-        )}
+        <span class="text-xs text-slate-400 font-medium">
+          {report.sector}
+        </span>
+        <span class="text-xs font-mono uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
+          {report.exchange} &bull; {report.region}
+        </span>
+        <time datetime={publishDateIso} class="text-xs text-slate-400 font-mono">{formattedDate}</time>
       </div>
 
       <!-- Right: Action Buttons & Institutional PDF Export -->
@@ -194,21 +190,11 @@ const politicalCulturalRisks = report.industryDeepDive?.economicPoliticalCultura
           <span>Export Institutional PDF</span>
           <span class="hidden md:inline-block text-[10px] text-emerald-200 font-normal px-1 rounded bg-emerald-700/50">⌘P</span>
         </a>
-
-        <!-- Copy Link Quick Button -->
-        <button
-          type="button"
-          class="copy-report-link-btn inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-mono transition-all cursor-pointer"
-          title="Copy report URL"
-        >
-          <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-          <span class="copy-btn-label hidden sm:inline">Copy</span>
-        </button>
       </div>
     </div>
   </aside>
 
-  <article class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <article class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumb Bar -->
     <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6 font-mono no-print" aria-label="Breadcrumbs">
       <a href={path('/')} class="hover:text-emerald-400 transition-colors">Home</a>
@@ -225,24 +211,6 @@ const politicalCulturalRisks = report.industryDeepDive?.economicPoliticalCultura
 
     <!-- Article Header -->
     <header class="my-6">
-      <div class="flex flex-wrap items-center gap-2.5 mb-3">
-        <a
-          href={path(`/tickers/${report.ticker.toLowerCase()}`)}
-          class="font-mono font-black text-lg px-2.5 py-0.5 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-900 transition-colors"
-          title={`View full ${report.companyName} research hub`}
-        >
-          ${report.ticker}
-        </a>
-        <span class="text-xs font-mono uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded">
-          {report.exchange} &bull; {report.region}
-        </span>
-        <span class="text-xs text-slate-400 font-medium">
-          {report.sector}
-        </span>
-        <span class="text-slate-400">&bull;</span>
-        <time datetime={publishDateIso} class="text-xs text-slate-400 font-mono">{formattedDate}</time>
-      </div>
-
       <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-snug">
         {report.title}
       </h1>
@@ -260,7 +228,7 @@ const politicalCulturalRisks = report.industryDeepDive?.economicPoliticalCultura
 
         <div class="flex items-center gap-3">
           <div class={`text-right px-4 py-2 rounded-lg border font-mono ${isPositive ? 'bg-emerald-950/80 border-emerald-500/30 text-emerald-400' : 'bg-rose-950/80 border-rose-500/30 text-rose-400'}`}>
-            <div class="text-[10px] uppercase font-sans tracking-wide">Daily Move</div>
+            <div class="text-[10px] uppercase font-sans tracking-wide">Today's Move</div>
             <div class="text-lg font-black">{isPositive ? '+' : ''}{report.movePercent.toFixed(2)}%</div>
           </div>
         </div>
