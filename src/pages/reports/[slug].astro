@@ -355,7 +355,6 @@ const valuationRows = [
         <button
           type="button"
           class="copy-report-link-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-600 text-xs font-semibold transition-all shadow-sm cursor-pointer"
-          data-url={reportUrl}
           title="Copy research URL to clipboard"
         >
           <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
@@ -964,7 +963,6 @@ const valuationRows = [
         <button
           type="button"
           class="copy-report-link-btn p-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-slate-500 transition-all group flex items-center justify-between shadow-sm cursor-pointer text-left"
-          data-url={reportUrl}
         >
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-slate-200 shrink-0 group-hover:scale-105 transition-transform">
@@ -1182,7 +1180,7 @@ const valuationRows = [
   function setupSocialShareButtons() {
     document.querySelectorAll<HTMLElement>('.copy-report-link-btn').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        const url = btn.dataset.url || window.location.href;
+        const url = window.location.href;
         try {
           await navigator.clipboard.writeText(url);
           const label = btn.querySelector('.copy-btn-label');

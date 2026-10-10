@@ -22,7 +22,7 @@ export interface MarketMover {
 export interface ValuationMetricComparison {
   current: number | null;
   industryAverage: number;
-  historicalAverage5Y: number;
+  historicalAverage5Y: number | null;
   chartData?: Array<{ year: string; value: number }>;
   chart?: Array<{ label: string; value: number; benchmark?: string }>;
 }
@@ -48,7 +48,7 @@ export interface VolatilityIndex {
 
 export interface CashFlowBreakdown {
   operatingCashFlow: number;
-  freeCashFlow: number;
+  freeCashFlow: number | null;
   status: string;
 }
 
@@ -315,9 +315,9 @@ export interface FundamentalMetrics {
   dividendYield: number;
   revenueTTM: number;
   netIncomeTTM: number;
-  grossMargin: number;
+  grossMargin: number | null;
   operatingMargin: number;
-  freeCashFlowTTM: number;
+  freeCashFlowTTM: number | null;
   cashAndEquivalents: number;
   netDebt: number;
   currentRatio: number | null;
@@ -385,6 +385,7 @@ export interface FundamentalMetrics {
 export interface MacroBackdrop {
   us10YearYield: number;
   us2YearYield: number;
+  treasuryBill13WeekYield?: number;
   fedFundsRate: number;
   ecbPolicyRate: number;
   vixIndex: number;
@@ -392,6 +393,7 @@ export interface MacroBackdrop {
   cpiInflationRate: number;
   dxyDollarIndex: number;
   sectorImpactSummary: string;
+  isFallback?: boolean;
 }
 
 export interface SocialSentiment {
@@ -400,6 +402,7 @@ export interface SocialSentiment {
   bearishPercent: number;
   sentimentScore: number; // -1.0 to 1.0
   volumeChange24h: number; // percentage delta
+  socialDiscussionSummary?: string;
   dominantThemes: string[];
   sampleCatalysts: string[];
   sourcesAnalyzed: number;
@@ -488,10 +491,10 @@ export interface LLMAnalysisOutput {
   executiveSummaryData?: ExecutiveSummaryData;
   markdownBody: string;
   extractedFigures: {
-    peRatio?: number;
+    peRatio?: number | null;
     revenueTTM?: number;
     operatingMargin?: number;
-    freeCashFlow?: number;
+    freeCashFlow?: number | null;
     netDebt?: number;
     movePercent?: number;
   };
@@ -622,8 +625,8 @@ export interface FinalReportFrontmatter {
   // Volatility & Cash Flow
   volatilityIndex: VolatilityIndex;
   cashFlow: CashFlowBreakdown;
-  freeCashFlow?: number;
-  operatingCashFlow?: number;
+  freeCashFlow?: number | null;
+  operatingCashFlow?: number | null;
 
   // Qualitative Analysis
   managementQuality: ManagementQuality;

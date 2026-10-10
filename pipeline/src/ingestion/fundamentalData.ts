@@ -156,12 +156,10 @@ export class FundamentalDataIngestor {
     const netIncomeTTM = secData?.latestNetIncomeTTM ?? 0;
     const operatingCashFlow = secData?.latestOperatingCashFlowTTM ?? 0;
     const capexTTM: number | undefined = secData?.capitalExpendituresTTM;
-    // FCF = OCF − CapEx when both are filed; otherwise retain the legacy conservative proxy
-    const freeCashFlowTTM = operatingCashFlow !== 0 && capexTTM !== undefined
+    // Strict Zero-Synthesis Policy: FCF = OCF − CapEx only when both are filed in official XBRL; otherwise null
+    const freeCashFlowTTM: number | null = (operatingCashFlow !== 0 && capexTTM !== undefined && capexTTM !== null)
       ? operatingCashFlow - Math.abs(capexTTM)
-      : operatingCashFlow !== 0
-        ? operatingCashFlow * 0.8
-        : (netIncomeTTM > 0 ? netIncomeTTM * 0.7 : (netIncomeTTM < 0 ? netIncomeTTM * 1.1 : 0));
+      : null;
     const totalDebt = secData?.totalDebt ?? 0;
     const cashAndEquivalents = secData?.cashAndEquivalents ?? 0;
     const netDebt = totalDebt - cashAndEquivalents;
@@ -173,9 +171,10 @@ export class FundamentalDataIngestor {
     const ebitdaTTM = operatingIncomeTTM !== null && depreciationTTM !== null
       ? operatingIncomeTTM + Math.abs(depreciationTTM)
       : null;
-    const grossMargin = (revenueTTM > 0 && netIncomeTTM)
-      ? Math.min(100, Math.max(0, parseFloat((((revenueTTM - Math.max(0, revenueTTM - netIncomeTTM) * 0.7) / revenueTTM) * 100).toFixed(1))))
-      : 0;
+    const grossProfitTTM: number | undefined = secData?.grossProfitTTM;
+    const grossMargin: number | null = (revenueTTM > 0 && grossProfitTTM !== undefined && grossProfitTTM !== null)
+      ? parseFloat(((grossProfitTTM / revenueTTM) * 100).toFixed(1))
+      : null;
 
     // 8 discrete fiscal quarters of reported EPS from 10-Q / 10-K XBRL
     const quarterlyEPSPast2Years: QuarterlyEPS[] = (secData?.quarterlyEPS ?? []).map((q: any) => ({
@@ -310,9 +309,9 @@ export class FundamentalDataIngestor {
     dividendYield: number;
     revenueTTM: number;
     netIncomeTTM: number;
-    grossMargin: number;
+    grossMargin: number | null;
     operatingMargin: number;
-    freeCashFlowTTM: number;
+    freeCashFlowTTM: number | null;
     operatingCashFlow?: number;
     totalDebt: number;
     cashAndEquivalents: number;
@@ -422,7 +421,7 @@ export class FundamentalDataIngestor {
     const priceToBook: ValuationMetricComparison = {
       current: currentPB,
       industryAverage: sectorBenchPB,
-      historicalAverage5Y: currentPB ? parseFloat((currentPB * 1.05).toFixed(2)) : bench.pb,
+      historicalAverage5Y: null,
       chartData: []
     };
 
@@ -431,7 +430,7 @@ export class FundamentalDataIngestor {
     const priceToEarnings: ValuationMetricComparison = {
       current: currentPE,
       industryAverage: sectorBenchPE,
-      historicalAverage5Y: currentPE ? parseFloat((currentPE * 1.05).toFixed(1)) : bench.pe,
+      historicalAverage5Y: null,
       chartData: []
     };
 
@@ -500,10 +499,10 @@ export class FundamentalDataIngestor {
     if (!isPenny) {
       // 1. Intangible Assets: Patents, brands, regulatory licenses
       if (['Technology', 'Healthcare', 'Consumer Defensive'].includes(normSector)) {
-        if (raw.grossMargin > 55 || (computedRoic && computedRoic > 15)) {
+        if ((raw.grossMargin !== null && raw.grossMargin > 55) || (computedRoic && computedRoic > 15)) {
           intangiblesRating = 'Wide';
-          intangiblesDesc = `Proprietary intellectual property, protected clinical pipelines, or brand equity enabling sustained premium pricing (Gross Margin: ${raw.grossMargin}%).`;
-        } else if (raw.grossMargin > 40) {
+          intangiblesDesc = `Proprietary intellectual property, protected clinical pipelines, or brand equity enabling sustained premium pricing${raw.grossMargin !== null ? ` (Gross Margin: ${raw.grossMargin}%)` : ''}.`;
+        } else if (raw.grossMargin !== null && raw.grossMargin > 40) {
           intangiblesRating = 'Narrow';
           intangiblesDesc = 'Recognized commercial brand or defensible specialized domain know-how providing steady market share.';
         }
@@ -544,7 +543,7 @@ export class FundamentalDataIngestor {
 
       // 4. Cost Advantage
       if (['Energy', 'Utilities', 'Basic Materials', 'Consumer Defensive', 'Industrials'].includes(normSector)) {
-        if (raw.operatingMargin > 18 || (raw.revenueTTM > 10_000_000_000 && raw.grossMargin > 30)) {
+        if (raw.operatingMargin > 18 || (raw.revenueTTM > 10_000_000_000 && raw.grossMargin !== null && raw.grossMargin > 30)) {
           costAdvantageRating = 'Wide';
           costAdvantageDesc = 'Structural unit cost leadership via favorable baseload asset location, proprietary resource access, or massive scale.';
         } else if (raw.operatingMargin > 10) {
@@ -644,16 +643,19 @@ export class FundamentalDataIngestor {
       ? clamp(raw.revenueGrowthYoY / 100, 0.03, 0.14)
       : 0.05;
 
-    // Normalize FCFF to prevent one-off CapEx lumpiness from distorting fair value
-    const normalizedFcf = operatingCashFlow > 0
-      ? Math.max(
-        raw.freeCashFlowTTM > 0 ? raw.freeCashFlowTTM : operatingCashFlow * 0.35,
-        operatingCashFlow * 0.35,
-        (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0)
-      )
-      : (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0);
+    // When CapEx is unfiled, DCF is inapplicable (Strict Zero-Synthesis)
+    // When CapEx is filed, normalize FCFF to prevent one-off CapEx lumpiness from distorting multi-decade fair value
+    const normalizedFcf = raw.freeCashFlowTTM !== null
+      ? (operatingCashFlow > 0
+        ? Math.max(
+          raw.freeCashFlowTTM,
+          operatingCashFlow * 0.35,
+          (raw.netIncomeTTM > 0 ? raw.netIncomeTTM * 0.75 : 0)
+        )
+        : (raw.freeCashFlowTTM > 0 ? raw.freeCashFlowTTM : 0))
+      : 0;
 
-    if (normalizedFcf > 0 && shares > 0 && dcfDiscountRate > terminalGrowth) {
+    if (raw.freeCashFlowTTM !== null && normalizedFcf > 0 && shares > 0 && dcfDiscountRate > terminalGrowth) {
       // Stage 1: Explicit 5-year forecast
       let currentFcf = normalizedFcf;
       for (let t = 1; t <= 5; t++) {
@@ -903,7 +905,9 @@ export class FundamentalDataIngestor {
         upside: dcfUpside,
         upsidePercent: dcfUpside,
         modelName: `3-Stage Discounted Cash Flow (Moat Fade: ${fadeYears}Y, Ke/WACC: ${pct1(dcfDiscountRate)}%)`,
-        status: dcfFair !== null ? 'Calculated' : 'Inapplicable: Non-positive normalized free cash flow',
+        status: dcfFair !== null
+          ? 'Calculated'
+          : (raw.freeCashFlowTTM === null ? 'Inapplicable: CapEx unfiled' : 'Inapplicable: Non-positive normalized free cash flow'),
         normalizedFcf: normalizedFcf > 0 ? parseFloat(normalizedFcf.toFixed(2)) : undefined,
         stage1Pv: stage1Pv > 0 ? parseFloat(stage1Pv.toFixed(2)) : undefined,
         stage2Pv: stage2Pv > 0 ? parseFloat(stage2Pv.toFixed(2)) : undefined,

@@ -64,6 +64,7 @@ export interface SecFinancialDisclosures {
   latestOperatingIncomeTTM?: number;
   latestOperatingCashFlowTTM?: number;
   capitalExpendituresTTM?: number;
+  grossProfitTTM?: number;
   depreciationAmortizationTTM?: number;
   /** Period end and derivation method of the TTM flow figures. */
   ttmPeriodEnd?: string;
@@ -482,6 +483,10 @@ export class WebScraper {
         'PaymentsToAcquireProductiveAssets',
         'PaymentsForCapitalImprovements'
       ]);
+      const grossProfitTTM = ttm([
+        'GrossProfit',
+        'GrossMargin'
+      ]);
       const depreciationTTM = ttm([
         'DepreciationDepletionAndAmortization',
         'DepreciationAndAmortization',
@@ -581,6 +586,7 @@ export class WebScraper {
         latestOperatingIncomeTTM: operatingIncomeTTM?.value,
         latestOperatingCashFlowTTM: operatingCashFlowTTM?.value,
         capitalExpendituresTTM: capexTTM?.value,
+        grossProfitTTM: grossProfitTTM?.value,
         depreciationAmortizationTTM: depreciationTTM?.value,
         ttmPeriodEnd: revenueTTM?.periodEnd ?? netIncomeTTM?.periodEnd,
         ttmMethod: revenueTTM?.method ?? netIncomeTTM?.method,

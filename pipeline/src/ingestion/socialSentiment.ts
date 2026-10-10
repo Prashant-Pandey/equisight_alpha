@@ -517,8 +517,11 @@ Return STRICT JSON ONLY:
       secFilingSummary = `SEC EDGAR 10-K (CIK ${secDisclosures.cik}, FY${secDisclosures.fiscalYear || ''}): Official Revenue $${(secDisclosures.latestRevenueTTM / 1e9).toFixed(2)}B${secDisclosures.latest10KFilingDate ? ` filed ${secDisclosures.latest10KFilingDate}` : ''}`;
     }
 
-    // Actual volume of tracked social messages (0 if historical tracking delta not recorded)
-    const volumeChange24h = stockTwits.totalMessages > 0 ? parseFloat((stockTwits.totalMessages * 5.0).toFixed(1)) : 0;
+    // Authentic volume of tracked social messages in session (0 if 24h baseline delta is not recorded)
+    const volumeChange24h = 0;
+    const socialDiscussionSummary = totalSources > 0
+      ? `Tracked ${stockTwits.totalMessages} StockTwits posts and ${redditPosts.length} Reddit threads in session`
+      : 'No active social discussions tracked in session';
 
     // Option Gamma Imbalance & Free Float Concentration factors
     const optionGammaImbalance: OptionGammaImbalance = moverContext?.optionGammaImbalance
@@ -544,8 +547,8 @@ Return STRICT JSON ONLY:
     const isPenny = moverContext?.isPennyStock || (moverContext?.price !== undefined && moverContext.price < 5.0);
     if (isPenny) inflationScore += 25;
 
-    if (volumeChange24h > 180) inflationScore += 20;
-    else if (volumeChange24h > 100) inflationScore += 10;
+    if (stockTwits.totalMessages > 35) inflationScore += 20;
+    else if (stockTwits.totalMessages > 20) inflationScore += 10;
 
     const driverLower = majorPriceDriver.toLowerCase();
     if (driverLower.includes('short squeeze') || driverLower.includes('hype')) inflationScore += 30;
@@ -599,6 +602,7 @@ Return STRICT JSON ONLY:
       bearishPercent: parseFloat(bearishPercent.toFixed(1)),
       sentimentScore: parseFloat(score.toFixed(2)),
       volumeChange24h,
+      socialDiscussionSummary,
       dominantThemes: Array.from(themes).slice(0, 5),
       sampleCatalysts,
       sourcesAnalyzed: totalSources,

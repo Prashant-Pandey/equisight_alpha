@@ -345,7 +345,7 @@ export class LLMSynthesisAgent {
     const expectationsVsReality = s.catalystSynthesis ||
       `${f.companyName}'s session movement of ${moveStr} aligned with market participants actively re-pricing the security following ${majorPriceDriver}. Institutional order flow and session volume velocity demonstrated focused capital repositioning, testing upper liquidity thresholds against prevailing market multiples.`;
 
-    const sessionDynamics = `In today's trading session, **${f.companyName} (${cleanTicker})** experienced notable price volatility on the **${venue}**, closing with a session movement of **${moveStr}** to trade at **$${mover.price.toFixed(2)} ${mover.currency}**. Total trading volume recorded **${mover.volume.toLocaleString()} shares**, representing a **${volumeAnomalyRatio}x divergence** against the 90-day historical average volume of ${mover.avgVolume.toLocaleString()} shares. Social discussion velocity around $${cleanTicker} shifted by **+${s.volumeChange24h}%**, with the primary price driver identified as **${majorPriceDriver}**. The algorithmic artificial inflation risk profile is appraised as **${riskLevel}**${isInflated ? ' (Elevated Retail Momentum / Liquidity Dislocation Detected)' : ' (Verified Organic Market Flow)'}.`;
+    const sessionDynamics = `In today's trading session, **${f.companyName} (${cleanTicker})** experienced notable price volatility on the **${venue}**, closing with a session movement of **${moveStr}** to trade at **$${mover.price.toFixed(2)} ${mover.currency}**. Total trading volume recorded **${mover.volume.toLocaleString()} shares**, representing a **${volumeAnomalyRatio}x divergence** against the 90-day historical average volume of ${mover.avgVolume.toLocaleString()} shares. Social discussion monitoring recorded **${s.sourcesAnalyzed} verified sources** (${s.socialDiscussionSummary || `Tracked ${s.sourcesAnalyzed} posts in session`}${s.volumeChange24h > 0 ? `, 24h delta: +${s.volumeChange24h}%` : ''}), with the primary price driver identified as **${majorPriceDriver}**. The algorithmic artificial inflation risk profile is appraised as **${riskLevel}**${isInflated ? ' (Elevated Retail Momentum / Liquidity Dislocation Detected)' : ' (Verified Organic Market Flow)'}.`;
 
     const macroeconomicContext = `Macroeconomic conditions exerted contextual influence, with benchmark US 10-Year Treasury Yields at ${macro.us10YearYield.toFixed(2)}% and the Cboe Volatility Index (VIX) at ${macro.vixIndex.toFixed(1)}, shaping the broad valuation multiple tolerance across ${f.sector} equities.`;
 
@@ -512,7 +512,7 @@ ${expectationsVsReality}
         ? f.priceToBook
         : null;
     const industryPB = (f as any).priceToBook?.industryAverage ?? (f as any).priceToBookComparison?.industryAverage ?? 2.5;
-    const hist5YPB = (f as any).priceToBook?.historicalAverage5Y ?? (f as any).priceToBookComparison?.historicalAverage5Y ?? 2.8;
+    const hist5YPB = (f as any).priceToBook?.historicalAverage5Y ?? (f as any).priceToBookComparison?.historicalAverage5Y ?? null;
 
     const priceToBookRatio = {
       current: currentPBVal,
@@ -521,13 +521,13 @@ ${expectationsVsReality}
       chart: currentPBVal !== null ? [
         { label: 'Current P/B', value: currentPBVal },
         { label: 'Industry Avg', value: industryPB },
-        { label: '5Y Historical Avg', value: hist5YPB }
+        ...(hist5YPB !== null ? [{ label: '5Y Historical Avg', value: hist5YPB }] : [])
       ] : []
     };
 
     const currentPEVal = f.peRatioTrailing ?? f.peRatioForward ?? (f as any).priceToEarnings?.current ?? null;
     const industryPE = (f as any).priceToEarnings?.industryAverage ?? (f as any).priceToEarningsComparison?.industryAverage ?? 22.0;
-    const hist5YPE = (f as any).priceToEarnings?.historicalAverage5Y ?? (f as any).priceToEarningsComparison?.historicalAverage5Y ?? 24.0;
+    const hist5YPE = (f as any).priceToEarnings?.historicalAverage5Y ?? (f as any).priceToEarningsComparison?.historicalAverage5Y ?? null;
 
     const priceToEarningsRatio = {
       current: currentPEVal,
@@ -536,7 +536,7 @@ ${expectationsVsReality}
       chart: currentPEVal !== null ? [
         { label: 'Current P/E', value: currentPEVal },
         { label: 'Industry Avg', value: industryPE },
-        { label: '5Y Historical Avg', value: hist5YPE }
+        ...(hist5YPE !== null ? [{ label: '5Y Historical Avg', value: hist5YPE }] : [])
       ] : []
     };
 
@@ -615,14 +615,14 @@ ${expectationsVsReality}
     });
 
     const volatilityIndex = {
-      value: +(f.beta ?? 1.15).toFixed(2),
-      rating: getVolatilityRating(undefined, f.beta ?? 1.15)
+      value: f.beta !== null && f.beta !== undefined ? +(f.beta).toFixed(2) : 1.0,
+      rating: getVolatilityRating(undefined, f.beta)
     };
 
     const cashFlow = {
-      operatingCashFlow: f.cashFlow?.operatingCashFlow ?? Math.round(f.freeCashFlowTTM * 1.2),
+      operatingCashFlow: f.cashFlow?.operatingCashFlow ?? 0,
       freeCashFlow: f.freeCashFlowTTM,
-      status: getCashFlowStatus({
+      status: f.cashFlow?.status ?? getCashFlowStatus({
         status: f.cashFlow?.status,
         freeCashFlow: f.freeCashFlowTTM,
         operatingCashFlow: f.cashFlow?.operatingCashFlow,
@@ -666,8 +666,8 @@ An evidence-based assessment of ${cleanTicker}'s capital structure reveals an en
 * **Short vs Long-Term Debt Ratio:** \`${shortVsLongTermRatio}\`
 * **Recent Changes in Debt:** ${recentChangesInDebt}
 * **Solvency & Credit Risk Audit:** ${debtRisks}
-* **Debt-to-Equity Ratio:** ${debtToEquityRatio ? debtToEquityRatio.toFixed(2) : '0.45'}
-* **Current Ratio:** ${f.currentRatio ? f.currentRatio.toFixed(2) : '1.75'} (Liquid assets versus short-term current liabilities)
+* **Debt-to-Equity Ratio:** ${debtToEquityRatio !== null && debtToEquityRatio !== undefined ? debtToEquityRatio.toFixed(2) : 'Not Disclosed'}
+* **Current Ratio:** ${f.currentRatio !== null && f.currentRatio !== undefined ? `${f.currentRatio.toFixed(2)}x` : 'Not Disclosed'} (Liquid assets versus short-term current liabilities)
 
 ---
 
@@ -676,12 +676,12 @@ An evidence-based assessment of ${cleanTicker}'s capital structure reveals an en
 ${f.businessSummary ? `### Business Overview:\n${f.businessSummary}\n` : ''}${f.segmentRevenueBreakdown && f.segmentRevenueBreakdown.length > 0 ? `### 10-K Segment Revenue Breakdown:\n${f.segmentRevenueBreakdown.map(s => `* **${s.segment}**${s.revenue ? `: \`$${(s.revenue / 1e9).toFixed(2)} billion\`` : ''}`).join('\n')}\n` : ''}Top-line revenue across the trailing twelve months stands at **$${(f.revenueTTM / 1e9).toFixed(2)} billion**, yielding a consolidated net income of **$${(f.netIncomeTTM / 1e9).toFixed(2)} billion**.
 
 Operational efficiency metrics demonstrate:
-* **Gross Profit Margin:** \`${f.grossMargin.toFixed(1)}%\`
+* **Gross Profit Margin:** \`${f.grossMargin !== null && f.grossMargin !== undefined ? `${f.grossMargin.toFixed(1)}%` : 'Not Reported in SEC Summaries'}\`
 * **Operating Margin (EBIT):** \`${f.operatingMargin.toFixed(1)}%\`
 * **Return on Equity (ROE):** \`${(f.returnOnEquity ?? 0).toFixed(1)}%\`
 * **Operating Cash Flow:** \`$${(cashFlow.operatingCashFlow / 1e9).toFixed(2)} billion\`
-* **TTM Free Cash Flow:** \`$${(cashFlow.freeCashFlow / 1e9).toFixed(2)} billion\` (Status: *${cashFlow.status}*)
-* **Return on Invested Capital (ROIC):** \`${f.roic ? f.roic.toFixed(1) : '12.4'}%\`
+* **TTM Free Cash Flow:** \`${cashFlow.freeCashFlow !== null && cashFlow.freeCashFlow !== undefined ? `$${(cashFlow.freeCashFlow / 1e9).toFixed(2)} billion` : 'Not Reported in SEC Summaries (CapEx unfiled)'}\` (Status: *${cashFlow.status}*)
+* **Return on Invested Capital (ROIC):** \`${f.roic !== null && f.roic !== undefined ? `${f.roic.toFixed(1)}%` : 'Not Disclosed'}\`
 
 ### Trailing 8-Quarter EPS History:
 ${quarterlyEPSPast2Years.length > 0 ? `| Quarter | Diluted EPS | Benchmark Beat/Miss |
@@ -797,7 +797,7 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
    * **Cited References:** Consensus 8-Model Valuation Suite (${consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)} target` : 'qualitative fundamental assessment'}) and SEC Form 10-K reported balance sheet asset base.
    * **Deduction Chain:** Market price of $${mover.price.toFixed(2)} ${dcfIntrinsic !== null ? `trades relative to intrinsic DCF ($${dcfIntrinsic.toFixed(2)})` : 'reflects current risk-adjusted discount'} -> Potential margin of safety -> Multiple stabilization potential.
 2. **Operating Resilience & Margins:**
-   * **Cited References:** SEC Form 10-Q Operating Statement showing ${f.grossMargin.toFixed(1)}% gross margin and $${(cashFlow.freeCashFlow / 1e9).toFixed(2)}B Free Cash Flow.
+   * **Cited References:** SEC Form 10-Q Operating Statement showing ${f.grossMargin !== null && f.grossMargin !== undefined ? `${f.grossMargin.toFixed(1)}% gross margin` : 'reported operating margins'}${cashFlow.freeCashFlow !== null && cashFlow.freeCashFlow !== undefined ? ` and $${(cashFlow.freeCashFlow / 1e9).toFixed(2)}B Free Cash Flow` : ''}.
    * **Deduction Chain:** Positive operational cash generation -> Minimal reliance on dilutive capital raises -> Flexibility to fund organic pipeline and service short-term debt obligations.
 3. **Competitive Moat Protection:**
    * **Cited References:** Industry IP registries and commercial customer retention filings.
@@ -825,7 +825,7 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
       executiveSummaryData: execSummaryData,
       markdownBody: markdownBody.trim(),
       extractedFigures: {
-        peRatio: f.peRatioTrailing || f.peRatioForward || 22.0,
+        peRatio: f.peRatioTrailing || f.peRatioForward || 0,
         revenueTTM: f.revenueTTM,
         operatingMargin: f.operatingMargin,
         freeCashFlow: f.freeCashFlowTTM,
@@ -882,12 +882,12 @@ Global macroeconomic conditions exert meaningful influence over equity valuation
       socialHooks: {
         twitterThread: [
           `1/3 📊 $${cleanTicker} closed ${moveStr} at $${mover.price.toFixed(2)} on ${venue} (Vol: ${(mover.volume / 1e6).toFixed(1)}M). Fundamental breakdown: 🧵👇`,
-          `2/3 🔍 Multi-model valuation target stands at $${(consensusFairValue ?? 0).toFixed(2)} (${verdict}). TTM Revenue: $${(f.revenueTTM / 1e9).toFixed(1)}B with ${f.operatingMargin.toFixed(1)}% operating margin and $${(f.freeCashFlowTTM / 1e9).toFixed(1)}B FCF.`,
+          `2/3 🔍 Multi-model valuation target stands at $${(consensusFairValue ?? 0).toFixed(2)} (${verdict}). TTM Revenue: $${(f.revenueTTM / 1e9).toFixed(1)}B with ${f.operatingMargin.toFixed(1)}% operating margin${f.freeCashFlowTTM !== null && f.freeCashFlowTTM !== undefined ? ` and $${(f.freeCashFlowTTM / 1e9).toFixed(1)}B FCF` : ''}.`,
           `3/3 ⚖️ Balance sheet carries $${(((shortTermDebt ?? 0) / 1e6)).toFixed(0)}M in short-term debt vs $${(f.cashAndEquivalents / 1e9).toFixed(1)}B cash. Read the full deep dive: ${CONFIG.SITE_URL}/reports/${slug}`
         ],
         redditPost: {
           title: `[Deep Dive] $${cleanTicker}: Fundamental & Balance Sheet Breakdown Following Today's ${moveStr} Move`,
-          bodyMarkdown: `Hey r/stocks,\n\nFollowing today's ${moveStr} move in **${f.companyName} ($${cleanTicker})** on ${venue}, here is an evidence-based fundamental review:\n\n### Key Metrics\n- **Market Cap:** $${(f.marketCap / 1e9).toFixed(2)}B\n- **Classification:** ${classification}\n- **Consensus Fair Value:** $${(consensusFairValue ?? 0).toFixed(2)} (${verdict})\n- **Trailing P/E:** ${currentPEVal ? `${currentPEVal}x` : 'N/A'}\n- **TTM Revenue:** $${(f.revenueTTM / 1e9).toFixed(2)}B\n- **Operating Margin:** ${f.operatingMargin.toFixed(1)}%\n- **TTM Free Cash Flow:** $${(f.freeCashFlowTTM / 1e9).toFixed(2)}B\n- **Total Debt:** $${(totalDebt / 1e9).toFixed(2)}B (Short-Term: $${(((shortTermDebt ?? 0) / 1e6)).toFixed(1)}M)\n\nFull deep dive: ${CONFIG.SITE_URL}/reports/${slug}\n\n*Educational research only. Not financial advice.*`,
+          bodyMarkdown: `Hey r/stocks,\n\nFollowing today's ${moveStr} move in **${f.companyName} ($${cleanTicker})** on ${venue}, here is an evidence-based fundamental review:\n\n### Key Metrics\n- **Market Cap:** $${(f.marketCap / 1e9).toFixed(2)}B\n- **Classification:** ${classification}\n- **Consensus Fair Value:** $${(consensusFairValue ?? 0).toFixed(2)} (${verdict})\n- **Trailing P/E:** ${currentPEVal ? `${currentPEVal}x` : 'N/A'}\n- **TTM Revenue:** $${(f.revenueTTM / 1e9).toFixed(2)}B\n- **Operating Margin:** ${f.operatingMargin.toFixed(1)}%\n- **TTM Free Cash Flow:** ${f.freeCashFlowTTM !== null && f.freeCashFlowTTM !== undefined ? `$${(f.freeCashFlowTTM / 1e9).toFixed(2)}B` : 'Not Reported in SEC Summaries (CapEx unfiled)'}\n- **Total Debt:** $${(totalDebt / 1e9).toFixed(2)}B (Short-Term: $${(((shortTermDebt ?? 0) / 1e6)).toFixed(1)}M)\n\nFull deep dive: ${CONFIG.SITE_URL}/reports/${slug}\n\n*Educational research only. Not financial advice.*`,
           flair: 'DD'
         },
         telegramAlert: `🚨 **$${cleanTicker} Session Analysis**: ${f.companyName} shifted ${moveStr} to $${mover.price.toFixed(2)} on ${venue}. Consensus Fair Value: $${(consensusFairValue ?? 0).toFixed(2)} (${verdict}). Read report: ${CONFIG.SITE_URL}/reports/${slug}`
