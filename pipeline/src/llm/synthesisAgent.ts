@@ -7,6 +7,11 @@ import {
   buildExecutiveSummarySystemPrompt,
   buildExecutiveSummaryUserPrompt
 } from './prompts.js';
+import {
+  EXECUTIVE_SUMMARY_SCHEMA,
+  MAIN_REPORT_SCHEMA,
+  safeParseJson
+} from './schemas.js';
 import { factChecker } from './factChecker.js';
 import { buildTheses } from '../monetization/adInjector.js';
 import { formatPriceTimestamp } from '../../../src/utils/formatters.js';
@@ -61,8 +66,18 @@ export class LLMSynthesisAgent {
     // Execute TWO parallel LLM calls concurrently
     console.log(`[LLMSynthesisAgent] Launching PARALLEL LLM calls: [1] Full Report & [2] Executive Summary & Session Catalyst for $${mover.ticker}...`);
     const [mainOutput, execOutput] = await Promise.all([
-      this.executeLLMCall<LLMAnalysisOutput>(mainSystemPrompt, mainUserPrompt, `MainReport-${mover.ticker}`),
-      this.executeLLMCall<ExecutiveSummaryData>(execSystemPrompt, execUserPrompt, `ExecSummary-${mover.ticker}`)
+      this.executeLLMCall<LLMAnalysisOutput>(
+        mainSystemPrompt,
+        mainUserPrompt,
+        `MainReport-${mover.ticker}`,
+        MAIN_REPORT_SCHEMA
+      ),
+      this.executeLLMCall<ExecutiveSummaryData>(
+        execSystemPrompt,
+        execUserPrompt,
+        `ExecSummary-${mover.ticker}`,
+        EXECUTIVE_SUMMARY_SCHEMA
+      )
     ]);
 
     let rawOutput: LLMAnalysisOutput | null = mainOutput;
@@ -136,14 +151,15 @@ export class LLMSynthesisAgent {
   private async executeLLMCall<T>(
     systemPrompt: string,
     userPrompt: string,
-    callerTag = 'LLM'
+    callerTag = 'LLM',
+    jsonSchema?: object
   ): Promise<T | null> {
     let result: T | null = null;
 
     // Try Antigravity (agy) CLI if configured (100% free local host LLM runtime)
     if (CONFIG.LLM_PROVIDER === 'agy') {
       try {
-        result = await this.callAgy<T>(systemPrompt, userPrompt, callerTag);
+        result = await this.callAgy<T>(systemPrompt, userPrompt, callerTag, jsonSchema);
       } catch (err: any) {
         console.warn(`[LLMSynthesisAgent] agy CLI call failed for ${callerTag} (${err.message}). Attempting fallbacks...`);
       }
@@ -171,10 +187,15 @@ export class LLMSynthesisAgent {
   }
 
   /**
-   * Invokes the local Antigravity (agy) CLI runtime.
+   * Invokes the local Antigravity (agy) CLI runtime with optional native schema enforcement.
    */
-  private async callAgy<T>(systemPrompt: string, userPrompt: string, callerTag = 'agy'): Promise<T> {
-    const combinedPrompt = `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid, parseable JSON object adhering strictly to the schema provided. Do NOT wrap in markdown backticks (no \`\`\`json), no introductory notes, no conversational closing. Start your output with { and end with }.`;
+  private async callAgy<T>(
+    systemPrompt: string,
+    userPrompt: string,
+    callerTag = 'agy',
+    jsonSchema?: object
+  ): Promise<T> {
+    const combinedPrompt = `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid, parseable JSON object adhering strictly to the schema provided. Do NOT wrap in markdown backticks (no \`\`\`json), no introductory notes, no conversational closing. Start your output with { and end with }. Do not escape dollar signs (\$ -> $), single quotes (\' -> '), or markdown characters.`;
 
     const agyBin = CONFIG.AGY_PATH || 'agy';
     const args = [
@@ -182,12 +203,16 @@ export class LLMSynthesisAgent {
       combinedPrompt,
       '--dangerously-skip-permissions',
       '--output-format',
-      'text',
+      jsonSchema ? 'json' : 'text',
       '--model',
       CONFIG.AGY_MODEL || 'gemini-3.8-flash-high'
     ];
 
-    console.log(`[LLMSynthesisAgent] Invoking agy CLI (${callerTag}) with model ${CONFIG.AGY_MODEL || 'gemini-3.8-flash-high'}...`);
+    if (jsonSchema) {
+      args.push('--json-schema', JSON.stringify(jsonSchema));
+    }
+
+    console.log(`[LLMSynthesisAgent] Invoking agy CLI (${callerTag}) with model ${CONFIG.AGY_MODEL || 'gemini-3.8-flash-high'}${jsonSchema ? ' [Native Schema Enforced]' : ''}...`);
 
     const outputText = await new Promise<string>((resolve, reject) => {
       execFile(
@@ -206,13 +231,35 @@ export class LLMSynthesisAgent {
       );
     });
 
-    const jsonMatch = outputText.match(/\{[\s\S]*\}/);
+    // 1. If agy returned structured output envelope from --output-format json
+    if (jsonSchema) {
+      try {
+        const envelope = JSON.parse(outputText);
+        if (envelope && envelope.structured_output && typeof envelope.structured_output === 'object') {
+          return envelope.structured_output as T;
+        }
+      } catch {
+        // Fall back to resilient text extraction below
+      }
+    }
+
+    // 2. Extract JSON payload and use safeParseJson with self-healing invalid escapes
+    let targetText = outputText;
+    try {
+      const envelope = JSON.parse(outputText);
+      if (envelope && typeof envelope.response === 'string') {
+        targetText = envelope.response;
+      }
+    } catch {
+      // outputText is raw text
+    }
+
+    const jsonMatch = targetText.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       throw new Error(`Could not find JSON payload in agy output (${callerTag})`);
     }
 
-    const parsed = JSON.parse(jsonMatch[0]) as T;
-    return parsed;
+    return safeParseJson<T>(jsonMatch[0]);
   }
 
   /**
@@ -246,7 +293,7 @@ export class LLMSynthesisAgent {
     const content = data?.choices?.[0]?.message?.content;
     if (!content) throw new Error(`Empty response from OpenAI (${callerTag})`);
 
-    return JSON.parse(content) as T;
+    return safeParseJson<T>(content);
   }
 
   /**
@@ -281,7 +328,7 @@ export class LLMSynthesisAgent {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error(`Could not find JSON payload in Anthropic response (${callerTag})`);
 
-    return JSON.parse(jsonMatch[0]) as T;
+    return safeParseJson<T>(jsonMatch[0]);
   }
 
   /**

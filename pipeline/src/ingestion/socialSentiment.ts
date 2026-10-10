@@ -1,6 +1,7 @@
 import { execFile } from 'child_process';
 import { webScraper, type StockIntelligenceScrapeResult } from './webScraper.js';
 import { CONFIG } from '../config.js';
+import { TIER1_SENTIMENT_SCHEMA, safeParseJson } from '../llm/schemas.js';
 import type { SocialSentiment, MarketMover, CatalystAlignment, FilteredHeadline, OptionGammaImbalance, FreeFloatConcentration, FundamentalMetrics } from '../types.js';
 
 export interface Tier1CatalystAnalysis {
@@ -76,12 +77,14 @@ Return STRICT JSON ONLY:
       '--effort',
       'low',
       '--output-format',
-      'text',
+      'json',
+      '--json-schema',
+      JSON.stringify(TIER1_SENTIMENT_SCHEMA),
       '--dangerously-skip-permissions'
     ];
 
     try {
-      console.log(`[SocialSentimentIngestor] Invoking Tier 1 agy (${CONFIG.TIER1_LLM_MODEL || 'gemini-3.6-flash-low'}) for $${cleanTicker} catalysts...`);
+      console.log(`[SocialSentimentIngestor] Invoking Tier 1 agy (${CONFIG.TIER1_LLM_MODEL || 'gemini-3.6-flash-low'}) [Native Schema Enforced] for $${cleanTicker} catalysts...`);
       const outputText = await new Promise<string>((resolve, reject) => {
         execFile(
           agyBin,
@@ -99,12 +102,26 @@ Return STRICT JSON ONLY:
         );
       });
 
-      const jsonMatch = outputText.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) {
-        throw new Error('Could not find JSON payload in agy Tier 1 output');
+      let parsed: any = null;
+      try {
+        const envelope = JSON.parse(outputText);
+        if (envelope && envelope.structured_output && typeof envelope.structured_output === 'object') {
+          parsed = envelope.structured_output;
+        } else if (envelope && typeof envelope.response === 'string') {
+          const match = envelope.response.match(/\{[\s\S]*\}/);
+          parsed = safeParseJson(match ? match[0] : envelope.response);
+        }
+      } catch {
+        // Fall back to resilient text extraction
       }
 
-      const parsed = JSON.parse(jsonMatch[0]);
+      if (!parsed) {
+        const jsonMatch = outputText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+          throw new Error('Could not find JSON payload in agy Tier 1 output');
+        }
+        parsed = safeParseJson(jsonMatch[0]);
+      }
 
       // Validate alignment enum
       const validAlignments: CatalystAlignment[] = [
@@ -131,9 +148,9 @@ Return STRICT JSON ONLY:
         }))
         .filter((h: FilteredHeadline) => h.relevance >= 6);
 
-      const dominantThemes: string[] = Array.isArray(parsed.dominantThemes)
+      const dominantThemes: string[] = (Array.isArray(parsed.dominantThemes) && parsed.dominantThemes.length > 0)
         ? parsed.dominantThemes.map((t: any) => String(t))
-        : [];
+        : (parsed.majorPriceDriver ? [String(parsed.majorPriceDriver)] : ['Corporate Disclosures', 'Market Flow']);
 
       const majorPriceDriver: string = typeof parsed.majorPriceDriver === 'string' && parsed.majorPriceDriver.trim().length > 0
         ? parsed.majorPriceDriver.trim()

@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "ticker": "FSLY",
+    "companyName": "Fastly, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-10T19:55:05.739Z",
+    "category": "gainer",
+    "movePercent": 15.8561,
+    "slug": "fsly-gain-16-percent-fundamental-analysis"
+  }
+]
