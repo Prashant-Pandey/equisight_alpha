@@ -1,0 +1,56 @@
+import type { SegmentBreakdownItem, QuarterlyEPS } from '../../types.js';
+
+export interface RawFundamentalInput {
+  ticker: string;
+  companyName: string;
+  sector: string;
+  industry: string;
+  description: string;
+  businessSummary?: string;
+  segmentRevenueBreakdown?: SegmentBreakdownItem[];
+  peerTickers?: string[];
+  peerData?: Record<string, any>;
+  etfData?: { price?: number; trailingPE?: number; forwardPE?: number };
+  marketCap: number;
+  peRatioTrailing: number | null;
+  peRatioForward: number | null;
+  pegRatio: number | null;
+  rawPB: number | null;
+  evToEbitda: number | null;
+  dividendYield: number;
+  revenueTTM: number;
+  netIncomeTTM: number;
+  grossMargin: number | null;
+  operatingMargin: number;
+  freeCashFlowTTM: number | null;
+  operatingCashFlow?: number;
+  totalDebt: number;
+  cashAndEquivalents: number;
+  netDebt: number;
+  debtToEquity: number | null;
+  currentRatio: number | null;
+  roic: number | null;
+  beta: number | null;
+  fiftyTwoWeekHigh: number;
+  fiftyTwoWeekLow: number;
+  price?: number;
+  sharesOutstanding?: number;
+  currentTTM_EPS?: number;
+  bookValuePerShare?: number | null;
+  recentEarningsDate?: string;
+  earningsSurprisePercent?: number | null;
+  shortTermDebt?: number | null;
+  longTermDebt?: number | null;
+  shortVsLongTermRatio?: number | string;
+  recentChangesInDebt?: string;
+  debtRisks?: string;
+  priorYearTotalDebt?: number | null;
+  quarterlyEPSPast2Years?: QuarterlyEPS[];
+  operatingIncomeTTM?: number | null;
+  ebitdaTTM?: number | null;
+  depreciationTTM?: number | null;
+  stockholdersEquity?: number | null;
+  revenueGrowthYoY?: number | null;
+  /** 10Y Treasury yield in percent (e.g. 4.25). */
+  riskFreeRate?: number;
+}
