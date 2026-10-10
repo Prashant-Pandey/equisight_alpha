@@ -168,7 +168,7 @@ export class LLMSynthesisAgent {
     // Try OpenAI if configured
     if (!result && CONFIG.OPENAI_API_KEY && CONFIG.LLM_PROVIDER === 'openai') {
       try {
-        result = await this.callOpenAI<T>(systemPrompt, userPrompt, callerTag);
+        result = await this.callOpenAI<T>(systemPrompt, userPrompt, callerTag, jsonSchema);
       } catch (err: any) {
         console.warn(`[LLMSynthesisAgent] OpenAI call failed for ${callerTag} (${err.message}). Attempting fallbacks...`);
       }
@@ -195,7 +195,9 @@ export class LLMSynthesisAgent {
     callerTag = 'agy',
     jsonSchema?: object
   ): Promise<T> {
-    const combinedPrompt = `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid, parseable JSON object adhering strictly to the schema provided. Do NOT wrap in markdown backticks (no \`\`\`json), no introductory notes, no conversational closing. Start your output with { and end with }. Do not escape dollar signs (\$ -> $), single quotes (\' -> '), or markdown characters.`;
+    const combinedPrompt = jsonSchema
+      ? `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL INSTRUCTION: Output structured JSON conforming strictly to the enforced schema.`
+      : `${systemPrompt}\n\n${userPrompt}\n\nCRITICAL INSTRUCTION: Respond ONLY with a valid, parseable JSON object adhering strictly to the schema provided. Do NOT wrap in markdown backticks (no \`\`\`json), no introductory notes, no conversational closing. Start your output with { and end with }. Do not escape dollar signs (\$ -> $), single quotes (\' -> '), or markdown characters.`;
 
     const agyBin = CONFIG.AGY_PATH || 'agy';
     const args = [
@@ -265,7 +267,12 @@ export class LLMSynthesisAgent {
   /**
    * OpenAI API Invocation with JSON schema adherence.
    */
-  private async callOpenAI<T>(systemPrompt: string, userPrompt: string, callerTag = 'OpenAI'): Promise<T> {
+  private async callOpenAI<T>(
+    systemPrompt: string,
+    userPrompt: string,
+    callerTag = 'OpenAI',
+    jsonSchema?: object
+  ): Promise<T> {
     const url = 'https://api.openai.com/v1/chat/completions';
     const res = await fetchWithRetry(url, {
       method: 'POST',
@@ -279,7 +286,15 @@ export class LLMSynthesisAgent {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        response_format: { type: 'json_object' },
+        response_format: jsonSchema
+          ? {
+              type: 'json_schema',
+              json_schema: {
+                name: callerTag.replace(/[^a-zA-Z0-9_-]/g, '_'),
+                schema: jsonSchema
+              }
+            }
+          : { type: 'json_object' },
         temperature: 0.2
       })
     });

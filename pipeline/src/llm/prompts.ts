@@ -261,47 +261,7 @@ ${sentiment.recentHeadlines && sentiment.recentHeadlines.length > 0 ? `Latest Fi
 ${sentiment.sampleCatalysts && sentiment.sampleCatalysts.length > 0 ? `Community Discussion Samples:\n${sentiment.sampleCatalysts.map((c) => `- ${c}`).join('\n')}` : ''}
 ${sentiment.secFilingSummary ? `SEC EDGAR Regulatory Filing: ${sentiment.secFilingSummary}` : ''}
 
-Please format your response strictly as JSON with this schema:
-{
-  "title": "string",
-  "seoDescription": "string (150-160 chars)",
-  "slug": "string (lowercase url slug, e.g. 'nvda-earnings-surge-valuation-analysis')",
-  "primaryKeywords": ["keyword 1", "keyword 2", "keyword 3"],
-  "secondaryKeywords": ["keyword 4", "keyword 5"],
-  "catalystSummary": "string (concise 2-sentence summary of why it moved)",
-  "catalystAlignment": "${sentiment.catalystAlignment || 'ALIGNED'}",
-  "catalystSynthesis": "string (explicitly discuss market expectations vs. reality and catalyst divergence)",
-  "markdownBody": "string (the complete markdown report with headings ##, markdown tables, and evidence)",
-  "extractedFigures": {
-    "peRatio": ${fundamentals.peRatioTrailing ?? fundamentals.peRatioForward ?? 0},
-    "revenueTTM": ${fundamentals.revenueTTM},
-    "operatingMargin": ${fundamentals.operatingMargin},
-    "freeCashFlow": ${fundamentals.freeCashFlowTTM !== null ? fundamentals.freeCashFlowTTM : 'null'},
-    "netDebt": ${fundamentals.netDebt},
-    "movePercent": ${mover.changePercent}
-  },
-  "theses": {
-    "bull": [
-      { "point": "string", "sources": [{ "name": "string", "url": "https://..." }], "deductionChain": "string" }
-    ],
-    "bear": [
-      { "point": "string", "sources": [{ "name": "string", "url": "https://..." }], "deductionChain": "string" }
-    ]
-  },
-  "socialHooks": {
-    "twitterThread": [
-      "Tweet 1 (hook with ticker $${mover.ticker}, move, venue, and core finding)...",
-      "Tweet 2 (fundamental metric breakdown with P/E and FCF)...",
-      "Tweet 3 (macro context & valuation asymmetry, ending with link placeholder)..."
-    ],
-    "redditPost": {
-      "title": "[Deep Dive] $${mover.ticker}: Fundamental Breakdown Following Today's ${mover.changePercent.toFixed(1)}% Move",
-      "bodyMarkdown": "Comprehensive reddit markdown analysis with disclaimer...",
-      "flair": "DD / Fundamental"
-    },
-    "telegramAlert": "🚨 **$${mover.ticker} Alert**: ${mover.name} moved ${mover.changePercent > 0 ? '+' : ''}${mover.changePercent.toFixed(1)}% today on ${mover.moneyMarketTradingVenue}. Key fundamental breakdown: ..."
-  }
-}`;
+Synthesize all fundamental, valuation, macro, and catalyst intelligence into the structured research report schema.`;
 }
 
 export function buildExecutiveSummarySystemPrompt(): string {
@@ -334,21 +294,7 @@ CORE OBJECTIVES FOR THIS EXECUTIVE SUMMARY & SESSION CATALYST:
      * The standard Key Session Metric markdown table.
 
 OUTPUT FORMAT:
-You MUST respond with valid, parseable JSON conforming strictly to this schema:
-{
-  "catalystHeadline": "string (crisp 1-sentence headline of the driver)",
-  "catalystCategory": "string",
-  "expectationsVsReality": "string (2-3 paragraphs analyzing the expectations vs reality gap)",
-  "sessionDynamics": "string (narrative explaining price action, volume divergence, and venue characteristics)",
-  "macroeconomicContext": "string (how macro rates, VIX, or sector factors influenced the session)",
-  "fundamentalImpact": "string (how the catalyst alters or confirms the company's fundamental trajectory)",
-  "keyTakeaways": [
-    "Takeaway 1...",
-    "Takeaway 2...",
-    "Takeaway 3..."
-  ],
-  "formattedMarkdown": "string (The complete markdown section starting with '## Executive Summary & Session Catalyst')"
-}`;
+Synthesize the analysis and output structured JSON adhering strictly to the enforced schema.`;
 }
 
 export function buildExecutiveSummaryUserPrompt(

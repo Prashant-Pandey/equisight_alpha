@@ -56,17 +56,7 @@ TASK:
    - NOISE_SPECULATION: Move driven by retail momentum or micro-cap liquidity noise
 4. Determine the primary price driver in 1 concise phrase.
 
-Return STRICT JSON ONLY:
-{
-  "relevantHeadlines": [
-    { "title": "string", "source": "string", "relevance": 9, "headlineSentiment": "Bullish|Bearish|Neutral" }
-  ],
-  "dominantThemes": ["Financial Disclosures", "Wall Street Revisions"],
-  "majorPriceDriver": "string",
-  "alignment": "ALIGNED|DIVERGENT_SELL_THE_NEWS|DIVERGENT_RELIEF_RALLY|MACRO_DOMINATED|NOISE_SPECULATION",
-  "catalystSynthesis": "string (1-2 sentences explaining why the market reacted this way relative to expectations)",
-  "overallMarketSentimentScore": -1.0 to 1.0
-}`;
+Return STRICT JSON ONLY adhering to the catalyst analysis schema.`;
 
     const agyBin = CONFIG.AGY_PATH || 'agy';
     const args = [
