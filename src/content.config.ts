@@ -185,8 +185,11 @@ const reportsCollection = defineCollection({
     moatSources: z.any().optional(),
     competitorBenchmarking: z.any().optional(),
     businessSummary: z.string().optional(),
-    segmentRevenueBreakdown: z.array(z.any()).optional(),
-    sectorDynamics: z.any().optional()
+    // Institutional Equity Selection Archetypes
+    archetype: z.enum(['moat', 'pead', 'contrarian', 'quant']).nullable().optional(),
+    archetypeScore: z.number().nullable().optional(),
+    archetypeRank: z.number().nullable().optional(),
+    archetypeThesis: z.string().nullable().optional()
   }).passthrough()
 });
 
