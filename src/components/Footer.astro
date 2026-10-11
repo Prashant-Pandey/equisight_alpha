@@ -3,62 +3,69 @@ import ComplianceDisclaimer from './ComplianceDisclaimer.astro';
 import { path } from '../utils/paths';
 ---
 
-<footer class="bg-slate-950 border-t border-slate-800 text-slate-400 text-xs">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<footer class="bg-[#121212] border-t border-[#2e2e2e] text-[#8e8e8e] text-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Mandatory Legal Exemption Box -->
     <ComplianceDisclaimer variant="full" />
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 my-10 pt-8 border-t border-slate-800/80">
-      <div>
-        <div class="flex items-center gap-2 mb-3">
-          <div class="w-6 h-6 rounded bg-emerald-500 flex items-center justify-center text-slate-950 font-bold text-xs">E</div>
-          <span class="text-sm font-bold text-white">EquiSight Alpha</span>
+    <!-- 12-Column Utilitarian Directory Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 my-6 pt-6 border-t border-[#222222]">
+      <!-- System Architecture Info (4 cols) -->
+      <div class="md:col-span-4 space-y-2">
+        <div class="flex items-center gap-2">
+          <span class="w-5 h-5 bg-[#0055ff] text-white flex items-center justify-center font-mono font-bold text-xs">E</span>
+          <span class="font-mono font-bold text-white tracking-tight uppercase">EquiSight Alpha</span>
         </div>
-        <p class="text-[11px] text-slate-400 leading-relaxed">
-          Quantitative equity intelligence and fundamental research publication. Publishing 10 evidence-based deep dives daily across US and European exchanges.
+        <p class="text-[11px] text-[#8e8e8e] leading-relaxed">
+          Autonomous equity intelligence terminal. Systematic algorithmic pipeline indexing valuation multiples, DCF consensus models, and balance sheet solvency checks across US & European exchanges.
         </p>
+        <div class="font-mono text-[10px] text-[#666666]">
+          SPEC: WCAG 2.2 AA · 12-COL MODULAR GRID · ZERO-DECORATION
+        </div>
       </div>
 
-      <div>
-        <h4 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">Research Streams</h4>
-        <ul class="space-y-2 text-[11px]">
-          <li><a href={path('/reports')} class="hover:text-emerald-400 transition-colors">Daily Top 5 Gainers</a></li>
-          <li><a href={path('/reports')} class="hover:text-emerald-400 transition-colors">Daily Top 5 Pullbacks</a></li>
-          <li><a href={path('/reports')} class="hover:text-emerald-400 transition-colors">European Equities Coverage</a></li>
-          <li><a href={path('/reports')} class="hover:text-emerald-400 transition-colors">US Large-Cap Multiples</a></li>
+      <!-- Navigation & Archetypes (3 cols) -->
+      <div class="md:col-span-3">
+        <h4 class="text-[11px] font-mono font-bold text-[#e5e5e5] uppercase tracking-wider mb-2 pb-1 border-b border-[#2e2e2e]">Coverage & Screening</h4>
+        <ul class="space-y-1.5 text-[11px] font-mono">
+          <li><a href={path('/reports')} class="hover:text-[#0055ff] transition-none">&rsaquo; Research Database (All Securities)</a></li>
+          <li><a href={path('/#strategy-moat')} class="hover:text-[#0055ff] transition-none">&rsaquo; Wide Moat Archetype</a></li>
+          <li><a href={path('/#strategy-pead')} class="hover:text-[#0055ff] transition-none">&rsaquo; PEAD Catalyst Screening</a></li>
+          <li><a href={path('/#strategy-contrarian')} class="hover:text-[#0055ff] transition-none">&rsaquo; Contrarian Quality Pullbacks</a></li>
+          <li><a href={path('/#strategy-quant')} class="hover:text-[#0055ff] transition-none">&rsaquo; Multi-Factor Quant Composite</a></li>
         </ul>
       </div>
 
-      <div>
-        <h4 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">Regulatory & Legal</h4>
-        <ul class="space-y-2 text-[11px]">
-          <li><a href={path('/definitions')} class="hover:text-emerald-400 font-medium transition-colors">Definitions & Heuristics Registry</a></li>
-          <li><a href={path('/disclaimer')} class="hover:text-amber-400 transition-colors">Publisher's Exemption Statement</a></li>
-          <li><a href={path('/disclaimer#sec')} class="hover:text-amber-400 transition-colors">Investment Advisers Act of 1940</a></li>
-          <li><a href={path('/disclaimer#finra')} class="hover:text-amber-400 transition-colors">FINRA Rule 2210 Notice</a></li>
-          <li><a href={path('/disclaimer#methodology')} class="hover:text-amber-400 transition-colors">Research Methodology</a></li>
-          <li><a href={path('/disclaimer#affiliate')} class="hover:text-amber-400 transition-colors">FTC Affiliate Disclosures</a></li>
+      <!-- Statutory & Legal (3 cols) -->
+      <div class="md:col-span-3">
+        <h4 class="text-[11px] font-mono font-bold text-[#e5e5e5] uppercase tracking-wider mb-2 pb-1 border-b border-[#2e2e2e]">Regulatory Disclosures</h4>
+        <ul class="space-y-1.5 text-[11px] font-mono">
+          <li><a href={path('/definitions')} class="hover:text-[#0055ff] transition-none">&rsaquo; Definitions & Heuristics Registry</a></li>
+          <li><a href={path('/disclaimer')} class="hover:text-[#0055ff] transition-none">&rsaquo; Publisher's Exemption Statement</a></li>
+          <li><a href={path('/disclaimer#sec')} class="hover:text-[#0055ff] transition-none">&rsaquo; Investment Advisers Act of 1940</a></li>
+          <li><a href={path('/disclaimer#finra')} class="hover:text-[#0055ff] transition-none">&rsaquo; FINRA Rule 2210 Compliance</a></li>
+          <li><a href={path('/disclaimer#methodology')} class="hover:text-[#0055ff] transition-none">&rsaquo; Quantitative Verification Model</a></li>
         </ul>
       </div>
 
-      <div>
-        <h4 class="text-xs font-semibold text-slate-200 uppercase tracking-wider mb-3">Syndication & Feeds</h4>
-        <ul class="space-y-2 text-[11px]">
-          <li><a href={path('/rss.xml')} class="hover:text-emerald-400 transition-colors">Automated RSS 2.0 Feed</a></li>
-          <li><a href={path('/sitemap-index.xml')} class="hover:text-emerald-400 transition-colors">Dynamic XML Sitemap</a></li>
-          <li><a href="https://twitter.com" target="_blank" rel="noopener" class="hover:text-emerald-400 transition-colors">Twitter / X Distribution</a></li>
-          <li><a href="https://reddit.com/r/stocks" target="_blank" rel="noopener" class="hover:text-emerald-400 transition-colors">Reddit Analytical Syndication</a></li>
-          <li><a href="https://t.me" target="_blank" rel="noopener" class="hover:text-sky-400 transition-colors">Telegram Broadcast Channel</a></li>
+      <!-- Feeds & Machine Readability (2 cols) -->
+      <div class="md:col-span-2">
+        <h4 class="text-[11px] font-mono font-bold text-[#e5e5e5] uppercase tracking-wider mb-2 pb-1 border-b border-[#2e2e2e]">Data Feeds</h4>
+        <ul class="space-y-1.5 text-[11px] font-mono">
+          <li><a href={path('/rss.xml')} class="hover:text-[#0055ff] transition-none">&rsaquo; RSS 2.0 XML</a></li>
+          <li><a href={path('/sitemap-index.xml')} class="hover:text-[#0055ff] transition-none">&rsaquo; Sitemap Index</a></li>
+          <li><a href={path('/definitions')} class="hover:text-[#0055ff] transition-none">&rsaquo; JSON Specs</a></li>
         </ul>
       </div>
     </div>
 
-    <div class="pt-8 border-t border-slate-900 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-4">
+    <!-- Bottom Copyright & Utility Bar -->
+    <div class="pt-4 border-t border-[#222222] flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-[#666666] gap-2">
       <div>
-        &copy; {new Date().getFullYear()} EquiSight Analytics Media LLC. All rights reserved.
+        &copy; {new Date().getFullYear()} EQUISIGHT ANALYTICS MEDIA LLC. FORM FOLLOWS FUNCTION.
       </div>
-      <div class="text-[10px] text-slate-400 text-center sm:text-right">
-        Quantitative equity analysis does not constitute investment advice. Capital is subject to market volatility.
+      <div>
+        STATUTORY EXEMPTION UNDER SECTION 202(a)(11)(D). ZERO INVESTMENT ADVICE.
       </div>
     </div>
   </div>

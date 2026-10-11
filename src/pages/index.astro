@@ -43,6 +43,7 @@ const pageTitle = "EquiSight Alpha | Systematic Fundamental Equity Research & Va
 const pageDescription = "Institutional-grade fundamental equity research, Morningstar-style economic moats, and multi-model DCF valuations across 4 systematic investment strategies.";
 
 // Valuation metrics helper
+// Valuation metrics helper
 function getUpsideData(currentPrice: number, fairValue: number | null | undefined) {
   if (!fairValue || currentPrice <= 0) return null;
   const upsidePct = ((fairValue - currentPrice) / currentPrice) * 100;
@@ -51,34 +52,34 @@ function getUpsideData(currentPrice: number, fairValue: number | null | undefine
     upsidePct,
     isUndervalued,
     label: isUndervalued
-      ? `+${upsidePct.toFixed(1)}% Upside`
-      : `${upsidePct.toFixed(1)}% vs FV`
+      ? `+${upsidePct.toFixed(1)}% FV`
+      : `${upsidePct.toFixed(1)}% FV`
   };
 }
 
 function getVerdictBadgeStyle(verdict?: string | null) {
   const v = (verdict || '').toLowerCase();
   if (v.includes('undervalued')) {
-    return 'bg-emerald-950/80 text-emerald-400 border-emerald-500/40';
+    return 'bg-[#181818] text-[#00cc66] border border-[#00cc66]';
   }
   if (v.includes('fairly valued')) {
-    return 'bg-slate-800/80 text-slate-300 border-slate-700/50';
+    return 'bg-[#181818] text-[#8e8e8e] border border-[#3a3a3a]';
   }
   if (v.includes('overvalued')) {
-    return 'bg-amber-950/80 text-amber-400 border-amber-500/40';
+    return 'bg-[#181818] text-[#ff3344] border border-[#ff3344]';
   }
-  return 'bg-slate-800/80 text-slate-400 border-slate-700/50';
+  return 'bg-[#181818] text-[#8e8e8e] border border-[#2e2e2e]';
 }
 
 function getMoatBadgeStyle(rating?: string | null) {
   const r = (rating || '').toLowerCase();
   if (r.includes('wide')) {
-    return 'bg-indigo-950/80 text-indigo-300 border-indigo-500/40';
+    return 'bg-[#181818] text-[#0055ff] border border-[#0055ff]';
   }
   if (r.includes('narrow')) {
-    return 'bg-sky-950/80 text-sky-300 border-sky-500/40';
+    return 'bg-[#181818] text-[#e5e5e5] border border-[#3a3a3a]';
   }
-  return 'bg-slate-800/60 text-slate-400 border-slate-700/40';
+  return 'bg-[#181818] text-[#8e8e8e] border border-[#2e2e2e]';
 }
 
 // Strategy Definitions
@@ -87,390 +88,377 @@ const STRATEGIES = [
     id: 'moat',
     name: 'Wide Moat at a Discount',
     shortName: 'Wide Moat',
-    icon: '🏰',
-    badge: 'Morningstar 5-Star / Intrinsic Value',
-    thesis: 'High-ROIC businesses protected by durable competitive advantages trading below intrinsic fair value.',
-    criteria: '5-Yr ROIC ≥ 15% · Op Margin ≥ 15% · Net Debt / EBITDA < 2.5x',
-    benchmark: 'Morningstar Wide Moat Focus (+320 bps annualized alpha)',
-    borderAccent: 'border-indigo-500/40',
-    bgBadge: 'bg-indigo-950/60 text-indigo-300 border-indigo-700/40',
-    activeTabClass: 'data-[active=true]:bg-indigo-600 data-[active=true]:text-white',
-    reports: moatReports.slice(0, 5)
+    code: 'STRAT-01',
+    badge: 'Intrinsic DCF / Moat Lockout',
+    thesis: 'High-ROIC businesses protected by structural competitive moats trading below intrinsic fair value.',
+    criteria: '5-Yr ROIC >= 15% · Op Margin >= 15% · Net Debt / EBITDA < 2.5x',
+    benchmark: 'Morningstar Wide Moat Focus (+320 bps alpha)',
+    reports: moatReports.slice(0, 6)
   },
   {
     id: 'pead',
     name: 'Earnings Catalyst & PEAD',
-    shortName: 'PEAD Catalysts',
-    icon: '🚀',
-    badge: 'Post-Earnings Announcement Drift',
-    thesis: 'Capitalizing on systematic sell-side analyst underreaction to quarterly EPS beats, forward guidance, and institutional volume.',
-    criteria: 'EPS Beat ≥ +5.0% · Rev Beat ≥ +2.0% · RVOL ≥ 2.0x',
-    benchmark: 'Two Sigma / Ball & Brown SUE Drift (+6.8% to +8.2% excess drift)',
-    borderAccent: 'border-emerald-500/40',
-    bgBadge: 'bg-emerald-950/60 text-emerald-300 border-emerald-700/40',
-    activeTabClass: 'data-[active=true]:bg-emerald-600 data-[active=true]:text-white',
-    reports: peadReports.slice(0, 5)
+    shortName: 'PEAD Drift',
+    code: 'STRAT-02',
+    badge: 'Post-Earnings Drift',
+    thesis: 'Capturing systematic sell-side consensus underreaction to earnings surprises and forward revisions.',
+    criteria: 'EPS Beat >= +5.0% · Rev Beat >= +2.0% · RVOL >= 2.0x',
+    benchmark: 'Two Sigma / Ball & Brown SUE Drift (+6.8% - +8.2%)',
+    reports: peadReports.slice(0, 6)
   },
   {
     id: 'contrarian',
     name: 'Contrarian Blue-Chip Pullbacks',
     shortName: 'Contrarian Dips',
-    icon: '🛡️',
+    code: 'STRAT-03',
     badge: 'Oversold Quality / Mean Reversion',
-    thesis: 'S&P 500 & NASDAQ-100 institutional staples temporarily sold off on macro headlines while maintaining pristine balance sheet health.',
-    criteria: 'S&P 500 / QQQ · 14-Day RSI ≤ 35.0 · Altman Z > 2.99 Safe Zone',
-    benchmark: 'Howard Marks / Piotroski Health (74.2% mean-reversion win rate)',
-    borderAccent: 'border-amber-500/40',
-    bgBadge: 'bg-amber-950/60 text-amber-300 border-amber-700/40',
-    activeTabClass: 'data-[active=true]:bg-amber-600 data-[active=true]:text-white',
-    reports: contrarianReports.slice(0, 5)
+    thesis: 'S&P 500 / NASDAQ staples sold off on transient macro noise while maintaining solvent balance sheets.',
+    criteria: 'S&P 500 / QQQ · RSI <= 35.0 · Altman Z > 2.99',
+    benchmark: 'Howard Marks / Piotroski Health (74.2% Win Rate)',
+    reports: contrarianReports.slice(0, 6)
   },
   {
     id: 'quant',
     name: 'Multi-Factor Quant Composite',
     shortName: 'Quant Composite',
-    icon: '⚡',
-    badge: 'Systematic Factor Optimization',
-    thesis: 'Orthogonal composite ranking balancing Quality (35%), Value (30%), Momentum (20%), and Financial Health (15%).',
-    criteria: 'Quality Z-Score · FCF Yield Relative to Sector · Low Leverage',
-    benchmark: 'AQR Style Premia (0.85 to 1.10 Information Ratio over 20 years)',
-    borderAccent: 'border-cyan-500/40',
-    bgBadge: 'bg-cyan-950/60 text-cyan-300 border-cyan-700/40',
-    activeTabClass: 'data-[active=true]:bg-cyan-600 data-[active=true]:text-white',
-    reports: quantReports.slice(0, 5)
+    code: 'STRAT-04',
+    badge: 'Factor Optimization',
+    thesis: 'Orthogonal composite balancing Quality (35%), Value (30%), Momentum (20%), and Financial Health (15%).',
+    criteria: 'Quality Z-Score · Relative FCF Yield · Leverage Factor',
+    benchmark: 'AQR Style Premia (0.85 - 1.10 IR)',
+    reports: quantReports.slice(0, 6)
   }
 ];
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <!-- Hero Section -->
-  <section class="relative overflow-hidden pt-12 pb-16 border-b border-slate-800/80 bg-gradient-to-b from-slate-900/80 via-slate-950 to-slate-950">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="max-w-4xl">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 mb-4 shadow-sm">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          Institutional Equity Screening Architecture Active
+  <!-- Top Utilitarian Mission Strip (No marketing fluff, pure density) -->
+  <section class="border-b border-[#2e2e2e] bg-[#121212] py-6 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#222222]">
+        <div>
+          <div class="font-mono text-xs text-[#0055ff] font-bold uppercase tracking-wider mb-1">
+            EQUITY RESEARCH ENGINE // BATCH-CYCLE 2026.10
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-mono font-black text-white tracking-tight uppercase">
+            Systematic Fundamental Research Terminal
+          </h1>
+          <p class="text-xs font-mono text-[#8e8e8e] mt-1 max-w-3xl">
+            FORM FOLLOWS FUNCTION. Real-time quantitative equity screening across 4 institutional strategies: Wide Moat Intrinsic Value, Post-Earnings Announcement Drift (PEAD), Contrarian Pullbacks, and Multi-Factor Quant Optimization.
+          </p>
         </div>
-        <h1 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
-          Evidence-Based Equity Analysis for <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">Rational Capital</span>
-        </h1>
-        <p class="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed max-w-3xl">
-          Independent quantitative and fundamental equity research. We screen established US & European equities through four institutional buy-side strategies—isolating economic moats, multi-model DCF valuations, earnings catalyst drift, and balance sheet solvency.
-        </p>
 
-        <!-- Strategy Quick Jump Pills -->
-        <div class="mt-6 flex flex-wrap items-center gap-2.5">
-          <span class="text-xs font-mono text-slate-400 uppercase tracking-wider mr-1">Strategies:</span>
-          {STRATEGIES.map((strat) => (
-            <a
-              href={`#strategy-${strat.id}`}
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900/80 hover:bg-slate-800 hover:border-slate-700 text-xs font-medium text-slate-200 transition-colors"
-            >
-              <span>{strat.icon}</span>
-              <span>{strat.shortName}</span>
-            </a>
-          ))}
+        <!-- Rapid Command Bar (3-second primary task completion) -->
+        <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
           <a
             href={path('/reports')}
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-950/40 hover:bg-emerald-900/60 text-xs font-semibold text-emerald-400 transition-colors ml-auto sm:ml-2"
+            class="px-4 py-2.5 bg-[#0055ff] hover:bg-[#0044cc] text-white font-bold border border-[#0055ff] transition-none tap-target flex items-center gap-2"
           >
-            <span>Research Database ({totalReportsCount})</span>
-            <span>&rarr;</span>
+            <span>[ SEARCH ARCHIVE ({totalReportsCount}) ]</span>
+          </a>
+          <a
+            href={path('/definitions')}
+            class="px-3 py-2.5 bg-[#181818] hover:bg-[#222222] text-[#e5e5e5] border border-[#2e2e2e] transition-none tap-target"
+          >
+            METHODOLOGY
           </a>
         </div>
       </div>
+
+      <!-- Strategy Fast Filters (Instant Access) -->
+      <div class="flex flex-wrap items-center gap-2 pt-3 font-mono text-xs">
+        <span class="text-[#8e8e8e] uppercase mr-1">STRATEGIES:</span>
+        {STRATEGIES.map((strat) => (
+          <a
+            href={`#strategy-${strat.id}`}
+            class="px-2.5 py-1 bg-[#181818] hover:bg-[#2e2e2e] text-[#e5e5e5] border border-[#2e2e2e] transition-none"
+          >
+            [{strat.code}] {strat.shortName} ({strat.reports.length})
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 
-  <!-- Market & Cohort Barometer Strip -->
-  <section class="border-b border-slate-800/80 bg-slate-950/60 py-6">
+  <!-- 12-Column Barometer Metrics Strip (High Scannability Matrix) -->
+  <section class="border-b border-[#2e2e2e] bg-[#181818]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- 1. Active Coverage Universe -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-900/40">
-          <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Active Cohort Universe</div>
-          <div class="mt-1 flex items-baseline gap-2">
-            <span class="text-2xl font-black text-white font-mono">{totalArchetypeStocks}</span>
-            <span class="text-xs text-slate-400 font-mono">Securities</span>
-          </div>
-          <div class="text-[11px] text-slate-400 mt-1">Universal Liquidity Gate ($2B+ Cap, ADTV > 500k)</div>
+      <div class="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-[#2e2e2e]">
+        <!-- Metric 1 -->
+        <div class="p-4 font-mono">
+          <div class="text-[10px] uppercase text-[#8e8e8e] tracking-wider">COVERED UNIVERSE</div>
+          <div class="text-xl font-bold text-white mt-0.5">{totalArchetypeStocks} <span class="text-xs text-[#8e8e8e] font-normal">STOCKS</span></div>
+          <div class="text-[10px] text-[#8e8e8e] mt-1">$2B+ Mkt Cap / ADTV > 500k</div>
         </div>
 
-        <!-- 2. Strategy Archetypes -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-900/40">
-          <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Institutional Strategies</div>
-          <div class="mt-1 flex items-baseline gap-2">
-            <span class="text-2xl font-black text-indigo-400 font-mono">4</span>
-            <span class="text-xs text-slate-400 font-mono">Archetypes</span>
-          </div>
-          <div class="text-[11px] text-slate-400 mt-1">Wide Moat · PEAD · Contrarian · Quant</div>
+        <!-- Metric 2 -->
+        <div class="p-4 font-mono">
+          <div class="text-[10px] uppercase text-[#8e8e8e] tracking-wider">UNDERVALUED POOL</div>
+          <div class="text-xl font-bold text-[#00cc66] mt-0.5">{undervaluedReports.length} <span class="text-xs text-[#8e8e8e] font-normal">SECURITIES</span></div>
+          <div class="text-[10px] text-[#8e8e8e] mt-1">Multi-Model DCF Discount</div>
         </div>
 
-        <!-- 3. Valuation Spread -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-900/40">
-          <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Valuation Opportunities</div>
-          <div class="mt-1 flex items-baseline gap-2">
-            <span class="text-2xl font-black text-emerald-400 font-mono">{undervaluedReports.length}</span>
-            <span class="text-xs text-slate-400 font-mono">Undervalued</span>
-          </div>
-          <div class="text-[11px] text-slate-400 mt-1">5-Method Multi-Model Consensus Engine</div>
+        <!-- Metric 3 -->
+        <div class="p-4 font-mono">
+          <div class="text-[10px] uppercase text-[#8e8e8e] tracking-wider">WIDE MOAT ASSETS</div>
+          <div class="text-xl font-bold text-[#0055ff] mt-0.5">{wideMoatReports.length} <span class="text-xs text-[#8e8e8e] font-normal">EQUITIES</span></div>
+          <div class="text-[10px] text-[#8e8e8e] mt-1">Durable ROIC Advantage</div>
         </div>
 
-        <!-- 4. Lockout Integrity -->
-        <div class="p-4 rounded-xl border border-slate-800/80 bg-slate-900/40">
-          <div class="text-[11px] font-mono uppercase tracking-wider text-slate-400">Moat Protection</div>
-          <div class="mt-1 flex items-baseline gap-2">
-            <span class="text-2xl font-black text-cyan-400 font-mono">{wideMoatReports.length}</span>
-            <span class="text-xs text-slate-400 font-mono">Wide Moats</span>
-          </div>
-          <div class="text-[11px] text-slate-400 mt-1">12-Month Lockout Window Enforced</div>
+        <!-- Metric 4 -->
+        <div class="p-4 font-mono">
+          <div class="text-[10px] uppercase text-[#8e8e8e] tracking-wider">PIPELINE AUDIT</div>
+          <div class="text-xl font-bold text-[#e5e5e5] mt-0.5">100% <span class="text-xs text-[#00cc66] font-normal">VERIFIED</span></div>
+          <div class="text-[10px] text-[#8e8e8e] mt-1">SEC EDGAR Primary Filings</div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Systematic Strategy Radar Section -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Section Header & Strategy Selector Bar -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 pb-6 border-b border-slate-800">
+  <!-- Main Utilitarian Strategy Radar Content -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    
+    <!-- Strategy Control Bar -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 mb-6 border-b border-[#2e2e2e]">
       <div>
-        <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-emerald-400 uppercase tracking-widest mb-1">
-          <span>●</span> Multi-Strategy Cohort Radar
-        </div>
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Institutional Equity Selection Radar
+        <h2 class="text-lg font-mono font-bold text-white uppercase tracking-tight">
+          Systematic Strategy Screener Matrix
         </h2>
-        <p class="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
-          Replacing naive price momentum screens with institutional-grade buy-side archetypes. Each security passes stringent financial health, liquidity, and valuation filters.
-        </p>
+        <p class="text-xs font-mono text-[#8e8e8e]">Left-aligned high-density data matrix. Direct access to all fundamentals and model consensus.</p>
       </div>
 
-      <!-- Strategy Tab Filter Controls -->
-      <div class="flex flex-wrap items-center gap-2 p-1 rounded-xl bg-slate-900/90 border border-slate-800 self-start md:self-auto" id="strategy-tabs-container">
+      <!-- Tab Buttons (Flat, sharp borders, instant switch) -->
+      <div class="flex flex-wrap items-center gap-1 font-mono text-xs" id="strategy-tabs-container">
         <button
           type="button"
-          class="strategy-tab-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all bg-emerald-500 text-slate-950 shadow-sm"
+          class="strategy-tab-btn px-3 py-1 bg-[#0055ff] text-white border border-[#0055ff] font-bold tap-target cursor-pointer"
           data-tab="all"
         >
-          All Strategies ({totalArchetypeStocks})
+          ALL STRATEGIES ({totalArchetypeStocks})
         </button>
         {STRATEGIES.map((strat) => (
           <button
             type="button"
-            class="strategy-tab-btn px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all text-slate-400 hover:text-white hover:bg-slate-800"
+            class="strategy-tab-btn px-3 py-1 bg-[#181818] text-[#8e8e8e] border border-[#2e2e2e] hover:text-[#e5e5e5] hover:border-[#3a3a3a] tap-target cursor-pointer"
             data-tab={strat.id}
           >
-            <span>{strat.icon}</span> {strat.shortName} ({strat.reports.length})
+            {strat.shortName} ({strat.reports.length})
           </button>
         ))}
       </div>
     </div>
 
-    <!-- Strategy Quadrants Container -->
-    <div class="space-y-12" id="strategy-sections-wrapper">
+    <!-- Strategy Sections Wrapper -->
+    <div class="space-y-8" id="strategy-sections-wrapper">
       {STRATEGIES.map((strat) => (
-        <div id={`strategy-${strat.id}`} class="strategy-group-section scroll-mt-24" data-strategy={strat.id}>
-          <!-- Strategy Header Banner -->
-          <div class={`rounded-2xl border ${strat.borderAccent} bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950 p-5 sm:p-6 mb-6 shadow-xl`}>
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div class="max-w-3xl">
-                <div class="flex items-center gap-2.5 mb-2">
-                  <span class="text-2xl">{strat.icon}</span>
-                  <h3 class="text-xl font-bold text-white tracking-tight">{strat.name}</h3>
-                  <span class={`text-[10px] font-mono px-2.5 py-0.5 rounded-md border ${strat.bgBadge}`}>
-                    {strat.badge}
-                  </span>
-                </div>
-                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                  {strat.thesis}
-                </p>
-                <div class="mt-3 flex flex-wrap items-center gap-3 text-xs text-slate-400">
-                  <span class="font-mono text-emerald-400">Screening: <strong class="text-slate-300 font-normal">{strat.criteria}</strong></span>
-                  <span class="hidden sm:inline text-slate-600">&bull;</span>
-                  <span class="font-mono text-slate-400">Precedent: <strong class="text-slate-300 font-normal">{strat.benchmark}</strong></span>
-                </div>
+        <div id={`strategy-${strat.id}`} class="strategy-group-section border border-[#2e2e2e] bg-[#181818] scroll-mt-20" data-strategy={strat.id}>
+          <!-- Strategy Module Header Banner (Utilitarian Data Header) -->
+          <div class="border-b border-[#2e2e2e] p-4 bg-[#141414] font-mono">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 pb-2 border-b border-[#222222]">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 bg-[#222222] text-[#e5e5e5] text-xs font-bold border border-[#2e2e2e]">{strat.code}</span>
+                <h3 class="text-base font-bold text-white uppercase">{strat.name}</h3>
+                <span class="text-xs text-[#8e8e8e]">[{strat.badge}]</span>
               </div>
+              <div class="text-xs text-[#8e8e8e]">
+                ACTIVE QUORUM: <strong class="text-white">{strat.reports.length} SECURITIES</strong>
+              </div>
+            </div>
 
-              <div class="flex items-center gap-2 self-start lg:self-center">
-                <span class="text-xs font-mono font-medium text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded-lg border border-slate-800">
-                  {strat.reports.length} Stocks Screened
-                </span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 pt-2 text-xs text-[#8e8e8e]">
+              <div>
+                <strong class="text-[#e5e5e5]">THESIS:</strong> {strat.thesis}
+              </div>
+              <div class="text-left md:text-right">
+                <strong class="text-[#e5e5e5]">FILTER:</strong> {strat.criteria}
               </div>
             </div>
           </div>
 
-          <!-- Stock Cards Grid (5 Selected Stocks per Strategy) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {strat.reports.map((report) => {
-              const upsideInfo = getUpsideData(report.data.currentPrice, report.data.valuationModels?.consensusFairValue);
-              const verdict = report.data.valuationModels?.verdict;
-              const moatRating = report.data.competitiveMoat?.rating;
-              const score = report.data.archetypeScore;
+          <!-- High-Density Utilitarian Data Table (Maximum scannability) -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs border-collapse">
+              <thead>
+                <tr class="bg-[#121212] text-[#8e8e8e] border-b border-[#2e2e2e]">
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold">Ticker</th>
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold">Company / Sector</th>
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold text-right">Price</th>
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold text-right">Consensus FV</th>
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold text-right">Margin / Spread</th>
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold text-center">Moat</th>
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold text-center">Verdict</th>
+                  <th class="py-2.5 px-3 uppercase tracking-wider font-bold text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[#222222]">
+                {strat.reports.map((report) => {
+                  const upsideInfo = getUpsideData(report.data.currentPrice, report.data.valuationModels?.consensusFairValue);
+                  const verdict = report.data.valuationModels?.verdict;
+                  const moatRating = report.data.competitiveMoat?.rating;
 
-              return (
-                <div class="group relative rounded-2xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900/90 hover:border-slate-700 transition-all p-5 flex flex-col justify-between shadow-lg">
-                  <div>
-                    <!-- Card Top Row: Ticker, Name, Exchange, Moat Badge -->
-                    <div class="flex items-start justify-between gap-3 mb-3">
-                      <div>
-                        <div class="flex items-center gap-2">
-                          <a
-                            href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
-                            class="font-mono font-black text-lg text-white group-hover:text-emerald-400 transition-colors"
-                            title={`View $${report.data.ticker} historical archive`}
-                          >
-                            ${report.data.ticker}
-                          </a>
-                          <span class="text-[10px] font-mono uppercase bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700/60">
-                            {report.data.exchange}
-                          </span>
-                        </div>
-                        <div class="text-xs text-slate-300 font-medium truncate max-w-[190px] sm:max-w-[220px] mt-0.5" title={report.data.companyName}>
+                  return (
+                    <tr class="hover:bg-[#1f1f1f] transition-none text-[#e5e5e5]">
+                      <!-- Ticker -->
+                      <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">
+                        <a
+                          href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
+                          class="text-[#0055ff] hover:underline"
+                        >
+                          ${report.data.ticker}
+                        </a>
+                        <span class="text-[10px] text-[#8e8e8e] ml-1">[{report.data.exchange}]</span>
+                      </td>
+
+                      <!-- Company / Sector -->
+                      <td class="py-2.5 px-3 max-w-[220px]">
+                        <div class="text-white font-medium truncate" title={report.data.companyName}>
                           {report.data.companyName}
                         </div>
-                      </div>
+                        <div class="text-[10px] text-[#8e8e8e] truncate">
+                          {report.data.sector}
+                        </div>
+                      </td>
 
-                      {moatRating && (
-                        <span class={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded border whitespace-nowrap ${getMoatBadgeStyle(moatRating)}`}>
-                          {moatRating === 'Wide Moat' ? '🏰 Wide Moat' : moatRating === 'Narrow Moat' ? 'Narrow Moat' : 'No Moat'}
-                        </span>
-                      )}
-                    </div>
+                      <!-- Price -->
+                      <td class="py-2.5 px-3 text-right font-bold text-white whitespace-nowrap">
+                        ${report.data.currentPrice.toFixed(2)}
+                      </td>
 
-                    <!-- Valuation & Pricing Dashboard Strip -->
-                    <div class="my-4 p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-2">
-                      <div class="flex items-center justify-between text-xs font-mono">
-                        <span class="text-slate-400">Market Price:</span>
-                        <span class="font-bold text-white">${report.data.currentPrice.toFixed(2)}</span>
-                      </div>
+                      <!-- Fair Value -->
+                      <td class="py-2.5 px-3 text-right text-[#8e8e8e] whitespace-nowrap">
+                        {report.data.valuationModels?.consensusFairValue
+                          ? `$${report.data.valuationModels.consensusFairValue.toFixed(2)}`
+                          : 'N/A'}
+                      </td>
 
-                      <div class="flex items-center justify-between text-xs font-mono">
-                        <span class="text-slate-400">Consensus Fair Value:</span>
-                        <span class="font-bold text-slate-200">
-                          {report.data.valuationModels?.consensusFairValue
-                            ? `$${report.data.valuationModels.consensusFairValue.toFixed(2)}`
-                            : 'N/A'}
-                        </span>
-                      </div>
-
-                      {upsideInfo && (
-                        <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
-                          <span class="text-slate-400">Margin / Spread:</span>
-                          <span class={`font-bold px-2 py-0.5 rounded text-[11px] ${upsideInfo.isUndervalued ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/50' : 'bg-amber-950 text-amber-400 border border-amber-800/50'}`}>
+                      <!-- Upside / Spread -->
+                      <td class="py-2.5 px-3 text-right font-bold whitespace-nowrap">
+                        {upsideInfo ? (
+                          <span class={upsideInfo.isUndervalued ? 'text-[#00cc66]' : 'text-[#ff3344]'}>
                             {upsideInfo.label}
                           </span>
-                        </div>
-                      )}
-                    </div>
+                        ) : (
+                          <span class="text-[#8e8e8e]">N/A</span>
+                        )}
+                      </td>
 
-                    <!-- Valuation Verdict & Key Pillar Badges -->
-                    <div class="flex flex-wrap items-center gap-1.5 mb-3">
-                      {verdict && (
-                        <span class={`text-[10px] font-mono px-2 py-0.5 rounded border ${getVerdictBadgeStyle(verdict)}`}>
-                          {verdict}
-                        </span>
-                      )}
-                      {score !== undefined && score !== null && (
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/70 text-slate-300 border border-slate-700/60">
-                          Score: {score > 0 ? `+${score.toFixed(2)}` : score.toFixed(2)}
-                        </span>
-                      )}
-                      <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800/50 text-slate-400 border border-slate-800">
-                        Cap: ${(report.data.marketCap / 1e9).toFixed(1)}B
-                      </span>
-                    </div>
+                      <!-- Moat -->
+                      <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                        {moatRating ? (
+                          <span class={`px-1.5 py-0.5 text-[10px] font-bold ${getMoatBadgeStyle(moatRating)}`}>
+                            {moatRating}
+                          </span>
+                        ) : (
+                          <span class="text-[#8e8e8e] text-[10px]">None</span>
+                        )}
+                      </td>
 
-                    <!-- Description / Thesis Excerpt -->
-                    <p class="text-xs text-slate-400 line-clamp-2 leading-relaxed">
-                      {report.data.description}
-                    </p>
-                  </div>
+                      <!-- Verdict -->
+                      <td class="py-2.5 px-3 text-center whitespace-nowrap">
+                        {verdict ? (
+                          <span class={`px-1.5 py-0.5 text-[10px] font-bold uppercase ${getVerdictBadgeStyle(verdict)}`}>
+                            {verdict}
+                          </span>
+                        ) : (
+                          <span class="text-[#8e8e8e] text-[10px]">Unrated</span>
+                        )}
+                      </td>
 
-                  <!-- Card Bottom Action -->
-                  <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                    <span class="text-slate-400 truncate max-w-[150px]">{report.data.sector}</span>
-                    <a
-                      href={path(`/reports/${report.slug}`)}
-                      class="font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors"
-                    >
-                      <span>Read Deep Dive</span>
-                      <span>&rarr;</span>
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
+                      <!-- Action (Immediate 2-click access) -->
+                      <td class="py-2.5 px-3 text-right whitespace-nowrap">
+                        <a
+                          href={path(`/reports/${report.slug}`)}
+                          class="px-2.5 py-1 bg-[#121212] hover:bg-[#0055ff] hover:text-white text-[#0055ff] border border-[#2e2e2e] font-bold text-xs transition-none tap-target inline-block"
+                        >
+                          [ DEEP DIVE ]
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })}
 
-            {strat.reports.length === 0 && (
-              <div class="col-span-full text-center py-12 rounded-2xl border border-slate-800/80 bg-slate-900/30 text-sm text-slate-400">
-                Awaiting next systematic {strat.name} screening cycle...
-              </div>
-            )}
+                {strat.reports.length === 0 && (
+                  <tr>
+                    <td colspan="8" class="py-6 text-center text-xs text-[#8e8e8e] font-mono">
+                      [ NO ACTIVE SECURITIES IN CURRENT SCREENING CYCLE ]
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       ))}
     </div>
 
-    <!-- Latest Reports Stream Section -->
-    <div class="mt-20 pt-10 border-t border-slate-800">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-slate-800">
+    <!-- Complete Research Log Stream (Utilitarian List View) -->
+    <div class="mt-12 pt-6 border-t border-[#2e2e2e]">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 mb-4 border-b border-[#2e2e2e]">
         <div>
-          <div class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-emerald-400 uppercase tracking-widest mb-1">
-            <span>●</span> Research Archive Stream
-          </div>
-          <h2 class="text-2xl font-bold text-white tracking-tight">Recent Comprehensive Research Feed</h2>
-          <p class="text-xs text-slate-400 mt-0.5">Full index of fundamental deep dives, multi-method valuations, and solvency stress tests</p>
+          <h2 class="text-base font-mono font-bold text-white uppercase tracking-tight">
+            Latest Fundamental Publications ({recentReports.length} Most Recent)
+          </h2>
+          <p class="text-xs font-mono text-[#8e8e8e]">Chronological publication feed with direct institutional access.</p>
         </div>
         <a
           href={path('/reports')}
-          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-mono font-semibold bg-slate-900 border border-slate-800 text-emerald-400 hover:bg-slate-800 hover:border-slate-700 transition-colors self-start sm:self-auto"
+          class="px-3 py-1.5 bg-[#0055ff] hover:bg-[#0044cc] text-white font-mono text-xs font-bold border border-[#0055ff] transition-none tap-target"
         >
-          <span>View All {totalReportsCount} Reports</span>
-          <span>&rarr;</span>
+          VIEW ALL {totalReportsCount} REPORTS &rarr;
         </a>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Scannable Publication Rows -->
+      <div class="divide-y divide-[#222222] border border-[#2e2e2e] bg-[#181818]">
         {recentReports.map((report) => {
           const arch = report.data.archetype || resolveArchetype(report);
           const strat = STRATEGIES.find((s) => s.id === arch);
 
           return (
-            <article class="p-5 rounded-2xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 hover:bg-slate-900/70 transition-all flex flex-col justify-between shadow-md">
-              <div>
-                <div class="flex items-center justify-between text-xs mb-3">
-                  <div class="flex items-center gap-2">
-                    <a
-                      href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
-                      class="font-mono font-bold text-emerald-400 hover:underline"
-                      title={`View historical research for $${report.data.ticker}`}
-                    >
-                      ${report.data.ticker}
-                    </a>
+            <article class="p-3.5 hover:bg-[#1f1f1f] transition-none flex flex-col md:flex-row md:items-center justify-between gap-3 font-mono text-xs">
+              <div class="flex items-start md:items-center gap-3 flex-1 min-w-0">
+                <!-- Ticker badge -->
+                <a
+                  href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
+                  class="font-black text-[#0055ff] bg-[#121212] px-2 py-1 border border-[#2e2e2e] hover:border-[#0055ff] shrink-0"
+                >
+                  ${report.data.ticker}
+                </a>
+
+                <!-- Meta & Title -->
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 text-[10px] text-[#8e8e8e] mb-0.5">
+                    <time datetime={new Date(report.data.publishDate).toISOString()}>
+                      {new Date(report.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </time>
+                    <span>&bull;</span>
+                    <span>{report.data.exchange}</span>
+                    <span>&bull;</span>
+                    <span>{report.data.sector}</span>
                     {strat && (
-                      <span class={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${strat.bgBadge}`}>
-                        {strat.icon} {strat.shortName}
-                      </span>
+                      <span class="text-[#e5e5e5] font-bold">[{strat.code}]</span>
                     )}
                   </div>
-                  <span class="text-slate-400 font-mono text-[11px]">
-                    {new Date(report.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </span>
+                  <h3 class="text-sm font-bold text-white hover:text-[#0055ff] transition-none truncate">
+                    <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
+                  </h3>
                 </div>
-
-                <h3 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2">
-                  <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
-                </h3>
-
-                <p class="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">
-                  {report.data.description}
-                </p>
               </div>
 
-              <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                <span class="text-slate-400">{report.data.sector}</span>
-                <a href={path(`/reports/${report.slug}`)} class="font-semibold text-emerald-400 hover:text-emerald-300">
-                  Read Deep Dive &rarr;
+              <!-- Price & Quick Access -->
+              <div class="flex items-center justify-between md:justify-end gap-4 shrink-0 pt-2 md:pt-0 border-t md:border-t-0 border-[#222222]">
+                <div class="text-right">
+                  <div class="font-bold text-white">${report.data.currentPrice.toFixed(2)}</div>
+                  <div class={`text-[10px] ${report.data.movePercent >= 0 ? 'text-[#00cc66]' : 'text-[#ff3344]'}`}>
+                    {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(1)}% session
+                  </div>
+                </div>
+
+                <a
+                  href={path(`/reports/${report.slug}`)}
+                  class="px-3 py-1 bg-[#121212] hover:bg-[#0055ff] hover:text-white text-[#0055ff] border border-[#2e2e2e] font-bold transition-none tap-target"
+                >
+                  OPEN &rarr;
                 </a>
               </div>
             </article>
@@ -480,12 +468,12 @@ const STRATEGIES = [
     </div>
   </section>
 
-  <!-- Google Site Verification Link -->
+  <!-- Google Verification -->
   <a href={path('/google610bb287ece732d9.html')} class="sr-only" aria-hidden="true" tabindex="-1" rel="author">Google Site Verification</a>
 </BaseLayout>
 
 <script>
-  // Interactive Strategy Tab Filter Logic
+  // Utilitarian Strategy Tab Switcher (Fast, zero layout shift)
   document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll<HTMLButtonElement>('.strategy-tab-btn');
     const sections = document.querySelectorAll<HTMLElement>('.strategy-group-section');
@@ -494,15 +482,17 @@ const STRATEGIES = [
       btn.addEventListener('click', () => {
         const targetTab = btn.getAttribute('data-tab');
 
-        // Update button active state
+        // Reset buttons to utilitarian base state
         tabButtons.forEach((b) => {
-          b.classList.remove('bg-emerald-500', 'text-slate-950', 'shadow-sm');
-          b.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
+          b.classList.remove('bg-[#0055ff]', 'text-white', 'border-[#0055ff]');
+          b.classList.add('bg-[#181818]', 'text-[#8e8e8e]', 'border-[#2e2e2e]');
         });
-        btn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-slate-800');
-        btn.classList.add('bg-emerald-500', 'text-slate-950', 'shadow-sm');
 
-        // Show/hide sections based on selected tab
+        // Set active button
+        btn.classList.remove('bg-[#181818]', 'text-[#8e8e8e]', 'border-[#2e2e2e]');
+        btn.classList.add('bg-[#0055ff]', 'text-white', 'border-[#0055ff]');
+
+        // Toggle sections
         sections.forEach((sec) => {
           const secStrategy = sec.getAttribute('data-strategy');
           if (targetTab === 'all' || secStrategy === targetTab) {

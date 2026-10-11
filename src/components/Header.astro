@@ -2,47 +2,58 @@
 import { path } from '../utils/paths';
 ---
 
-<header class="sticky top-0 z-50 bg-slate-950/85 backdrop-blur-md border-b border-slate-800">
-  <!-- Primary Navigation -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-    <div class="flex items-center gap-8">
-      <a href={path('/')} class="flex items-center gap-2.5 group">
-        <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-black text-lg shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-          E
-        </div>
-        <div>
-          <span class="text-lg font-bold text-white tracking-tight group-hover:text-emerald-400 transition-colors">
-            EquiSight<span class="text-emerald-400">.Alpha</span>
-          </span>
-          <span class="block text-[9px] uppercase tracking-widest text-slate-400 font-mono -mt-1">
-          </span>
-        </div>
+<header class="sticky top-0 z-50 bg-[#121212] border-b border-[#2e2e2e]">
+  <!-- Top Utilitarian Utility & Status Bar -->
+  <div class="border-b border-[#222222] bg-[#181818] px-4 sm:px-6 lg:px-8 py-1 text-[11px] font-mono text-[#8e8e8e] flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <span class="flex items-center gap-1.5 text-[#e5e5e5]">
+        <span class="inline-block w-2 h-2 bg-[#00cc66]"></span>
+        TERMINAL FEED: ACTIVE
+      </span>
+      <span class="hidden md:inline text-[#2e2e2e]">|</span>
+      <span class="hidden md:inline">SYSTEM: RE-SCREENED 10 MIN INTERVALS</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href={path('/definitions')} class="hover:text-[#0055ff] transition-none">METHODOLOGY REGISTRY</a>
+      <span class="text-[#2e2e2e]">|</span>
+      <a href={path('/rss.xml')} class="hover:text-[#0055ff] transition-none flex items-center gap-1">
+        <span>RSS FEED</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Primary Navigation Bar (12-col modular header) -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-12 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <a href={path('/')} class="flex items-center gap-2 font-mono font-bold text-sm text-[#e5e5e5] hover:text-[#0055ff] transition-none">
+        <span class="px-1.5 py-0.5 bg-[#0055ff] text-white text-xs font-mono font-black">EQ</span>
+        <span class="tracking-tight uppercase">EquiSight Alpha</span>
       </a>
 
-      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
-        <a href={path('/')} class="hover:text-emerald-400 transition-colors">Market Radar</a>
-        <a href={path('/reports')} class="hover:text-emerald-400 transition-colors">Research </a>
-        <a href={path('/disclaimer')} class="hover:text-amber-400 transition-colors">Regulatory Exemption</a>
+      <!-- Direct Persistent Text Links (Max 5-7 top-level items, instant 2-click access) -->
+      <nav class="hidden md:flex items-center gap-1 font-mono text-xs text-[#8e8e8e]" aria-label="Main Navigation">
+        <a href={path('/')} class="px-2.5 py-1 text-[#e5e5e5] hover:text-white hover:bg-[#181818] transition-none">
+          RADAR
+        </a>
+        <a href={path('/reports')} class="px-2.5 py-1 hover:text-[#e5e5e5] hover:bg-[#181818] transition-none">
+          DATABASE
+        </a>
+        <a href={path('/definitions')} class="px-2.5 py-1 hover:text-[#e5e5e5] hover:bg-[#181818] transition-none">
+          HEURISTICS
+        </a>
+        <a href={path('/disclaimer')} class="px-2.5 py-1 hover:text-[#e5e5e5] hover:bg-[#181818] transition-none">
+          DISCLAIMER
+        </a>
       </nav>
     </div>
 
-    <div class="flex items-center gap-3">
-      <a
-        href={path('/rss.xml')}
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-900 text-xs font-medium text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
-        title="Subscribe to RSS Feed"
-      >
-        <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93v-2.83Z"/>
-        </svg>
-        <span class="hidden sm:inline">RSS Feed</span>
-      </a>
-
+    <!-- Right Primary Action Button -->
+    <div class="flex items-center gap-2">
       <a
         href={path('/reports')}
-        class="inline-flex items-center justify-center px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-950 bg-emerald-400 hover:bg-emerald-300 transition-all shadow-sm"
+        class="inline-flex items-center justify-center px-3 py-1 text-xs font-mono font-semibold text-white bg-[#0055ff] hover:bg-[#0044cc] border border-[#0055ff] transition-none tap-target"
       >
-        Explore Research Reports
+        [ ENTER RESEARCH ARCHIVE ]
       </a>
     </div>
   </div>

@@ -15,184 +15,171 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
-    <div class="mb-8 pb-6 border-b border-slate-800">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-950 border border-emerald-500/30 text-emerald-400 mb-3">
-        Comprehensive Research Database
+    <div class="mb-6 pb-4 border-b border-[#2e2e2e]">
+      <div class="inline-block px-2 py-0.5 text-xs font-mono font-bold bg-[#181818] border border-[#0055ff] text-[#0055ff] mb-2 uppercase">
+        ARCHIVE REPOSITORY // FULL REGISTRY
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-        Equity Research 
+      <h1 class="text-2xl sm:text-3xl font-mono font-black text-white tracking-tight uppercase">
+        Equity Research Database
       </h1>
-      <p class="text-sm text-slate-400 mt-2 max-w-3xl leading-relaxed">
-        Institutional equity research indexing evidence-based fundamental deep dives, multi-method intrinsic valuations, 8-quarter EPS trends, and solvency stress tests.
+      <p class="text-xs font-mono text-[#8e8e8e] mt-1 max-w-3xl leading-relaxed">
+        Algorithmic equity index. Standardized fundamental analyses, multi-model DCF intrinsic values, balance sheet solvency stress tests, and earnings catalysts.
       </p>
     </div>
 
-    <!-- Interactive Client-Side Filter Engine -->
-    <section class="mb-8 p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/70 shadow-xl space-y-5" aria-label="Research  Filters">
+    <!-- Interactive Utilitarian Filter Engine -->
+    <section class="mb-6 p-4 border border-[#2e2e2e] bg-[#181818] space-y-4" aria-label="Research Filters">
       <!-- Search & Sort Bar -->
-      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+      <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         <!-- Text Search -->
         <div class="relative flex-1">
-          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
           <input
             type="text"
             id="filter-search"
-            placeholder="Search by ticker (e.g. ACN, PPC) or company name..."
-            class="w-full pl-10 pr-4 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
+            placeholder="FILTER TICKER (e.g. ACN, GOOGL) OR COMPANY NAME..."
+            class="w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] text-white placeholder-[#666666] text-xs font-mono focus:outline-none focus:border-[#0055ff] transition-none tap-target"
           />
         </div>
 
         <!-- Sort Select & Reset Button -->
-        <div class="flex items-center gap-3">
-          <div class="relative min-w-[190px]">
+        <div class="flex items-center gap-2">
+          <div class="relative min-w-[200px]">
             <select
               id="filter-sort"
-              class="w-full px-3 py-2.5 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-xs font-mono focus:outline-none focus:border-emerald-500 transition-colors cursor-pointer appearance-none pr-8"
+              class="w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] text-white text-xs font-mono focus:outline-none focus:border-[#0055ff] cursor-pointer appearance-none pr-8 tap-target"
             >
-              <option value="newest">Sort: Newest First</option>
-              <option value="oldest">Sort: Oldest First</option>
-              <option value="top-gainers">Sort: Top Gainers (+%)</option>
-              <option value="top-losers">Sort: Top Losers (-%)</option>
-              <option value="highest-price">Sort: Price (High to Low)</option>
-              <option value="lowest-price">Sort: Price (Low to High)</option>
-              <option value="7days">Filter: Past 7 Days</option>
-              <option value="30days">Filter: Past 30 Days</option>
+              <option value="newest">SORT: NEWEST FIRST</option>
+              <option value="oldest">SORT: OLDEST FIRST</option>
+              <option value="top-gainers">SORT: TOP GAINERS (+%)</option>
+              <option value="top-losers">SORT: TOP LOSERS (-%)</option>
+              <option value="highest-price">SORT: PRICE (HIGH TO LOW)</option>
+              <option value="lowest-price">SORT: PRICE (LOW TO HIGH)</option>
+              <option value="7days">FILTER: PAST 7 DAYS</option>
+              <option value="30days">FILTER: PAST 30 DAYS</option>
             </select>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
-              <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </div>
           </div>
 
           <button
             id="filter-reset-btn"
             type="button"
-            class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer border border-slate-700"
+            class="px-3 py-2 bg-[#222222] hover:bg-[#2e2e2e] text-[#e5e5e5] hover:text-white text-xs font-mono font-bold transition-none whitespace-nowrap cursor-pointer border border-[#2e2e2e] tap-target"
           >
-            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span>Reset Filters</span>
+            [ RESET ]
           </button>
         </div>
       </div>
 
-      <!-- Multi-Parameter Filter Grid -->
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-3 border-t border-slate-800/80">
+      <!-- Multi-Parameter Filter Grid (6 Columns, high-density) -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-3 border-t border-[#222222]">
         <!-- 1. Drop / Gain Percent -->
         <div>
-          <label for="filter-move" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
-            Session Move
+          <label for="filter-move" class="block text-[10px] font-mono text-[#8e8e8e] uppercase tracking-wider mb-1">
+            SESSION MOVE
           </label>
           <select
             id="filter-move"
-            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
           >
-            <option value="all">All Moves</option>
-            <option value="gainers">Gainers Only (+)</option>
-            <option value="losers">Losers Only (-)</option>
-            <option value="big">Large Moves (&ge; &plusmn;5%)</option>
-            <option value="extreme">Extreme (&ge; &plusmn;10%)</option>
+            <option value="all">ALL MOVES</option>
+            <option value="gainers">GAINERS (+)</option>
+            <option value="losers">LOSERS (-)</option>
+            <option value="big">LARGE (&ge; &plusmn;5%)</option>
+            <option value="extreme">EXTREME (&ge; &plusmn;10%)</option>
           </select>
         </div>
 
         <!-- 2. Current Price Range -->
         <div>
-          <label for="filter-price" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
-            Stock Price
+          <label for="filter-price" class="block text-[10px] font-mono text-[#8e8e8e] uppercase tracking-wider mb-1">
+            STOCK PRICE
           </label>
           <select
             id="filter-price"
-            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
           >
-            <option value="all">All Prices</option>
-            <option value="penny">Penny Stocks (&lt; $5)</option>
-            <option value="under25">$5 to $25</option>
-            <option value="mid">$25 to $100</option>
-            <option value="large">Large (&gt; $100)</option>
+            <option value="all">ALL PRICES</option>
+            <option value="penny">PENNY (&lt; $5)</option>
+            <option value="under25">$5 TO $25</option>
+            <option value="mid">$25 TO $100</option>
+            <option value="large">LARGE (&gt; $100)</option>
           </select>
         </div>
 
         <!-- 3. P/E Multiple -->
         <div>
-          <label for="filter-pe" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
-            P/E Multiple
+          <label for="filter-pe" class="block text-[10px] font-mono text-[#8e8e8e] uppercase tracking-wider mb-1">
+            P/E MULTIPLE
           </label>
           <select
             id="filter-pe"
-            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
           >
-            <option value="all">All Multiples</option>
-            <option value="profitable">Profitable Only (P/E &gt; 0)</option>
-            <option value="value">Deep Value (&lt; 15x)</option>
-            <option value="moderate">Reasonable (15x - 30x)</option>
-            <option value="growth">Growth Premium (&gt; 30x)</option>
-            <option value="unprofitable">Deficit / Unprofitable</option>
+            <option value="all">ALL MULTIPLES</option>
+            <option value="profitable">PROFITABLE (P/E &gt; 0)</option>
+            <option value="value">DEEP VALUE (&lt; 15x)</option>
+            <option value="moderate">REASONABLE (15x-30x)</option>
+            <option value="growth">GROWTH (&gt; 30x)</option>
+            <option value="unprofitable">DEFICIT / LOSS</option>
           </select>
         </div>
 
         <!-- 4. Dividend Yield -->
         <div>
-          <label for="filter-dividend" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
-            Dividend Yield
+          <label for="filter-dividend" class="block text-[10px] font-mono text-[#8e8e8e] uppercase tracking-wider mb-1">
+            DIVIDEND YIELD
           </label>
           <select
             id="filter-dividend"
-            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
           >
-            <option value="all">All Yields</option>
-            <option value="paying">Dividend Paying (&gt; 0%)</option>
-            <option value="high">High Yield (&ge; 2.5%)</option>
-            <option value="none">Zero Dividend (0%)</option>
+            <option value="all">ALL YIELDS</option>
+            <option value="paying">PAYING (&gt; 0%)</option>
+            <option value="high">HIGH (&ge; 2.5%)</option>
+            <option value="none">ZERO (0%)</option>
           </select>
         </div>
 
         <!-- 5. Classification -->
         <div>
-          <label for="filter-classification" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
-            Classification
+          <label for="filter-classification" class="block text-[10px] font-mono text-[#8e8e8e] uppercase tracking-wider mb-1">
+            CLASSIFICATION
           </label>
           <select
             id="filter-classification"
-            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
           >
-            <option value="all">All Classes</option>
-            <option value="Growth Stock">Growth Stock</option>
-            <option value="Income Stock">Income Stock</option>
-            <option value="Value / Turnaround">Value / Turnaround</option>
-            <option value="Speculative Penny Stock">Speculative Penny Stock</option>
+            <option value="all">ALL CLASSES</option>
+            <option value="Growth Stock">GROWTH STOCK</option>
+            <option value="Income Stock">INCOME STOCK</option>
+            <option value="Value / Turnaround">VALUE / TURNAROUND</option>
+            <option value="Speculative Penny Stock">PENNY SPECULATIVE</option>
           </select>
         </div>
 
         <!-- 6. Free Cash Flow -->
         <div>
-          <label for="filter-fcf" class="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1">
-            Free Cash Flow
+          <label for="filter-fcf" class="block text-[10px] font-mono text-[#8e8e8e] uppercase tracking-wider mb-1">
+            FREE CASH FLOW
           </label>
           <select
             id="filter-fcf"
-            class="w-full px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
           >
-            <option value="all">All Cash Flows</option>
-            <option value="positive">Positive FCF (&gt; $0)</option>
-            <option value="burning">Negative FCF (Burn)</option>
+            <option value="all">ALL CASH FLOWS</option>
+            <option value="positive">POSITIVE (&gt; $0)</option>
+            <option value="burning">NEGATIVE (BURN)</option>
           </select>
         </div>
       </div>
 
       <!-- Bottom Bar: Risk Slider & Dynamic Counter -->
-      <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-slate-800/80">
+      <div class="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-[#222222]">
         <!-- Risk Slider -->
         <div class="flex items-center gap-3">
-          <span class="text-[11px] font-mono text-slate-400 whitespace-nowrap">
-            Max Fundamental Risk: <strong id="filter-risk-val" class="text-white font-mono">10</strong>/10
+          <span class="text-[11px] font-mono text-[#8e8e8e] whitespace-nowrap">
+            MAX FUNDAMENTAL RISK: <strong id="filter-risk-val" class="text-white font-mono">10</strong>/10
           </span>
           <input
             type="range"
@@ -201,38 +188,35 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
             max="10"
             value="10"
             step="1"
-            class="w-28 sm:w-40 accent-emerald-500 cursor-pointer"
+            class="w-28 sm:w-40 accent-[#0055ff] cursor-pointer"
             aria-label="Filter reports by maximum fundamental risk rating"
           />
         </div>
 
         <!-- Dynamic Counter -->
-        <div class="text-xs font-mono text-slate-300">
-          Showing <span id="visible-count" class="font-bold text-emerald-400">{sortedReports.length}</span> of <span id="total-count" class="font-bold text-white">{sortedReports.length}</span> reports
+        <div class="text-xs font-mono text-[#8e8e8e]">
+          MATCHED: <span id="visible-count" class="font-bold text-[#0055ff]">{sortedReports.length}</span> / <span id="total-count" class="font-bold text-white">{sortedReports.length}</span> SECURITIES
         </div>
       </div>
     </section>
 
     <!-- Empty State Container -->
-    <div id="filter-empty-state" class="hidden my-12 p-8 rounded-2xl border border-slate-800 bg-slate-900/40 text-center space-y-4">
-      <div class="w-12 h-12 mx-auto rounded-full bg-slate-800/80 text-slate-400 flex items-center justify-center text-xl">
-        🔍
-      </div>
-      <h3 class="text-lg font-bold text-white">No research reports match your criteria</h3>
-      <p class="text-xs text-slate-400 max-w-md mx-auto">
-        Try relaxing your filter parameters, searching for a different ticker, or reset all active filters to view the full research library.
+    <div id="filter-empty-state" class="hidden my-8 p-6 border border-[#2e2e2e] bg-[#181818] text-center space-y-3 font-mono">
+      <h3 class="text-sm font-bold text-white uppercase">[ ZERO MATCHING SECURITIES ]</h3>
+      <p class="text-xs text-[#8e8e8e] max-w-md mx-auto">
+        Adjust active filter parameters or clear query to inspect the full coverage universe.
       </p>
       <button
         id="empty-reset-btn"
         type="button"
-        class="px-4 py-2 rounded-xl bg-emerald-950 text-emerald-400 border border-emerald-600/40 hover:bg-emerald-900 text-xs font-mono font-bold transition-colors cursor-pointer"
+        class="px-4 py-1.5 bg-[#0055ff] hover:bg-[#0044cc] text-white text-xs font-mono font-bold border border-[#0055ff] transition-none cursor-pointer tap-target"
       >
-        Reset All Filters
+        [ RESET ALL FILTERS ]
       </button>
     </div>
 
-    <!-- Reports Grid -->
-    <div id="reports-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Reports Grid (High-Density Utilitarian Cards with 1px borders) -->
+    <div id="reports-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {sortedReports.map((report) => {
         const isPenny = checkPennyStock(report.data.currentPrice, report.data.exchange, report.data.isPennyStock);
         const classification = getClassification({
@@ -255,7 +239,7 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
 
         return (
           <article
-            class="report-card p-5 rounded-2xl border border-slate-800 bg-slate-900/50 hover:border-slate-700 transition-all flex flex-col justify-between shadow-sm"
+            class="report-card p-4 border border-[#2e2e2e] bg-[#181818] hover:border-[#0055ff] transition-none flex flex-col justify-between"
             data-ticker={report.data.ticker.toLowerCase()}
             data-company={report.data.companyName.toLowerCase()}
             data-title={report.data.title.toLowerCase()}
@@ -271,67 +255,59 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
           >
             <div>
               <!-- Top Row: Ticker, Classification Badge, Date -->
-              <div class="flex items-center justify-between text-xs mb-3 gap-2">
+              <div class="flex items-center justify-between text-xs mb-2.5 gap-2 font-mono">
                 <div class="flex items-center gap-2">
                   <a
                     href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
-                    class="font-mono font-black text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-lg border border-emerald-800/50 hover:border-emerald-400 transition-colors"
+                    class="font-black text-white bg-[#121212] px-2 py-0.5 border border-[#2e2e2e] hover:border-[#0055ff] transition-none"
                     title={`View all research for $${report.data.ticker}`}
                   >
                     ${report.data.ticker}
                   </a>
                   <!-- Classification Badge -->
-                  <span
-                    class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold"
-                    class:list={[
-                      classification === 'Growth Stock' ? 'bg-indigo-950/80 text-indigo-300 border border-indigo-800/50' :
-                      classification === 'Income Stock' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/50' :
-                      classification === 'Speculative Penny Stock' ? 'bg-amber-950/80 text-amber-300 border border-amber-800/50' :
-                      'bg-sky-950/80 text-sky-300 border border-sky-800/50'
-                    ]}
-                  >
+                  <span class="px-1.5 py-0.5 text-[10px] font-bold border border-[#2e2e2e] text-[#8e8e8e] bg-[#121212] uppercase">
                     {classification}
                   </span>
                 </div>
 
-                <time datetime={new Date(report.data.publishDate).toISOString()} class="text-slate-400 font-mono text-[11px] whitespace-nowrap">
+                <time datetime={new Date(report.data.publishDate).toISOString()} class="text-[#8e8e8e] text-[10px]">
                   {new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </time>
               </div>
 
               <!-- Report Title -->
-              <h2 class="text-base font-bold text-white hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+              <h2 class="text-sm font-mono font-bold text-white hover:text-[#0055ff] transition-none line-clamp-2 leading-snug">
                 <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
               </h2>
 
               <!-- Description -->
-              <p class="text-xs text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+              <p class="text-xs text-[#8e8e8e] mt-1.5 line-clamp-2 leading-relaxed">
                 {report.data.description}
               </p>
 
-              <!-- Key Metrics Grid -->
-              <div class="mt-4 pt-3 border-t border-slate-800/80 grid grid-cols-3 gap-2 text-[11px] font-mono">
+              <!-- Key Metrics Grid (Explicit Utilitarian 3-Box Strip) -->
+              <div class="mt-3 pt-2.5 border-t border-[#222222] grid grid-cols-3 gap-2 text-[11px] font-mono">
                 <!-- Price & Move -->
-                <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                  <div class="text-[9px] text-slate-500 uppercase">Price / Move</div>
+                <div class="p-2 bg-[#121212] border border-[#222222]">
+                  <div class="text-[9px] text-[#8e8e8e] uppercase">PRICE / MOVE</div>
                   <div class="font-bold text-white mt-0.5">${priceVal.toFixed(2)}</div>
-                  <div class={`text-[10px] font-bold ${isPos ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <div class={`text-[10px] font-bold ${isPos ? 'text-[#00cc66]' : 'text-[#ff3344]'}`}>
                     {isPos ? '+' : ''}{moveVal.toFixed(1)}%
                   </div>
                 </div>
 
                 <!-- P/E Multiple & Div Yield -->
-                <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                  <div class="text-[9px] text-slate-500 uppercase">P/E &bull; Yield</div>
+                <div class="p-2 bg-[#121212] border border-[#222222]">
+                  <div class="text-[9px] text-[#8e8e8e] uppercase">P/E · YIELD</div>
                   <div class="font-bold text-white mt-0.5">{peVal ? `${peVal.toFixed(1)}x` : 'N/A'}</div>
-                  <div class="text-[10px] text-slate-400">{divYieldVal > 0 ? `${divYieldVal.toFixed(1)}% Div` : 'No Div'}</div>
+                  <div class="text-[10px] text-[#8e8e8e]">{divYieldVal > 0 ? `${divYieldVal.toFixed(1)}% Div` : '0% Div'}</div>
                 </div>
 
                 <!-- Risk Score & Free Cash Flow -->
-                <div class="p-2 rounded-lg bg-slate-950/60 border border-slate-800/80">
-                  <div class="text-[9px] text-slate-500 uppercase">Risk &bull; FCF</div>
-                  <div class="font-bold text-amber-400 mt-0.5">{riskVal}/10 Risk</div>
-                  <div class={`text-[10px] font-bold ${fcfVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                <div class="p-2 bg-[#121212] border border-[#222222]">
+                  <div class="text-[9px] text-[#8e8e8e] uppercase">RISK · FCF</div>
+                  <div class="font-bold text-[#e5e5e5] mt-0.5">{riskVal}/10</div>
+                  <div class={`text-[10px] font-bold ${fcfVal >= 0 ? 'text-[#00cc66]' : 'text-[#ff3344]'}`}>
                     {formatFCF(fcfVal)}
                   </div>
                 </div>
@@ -339,15 +315,15 @@ const pageDescription = "Full index of evidence-based fundamental equity researc
             </div>
 
             <!-- Card Bottom Bar -->
-            <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-              <span class="text-[11px] font-mono text-slate-400">
-                {report.data.exchange} &bull; {report.data.sector}
+            <div class="mt-3 pt-2.5 border-t border-[#222222] flex items-center justify-between text-xs font-mono">
+              <span class="text-[10px] text-[#8e8e8e] truncate max-w-[170px]">
+                {report.data.exchange} · {report.data.sector}
               </span>
               <a
                 href={path(`/reports/${report.slug}`)}
-                class="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1 text-xs"
+                class="text-[#0055ff] hover:text-white hover:bg-[#0055ff] px-2 py-0.5 border border-[#2e2e2e] font-bold text-xs transition-none tap-target"
               >
-                Read Deep Dive &rarr;
+                [ VIEW REPORT ]
               </a>
             </div>
           </article>

@@ -24,8 +24,48 @@ const props = Astro.props;
   <head>
     <meta charset="UTF-8" />
     <SEOHead {...props} />
+    <style is:global>
+      /* Utilitarian Design System Reset */
+      :root {
+        --color-bg: #121212;
+        --color-surface: #181818;
+        --color-border: #2e2e2e;
+        --color-text: #e5e5e5;
+        --color-muted: #8e8e8e;
+        --color-accent: #0055ff;
+        --color-accent-hover: #0044cc;
+      }
+      html {
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+        color: var(--color-text);
+        background-color: var(--color-bg);
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* Zero rounded corners, zero blur, zero drop shadows in utilitarian mode */
+      * {
+        border-radius: 0px !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
+      button, input, select, textarea, a.btn {
+        border-radius: 2px !important;
+      }
+      /* High-contrast focus state for WCAG 2.2 AA accessibility */
+      :focus-visible {
+        outline: 2px solid #0055ff !important;
+        outline-offset: 2px !important;
+      }
+      /* Tap target minimum 44px on interactive controls where required */
+      .tap-target {
+        min-height: 44px;
+        min-width: 44px;
+      }
+    </style>
   </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-emerald-500 selection:text-slate-950">
+  <body class="bg-[#121212] text-[#e5e5e5] min-h-screen flex flex-col font-sans antialiased selection:bg-[#0055ff] selection:text-white">
     <Header />
     <main class="flex-grow">
       <slot />

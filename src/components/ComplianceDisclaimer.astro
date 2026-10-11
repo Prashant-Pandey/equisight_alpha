@@ -7,41 +7,42 @@ const { variant = 'full' } = Astro.props;
 ---
 
 {variant === 'banner' && (
-  <div class="bg-amber-500/10 border-b border-amber-500/20 py-2 px-4 text-center text-xs text-amber-300">
-    <span class="font-semibold">Regulatory Notice:</span> Content published for educational and informational purposes under the statutory Publisher's Exemption. Not individualized investment advice.
+  <div class="bg-[#181818] border border-[#2e2e2e] py-1.5 px-3 text-xs font-mono text-[#8e8e8e] flex items-center justify-between">
+    <div>
+      <span class="font-bold text-[#e5e5e5]">[ STATUTORY NOTICE ]</span> Educational/informational under statutory Publisher's Exemption. Zero personalized advice.
+    </div>
+    <span class="text-[10px] text-[#666666] hidden sm:inline">SEC § 202(a)(11)(D)</span>
   </div>
 )}
 
 {variant === 'compact' && (
-  <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 mt-6">
+  <div class="text-[11px] font-mono text-[#8e8e8e] border-t border-[#2e2e2e] pt-3 mt-4">
     <p>
-      <strong>Compliance Exemption:</strong> Published under Section 202(a)(11)(D) of the Investment Advisers Act of 1940. EquiSight Alpha provides impersonal quantitative equity research. Equities carry capital risk.
+      <strong class="text-[#e5e5e5]">COMPLIANCE EXEMPTION:</strong> Section 202(a)(11)(D) of the Investment Advisers Act of 1940. EquiSight Alpha provides impersonal quantitative equity research.
     </p>
   </div>
 )}
 
 {variant === 'full' && (
-  <aside class="my-10 p-6 rounded-xl border border-slate-800 bg-slate-900/60 text-slate-400 text-xs leading-relaxed space-y-3">
-    <div class="flex items-center gap-2 text-slate-200 font-semibold text-sm">
-      <svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-      </svg>
-      <span>Mandatory Statutory Publisher's Exemption & Regulatory Disclosure</span>
+  <aside class="my-6 p-4 border border-[#2e2e2e] bg-[#181818] text-[#8e8e8e] text-xs font-mono leading-relaxed space-y-2.5">
+    <div class="flex items-center justify-between pb-2 border-b border-[#2e2e2e] text-[#e5e5e5] font-bold text-xs uppercase tracking-wider">
+      <span>[ MANDATORY STATUTORY PUBLISHER'S EXEMPTION & REGULATORY DISCLOSURE ]</span>
+      <span class="text-[10px] text-[#8e8e8e]">15 U.S.C. § 80b-2(a)(11)(D)</span>
     </div>
     <p>
-      <strong>1. Impersonal Educational Analysis:</strong> All research, valuation data, financial statement ratios, and social sentiment metrics presented by <em>EquiSight Alpha</em> are prepared strictly for general informational and educational purposes. This publication qualifies for the bona fide publisher's exclusion under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and the precedent established in <em>Lowe v. SEC</em>, 472 U.S. 181 (1985).
+      <strong class="text-[#e5e5e5]">1. Impersonal Educational Analysis:</strong> All research, valuation data, financial statement ratios, and social sentiment metrics presented by <em>EquiSight Alpha</em> are prepared strictly for general informational and educational purposes. This publication qualifies for the bona fide publisher's exclusion under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and the precedent established in <em>Lowe v. SEC</em>, 472 U.S. 181 (1985).
     </p>
     <p>
-      <strong>2. No Fiduciary or Advisory Relationship:</strong> Nothing contained within this report constitutes an offer, solicitation, or recommendation to purchase or liquidate any security, derivative, or commodity. We do not provide personalized financial, legal, or tax advice. Readers must conduct independent due diligence or consult a registered investment adviser (RIA) licensed by the SEC or FINRA prior to executing transactions.
+      <strong class="text-[#e5e5e5]">2. No Fiduciary or Advisory Relationship:</strong> Nothing contained within this report constitutes an offer, solicitation, or recommendation to purchase or liquidate any security, derivative, or commodity. We do not provide personalized financial, legal, or tax advice. Readers must conduct independent due diligence or consult a registered investment adviser (RIA) licensed by the SEC or FINRA prior to executing transactions.
     </p>
     <p>
-      <strong>3. Historical & Quantitative Analysis Risks:</strong> Past performance, quantitative screening models, and historical financial ratios are not indicative of future market outcomes. Equities are volatile financial instruments susceptible to total capital loss. 
+      <strong class="text-[#e5e5e5]">3. Historical & Quantitative Analysis Risks:</strong> Past performance, quantitative screening models, and historical financial ratios are not indicative of future market outcomes. Equities are volatile financial instruments susceptible to total capital loss.
     </p>
     <p>
-      <strong>4. Affiliate Compensation Disclosure (FTC 16 CFR § 255.5):</strong> We may maintain commercial affiliate partnerships with selected brokerages and financial platforms referenced in this report. If you open an account or purchase services through our links, we may receive compensation at zero supplemental cost to you. Editorial selection of covered tickers is determined strictly by objective volume, liquidity, and volatility mathematical filters.
+      <strong class="text-[#e5e5e5]">4. Affiliate Compensation Disclosure (FTC 16 CFR § 255.5):</strong> We may maintain commercial affiliate partnerships with selected brokerages and financial platforms referenced in this report. Editorial selection of covered tickers is determined strictly by objective volume, liquidity, and volatility mathematical filters.
     </p>
     <p>
-      <strong>5. Automated Systems & Methodology Disclosure:</strong> This publication is prepared using automated quantitative agents and institutional analysis pipelines from verified public regulatory filings (SEC EDGAR) and live exchange feeds. Financial models, intrinsic value calculations, and sentiment indicators are algorithmically compiled under the Publisher's Exemption.
+      <strong class="text-[#e5e5e5]">5. Automated Systems & Methodology Disclosure:</strong> This publication is prepared using automated quantitative agents and institutional analysis pipelines from verified public regulatory filings (SEC EDGAR) and live exchange feeds. Financial models, intrinsic value calculations, and sentiment indicators are algorithmically compiled under the Publisher's Exemption.
     </p>
   </aside>
 )}

@@ -39,63 +39,67 @@ const pageDescription = `Historical equity research reports, valuation multiples
   companyName={companyName}
   sector={sector}
 >
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumb Bar -->
-    <nav class="flex items-center gap-2 text-xs text-slate-400 mb-6 font-mono">
-      <a href={path('/')} class="hover:text-emerald-400 transition-colors">Home</a>
+    <nav class="flex items-center gap-2 text-xs text-[#8e8e8e] mb-4 font-mono">
+      <a href={path('/')} class="hover:text-[#0055ff] transition-none">RADAR</a>
       <span>&rsaquo;</span>
-      <a href={path('/reports')} class="hover:text-emerald-400 transition-colors">Reports</a>
+      <a href={path('/reports')} class="hover:text-[#0055ff] transition-none">DATABASE</a>
       <span>&rsaquo;</span>
-      <span class="text-slate-200">${ticker} Research Hub</span>
+      <span class="text-white">${ticker} ARCHIVE</span>
     </nav>
 
     <!-- Header -->
-    <div class="mb-10 pb-6 border-b border-slate-800">
+    <div class="mb-6 pb-4 border-b border-[#2e2e2e] font-mono">
       <div class="flex items-center gap-3 mb-2">
-        <span class="font-mono font-black text-2xl text-emerald-400 bg-emerald-950 px-3 py-1 rounded-xl border border-emerald-500/40">
+        <span class="font-black text-xl text-white bg-[#181818] px-3 py-1 border border-[#0055ff]">
           ${ticker}
         </span>
         <div>
-          <h1 class="text-3xl font-extrabold text-white tracking-tight">{companyName}</h1>
-          <p class="text-xs text-slate-400 font-mono mt-0.5">
-            {latestReport ? `${latestReport.data.exchange} • ${sector} • ${latestReport.data.industry}` : 'Equities Research'}
+          <h1 class="text-2xl font-bold text-white tracking-tight uppercase">{companyName}</h1>
+          <p class="text-xs text-[#8e8e8e] mt-0.5">
+            {latestReport ? `${latestReport.data.exchange} · ${sector} · ${latestReport.data.industry}` : 'EQUITY RESEARCH'}
           </p>
         </div>
       </div>
-      <p class="text-sm text-slate-300 mt-4 max-w-3xl leading-relaxed">
-        Comprehensive institutional research for {companyName}. In-depth fundamental reports evaluate balance sheet solvency, cash flow generation, and macroeconomic sensitivity over time.
+      <p class="text-xs text-[#8e8e8e] mt-2 max-w-3xl leading-relaxed">
+        Systematic equity dossier for {companyName}. Evaluation of balance sheet solvency, cash flow generation, and consensus valuation models.
       </p>
     </div>
 
     <!-- Coverage History Feed -->
     <div>
-      <h2 class="text-xl font-bold text-white mb-6">Historical Research Coverage ({reports.length} Reports)</h2>
+      <div class="flex items-center justify-between pb-3 mb-4 border-b border-[#2e2e2e] font-mono">
+        <h2 class="text-sm font-bold text-white uppercase">Historical Research Coverage ({reports.length} Reports)</h2>
+        <span class="text-xs text-[#8e8e8e]">SORT: CHRONOLOGICAL DESCENDING</span>
+      </div>
       
-      <div class="space-y-4">
+      <div class="divide-y divide-[#222222] border border-[#2e2e2e] bg-[#181818]">
         {reports.map((report) => (
-          <article class="p-5 rounded-xl border border-slate-800 bg-slate-900/40 hover:border-slate-700 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <div class="flex items-center gap-3 text-xs text-slate-400 mb-1">
-                <time datetime={new Date(report.data.publishDate).toISOString()} class="font-mono">
+          <article class="p-3.5 hover:bg-[#1f1f1f] transition-none flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs">
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-wrap items-center gap-2 text-[10px] text-[#8e8e8e] mb-1">
+                <time datetime={new Date(report.data.publishDate).toISOString()}>
                   {new Date(report.data.publishDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                 </time>
-                <span class={`font-mono font-bold ${report.data.movePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(2)}% Move
+                <span>&bull;</span>
+                <span class={`font-bold ${report.data.movePercent >= 0 ? 'text-[#00cc66]' : 'text-[#ff3344]'}`}>
+                  {report.data.movePercent >= 0 ? '+' : ''}{report.data.movePercent.toFixed(2)}% MOVE
                 </span>
-                <span class="text-slate-400">&bull;</span>
-                <span>P/E: <strong class="text-slate-200">{report.data.peRatio ? `${report.data.peRatio.toFixed(1)}x` : 'N/A'}</strong></span>
-                <span class="text-slate-400">&bull;</span>
-                <span>Cap: <strong class="text-slate-200">${(report.data.marketCap / 1e9).toFixed(1)}B</strong></span>
+                <span>&bull;</span>
+                <span>P/E: <strong class="text-white">{report.data.peRatio ? `${report.data.peRatio.toFixed(1)}x` : 'N/A'}</strong></span>
+                <span>&bull;</span>
+                <span>CAP: <strong class="text-white">${(report.data.marketCap / 1e9).toFixed(1)}B</strong></span>
               </div>
-              <h3 class="text-base font-bold text-white hover:text-emerald-400 transition-colors">
+              <h3 class="text-sm font-bold text-white hover:text-[#0055ff] transition-none truncate">
                 <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
               </h3>
             </div>
             <a
               href={path(`/reports/${report.slug}`)}
-              class="shrink-0 px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-emerald-400 transition-colors"
+              class="shrink-0 px-3 py-1 bg-[#121212] hover:bg-[#0055ff] hover:text-white text-[#0055ff] border border-[#2e2e2e] font-bold text-xs transition-none tap-target"
             >
-              Read Report &rarr;
+              [ VIEW REPORT ]
             </a>
           </article>
         ))}

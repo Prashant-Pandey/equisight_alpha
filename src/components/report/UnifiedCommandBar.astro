@@ -66,176 +66,142 @@ const tabs = [
 <div id="command-bar-hero-sentinel" class="h-0 w-full pointer-events-none"></div>
 
 <!-- Unified Adaptive Command Header & Sticky Bar -->
-<section class="mb-8" id="unified-command-section">
-  <!-- EXPANDED HERO CARD (Page Top) -->
-  <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 sm:p-7 shadow-2xl relative overflow-hidden">
-    <!-- Background subtle gradient glow -->
-    <div class="absolute -right-20 -top-20 w-80 h-80 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none"></div>
-
+<section class="mb-6" id="unified-command-section">
+  <!-- EXPANDED HERO CARD (Utilitarian Clean Layout) -->
+  <div class="border border-[#2e2e2e] bg-[#181818] p-4 sm:p-5 font-mono">
     <!-- Top Metadata Row -->
-    <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-800">
-      <div class="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-4 border-b border-[#222222]">
+      <div class="flex flex-wrap items-center gap-2 text-xs">
         <a
           href={path(`/tickers/${report.ticker.toLowerCase()}`)}
-          class="font-black px-2.5 py-1 rounded-lg bg-emerald-950 text-emerald-400 border border-emerald-500/40 hover:bg-emerald-900 transition-colors"
+          class="font-black px-2 py-0.5 bg-[#121212] text-white border border-[#0055ff] hover:bg-[#0055ff] transition-none"
         >
           ${report.ticker}
         </a>
-        <span class="text-slate-300 font-medium">{report.companyName}</span>
-        <span class="text-slate-500">&bull;</span>
-        <span class="text-slate-400">{report.sector}</span>
-        <span class="text-slate-500">&bull;</span>
-        <span class="uppercase bg-slate-800 text-slate-300 px-2 py-0.5 rounded text-[11px]">
+        <span class="text-white font-bold">{report.companyName}</span>
+        <span class="text-[#666666]">|</span>
+        <span class="text-[#8e8e8e]">{report.sector}</span>
+        <span class="text-[#666666]">|</span>
+        <span class="uppercase bg-[#121212] text-[#8e8e8e] px-1.5 py-0.5 border border-[#2e2e2e] text-[10px]">
           {report.exchange} : {report.region}
         </span>
-        <time datetime={publishDateIso} class="text-slate-400 text-[11px]">{formattedDate}</time>
+        <time datetime={publishDateIso} class="text-[#8e8e8e] text-[10px]">{formattedDate}</time>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
         <!-- PDF Export -->
         <a
           href={`${printUrl}?autoprint=true`}
           target="_blank"
           rel="noopener"
           id="export-pdf-action-btn"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-xs font-bold transition-all shadow-md cursor-pointer border border-emerald-400/30"
-          title="Download institutional research PDF formatted to Morningstar 7-Module standards (Shortcut: ⌘P)"
+          class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0055ff] hover:bg-[#0044cc] text-white text-xs font-bold transition-none border border-[#0055ff] cursor-pointer tap-target"
+          title="Print / Export Report"
         >
-          <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 2l3 3h-3V4zm-1 9V9h-2v4H6l4 4 4-4h-2z" clip-rule="evenodd"/>
-          </svg>
-          <span class="hidden sm:inline">Export</span>
-          <span class="hidden md:inline-block text-[10px] text-emerald-200 font-normal px-1 rounded bg-emerald-700/50">⌘P</span>
+          [ PDF EXPORT ]
         </a>
 
         <!-- CSV Export -->
         <button
           type="button"
           id="cmd-export-csv-btn"
-          class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs font-bold transition-all border border-slate-700 cursor-pointer shadow-sm"
+          class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#121212] hover:bg-[#222222] text-[#e5e5e5] text-xs font-bold transition-none border border-[#2e2e2e] cursor-pointer tap-target"
           title="Export spreadsheet model data to CSV"
         >
-          <svg class="w-3.5 h-3.5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          <span class="hidden sm:inline">Model CSV</span>
+          [ CSV MODEL ]
         </button>
       </div>
     </div>
 
-    <!-- Main Title & Price Display -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-      <!-- Left 7 Cols: Title & Valuation Tag -->
-      <div class="md:col-span-7 space-y-3">
-        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-snug">
+    <!-- Main Title & Price Display (12-Col Modular Layout) -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+      <!-- Left 8 Cols: Title & Valuation Tag -->
+      <div class="md:col-span-8 space-y-2">
+        <h1 class="text-xl sm:text-2xl font-bold text-white tracking-tight uppercase">
           {report.title}
         </h1>
-        <div class="flex flex-wrap items-center gap-3 text-xs font-mono">
-          <span class="text-amber-300 font-bold text-sm">
-            Rating: {starRatingString || 'Rating In Review'}
+        <div class="flex flex-wrap items-center gap-3 text-xs text-[#8e8e8e]">
+          <span class="text-white font-bold">
+            RATING: {starRatingString || 'IN REVIEW'}
           </span>
-          <span class="text-slate-500">&bull;</span>
-          <span class="text-slate-400">
-            Sector: <strong class="text-slate-200">{report.industry}</strong>
+          <span class="text-[#666666]">|</span>
+          <span>
+            INDUSTRY: <strong class="text-[#e5e5e5]">{report.industry}</strong>
           </span>
         </div>
       </div>
 
-      <!-- Right 5 Cols: Large Price & Move Card -->
-      <div class="md:col-span-5 p-4 rounded-xl border border-slate-800 bg-slate-950/70 flex items-center justify-between">
+      <!-- Right 4 Cols: Large Price & Move Block -->
+      <div class="md:col-span-4 p-3 border border-[#2e2e2e] bg-[#121212] flex items-center justify-between">
         <div>
-          <div class="text-[10px] uppercase tracking-wider text-slate-400 font-mono font-semibold">
+          <div class="text-[10px] uppercase text-[#8e8e8e]">
             {priceDisplayLabel}
           </div>
-          <div class="text-3xl sm:text-4xl font-black text-white font-mono mt-0.5">
-            ${currentPrice.toFixed(2)} <span class="text-xs text-slate-400 font-normal">{report.currency || 'USD'}</span>
+          <div class="text-2xl sm:text-3xl font-black text-white mt-0.5">
+            ${currentPrice.toFixed(2)} <span class="text-xs text-[#8e8e8e] font-normal">{report.currency || 'USD'}</span>
           </div>
         </div>
 
-        <div class={`text-right px-4 py-2 rounded-lg border font-mono ${isPositive ? 'bg-emerald-950/80 border-emerald-500/30 text-emerald-400' : 'bg-rose-950/80 border-rose-500/30 text-rose-400'}`}>
-          <div class="text-[10px] uppercase font-sans tracking-wide">Today's Move</div>
-          <div class="text-xl font-black">{isPositive ? '+' : ''}{report.movePercent.toFixed(2)}%</div>
+        <div class={`text-right px-3 py-1.5 border ${isPositive ? 'border-[#00cc66] text-[#00cc66]' : 'border-[#ff3344] text-[#ff3344]'}`}>
+          <div class="text-[9px] uppercase tracking-wider text-[#8e8e8e]">SESSION MOVE</div>
+          <div class="text-lg font-black">{isPositive ? '+' : ''}{report.movePercent.toFixed(2)}%</div>
         </div>
       </div>
     </div>
 
-    <!-- 52-WEEK RANGE & INTRINSIC BENCHMARK CONTINUOUS SCALE -->
-    <div class="mt-6 pt-5 border-t border-slate-800">
-      <div class="flex items-center justify-between text-xs font-mono mb-2">
-        <span class="text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
-          <span>52-Week Range & Intrinsic Target Scale</span>
+    <!-- 52-WEEK RANGE & INTRINSIC BENCHMARK SCALE (Utilitarian High-Contrast) -->
+    <div class="mt-4 pt-4 border-t border-[#222222]">
+      <div class="flex items-center justify-between text-xs mb-1.5">
+        <span class="text-[#8e8e8e] font-bold uppercase">
+          52-WEEK RANGE & INTRINSIC FVE SPREAD
         </span>
-        <span class="text-[11px] text-slate-400">
-          Fair Value Target: <strong class="text-sky-400">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
+        <span class="text-xs">
+          CONSENSUS FAIR VALUE: <strong class="text-[#0055ff]">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
         </span>
       </div>
 
       <!-- Horizontal Continuous Range Meter -->
-      <div class="relative h-6 bg-slate-950/90 rounded-lg border border-slate-800 overflow-hidden flex items-center">
-        <!-- Background gradient zone: Green zone below 5-Star buy, Red zone above 1-Star trim -->
+      <div class="relative h-4 bg-[#121212] border border-[#2e2e2e] overflow-hidden flex items-center">
+        <!-- Undervalued Zone -->
         {fiveStarPrice && (
           <div
-            class="absolute left-0 top-0 bottom-0 bg-emerald-500/15 border-r border-emerald-500/40"
+            class="absolute left-0 top-0 bottom-0 bg-[#00cc66]/20 border-r border-[#00cc66]"
             style={`width: ${buyPct}%;`}
-            title={`5-Star Undervalued Zone (< $${fiveStarPrice.toFixed(2)})`}
           ></div>
         )}
+        <!-- Overvalued Zone -->
         {oneStarPrice && (
           <div
-            class="absolute right-0 top-0 bottom-0 bg-rose-500/15 border-l border-rose-500/40"
+            class="absolute right-0 top-0 bottom-0 bg-[#ff3344]/20 border-l border-[#ff3344]"
             style={`left: ${trimPct}%; width: ${100 - trimPct}%;`}
-            title={`1-Star Overvalued Zone (> $${oneStarPrice.toFixed(2)})`}
           ></div>
         )}
 
-        <!-- Consensus FVE Target Pip -->
+        <!-- Consensus FVE Target Line -->
         {consensusFairValue && (
           <div
-            class="absolute top-0 bottom-0 w-1 bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)] -translate-x-1/2 z-10"
+            class="absolute top-0 bottom-0 w-0.5 bg-[#0055ff] -translate-x-1/2 z-10"
             style={`left: ${fvePct}%;`}
-            title={`Consensus Fair Value Estimate: $${consensusFairValue.toFixed(2)}`}
           ></div>
         )}
 
         <!-- Spot Market Price Marker -->
         <div
-          class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 z-20 flex flex-col items-center"
+          class="absolute top-0 bottom-0 w-1 bg-white -translate-x-1/2 z-20"
           style={`left: ${spotPct}%;`}
           title={`Spot Price: $${currentPrice.toFixed(2)}`}
-        >
-          <div class="w-3.5 h-3.5 rounded-full bg-white border-2 border-emerald-500 shadow-md"></div>
-        </div>
+        ></div>
       </div>
 
       <!-- Scale Labels Below Bar -->
-      <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 mt-2">
-        <div>
-          <span>52W Low: </span>
-          <strong class="text-slate-300">${lowBound.toFixed(2)}</strong>
-        </div>
-        {fiveStarPrice && (
-          <div class="text-emerald-400">
-            <span>5★ Buy Below: </span>
-            <strong>${fiveStarPrice.toFixed(2)}</strong>
-          </div>
-        )}
-        <div class="text-white font-bold">
-          <span>Current: </span>
-          <strong>${currentPrice.toFixed(2)}</strong>
-        </div>
-        {consensusFairValue && (
-          <div class="text-sky-400 font-bold">
-            <span>FVE Target: </span>
-            <strong>${consensusFairValue.toFixed(2)}</strong>
-          </div>
-        )}
-        {oneStarPrice && (
-          <div class="text-rose-400">
-            <span>1★ Trim Above: </span>
-            <strong>${oneStarPrice.toFixed(2)}</strong>
-          </div>
-        )}
-        <div>
-          <span>52W High: </span>
-          <strong class="text-slate-300">${highBound.toFixed(2)}</strong>
-        </div>
+      <div class="flex items-center justify-between text-[10px] text-[#8e8e8e] mt-1.5">
+        <div>52W LOW: <strong class="text-white">${lowBound.toFixed(2)}</strong></div>
+        {fiveStarPrice && <div>5★ BUY &lt; <strong class="text-[#00cc66]">${fiveStarPrice.toFixed(2)}</strong></div>}
+        <div class="text-white font-bold">SPOT: ${currentPrice.toFixed(2)}</div>
+        {consensusFairValue && <div>FVE: <strong class="text-[#0055ff]">${consensusFairValue.toFixed(2)}</strong></div>}
+        {oneStarPrice && <div>1★ TRIM &gt; <strong class="text-[#ff3344]">${oneStarPrice.toFixed(2)}</strong></div>}
+        <div>52W HIGH: <strong class="text-white">${highBound.toFixed(2)}</strong></div>
       </div>
     </div>
   </div>

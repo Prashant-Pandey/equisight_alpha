@@ -17,32 +17,31 @@ const categories = Object.keys(definitionsByCategory);
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header Bar -->
-    <div class="mb-10 pb-6 border-b border-slate-800">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-3">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Institutional Methodology Registry
+    <div class="mb-6 pb-4 border-b border-[#2e2e2e] font-mono">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
+        <div class="inline-block px-2 py-0.5 text-xs font-bold bg-[#181818] border border-[#0055ff] text-[#0055ff] uppercase">
+          HEURISTICS & ALGORITHMIC SPECIFICATION REGISTRY
         </div>
-        <div class="text-xs font-mono text-slate-400">
-          Version 1.2 · Active Rules: <span class="text-emerald-400 font-bold">{totalDefinitions}</span>
+        <div class="text-xs text-[#8e8e8e]">
+          VERSION 1.2 · ACTIVE DEFINITIONS: <span class="text-white font-bold">{totalDefinitions}</span>
         </div>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+      <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight uppercase">
         Financial Definitions & Quantitative Heuristics
       </h1>
-      <p class="text-sm text-slate-400 mt-2 max-w-3xl leading-relaxed">
+      <p class="text-xs text-[#8e8e8e] mt-1 max-w-3xl leading-relaxed">
         Canonical domain definitions, statutory anchors, quantitative thresholds, and reviewer audit instructions governing algorithmic classification across EquiSight Alpha equity research.
       </p>
 
       <!-- Category Filter Pills -->
-      <div class="flex flex-wrap gap-2 mt-6 pt-4 border-t border-slate-800/80">
-        <span class="text-xs text-slate-400 self-center mr-1 font-mono uppercase">Categories:</span>
+      <div class="flex flex-wrap gap-1.5 mt-4 pt-3 border-t border-[#222222]">
+        <span class="text-xs text-[#8e8e8e] self-center mr-1 uppercase">CATEGORIES:</span>
         {categories.map((cat, idx) => (
           <a
             href={`#cat-${idx}`}
-            class="text-xs px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-emerald-400 hover:border-emerald-500/40 transition-colors"
+            class="text-xs px-2.5 py-1 bg-[#181818] border border-[#2e2e2e] text-[#e5e5e5] hover:border-[#0055ff] hover:text-[#0055ff] transition-none"
           >
             {cat}
           </a>
@@ -51,12 +50,12 @@ const categories = Object.keys(definitionsByCategory);
     </div>
 
     <!-- Reviewer Notice Box -->
-    <div class="mb-12 p-5 rounded-xl bg-slate-900/70 border border-slate-800 flex items-start gap-4">
-      <div class="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-lg shrink-0">
-        ⚖️
+    <div class="mb-8 p-4 bg-[#181818] border border-[#2e2e2e] flex items-start gap-3 font-mono text-xs">
+      <div class="px-2 py-1 bg-[#121212] border border-[#2e2e2e] text-[#0055ff] font-bold shrink-0">
+        AUDIT
       </div>
-      <div class="text-xs text-slate-300 leading-relaxed space-y-1">
-        <div class="font-bold text-white text-sm">Human Reviewer & Compliance Guide</div>
+      <div class="text-[#8e8e8e] leading-relaxed space-y-1">
+        <div class="font-bold text-white uppercase text-xs">Human Reviewer & Compliance Guide</div>
         <p>
           All classifications and ratings in our reports are computed strictly against the centralized rules below. Domain experts reviewing reports should verify that asset profiles conform to these thresholds. Special industry standards (e.g., REIT leverage or high-growth CapEx cycles) are highlighted in the audit notes.
         </p>
@@ -64,59 +63,59 @@ const categories = Object.keys(definitionsByCategory);
     </div>
 
     <!-- Definitions Sections -->
-    <div class="space-y-14">
+    <div class="space-y-10">
       {categories.map((category, catIdx) => {
         const defs: FinancialDomainDefinition[] = definitionsByCategory[category as keyof typeof definitionsByCategory] || [];
         return (
-          <section id={`cat-${catIdx}`} class="scroll-mt-20">
-            <div class="flex items-center gap-3 mb-6 pb-2 border-b border-slate-800">
-              <h2 class="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>
+          <section id={`cat-${catIdx}`} class="scroll-mt-20 font-mono">
+            <div class="flex items-center gap-2 mb-4 pb-2 border-b border-[#2e2e2e]">
+              <span class="w-2 h-2 bg-[#0055ff]"></span>
+              <h2 class="text-base font-bold text-white uppercase tracking-tight">
                 {category}
               </h2>
-              <span class="text-xs font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">
-                {defs.length} {defs.length === 1 ? 'Rule' : 'Rules'}
+              <span class="text-xs px-2 py-0.5 border border-[#2e2e2e] bg-[#181818] text-[#8e8e8e]">
+                {defs.length} {defs.length === 1 ? 'RULE' : 'RULES'}
               </span>
             </div>
 
-            <div class="space-y-8">
+            <div class="space-y-4">
               {defs.map((def) => (
-                <div class="rounded-xl border border-slate-800/80 bg-slate-900/50 overflow-hidden hover:border-slate-700 transition-colors">
+                <div class="border border-[#2e2e2e] bg-[#181818] overflow-hidden">
                   <!-- Definition Card Header -->
-                  <div class="p-5 border-b border-slate-800/80 bg-slate-900/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div class="p-4 border-b border-[#2e2e2e] bg-[#141414] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <div class="text-xs font-mono text-emerald-400 uppercase tracking-wider mb-1">
-                        ID: {def.id}
+                      <div class="text-[10px] text-[#0055ff] uppercase tracking-wider mb-0.5 font-bold">
+                        RULE ID: {def.id}
                       </div>
-                      <h3 class="text-base sm:text-lg font-bold text-white">
+                      <h3 class="text-sm sm:text-base font-bold text-white uppercase">
                         {def.term}
                       </h3>
                     </div>
                     {def.regulatoryStandard && (
-                      <div class="text-[11px] font-mono px-2.5 py-1 rounded bg-amber-500/10 border border-amber-500/30 text-amber-300 self-start sm:self-auto">
-                        🏛️ {def.regulatoryStandard}
+                      <div class="text-[10px] px-2 py-0.5 border border-[#2e2e2e] bg-[#121212] text-[#e5e5e5] self-start sm:self-auto">
+                        STANDARD: {def.regulatoryStandard}
                       </div>
                     )}
                   </div>
 
                   <!-- Definition Card Body -->
-                  <div class="p-5 sm:p-6 space-y-5 text-xs text-slate-300">
+                  <div class="p-4 space-y-4 text-xs">
                     <!-- Academic / Methodology Anchor -->
                     <div>
-                      <div class="text-[11px] font-mono uppercase text-slate-400 mb-1">Methodology Anchor</div>
-                      <div class="text-slate-200 font-medium">{def.academicOrMethodologyAnchor}</div>
+                      <div class="text-[10px] uppercase text-[#8e8e8e] mb-0.5">METHODOLOGY ANCHOR</div>
+                      <div class="text-white font-medium">{def.academicOrMethodologyAnchor}</div>
                     </div>
 
                     <!-- Logic / Formula -->
-                    <div class="p-3 rounded-lg bg-slate-950 border border-slate-800/80 font-mono text-[11px] text-emerald-300 overflow-x-auto">
-                      <div class="text-[10px] uppercase text-slate-400 mb-1 font-sans">Formal Logic Formulation:</div>
+                    <div class="p-3 bg-[#121212] border border-[#2e2e2e] text-[11px] text-[#e5e5e5] overflow-x-auto">
+                      <div class="text-[9px] uppercase text-[#8e8e8e] mb-1">FORMAL LOGIC FORMULATION:</div>
                       <code>{def.formulaOrLogicSummary}</code>
                     </div>
 
                     <!-- Methodology Rationale -->
                     <div>
-                      <div class="text-[11px] font-mono uppercase text-slate-400 mb-1">Domain Rationale</div>
-                      <p class="leading-relaxed text-slate-300">
+                      <div class="text-[10px] uppercase text-[#8e8e8e] mb-0.5">DOMAIN RATIONALE</div>
+                      <p class="leading-relaxed text-[#8e8e8e]">
                         {def.methodologyRationale}
                       </p>
                     </div>
@@ -124,22 +123,22 @@ const categories = Object.keys(definitionsByCategory);
                     <!-- Tiers / Outputs Table if available -->
                     {def.tiers && def.tiers.length > 0 && (
                       <div>
-                        <div class="text-[11px] font-mono uppercase text-slate-400 mb-2">Tiers & Classification Output Matrix</div>
-                        <div class="overflow-x-auto border border-slate-800 rounded-lg">
+                        <div class="text-[10px] uppercase text-[#8e8e8e] mb-1.5">TIERS & CLASSIFICATION OUTPUT MATRIX</div>
+                        <div class="overflow-x-auto border border-[#2e2e2e]">
                           <table class="w-full text-left border-collapse text-[11px]">
-                            <thead class="bg-slate-950 text-slate-400 border-b border-slate-800 font-mono">
+                            <thead class="bg-[#121212] text-[#8e8e8e] border-b border-[#2e2e2e]">
                               <tr>
-                                <th class="p-2.5 font-semibold">Tier Label</th>
-                                <th class="p-2.5 font-semibold">Quantitative Criteria</th>
-                                <th class="p-2.5 font-semibold">Analyst Implication</th>
+                                <th class="p-2 uppercase font-bold">Tier Label</th>
+                                <th class="p-2 uppercase font-bold">Quantitative Criteria</th>
+                                <th class="p-2 uppercase font-bold">Analyst Implication</th>
                               </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-800/60 font-sans">
+                            <tbody class="divide-y divide-[#222222]">
                               {def.tiers.map((tier) => (
-                                <tr class="hover:bg-slate-800/30">
-                                  <td class="p-2.5 font-bold text-white whitespace-nowrap">{tier.label}</td>
-                                  <td class="p-2.5 font-mono text-emerald-400">{tier.criteria}</td>
-                                  <td class="p-2.5 text-slate-300">{tier.analystImplication}</td>
+                                <tr class="hover:bg-[#1f1f1f]">
+                                  <td class="p-2 font-bold text-white whitespace-nowrap">{tier.label}</td>
+                                  <td class="p-2 text-[#00cc66] font-mono">{tier.criteria}</td>
+                                  <td class="p-2 text-[#8e8e8e]">{tier.analystImplication}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -149,9 +148,9 @@ const categories = Object.keys(definitionsByCategory);
                     )}
 
                     <!-- Reviewer Audit Notes -->
-                    <div class="p-4 rounded-lg bg-amber-500/5 border border-amber-500/20 text-slate-300">
-                      <div class="flex items-center gap-2 text-amber-400 font-bold text-xs mb-1">
-                        <span>🔍</span> Human Reviewer Audit Note
+                    <div class="p-3 bg-[#121212] border border-[#2e2e2e] text-[#8e8e8e]">
+                      <div class="text-white font-bold text-xs mb-1 uppercase">
+                        [ REVIEWER AUDIT NOTE ]
                       </div>
                       <p class="leading-relaxed">
                         {def.reviewerNotes}
@@ -167,14 +166,14 @@ const categories = Object.keys(definitionsByCategory);
     </div>
 
     <!-- Bottom Back to Top / Links -->
-    <div class="mt-14 pt-8 border-t border-slate-800 flex flex-wrap items-center justify-between gap-4 text-xs">
-      <a href="#cat-0" class="text-emerald-400 hover:underline flex items-center gap-1 font-mono">
-        ↑ Return to top
+    <div class="mt-8 pt-4 border-t border-[#2e2e2e] flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+      <a href="#cat-0" class="text-[#0055ff] hover:underline flex items-center gap-1">
+        [&uarr; TOP OF REGISTRY]
       </a>
-      <div class="flex gap-4 text-slate-400">
-        <a href={path('/reports')} class="hover:text-white transition-colors">Equity Reports</a>
+      <div class="flex gap-4 text-[#8e8e8e]">
+        <a href={path('/reports')} class="hover:text-white transition-none">RESEARCH DATABASE</a>
         <span>·</span>
-        <a href={path('/disclaimer')} class="hover:text-white transition-colors">Compliance & Exemption</a>
+        <a href={path('/disclaimer')} class="hover:text-white transition-none">STATUTORY DISCLAIMER</a>
       </div>
     </div>
   </div>
