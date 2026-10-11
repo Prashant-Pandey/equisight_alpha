@@ -2,11 +2,12 @@ import { fetchWithRetry } from '../utils/httpClient.js';
 import { historyTracker } from '../storage/historyTracker.js';
 import { CONFIG } from '../config.js';
 import { webScraper } from './webScraper.js';
-import type { MarketMover } from '../types.js';
+import { archetypeScreener, type ArchetypeCandidate } from './archetypeScreener.js';
+import type { MarketMover, StockArchetype } from '../types.js';
 
 import { resolveTradingVenue, isPennyStock as checkPennyStock } from '../../../src/utils/financialClassification.js';
 
-export { resolveTradingVenue };
+export { resolveTradingVenue, archetypeScreener, type StockArchetype };
 
 export class MarketMoverIngestor {
   private rawQuoteCache = new Map<string, any>();
@@ -121,6 +122,60 @@ export class MarketMoverIngestor {
   }
 
   /**
+   * Institutional Archetype Equity Selection Engine.
+   * Selects high-conviction equities according to institutional archetypes:
+   *  - 'moat': Wide Moat at a Discount (Morningstar 5-Star / Intrinsic Value)
+   *  - 'pead': Earnings Catalyst & PEAD (Post-Earnings Announcement Drift)
+   *  - 'contrarian': Contrarian Blue-Chip Pullbacks (Oversold Quality / Mean Reversion)
+   *  - 'quant': Multi-Factor Quantitative Composite (Systematic 4-Pillar Model)
+   *  - 'all': 5 stocks per archetype (20 stocks total)
+   */
+  public async getArchetypeMovers(
+    archetype: StockArchetype | 'all' = 'all',
+    count = 5,
+    options: { ignoreLockout?: boolean } = {}
+  ): Promise<MarketMover[]> {
+    console.log(`[MarketMoverIngestor] Selecting high-conviction institutional equities (archetype: ${archetype})...`);
+    const movers = await archetypeScreener.getArchetypeMovers(archetype, count, options);
+    const hydratedMovers: MarketMover[] = [];
+
+    for (const m of movers) {
+      try {
+        console.log(`[MarketMoverIngestor] Hydrating live market quote for selected archetype equity $${m.ticker}...`);
+        const live = await this.getMoverForTicker(m.ticker);
+        const merged: MarketMover = {
+          ...live,
+          archetype: m.archetype,
+          archetypeScore: m.archetypeScore
+        };
+        hydratedMovers.push(merged);
+      } catch (err: any) {
+        console.warn(`[MarketMoverIngestor] Could not hydrate live quote for $${m.ticker}: ${err.message}. Retaining screener candidate data.`);
+        this.rawQuoteCache.set(m.ticker.toUpperCase(), {
+          symbol: m.ticker,
+          regularMarketPrice: m.price,
+          regularMarketChange: m.change,
+          regularMarketChangePercent: m.changePercent,
+          regularMarketVolume: m.volume,
+          averageDailyVolume3Month: m.avgVolume,
+          marketCap: m.marketCap,
+          sharesOutstanding: m.sharesOutstanding,
+          longName: m.name,
+          shortName: m.name,
+          exchange: m.exchange,
+          currency: m.currency
+        });
+        hydratedMovers.push(m);
+      }
+    }
+
+    return hydratedMovers;
+  }
+
+  /**
+   * @deprecated Naive daily mover selection is deprecated in favor of institutional-grade archetype selection (getArchetypeMovers).
+   * Maintained for legacy compatibility.
+   *
    * Fetches top movers, excludes trailing 12-month coverage, and returns 5 gainers + 5 losers.
    * If includePennyStocks is true, also attaches eligible penny stocks (2 gainers, 3 losers).
    */
@@ -129,6 +184,7 @@ export class MarketMoverIngestor {
     losers: MarketMover[];
     pennyStocks?: { gainers: MarketMover[]; losers: MarketMover[] };
   }> {
+    console.warn('[MarketMoverIngestor] Deprecation Notice: getEligibleMovers() selects naive daily price movers. Consider using getArchetypeMovers() for institutional equity research.');
     console.log('[MarketMoverIngestor] Fetching daily market movers for US and European equities...');
 
     const candidates = await this.fetchLiveScreenerMovers();

@@ -10,6 +10,8 @@
     "preview": "astro preview",
     "pipeline:run": "tsx pipeline/src/orchestrator.ts --run-now",
     "pipeline:run:tickers": "tsx pipeline/src/orchestrator.ts --tickers",
+    "pipeline:archetype": "tsx pipeline/src/orchestrator.ts --archetype",
+    "pipeline:archetype:all": "tsx pipeline/src/orchestrator.ts --archetype=all",
     "pipeline:cron": "tsx pipeline/src/startCron.ts",
     "pipeline:stop_cron": "tsx pipeline/src/stopCron.ts",
     "pipeline:stop-cron": "tsx pipeline/src/stopCron.ts",
@@ -17,7 +19,7 @@
     "pipeline:distribute": "tsx pipeline/src/distribution/socialPublisher.ts",
     "pipeline:sitemap": "tsx pipeline/src/seo/sitemapGenerator.ts",
     "pipeline:test": "tsx tests/pipeline.test.ts",
-    "test": "tsx tests/centralized_definitions.test.ts && tsx tests/schema_enforcement.test.ts && tsx tests/two_part_report.test.ts && tsx tests/report_structure_improvements.test.ts && tsx tests/report_feedback_improvements.test.ts && tsx tests/sitemap_feature.test.ts"
+    "test": "tsx tests/centralized_definitions.test.ts && tsx tests/schema_enforcement.test.ts && tsx tests/two_part_report.test.ts && tsx tests/report_structure_improvements.test.ts && tsx tests/report_feedback_improvements.test.ts && tsx tests/sitemap_feature.test.ts && tsx tests/stock_selection_archetype.test.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.0",

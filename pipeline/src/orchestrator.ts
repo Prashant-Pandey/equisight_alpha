@@ -13,7 +13,7 @@ import { sitemapGenerator } from './seo/sitemapGenerator.js';
 import { socialPublisher } from './distribution/socialPublisher.js';
 import { buildAndDeployManager } from './deploy/buildAndDeploy.js';
 import { historyTracker } from './storage/historyTracker.js';
-import type { MarketMover } from './types.js';
+import type { MarketMover, StockArchetype } from './types.js';
 
 export class PipelineOrchestrator {
   private isRunning = false;
@@ -110,7 +110,7 @@ export class PipelineOrchestrator {
    */
   public async runExecutionCycle(
     cycleName = 'MANUAL_TRIGGER',
-    options: { specificTickers?: string[] } = {}
+    options: { specificTickers?: string[]; archetype?: StockArchetype | 'all'; legacyMovers?: boolean } = {}
   ): Promise<void> {
     if (this.isRunning) {
       console.warn(`[PipelineOrchestrator] Cycle ${cycleName} skipped: Previous cycle is still actively processing.`);
@@ -147,16 +147,32 @@ export class PipelineOrchestrator {
         }
 
         console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} targeted equities (${targetMovers.map(m => `$${m.ticker}`).join(', ')})`);
-      } else {
-        // 1. Ingest Market Movers and Penny Stocks, applying 12-Month Lockout Filter
+      } else if (options.legacyMovers) {
+        // Legacy Movers Mode (Deprecated)
         const { gainers, losers, pennyStocks } = await marketMoverIngestor.getEligibleMovers({ includePennyStocks: true });
         targetMovers = [
           ...gainers,
           ...losers,
           ...(pennyStocks ? [...pennyStocks.gainers, ...pennyStocks.losers] : [])
         ];
+        console.log(`[PipelineOrchestrator] Target movers queue established (Legacy Mode): ${targetMovers.length} equities`);
+      } else {
+        // Institutional Equity Selection Archetype Mode (§8.1)
+        const archetype = options.archetype || getScheduledDayArchetype();
+        console.log(`[PipelineOrchestrator] Executing Institutional Equity Selection Archetype (Mode: ${archetype.toUpperCase()})...`);
+        try {
+          targetMovers = await marketMoverIngestor.getArchetypeMovers(archetype);
+        } catch (archErr: any) {
+          console.warn(`[PipelineOrchestrator] Archetype selection warning: ${archErr.message}. Falling back to eligible movers...`);
+        }
 
-        console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} equities (${gainers.length} gainers, ${losers.length} losers${pennyStocks ? `, ${pennyStocks.gainers.length + pennyStocks.losers.length} penny stocks` : ''})`);
+        if (targetMovers.length === 0) {
+          console.warn('[PipelineOrchestrator] Archetype screening returned 0 candidates. Falling back to eligible movers...');
+          const { gainers, losers } = await marketMoverIngestor.getEligibleMovers();
+          targetMovers = [...gainers, ...losers];
+        }
+
+        console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} institutional equities (${targetMovers.map(m => `$${m.ticker}${m.archetype ? ` [${m.archetype.toUpperCase()}]` : ''}`).join(', ')})`);
       }
 
       // 2. Ingest Global Macro Context
@@ -274,7 +290,54 @@ export function parseTickersFromArgv(argv: string[]): string[] {
   return [...new Set(tickers)];
 }
 
+/**
+ * Resolves the scheduled institutional archetype based on alternating weekday rotation:
+ *   Monday:    'moat' (Wide Moat at a Discount)
+ *   Tuesday:   'pead' (Earnings Catalyst & PEAD)
+ *   Wednesday: 'contrarian' (Contrarian Blue-Chip Pullbacks)
+ *   Thursday:  'quant' (Multi-Factor Quantitative Composite)
+ *   Friday/Sat/Sun: 'all' (Weekly Best-of-20: 5 per archetype)
+ */
+export function getScheduledDayArchetype(date = new Date()): StockArchetype | 'all' {
+  const day = date.getDay(); // 0 = Sun, 1 = Mon, ..., 5 = Fri, 6 = Sat
+  switch (day) {
+    case 1: return 'moat';
+    case 2: return 'pead';
+    case 3: return 'contrarian';
+    case 4: return 'quant';
+    default: return 'all';
+  }
+}
+
+/**
+ * Parses archetype selection from command-line arguments.
+ * Supports:
+ *   --archetype=moat
+ *   --archetype moat
+ *   --archetype=all
+ */
+export function parseArchetypeFromArgv(argv: string[]): StockArchetype | 'all' | null {
+  const inlineMatch = argv.find((a) => a.startsWith('--archetype='));
+  if (inlineMatch) {
+    const val = inlineMatch.split('=').slice(1).join('=').toLowerCase().trim();
+    if (['moat', 'pead', 'contrarian', 'quant', 'all'].includes(val)) {
+      return val as StockArchetype | 'all';
+    }
+  }
+
+  const flagIdx = argv.findIndex((a) => a === '--archetype');
+  if (flagIdx !== -1 && argv[flagIdx + 1]) {
+    const val = argv[flagIdx + 1].toLowerCase().trim();
+    if (['moat', 'pead', 'contrarian', 'quant', 'all'].includes(val)) {
+      return val as StockArchetype | 'all';
+    }
+  }
+
+  return null;
+}
+
 // CLI Execution Support:
+// Run with "tsx pipeline/src/orchestrator.ts --archetype <moat|pead|contrarian|quant|all>" for institutional screening.
 // Run with "tsx pipeline/src/orchestrator.ts --tickers <SYMBOL1> <SYMBOL2>" for targeted equities.
 // Run with "tsx pipeline/src/orchestrator.ts --run-now" for an immediate one-off cycle.
 // Run with "tsx pipeline/src/orchestrator.ts" to start the continuous cron daemon in the background.
@@ -283,6 +346,9 @@ export function parseTickersFromArgv(argv: string[]): string[] {
 const hasTickersFlag = process.argv.includes('--tickers') ||
   process.argv.includes('--ticker') ||
   process.argv.some((a) => a.startsWith('--tickers=') || a.startsWith('--ticker='));
+
+const hasArchetypeFlag = process.argv.includes('--archetype') ||
+  process.argv.some((a) => a.startsWith('--archetype='));
 
 if (hasTickersFlag) {
   const tickers = parseTickersFromArgv(process.argv);
@@ -304,9 +370,20 @@ if (hasTickersFlag) {
     console.error('[CLI] Unhandled error during targeted CLI execution:', err);
     process.exit(1);
   });
+} else if (hasArchetypeFlag) {
+  const archetype = parseArchetypeFromArgv(process.argv) || 'all';
+  console.log(`[CLI] Detected --archetype=${archetype} argument. Executing institutional equity screening cycle...`);
+  orchestrator.runExecutionCycle(`CLI_ARCHETYPE_${archetype.toUpperCase()}`, { archetype }).then(() => {
+    console.log('[CLI] Archetype execution cycle finished.');
+    process.exit(0);
+  }).catch((err) => {
+    console.error('[CLI] Unhandled error during archetype CLI execution:', err);
+    process.exit(1);
+  });
 } else if (process.argv.includes('--run-now')) {
-  console.log('[CLI] Detected --run-now argument. Executing immediate cycle...');
-  orchestrator.runExecutionCycle('CLI_RUN_NOW').then(() => {
+  const archetype = parseArchetypeFromArgv(process.argv);
+  console.log(`[CLI] Detected --run-now argument${archetype ? ` (archetype: ${archetype})` : ''}. Executing immediate cycle...`);
+  orchestrator.runExecutionCycle('CLI_RUN_NOW', { archetype: archetype || undefined }).then(() => {
     console.log('[CLI] Execution cycle finished.');
     process.exit(0);
   }).catch((err) => {

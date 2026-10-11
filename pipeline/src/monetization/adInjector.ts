@@ -510,7 +510,14 @@ export class ProgrammaticAdInjector {
       competitorBenchmarking: fundamentals.competitorBenchmarking ?? analysis.competitorBenchmarking,
       businessSummary: fundamentals.businessSummary ?? analysis.businessSummary,
       segmentRevenueBreakdown: fundamentals.segmentRevenueBreakdown ?? analysis.segmentRevenueBreakdown,
-      sectorDynamics: fundamentals.sectorDynamics ?? analysis.sectorDynamics
+      sectorDynamics: fundamentals.sectorDynamics ?? analysis.sectorDynamics,
+
+      // Institutional Archetype Details
+      archetype: mover.archetype,
+      archetypeScore: mover.archetypeScore,
+      archetypeRank: mover.archetypeRank,
+      archetypeThesis: mover.archetypeThesis,
+      archetypeDetails: mover.archetypeDetails
     };
 
     // Inject contextual monetization units into Markdown body

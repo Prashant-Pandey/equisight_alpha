@@ -1,3 +1,5 @@
+export type StockArchetype = 'moat' | 'pead' | 'contrarian' | 'quant';
+
 export interface MarketMover {
   ticker: string;
   symbol: string;
@@ -17,6 +19,11 @@ export interface MarketMover {
   sharesOutstanding?: number;
   floatShares?: number;
   newsHeadline?: string;
+  archetype?: StockArchetype;
+  archetypeScore?: number;
+  archetypeRank?: number;
+  archetypeThesis?: string;
+  archetypeDetails?: Record<string, any>;
 }
 
 export interface ValuationMetricComparison {
