@@ -9,6 +9,7 @@ import { socialSentimentIngestor } from './ingestion/socialSentiment.js';
 import { synthesisAgent } from './llm/synthesisAgent.js';
 import { adInjector } from './monetization/adInjector.js';
 import { reportGenerator } from './storage/reportGenerator.js';
+import { sitemapGenerator } from './seo/sitemapGenerator.js';
 import { socialPublisher } from './distribution/socialPublisher.js';
 import { buildAndDeployManager } from './deploy/buildAndDeploy.js';
 import { historyTracker } from './storage/historyTracker.js';
@@ -182,6 +183,10 @@ export class PipelineOrchestrator {
           // E. Save Astro Content Collection Report & Update 12-Month Lockout
           const savedPath = await reportGenerator.saveReport(mover, analysis.slug, frontmatter, enrichedMarkdown);
 
+          // E.1 Dynamic Sitemap Regeneration (runs whenever a stock analysis report is generated)
+          const sitemapResult = await sitemapGenerator.generateSitemap();
+          console.log(`[PipelineOrchestrator] Dynamic sitemap regenerated (${sitemapResult.urlCount} URLs indexed) following $${mover.ticker} report.`);
+
           // F. Social Multi-Channel Distribution
           await socialPublisher.distributeReport(savedPath, frontmatter, analysis.slug);
 
@@ -200,9 +205,10 @@ export class PipelineOrchestrator {
 
       console.log(`\n[PipelineOrchestrator] Batch processing concluded. Generated ${publishedReports.length} / ${targetMovers.length} reports.`);
 
-      // 4. Trigger Astro Static Build & Deployment
+      // 4. Finalize Sitemap & Trigger Astro Static Build & Deployment
       if (publishedReports.length > 0) {
-        console.log('[PipelineOrchestrator] Triggering static build compilation...');
+        console.log('[PipelineOrchestrator] Finalizing sitemaps and triggering static build compilation...');
+        await sitemapGenerator.generateSitemap({ notifySearchEngines: true });
         const tickers = publishedReports.map((r) => `$${r.ticker}`).join(', ');
         const commitMsg = `chore(deploy): auto-publish ${publishedReports.length} reports (${tickers}) [${new Date().toISOString().split('T')[0]}]`;
         const buildResult = await buildAndDeployManager.executeBuildAndDeploy(commitMsg);

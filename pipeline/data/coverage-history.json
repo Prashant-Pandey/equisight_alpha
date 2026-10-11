@@ -7,5 +7,14 @@
     "category": "gainer",
     "movePercent": 15.8561,
     "slug": "fsly-gain-16-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NVDA",
+    "companyName": "NVIDIA Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T02:32:35.731Z",
+    "category": "gainer",
+    "movePercent": 5.2,
+    "slug": "aapl-pipeline-sitemap-verification-test"
   }
 ]

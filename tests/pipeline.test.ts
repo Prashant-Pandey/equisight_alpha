@@ -15,6 +15,8 @@ import {
   buildExecutiveSummaryUserPrompt
 } from '../pipeline/src/llm/prompts.js';
 import type { MarketMover, FundamentalMetrics, LLMAnalysisOutput, SocialSentiment } from '../pipeline/src/types.js';
+import { sitemapGenerator, SitemapGenerator } from '../pipeline/src/seo/sitemapGenerator.js';
+import { reportGenerator } from '../pipeline/src/storage/reportGenerator.js';
 import path from 'path';
 import fs from 'fs';
 
@@ -798,6 +800,56 @@ async function runTestSuite() {
   assert.ok(execInjection.frontmatter.executiveSummaryData !== undefined, 'Frontmatter must contain executiveSummaryData');
   assert.strictEqual(execInjection.frontmatter.executiveSummaryData?.catalystHeadline, detExecSummary.catalystHeadline);
   console.log('✓ Pass: Parallel Executive Summary & Session Catalyst synthesis engine and frontmatter verified.\n');
+
+  // 18. Test Dynamic Sitemap Feature (Runs Whenever Report is Generated)
+  console.log('Test 18: Dynamic XML Sitemap Generation Upon Report Creation');
+  const initialSitemapResult = await sitemapGenerator.generateSitemap();
+  assert.strictEqual(initialSitemapResult.success, true, 'Initial sitemap generation must succeed');
+  assert.ok(initialSitemapResult.urlCount >= 4, 'Must index at least 4 static URLs');
+
+  // Verify that saving a report automatically runs sitemap generation
+  const testSitemapSlug = 'aapl-pipeline-sitemap-verification-test';
+  const testReportPath = await reportGenerator.saveReport(
+    usMover,
+    testSitemapSlug,
+    adInjection.frontmatter,
+    '## Pipeline Sitemap Test Content'
+  );
+  assert.ok(fs.existsSync(testReportPath), 'Report markdown must be saved to disk');
+
+  // Check public sitemap files were updated
+  const publicSitemap0File = path.resolve(process.cwd(), 'public/sitemap-0.xml');
+  const publicSitemapIndexFile = path.resolve(process.cwd(), 'public/sitemap-index.xml');
+  const publicSitemapRootFile = path.resolve(process.cwd(), 'public/sitemap.xml');
+
+  assert.ok(fs.existsSync(publicSitemap0File), 'public/sitemap-0.xml must exist');
+  assert.ok(fs.existsSync(publicSitemapIndexFile), 'public/sitemap-index.xml must exist');
+  assert.ok(fs.existsSync(publicSitemapRootFile), 'public/sitemap.xml must exist');
+
+  const sitemap0Content = fs.readFileSync(publicSitemap0File, 'utf-8');
+  const actualSavedSlug = path.basename(testReportPath, '.md');
+  assert.ok(
+    sitemap0Content.includes(`/reports/${actualSavedSlug}/`),
+    `sitemap-0.xml must contain the newly generated report route: /reports/${actualSavedSlug}/`
+  );
+  assert.ok(
+    sitemap0Content.includes(`/reports/${actualSavedSlug}/print/`),
+    'sitemap-0.xml must contain the report print route'
+  );
+  assert.ok(
+    sitemap0Content.includes(`/institutional-summary/${actualSavedSlug}/`),
+    'sitemap-0.xml must contain the report institutional summary route'
+  );
+  assert.ok(
+    sitemap0Content.includes(`/tickers/${usMover.ticker.toLowerCase()}/`),
+    `sitemap-0.xml must contain the ticker hub route: /tickers/${usMover.ticker.toLowerCase()}/`
+  );
+
+  // Clean up mock report file
+  if (fs.existsSync(testReportPath)) fs.unlinkSync(testReportPath);
+  // Restore pristine sitemap
+  await sitemapGenerator.generateSitemap();
+  console.log('✓ Pass: Dynamic Sitemap feature runs automatically upon report generation and indexes all report/ticker routes.\n');
 
   // Clean up test file
   if (fs.existsSync(testHistoryPath)) fs.unlinkSync(testHistoryPath);

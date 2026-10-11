@@ -336,45 +336,81 @@ const keyTakeaways = report.executiveSummaryData?.keyTakeaways || [
 
     <!-- TAB PANEL 1: OVERVIEW & OUTLOOK (70/30 Desk Workstation Layout) -->
     <div id="tab-panel-overview" class="report-tab-panel my-8">
+      
+      <!-- Full-Width Container Slot for Executive Summary when expanded -->
+      <div id="exec-summary-fullwidth-slot" class="mb-8 hidden" aria-live="polite"></div>
+
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         <!-- LEFT 70% RAIL (Main Analyst Deep-Dive) -->
         <div class="lg:col-span-8 space-y-8">
           
-          <!-- Executive Summary & Key Takeaways Card -->
-          <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg space-y-4" id="sec-executive-summary">
-            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-              <h2 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
-                <span>Executive Summary & Strategic Takeaways</span>
-              </h2>
-              <span class="text-xs font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
-                Analyst Consensus
-              </span>
-            </div>
-
-            <!-- Catalyst Headline Box -->
-            {report.executiveSummaryData?.catalystHeadline && (
-              <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
-                <span class="text-sky-400 font-mono font-bold uppercase text-[11px] block mb-1">Session Driver:</span>
-                "{report.executiveSummaryData.catalystHeadline}"
+          <!-- Normal Rail Slot for Executive Summary & Key Takeaways Card -->
+          <div id="exec-summary-normal-slot">
+            <section class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg space-y-4 transition-all duration-200" id="sec-executive-summary">
+              <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div class="flex items-center gap-2.5">
+                  <h2 class="text-lg font-extrabold text-white tracking-tight flex items-center gap-2">
+                    <span>Executive Summary & Strategic Takeaways</span>
+                  </h2>
+                  <span id="exec-summary-expanded-badge" class="hidden text-[10px] font-mono uppercase tracking-wider text-sky-400 bg-sky-950/80 border border-sky-500/30 px-2 py-0.5 rounded-full font-bold">
+                    Full Width
+                  </span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                  <span class="text-xs font-mono text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2.5 py-0.5 rounded-full">
+                    Analyst Consensus
+                  </span>
+                  <!-- Expand to Full Width Button -->
+                  <button
+                    id="btn-expand-executive-summary"
+                    type="button"
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-mono font-medium text-slate-300 bg-slate-800/90 hover:bg-slate-700 hover:text-white border border-slate-700 hover:border-slate-500 transition-all cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
+                    aria-expanded="false"
+                    aria-controls="sec-executive-summary"
+                    title="Expand to full width of the page"
+                  >
+                    <svg id="exec-expand-icon-expand" class="w-3.5 h-3.5 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <polyline points="9 21 3 21 3 15"></polyline>
+                      <line x1="21" y1="3" x2="14" y2="10"></line>
+                      <line x1="3" y1="21" x2="10" y2="14"></line>
+                    </svg>
+                    <svg id="exec-expand-icon-collapse" class="w-3.5 h-3.5 text-sky-400 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="4 14 10 14 10 20"></polyline>
+                      <polyline points="20 10 14 10 14 4"></polyline>
+                      <line x1="14" y1="10" x2="21" y2="3"></line>
+                      <line x1="10" y1="14" x2="3" y2="21"></line>
+                    </svg>
+                    <span id="exec-expand-btn-text">Expand</span>
+                  </button>
+                </div>
               </div>
-            )}
 
-            <!-- Bullet Takeaways -->
-            <div class="space-y-2.5">
-              <div class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
-                Core Analytical Findings:
+              <!-- Catalyst Headline Box -->
+              {report.executiveSummaryData?.catalystHeadline && (
+                <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800 text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
+                  <span class="text-sky-400 font-mono font-bold uppercase text-[11px] block mb-1">Session Driver:</span>
+                  "{report.executiveSummaryData.catalystHeadline}"
+                </div>
+              )}
+
+              <!-- Bullet Takeaways -->
+              <div class="space-y-2.5">
+                <div class="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">
+                  Core Analytical Findings:
+                </div>
+                <ul id="exec-summary-bullets" class="space-y-2">
+                  {keyTakeaways.map((item: string, idx: number) => (
+                    <li class="flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed p-2.5 rounded-lg bg-slate-950/40 border border-slate-800/80">
+                      <span class="font-mono text-emerald-400 font-bold shrink-0 mt-0.5">0{idx + 1}.</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul class="space-y-2">
-                {keyTakeaways.map((item: string, idx: number) => (
-                  <li class="flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed p-2.5 rounded-lg bg-slate-950/40 border border-slate-800/80">
-                    <span class="font-mono text-emerald-400 font-bold shrink-0 mt-0.5">0{idx + 1}.</span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </section>
+            </section>
+          </div>
 
           <!-- [TIER 2] INSTITUTIONAL VALUATION FOOTBALL FIELD CHART -->
           <ValuationFootballField report={report} />
@@ -1582,6 +1618,77 @@ const keyTakeaways = report.executiveSummaryData?.keyTakeaways || [
         }
       });
     });
+
+    // 6. Executive Summary Full-Width Expand Engine
+    const expandBtn = document.getElementById('btn-expand-executive-summary');
+    const execSection = document.getElementById('sec-executive-summary');
+    const fullwidthSlot = document.getElementById('exec-summary-fullwidth-slot');
+    const normalSlot = document.getElementById('exec-summary-normal-slot');
+    const iconExpand = document.getElementById('exec-expand-icon-expand');
+    const iconCollapse = document.getElementById('exec-expand-icon-collapse');
+    const expandBtnText = document.getElementById('exec-expand-btn-text');
+    const expandedBadge = document.getElementById('exec-summary-expanded-badge');
+    const execBullets = document.getElementById('exec-summary-bullets');
+
+    if (expandBtn && execSection && fullwidthSlot && normalSlot && !expandBtn.dataset.initialized) {
+      expandBtn.dataset.initialized = 'true';
+      let isExpanded = false;
+
+      function setExpandState(expanded, shouldScroll = false) {
+        isExpanded = expanded;
+        if (isExpanded) {
+          fullwidthSlot.appendChild(execSection);
+          fullwidthSlot.classList.remove('hidden');
+
+          expandBtn.setAttribute('aria-expanded', 'true');
+          expandBtn.setAttribute('title', 'Collapse to standard width');
+          expandBtn.classList.add('border-sky-500/50', 'bg-sky-950/70', 'text-sky-300');
+          expandBtn.classList.remove('text-slate-300', 'bg-slate-800/90', 'border-slate-700');
+          if (expandBtnText) expandBtnText.textContent = 'Collapse';
+          if (iconExpand) iconExpand.classList.add('hidden');
+          if (iconCollapse) iconCollapse.classList.remove('hidden');
+          if (expandedBadge) expandedBadge.classList.remove('hidden');
+
+          execSection.classList.add('ring-1', 'ring-sky-500/30', 'border-slate-700', 'bg-slate-900/80');
+          if (execBullets) {
+            execBullets.classList.remove('space-y-2');
+            execBullets.classList.add('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-3', 'space-y-0');
+          }
+        } else {
+          normalSlot.appendChild(execSection);
+          fullwidthSlot.classList.add('hidden');
+
+          expandBtn.setAttribute('aria-expanded', 'false');
+          expandBtn.setAttribute('title', 'Expand to full width of the page');
+          expandBtn.classList.remove('border-sky-500/50', 'bg-sky-950/70', 'text-sky-300');
+          expandBtn.classList.add('text-slate-300', 'bg-slate-800/90', 'border-slate-700');
+          if (expandBtnText) expandBtnText.textContent = 'Expand';
+          if (iconExpand) iconExpand.classList.remove('hidden');
+          if (iconCollapse) iconCollapse.classList.add('hidden');
+          if (expandedBadge) expandedBadge.classList.add('hidden');
+
+          execSection.classList.remove('ring-1', 'ring-sky-500/30', 'border-slate-700', 'bg-slate-900/80');
+          if (execBullets) {
+            execBullets.classList.add('space-y-2');
+            execBullets.classList.remove('grid', 'grid-cols-1', 'md:grid-cols-2', 'gap-3', 'space-y-0');
+          }
+        }
+
+        if (shouldScroll) {
+          execSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+
+      expandBtn.addEventListener('click', () => {
+        setExpandState(!isExpanded, true);
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && isExpanded) {
+          setExpandState(false, true);
+        }
+      });
+    }
   }
 
   setupWorkstation();

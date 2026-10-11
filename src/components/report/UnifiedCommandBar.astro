@@ -89,10 +89,6 @@ const tabs = [
           {report.exchange} : {report.region}
         </span>
         <time datetime={publishDateIso} class="text-slate-400 text-[11px]">{formattedDate}</time>
-      </div>
-
-      <!-- Quick Action Buttons -->
-      <div class="flex items-center gap-2">
         <!-- PDF Export -->
         <a
           href={`${printUrl}?autoprint=true`}
@@ -105,7 +101,7 @@ const tabs = [
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 2l3 3h-3V4zm-1 9V9h-2v4H6l4 4 4-4h-2z" clip-rule="evenodd"/>
           </svg>
-          <span class="hidden sm:inline">Export Institutional PDF</span>
+          <span class="hidden sm:inline">Export</span>
           <span class="hidden md:inline-block text-[10px] text-emerald-200 font-normal px-1 rounded bg-emerald-700/50">⌘P</span>
         </a>
 
@@ -120,18 +116,6 @@ const tabs = [
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <span class="hidden sm:inline">Model CSV</span>
-        </button>
-
-        <!-- Copy Link -->
-        <button
-          type="button"
-          class="copy-report-link-btn inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-mono text-xs font-bold transition-all border border-slate-700 cursor-pointer shadow-sm"
-          title="Copy report permalink to clipboard"
-        >
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-          </svg>
-          <span class="copy-btn-label hidden sm:inline">Share</span>
         </button>
       </div>
     </div>
@@ -253,27 +237,6 @@ const tabs = [
           <strong class="text-slate-300">${highBound.toFixed(2)}</strong>
         </div>
       </div>
-    </div>
-
-    <!-- Module Tabs Bar -->
-    <div class="mt-6 pt-4 border-t border-slate-800 flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Report Modules Navigation">
-      {tabs.map((tab) => (
-        <button
-          type="button"
-          role="tab"
-          id={`tab-btn-${tab.id}`}
-          data-tab-target={tab.id}
-          aria-selected={tab.id === defaultTab ? 'true' : 'false'}
-          aria-controls={`tab-panel-${tab.id}`}
-          class={`tab-trigger px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap cursor-pointer border ${
-            tab.id === defaultTab
-              ? 'bg-emerald-950/90 text-emerald-300 border-emerald-500/50 shadow-sm'
-              : 'bg-slate-900/60 text-slate-400 border-slate-800 hover:bg-slate-800/80 hover:text-slate-200 hover:border-slate-700'
-          }`}
-        >
-          {tab.label}
-        </button>
-      ))}
     </div>
   </div>
 </section>

@@ -3,6 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { CONFIG } from '../config.js';
 import { historyTracker } from './historyTracker.js';
+import { sitemapGenerator } from '../seo/sitemapGenerator.js';
 import type { MarketMover, FinalReportFrontmatter } from '../types.js';
 
 export class ReportFileGenerator {
@@ -23,7 +24,8 @@ export class ReportFileGenerator {
     mover: MarketMover,
     slug: string,
     frontmatter: FinalReportFrontmatter,
-    content: string
+    content: string,
+    options?: { skipSitemap?: boolean }
   ): Promise<string> {
     const today = new Date().toISOString().split('T')[0];
     const cleanSlug = slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
@@ -53,6 +55,16 @@ export class ReportFileGenerator {
     });
 
     console.log(`[ReportFileGenerator] Saved report to ${targetPath}. Coverage history updated.`);
+
+    // Automatically regenerate sitemap whenever a report is generated
+    if (!options?.skipSitemap) {
+      try {
+        await sitemapGenerator.generateSitemap({ reportsDir: this.outputDir });
+      } catch (sitemapErr: any) {
+        console.warn(`[ReportFileGenerator] Warning: Sitemap regeneration encountered an issue: ${sitemapErr.message}`);
+      }
+    }
+
     return targetPath;
   }
 }

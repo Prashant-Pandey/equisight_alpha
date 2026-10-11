@@ -77,6 +77,15 @@ assert(fslyPrintContent.includes('Module 7 &bull; Compliance, Governance &amp; D
 assert(fslyPrintContent.includes('mstar-metric-strip'), 'Print view must include Morningstar persistent 8-tile header strip');
 assert(fslyPrintContent.includes('page-break'), 'Print view must contain page breaks for institutional pagination');
 assert(fslyPrintContent.includes('no-print'), 'Print view must include screen toolbar hidden on paper print');
-console.log('✓ Institutional Print layout verified adhering to Morningstar 7-Module Chronology.');
+// Test 7: Executive Summary Full-Width Expand Feature
+assert(fslyWebContent.includes('id="btn-expand-executive-summary"'), 'Web page must contain btn-expand-executive-summary ID');
+assert(fslyWebContent.includes('id="exec-summary-fullwidth-slot"'), 'Web page must contain exec-summary-fullwidth-slot ID');
+assert(fslyWebContent.includes('id="exec-summary-normal-slot"'), 'Web page must contain exec-summary-normal-slot ID');
+assert(fslyWebContent.includes('id="sec-executive-summary"'), 'Web page must contain sec-executive-summary ID');
+assert(fslyWebContent.includes('id="exec-expand-icon-expand"'), 'Web page must contain expand icon');
+assert(fslyWebContent.includes('id="exec-expand-icon-collapse"'), 'Web page must contain collapse icon');
+assert(fslyWebContent.includes('aria-controls="sec-executive-summary"'), 'Expand button must have aria-controls set to sec-executive-summary');
+console.log('✓ Executive Summary & Strategic Takeaways Full-Width Expand Feature verified.');
 
 console.log('\n🎉 ALL REPORT STRUCTURE & PDF EXPORT VERIFICATION TESTS PASSED!\n');
+
