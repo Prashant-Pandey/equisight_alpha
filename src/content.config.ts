@@ -45,14 +45,14 @@ const reportsCollection = defineCollection({
     priceToEarningsRatio: z.any().optional(),
 
     // Profitability & EPS
-    returnOnEquity: z.number().optional().default(0),
+    returnOnEquity: z.number().nullable().optional().default(0),
     earningsPerShare: z.any().optional(),
 
     // Volatility & Cash Flow
     volatilityIndex: z.any().optional(),
     cashFlow: z.any().optional(),
-    freeCashFlow: z.number().optional(),
-    operatingCashFlow: z.number().optional(),
+    freeCashFlow: z.number().nullable().optional(),
+    operatingCashFlow: z.number().nullable().optional(),
 
     // Qualitative Analysis
     managementQuality: z.any().optional(),
