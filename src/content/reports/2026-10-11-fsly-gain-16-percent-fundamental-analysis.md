@@ -4,7 +4,7 @@ description: >-
   Evidence-based financial analysis of Fastly, Inc. (FSLY) following today's
   +15.9% move on Nasdaq Global Select Market. Valuation models, debt breakdown,
   and macro impact.
-publishDate: '2026-10-11T02:15:08.966Z'
+publishDate: '2026-10-11T11:55:11.645Z'
 ticker: FSLY
 companyName: 'Fastly, Inc.'
 exchange: NASDAQ
@@ -96,16 +96,17 @@ socialHooks:
     +15.9% Move
   telegram: "\U0001F6A8 **$FSLY Session Analysis**: Fastly, Inc. shifted +15.9% to $29.30 on Nasdaq Global Select Market. Consensus Fair Value: $11.21 (Significantly Overvalued). Read report: https://prashant-pandey.github.io/equisight_alpha/reports/fsly-gain-16-percent-fundamental-analysis"
 executiveSummaryData:
-  catalystHeadline: Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership
+  catalystHeadline: >-
+    Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding
+    contract sizes, complemented by Comcast Peacock partnership momentum
   catalystCategory: Commercial Contract / Supply Agreement
   expectationsVsReality: >-
-    Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily
-    by a major Wall Street upgrade from Oppenheimer to Outperform (Buy) with a
-    $35 target. Oppenheimer highlighted underappreciated high growth trajectory,
-    expanding contract values, and exposure to the Agentic AI opportunity. The
-    rally was further bolstered by news of a strategic partnership/tie-up with
-    Comcast (tapping Fastly's edge platform for Peacock streaming) and follow-on
-    fair value/analyst adjustments following Fastly's Investor Day.
+    Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer
+    upgrade to Buy/Outperform (with an aggressive price target and emphasis on
+    underappreciated agentic AI growth and expanding contract sizes), supported
+    by continued momentum from a major enterprise partnership with Comcast
+    tapping Fastly's edge platform for Peacock streaming. The market reaction is
+    fully aligned with the strong fundamental and analyst catalyst confluence.
   sessionDynamics: >-
     In today's trading session, **Fastly, Inc. (FSLY)** experienced notable
     price volatility on the **Nasdaq Global Select Market**, closing with a
@@ -114,8 +115,9 @@ executiveSummaryData:
     against the 90-day historical average volume of 6,537,835 shares. Social
     discussion monitoring recorded **65 verified sources** (Tracked 30
     StockTwits posts and 15 Reddit threads in session), with the primary price
-    driver identified as **Oppenheimer Upgrade to Buy / Outperform & Comcast
-    Edge Partnership**. The algorithmic artificial inflation risk profile is
+    driver identified as **Oppenheimer upgrade to Outperform/Buy citing Agentic
+    AI growth and expanding contract sizes, complemented by Comcast Peacock
+    partnership momentum**. The algorithmic artificial inflation risk profile is
     appraised as **Low** (Verified Organic Market Flow).
   macroeconomicContext: >-
     Macroeconomic conditions exerted contextual influence, with benchmark US
@@ -130,9 +132,10 @@ executiveSummaryData:
     sheet debt obligations and cash generation capability.
   keyTakeaways:
     - >-
-      Primary Catalyst: Oppenheimer Upgrade to Buy / Outperform & Comcast Edge
-      Partnership (Commercial Contract / Supply Agreement &bull; Alignment:
-      `ALIGNED`).
+      Primary Catalyst: Oppenheimer upgrade to Outperform/Buy citing Agentic AI
+      growth and expanding contract sizes, complemented by Comcast Peacock
+      partnership momentum (Commercial Contract / Supply Agreement &bull;
+      Alignment: `ALIGNED`).
     - >-
       Order Flow Divergence: Session volume expanded to 2.32x historical 90-day
       baseline.
@@ -153,25 +156,26 @@ executiveSummaryData:
     against the 90-day historical average volume of 6,537,835 shares. Social
     discussion monitoring recorded **65 verified sources** (Tracked 30
     StockTwits posts and 15 Reddit threads in session), with the primary price
-    driver identified as **Oppenheimer Upgrade to Buy / Outperform & Comcast
-    Edge Partnership**. The algorithmic artificial inflation risk profile is
+    driver identified as **Oppenheimer upgrade to Outperform/Buy citing Agentic
+    AI growth and expanding contract sizes, complemented by Comcast Peacock
+    partnership momentum**. The algorithmic artificial inflation risk profile is
     appraised as **Low** (Verified Organic Market Flow).
 
 
-    Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily
-    by a major Wall Street upgrade from Oppenheimer to Outperform (Buy) with a
-    $35 target. Oppenheimer highlighted underappreciated high growth trajectory,
-    expanding contract values, and exposure to the Agentic AI opportunity. The
-    rally was further bolstered by news of a strategic partnership/tie-up with
-    Comcast (tapping Fastly's edge platform for Peacock streaming) and follow-on
-    fair value/analyst adjustments following Fastly's Investor Day.
+    Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer
+    upgrade to Buy/Outperform (with an aggressive price target and emphasis on
+    underappreciated agentic AI growth and expanding contract sizes), supported
+    by continued momentum from a major enterprise partnership with Comcast
+    tapping Fastly's edge platform for Peacock streaming. The market reaction is
+    fully aligned with the strong fundamental and analyst catalyst confluence.
 
 
     > **Key Session Takeaways:**
 
-    > - **Primary Catalyst:** Oppenheimer Upgrade to Buy / Outperform & Comcast
-    Edge Partnership (Commercial Contract / Supply Agreement &bull; Alignment:
-    `ALIGNED`)
+    > - **Primary Catalyst:** Oppenheimer upgrade to Outperform/Buy citing
+    Agentic AI growth and expanding contract sizes, complemented by Comcast
+    Peacock partnership momentum (Commercial Contract / Supply Agreement &bull;
+    Alignment: `ALIGNED`)
 
     > - **Volume & Liquidity:** Volume expanded to **2.32x** historical 90d
     average.
@@ -207,10 +211,11 @@ executiveSummaryData:
     | **52-Week Range** | `$7.74 - $34.82` | Current: $29.30 |
 
     | **Social Sentiment** | `92.3% Bull / 7.7% Bear` | Major Driver:
-    Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership |
+    Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding
+    contract sizes, complemented by Comcast Peacock partnership momentum |
 isPennyStock: false
 moneyMarketTradingVenue: Nasdaq Global Select Market
-priceTimestamp: 'Price on Oct 10, 2026, 10:15 PM EDT'
+priceTimestamp: 'Price on Oct 11, 2026, 7:55 AM EDT'
 debtAnalysis:
   totalDebt: 323958000
   debtToEquity: 0.07
@@ -640,23 +645,24 @@ classification: Growth Stock
 isArtificiallyInflated: false
 artificialInflationRisk: Low
 volumeAnomalyRatio: 2.32
-majorPriceDriver: Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership
+majorPriceDriver: >-
+  Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding
+  contract sizes, complemented by Comcast Peacock partnership momentum
 newsImpact: >-
   High Impact: 20 verified news publications tracked. Primary catalyst: "Fastly
   (FSLY) Stock Fair Value Edges Higher After Investor Day And Analyst Revisions
   - Yahoo Finance" (Yahoo Finance). [Catalyst Dynamics: ALIGNED] Fastly ($FSLY)
-  experienced a sharp session rally of +15.86% driven primarily by a major Wall
-  Street upgrade from Oppenheimer to Outperform (Buy) with a $35 target.
-  Oppenheimer highlighted underappreciated high growth trajectory, expanding
-  contract values, and exposure to the Agentic AI opportunity. The rally was
-  further bolstered by news of a strategic partnership/tie-up with Comcast
-  (tapping Fastly's edge platform for Peacock streaming) and follow-on fair
-  value/analyst adjustments following Fastly's Investor Day.
+  rallied +15.86% driven primarily by a high-impact Oppenheimer upgrade to
+  Buy/Outperform (with an aggressive price target and emphasis on
+  underappreciated agentic AI growth and expanding contract sizes), supported by
+  continued momentum from a major enterprise partnership with Comcast tapping
+  Fastly's edge platform for Peacock streaming. The market reaction is fully
+  aligned with the strong fundamental and analyst catalyst confluence.
 socialMediaImpact: >-
   Observed Velocity: 30 StockTwits posts and 15 Reddit threads logged across
   monitored streams.
 optionGammaImbalance:
-  imbalanceRatio: 3.62
+  imbalanceRatio: 3.69
   netGammaExposure: Dealer Short Gamma (High Squeeze Sensitivity)
   callVolume: 6864
   putVolume: 2859
@@ -664,7 +670,7 @@ optionGammaImbalance:
   putOpenInterest: 12250
   riskLevel: Severe
   status: >-
-    Extreme call open interest and gamma concentration (3.62x call/put ratio)
+    Extreme call open interest and gamma concentration (3.69x call/put ratio)
     exposes market makers to reflexive upside delta-hedging acceleration.
 freeFloatConcentration:
   freeFloatShares: 152429391
@@ -678,24 +684,25 @@ artificialInflation:
   isInflated: false
   riskLevel: Low
   volumeAnomalyRatio: 2.32
-  majorPriceDriver: Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership
+  majorPriceDriver: >-
+    Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding
+    contract sizes, complemented by Comcast Peacock partnership momentum
   sentimentScore: 0.85
   newsImpact: >-
     High Impact: 20 verified news publications tracked. Primary catalyst:
     "Fastly (FSLY) Stock Fair Value Edges Higher After Investor Day And Analyst
     Revisions - Yahoo Finance" (Yahoo Finance). [Catalyst Dynamics: ALIGNED]
-    Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily
-    by a major Wall Street upgrade from Oppenheimer to Outperform (Buy) with a
-    $35 target. Oppenheimer highlighted underappreciated high growth trajectory,
-    expanding contract values, and exposure to the Agentic AI opportunity. The
-    rally was further bolstered by news of a strategic partnership/tie-up with
-    Comcast (tapping Fastly's edge platform for Peacock streaming) and follow-on
-    fair value/analyst adjustments following Fastly's Investor Day.
+    Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer
+    upgrade to Buy/Outperform (with an aggressive price target and emphasis on
+    underappreciated agentic AI growth and expanding contract sizes), supported
+    by continued momentum from a major enterprise partnership with Comcast
+    tapping Fastly's edge platform for Peacock streaming. The market reaction is
+    fully aligned with the strong fundamental and analyst catalyst confluence.
   socialMediaImpact: >-
     Observed Velocity: 30 StockTwits posts and 15 Reddit threads logged across
     monitored streams.
   optionGammaImbalance:
-    imbalanceRatio: 3.62
+    imbalanceRatio: 3.69
     netGammaExposure: Dealer Short Gamma (High Squeeze Sensitivity)
     callVolume: 6864
     putVolume: 2859
@@ -703,7 +710,7 @@ artificialInflation:
     putOpenInterest: 12250
     riskLevel: Severe
     status: >-
-      Extreme call open interest and gamma concentration (3.62x call/put ratio)
+      Extreme call open interest and gamma concentration (3.69x call/put ratio)
       exposes market makers to reflexive upside delta-hedging acceleration.
   freeFloatConcentration:
     freeFloatShares: 152429391
@@ -851,106 +858,85 @@ theses:
         -> Margin contraction during periods of suboptimal capacity utilization.
 catalystAlignment: ALIGNED
 catalystSynthesis: >-
-  Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily
-  by a major Wall Street upgrade from Oppenheimer to Outperform (Buy) with a $35
-  target. Oppenheimer highlighted underappreciated high growth trajectory,
-  expanding contract values, and exposure to the Agentic AI opportunity. The
-  rally was further bolstered by news of a strategic partnership/tie-up with
-  Comcast (tapping Fastly's edge platform for Peacock streaming) and follow-on
-  fair value/analyst adjustments following Fastly's Investor Day.
+  Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer
+  upgrade to Buy/Outperform (with an aggressive price target and emphasis on
+  underappreciated agentic AI growth and expanding contract sizes), supported by
+  continued momentum from a major enterprise partnership with Comcast tapping
+  Fastly's edge platform for Peacock streaming. The market reaction is fully
+  aligned with the strong fundamental and analyst catalyst confluence.
 filteredHeadlines:
-  - title: >-
-      Fastly (FSLY) Stock Fair Value Edges Higher After Investor Day And Analyst
-      Revisions
-    source: Yahoo Finance
-    relevance: 8.5
-    headlineSentiment: Bullish
-  - title: >-
-      Fastly (FSLY) Lands Comcast Tie Up As Bullish Valuation Case Faces A
-      Reality Check
-    source: Simply Wall Street
-    relevance: 9.5
-    headlineSentiment: Bullish
-  - title: >-
-      Fastly (FSLY) Is Up 13.5% After Comcast Taps Its Edge Platform for Peacock
-      Streaming Partnership – Has The Bull Case Changed?
-    source: Yahoo Finance
-    relevance: 9.5
-    headlineSentiment: Bullish
-  - title: 'Fastly (FSLY) Climbed, So What Is Behind The Latest Attention?'
-    source: Yahoo Finance
-    relevance: 7.5
-    headlineSentiment: Bullish
-  - title: Fastly (FSLY) Stock May Be Above Fair Value Following Streaming Deal News
-    source: Yahoo Finance
-    relevance: 8
-    headlineSentiment: Neutral
-  - title: Is Fastly Inc (FSLY) Overvalued After 15.9% Rally? GF Value Says
-    source: GuruFocus
-    relevance: 7.5
-    headlineSentiment: Neutral
-  - title: Why Is Fastly (FSLY) Stock Rocketing Higher Today
-    source: Yahoo Finance
-    relevance: 8
-    headlineSentiment: Bullish
-  - title: >-
-      Fastly (NYSE:FSLY) Stock Jumps 17% After Oppenheimer Bets on Agentic AI
-      Growth
-    source: Stocks Down Under
-    relevance: 9.5
-    headlineSentiment: Bullish
-  - title: Oppenheimer Just Upgraded Fastly Stock. Here's Why.
-    source: Yahoo Finance
-    relevance: 10
-    headlineSentiment: Bullish
-  - title: Oppenheimer Just Upgraded Fastly Stock. Here's Why.
-    source: inkl
-    relevance: 9.5
-    headlineSentiment: Bullish
-  - title: Why Fastly Stock Is Soaring Today
-    source: Yahoo Finance
-    relevance: 8
-    headlineSentiment: Bullish
   - title: >-
       Fastly (FSLY) Stock Pops as Oppenheimer Upgrades to Buy, Says ‘High Growth
       Trajectory Is Underappreciated’
     source: TipRanks
-    relevance: 10
+    relevance: 9.2
     headlineSentiment: Bullish
   - title: >-
       Fastly Soars 17% on Oppenheimer Upgrade Citing “Growing Contract Values”
       and Agentic AI Opportunity
     source: TIKR.com
-    relevance: 10
-    headlineSentiment: Bullish
-  - title: Why Is Fastly Stock Soaring Friday?
-    source: Benzinga
-    relevance: 8.5
-    headlineSentiment: Bullish
-  - title: 'Fastly Sees Unusually High Options Volume (NASDAQ:FSLY)'
-    source: MarketBeat
-    relevance: 7.5
-    headlineSentiment: Bullish
-  - title: 'Fastly: Riding the Agentic AI Wave'
-    source: TradingView
-    relevance: 9
-    headlineSentiment: Bullish
-  - title: >-
-      FSLY Rockets Nearly 16%: Oppenheimer Upgrades Stock As Analyst Sees
-      Agentic AI Driving Sustained Growth
-    source: Yahoo Finance
-    relevance: 10
+    relevance: 9.4
     headlineSentiment: Bullish
   - title: >-
       Fastly Spikes 15% as Oppenheimer Upgrades to Outperform With $35 Target;
       Datadog Rises 4%, Cloudflare Gains 2%
     source: 24/7 Wall St.
-    relevance: 10
+    relevance: 9.3
+    headlineSentiment: Bullish
+  - title: >-
+      FSLY Rockets Nearly 16%: Oppenheimer Upgrades Stock As Analyst Sees
+      Agentic AI Driving Sustained Growth
+    source: Yahoo Finance
+    relevance: 9.2
+    headlineSentiment: Bullish
+  - title: >-
+      Fastly (NYSE:FSLY) Stock Jumps 17% After Oppenheimer Bets on Agentic AI
+      Growth
+    source: Stocks Down Under
+    relevance: 9
+    headlineSentiment: Bullish
+  - title: >-
+      Fastly (FSLY) Is Up 13.5% After Comcast Taps Its Edge Platform for Peacock
+      Streaming Partnership – Has The Bull Case Changed?
+    source: Yahoo Finance
+    relevance: 8.8
+    headlineSentiment: Bullish
+  - title: 'Fastly pops on back of Oppenheimer upgrade (FSLY:NASDAQ)'
+    source: Seeking Alpha
+    relevance: 8.5
+    headlineSentiment: Bullish
+  - title: Oppenheimer Just Upgraded Fastly Stock. Here's Why.
+    source: Yahoo Finance
+    relevance: 8.2
+    headlineSentiment: Bullish
+  - title: >-
+      Fastly (FSLY) Stock Fair Value Edges Higher After Investor Day And Analyst
+      Revisions
+    source: Yahoo Finance
+    relevance: 8
+    headlineSentiment: Bullish
+  - title: >-
+      Fastly (FSLY) Lands Comcast Tie Up As Bullish Valuation Case Faces A
+      Reality Check
+    source: Simply Wall Street
+    relevance: 7.8
+    headlineSentiment: Neutral
+  - title: Fastly (FSLY) Stock May Be Above Fair Value Following Streaming Deal News
+    source: Yahoo Finance
+    relevance: 7.2
+    headlineSentiment: Neutral
+  - title: 'Fastly: Riding the Agentic AI Wave'
+    source: TradingView
+    relevance: 7.5
     headlineSentiment: Bullish
   - title: 'Fastly (NASDAQ:FSLY) Shares Gap Up - Here''s Why'
     source: MarketBeat
-    relevance: 8.5
+    relevance: 6.5
     headlineSentiment: Bullish
+  - title: 'Fastly Sees Unusually High Options Volume (NASDAQ:FSLY)'
+    source: MarketBeat
+    relevance: 6.2
+    headlineSentiment: Neutral
 morningstarRating:
   starRating: 1
   starRatingString: ★
@@ -1084,12 +1070,12 @@ sectorDynamics:
 ---
 ## Executive Summary & Session Catalyst
 
-In today's trading session, **Fastly, Inc. (FSLY)** experienced notable price volatility on the **Nasdaq Global Select Market**, closing with a session movement of **+15.9%** to trade at **$29.30 USD**. Total trading volume recorded **15,145,871 shares**, representing a **2.32x divergence** against the 90-day historical average volume of 6,537,835 shares. Social discussion monitoring recorded **65 verified sources** (Tracked 30 StockTwits posts and 15 Reddit threads in session), with the primary price driver identified as **Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership**. The algorithmic artificial inflation risk profile is appraised as **Low** (Verified Organic Market Flow).
+In today's trading session, **Fastly, Inc. (FSLY)** experienced notable price volatility on the **Nasdaq Global Select Market**, closing with a session movement of **+15.9%** to trade at **$29.30 USD**. Total trading volume recorded **15,145,871 shares**, representing a **2.32x divergence** against the 90-day historical average volume of 6,537,835 shares. Social discussion monitoring recorded **65 verified sources** (Tracked 30 StockTwits posts and 15 Reddit threads in session), with the primary price driver identified as **Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding contract sizes, complemented by Comcast Peacock partnership momentum**. The algorithmic artificial inflation risk profile is appraised as **Low** (Verified Organic Market Flow).
 
-Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily by a major Wall Street upgrade from Oppenheimer to Outperform (Buy) with a $35 target. Oppenheimer highlighted underappreciated high growth trajectory, expanding contract values, and exposure to the Agentic AI opportunity. The rally was further bolstered by news of a strategic partnership/tie-up with Comcast (tapping Fastly's edge platform for Peacock streaming) and follow-on fair value/analyst adjustments following Fastly's Investor Day.
+Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer upgrade to Buy/Outperform (with an aggressive price target and emphasis on underappreciated agentic AI growth and expanding contract sizes), supported by continued momentum from a major enterprise partnership with Comcast tapping Fastly's edge platform for Peacock streaming. The market reaction is fully aligned with the strong fundamental and analyst catalyst confluence.
 
 > **Key Session Takeaways:**
-> - **Primary Catalyst:** Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership (Commercial Contract / Supply Agreement &bull; Alignment: `ALIGNED`)
+> - **Primary Catalyst:** Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding contract sizes, complemented by Comcast Peacock partnership momentum (Commercial Contract / Supply Agreement &bull; Alignment: `ALIGNED`)
 > - **Volume & Liquidity:** Volume expanded to **2.32x** historical 90d average.
 > - **Valuation Consensus:** Multi-model fair value target stands at **$11.21** (**Significantly Overvalued**).
 > - **Macro & Solvency:** US 10Y Yield at **5.24%**; Net debt position of **$0.23B**.
@@ -1104,7 +1090,7 @@ Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily by 
 | **Market Capitalization** | `$4.67B` | Classification: Growth Stock |
 | **Trading Volume** | `15,145,871` | Anomaly Ratio: 2.32x vs 90d avg |
 | **52-Week Range** | `$7.74 - $34.82` | Current: $29.30 |
-| **Social Sentiment** | `92.3% Bull / 7.7% Bear` | Major Driver: Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership |
+| **Social Sentiment** | `92.3% Bull / 7.7% Bear` | Major Driver: Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding contract sizes, complemented by Comcast Peacock partnership momentum |
 
 
 ---
@@ -1133,13 +1119,13 @@ Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily by 
 An empirical audit of recent order book dynamics and social media chatter reveals important structural characteristics regarding today's move:
 
 * **Volume Anomaly Ratio:** Today's volume of 15,145,871 represents **2.32x** normal trading activity. This heavy volume expansion indicates aggressive speculative participation or institutional liquidity repositioning.
-* **Option Gamma Imbalance:** `Severe` (Dealer Short Gamma (High Squeeze Sensitivity), Imbalance Ratio: 3.62x). Extreme call open interest and gamma concentration (3.62x call/put ratio) exposes market makers to reflexive upside delta-hedging acceleration.
+* **Option Gamma Imbalance:** `Severe` (Dealer Short Gamma (High Squeeze Sensitivity), Imbalance Ratio: 3.69x). Extreme call open interest and gamma concentration (3.69x call/put ratio) exposes market makers to reflexive upside delta-hedging acceleration.
 * **Free Float Concentration:** `Low` (95.7% Public Float, Turnover Ratio: 9.9% of Float). Liquid public float structure (95.7% public float); broad institutional distribution insulates equity from artificial supply-side squeezes.
-* **Major Price Driver:** The session's primary catalyst is **Oppenheimer Upgrade to Buy / Outperform & Comcast Edge Partnership**.
+* **Major Price Driver:** The session's primary catalyst is **Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding contract sizes, complemented by Comcast Peacock partnership momentum**.
 * **Catalyst-Price Alignment:** `ALIGNED`
-* **Expectations vs. Reality Gap:** Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily by a major Wall Street upgrade from Oppenheimer to Outperform (Buy) with a $35 target. Oppenheimer highlighted underappreciated high growth trajectory, expanding contract values, and exposure to the Agentic AI opportunity. The rally was further bolstered by news of a strategic partnership/tie-up with Comcast (tapping Fastly's edge platform for Peacock streaming) and follow-on fair value/analyst adjustments following Fastly's Investor Day.
+* **Expectations vs. Reality Gap:** Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer upgrade to Buy/Outperform (with an aggressive price target and emphasis on underappreciated agentic AI growth and expanding contract sizes), supported by continued momentum from a major enterprise partnership with Comcast tapping Fastly's edge platform for Peacock streaming. The market reaction is fully aligned with the strong fundamental and analyst catalyst confluence.
 * **Quantitative Sentiment Index:** Aggregated retail and financial market sentiment scores **85 / 100**, reflecting broad optimism.
-* **News & Social Media Footprint:** High Impact: 20 verified news publications tracked. Primary catalyst: "Fastly (FSLY) Stock Fair Value Edges Higher After Investor Day And Analyst Revisions - Yahoo Finance" (Yahoo Finance). [Catalyst Dynamics: ALIGNED] Fastly ($FSLY) experienced a sharp session rally of +15.86% driven primarily by a major Wall Street upgrade from Oppenheimer to Outperform (Buy) with a $35 target. Oppenheimer highlighted underappreciated high growth trajectory, expanding contract values, and exposure to the Agentic AI opportunity. The rally was further bolstered by news of a strategic partnership/tie-up with Comcast (tapping Fastly's edge platform for Peacock streaming) and follow-on fair value/analyst adjustments following Fastly's Investor Day. Concurrently, Observed Velocity: 30 StockTwits posts and 15 Reddit threads logged across monitored streams.
+* **News & Social Media Footprint:** High Impact: 20 verified news publications tracked. Primary catalyst: "Fastly (FSLY) Stock Fair Value Edges Higher After Investor Day And Analyst Revisions - Yahoo Finance" (Yahoo Finance). [Catalyst Dynamics: ALIGNED] Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer upgrade to Buy/Outperform (with an aggressive price target and emphasis on underappreciated agentic AI growth and expanding contract sizes), supported by continued momentum from a major enterprise partnership with Comcast tapping Fastly's edge platform for Peacock streaming. The market reaction is fully aligned with the strong fundamental and analyst catalyst confluence. Concurrently, Observed Velocity: 30 StockTwits posts and 15 Reddit threads logged across monitored streams.
 
 ---
 

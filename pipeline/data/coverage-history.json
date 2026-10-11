@@ -3,18 +3,135 @@
     "ticker": "FSLY",
     "companyName": "Fastly, Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-11T02:15:08.978Z",
+    "coveredAt": "2026-10-11T11:55:11.656Z",
     "category": "gainer",
     "movePercent": 15.8561,
     "slug": "fsly-gain-16-percent-fundamental-analysis"
   },
   {
-    "ticker": "NVDA",
-    "companyName": "NVIDIA Corporation",
+    "ticker": "NVAX",
+    "companyName": "Novavax, Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-11T02:32:35.731Z",
+    "coveredAt": "2026-10-11T11:57:06.862Z",
     "category": "gainer",
-    "movePercent": 5.2,
-    "slug": "aapl-pipeline-sitemap-verification-test"
+    "movePercent": 15.8038,
+    "slug": "nvax-gain-16-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CCI",
+    "companyName": "Crown Castle Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T11:58:56.520Z",
+    "category": "gainer",
+    "movePercent": 15.6046,
+    "slug": "cci-gain-16-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MRNA",
+    "companyName": "Moderna, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T12:00:46.093Z",
+    "category": "gainer",
+    "movePercent": 14.2132,
+    "slug": "mrna-gain-14-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HUM",
+    "companyName": "Humana Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T12:02:51.491Z",
+    "category": "gainer",
+    "movePercent": 11.5597,
+    "slug": "hum-gain-12-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TMUS",
+    "companyName": "T-Mobile US, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T12:04:42.727Z",
+    "category": "loser",
+    "movePercent": -13.2683,
+    "slug": "tmus-loss-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "ASTS",
+    "companyName": "AST SpaceMobile, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T12:06:33.626Z",
+    "category": "loser",
+    "movePercent": -10.4778,
+    "slug": "asts-loss-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "T",
+    "companyName": "AT&T Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T12:08:18.425Z",
+    "category": "loser",
+    "movePercent": -9.8099,
+    "slug": "t-loss-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TIGO",
+    "companyName": "Millicom International Cellular",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T12:10:09.385Z",
+    "category": "loser",
+    "movePercent": -9.63046,
+    "slug": "tigo-loss-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "VZ",
+    "companyName": "Verizon Communications Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T12:11:50.004Z",
+    "category": "loser",
+    "movePercent": -8.74733,
+    "slug": "vz-loss-9-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CCM",
+    "companyName": "Concord Medical Services Holdin",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T12:13:34.502Z",
+    "category": "gainer",
+    "movePercent": 25.1613,
+    "slug": "ccm-gain-25-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MOGU",
+    "companyName": "MOGU Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T12:15:16.599Z",
+    "category": "gainer",
+    "movePercent": 20.1072,
+    "slug": "mogu-gain-20-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PLCE",
+    "companyName": "Children's Place, Inc. (The)",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T12:17:08.907Z",
+    "category": "loser",
+    "movePercent": -26.0417,
+    "slug": "plce-loss-26-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "JELD",
+    "companyName": "JELD-WEN Holding, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T12:19:05.564Z",
+    "category": "loser",
+    "movePercent": -11.4943,
+    "slug": "jeld-loss-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "OPTU",
+    "companyName": "Optimum Communications, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T12:20:45.064Z",
+    "category": "loser",
+    "movePercent": -5.80665,
+    "slug": "optu-loss-6-percent-fundamental-analysis"
   }
 ]
