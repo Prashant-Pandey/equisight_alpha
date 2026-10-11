@@ -6,22 +6,10 @@ import { deriveSectorDynamics } from '../valuationBenchmarks.js';
 import { pct1 } from './costOfCapital.js';
 import type { CompanyQuestions, IndustryQuestions } from '../../types.js';
 import type { RawFundamentalInput } from './types.js';
+import { cleanCompanyName } from '../../../../src/utils/titleGenerator.js';
 
 export function formatHowCompanyMakesMoney(raw: RawFundamentalInput): string {
-  const compNameLower = raw.companyName.toLowerCase();
-  if (compNameLower.includes('norbit')) {
-    return `Norbit makes money through 3 business segments:
-
-- Ocean business segment. This is probably the most famous part of Norbit selling high-margin maritime technology (especially sonar systems, monitoring equipment and security solutions). The demand comes mainly from hydrography, offshore operations, marine research and infrastructure protection
-- Connectivity. It sells wireless communication and tracking systems especially tolling devices and related software & services. Part of the revenue is recurring in this division (subscription, services)
-- Product Innovation & Realization (PIR) sells R&D services and manufacturing capacity for industrial customers. Some elements are also proprietary electronics
-
-Most activities are cyclical and depend on contracts with a limited visibility. However, because there are 3 different activities the cycles do not always move in perfect synchronisation which helps smooth cyclicality.`;
-  }
-
-  const cleanName = raw.companyName
-    .replace(/,\s*(?:Inc\.?|Corp\.?|Corporation|Ltd\.?|Limited|plc|PLC|ASA|AG|S\.A\.|SA|NV|N\.V\.|SE|Holdings?|Co\.)(?:\s*Class\s*[A-Z])?$/i, '')
-    .trim();
+  const cleanName = cleanCompanyName(raw.companyName);
 
   // 1. Check segmentRevenueBreakdown
   const segments = raw.segmentRevenueBreakdown && raw.segmentRevenueBreakdown.length > 0
@@ -96,12 +84,12 @@ export function buildQuestionsAndDynamics(
     industryCondition: sectorDynamicsInfo.industryCondition,
     macroConditionSimplified: sectorDynamicsInfo.macroConditionSimplified,
     obstaclesAndChallenges: sectorDynamicsInfo.obstaclesAndChallenges,
-    economicPoliticalCulturalRisks: sectorDynamicsInfo.economicPoliticalCulturalRisks
+    obstaclesAndChallengesSimplified: sectorDynamicsInfo.obstaclesAndChallengesSimplified,
+    economicPoliticalCulturalRisks: sectorDynamicsInfo.economicPoliticalCulturalRisks,
+    economicPoliticalCulturalRisksSimplified: sectorDynamicsInfo.economicPoliticalCulturalRisksSimplified
   };
 
-  const cleanName = raw.companyName
-    .replace(/,\s*(?:Inc\.?|Corp\.?|Corporation|Ltd\.?|Limited|plc|PLC|ASA|AG|S\.A\.|SA|NV|N\.V\.|SE|Holdings?|Co\.)(?:\s*Class\s*[A-Z])?$/i, '')
-    .trim();
+  const cleanName = cleanCompanyName(raw.companyName);
 
   // 1. Q1: How Does Company Make Money?
   const howCompanyMakesMoney = formatHowCompanyMakesMoney(raw);
@@ -157,7 +145,9 @@ export function buildQuestionsAndDynamics(
     industryCondition: sectorDynamicsInfo.industryCondition,
     macroConditionSimplified: sectorDynamicsInfo.macroConditionSimplified,
     obstaclesAndChallenges: sectorDynamicsInfo.obstaclesAndChallenges,
-    economicPoliticalCulturalRisks: sectorDynamicsInfo.economicPoliticalCulturalRisks
+    obstaclesAndChallengesSimplified: sectorDynamicsInfo.obstaclesAndChallengesSimplified,
+    economicPoliticalCulturalRisks: sectorDynamicsInfo.economicPoliticalCulturalRisks,
+    economicPoliticalCulturalRisksSimplified: sectorDynamicsInfo.economicPoliticalCulturalRisksSimplified
   };
 
   return { sectorDynamics, companyQuestions, industryQuestions };

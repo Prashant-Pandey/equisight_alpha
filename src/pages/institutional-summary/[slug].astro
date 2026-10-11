@@ -40,8 +40,9 @@ const formattedDate = new Date(report.publishDate).toLocaleDateString('en-US', {
 const priceDisplayLabel = formatPriceTimestamp(report.publishDate, report.priceTimestamp);
 
 // Canonical & page meta
-const pageTitle = `${report.ticker} Institutional Summary & Qualitative Audit | EquiSight`;
-const pageDescription = `Interactive unabridged institutional research memo and qualitative audit for ${report.companyName} ($${report.ticker}).`;
+const targetReportUrl = path(`/reports/${entry.slug}#sec-institutional-summary`);
+const pageTitle = `[Deprecated] ${report.ticker} Complete Institutional Analyst Report | EquiSight`;
+const pageDescription = `The standalone institutional-summary view has been consolidated into the primary report page for ${report.companyName} ($${report.ticker}).`;
 ---
 
 <BaseLayout
@@ -52,7 +53,40 @@ const pageDescription = `Interactive unabridged institutional research memo and 
   sector={report.sector}
   publishDate={typeof report.publishDate === 'string' ? report.publishDate : report.publishDate.toISOString()}
 >
+  <!-- SEO & Canonical Header: Auto Redirect to Main Report Section -->
+  <head slot="head">
+    <meta http-equiv="refresh" content={`0;url=${targetReportUrl}`} />
+    <link rel="canonical" href={targetReportUrl} />
+  </head>
+
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+    <!-- Prominent Deprecation & Consolidation Banner -->
+    <aside class="p-4 sm:p-5 rounded-2xl border border-amber-500/40 bg-amber-950/30 text-amber-200 shadow-xl backdrop-blur-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" role="alert">
+      <div class="flex items-start gap-3">
+        <div class="p-2 rounded-xl bg-amber-500/20 text-amber-400 shrink-0 mt-0.5">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-sm font-bold text-white tracking-tight">Notice: Institutional Summary Page is Deprecated</h2>
+            <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">Consolidated</span>
+          </div>
+          <p class="text-xs text-amber-300/90 mt-1 leading-relaxed">
+            All institutional summary tools, chapter jump ribbons, table toolkits, and unabridged qualitative research have been permanently unified into the <strong>Complete Institutional Analyst Report</strong> section on the primary research page.
+          </p>
+        </div>
+      </div>
+      <a
+        href={targetReportUrl}
+        class="inline-flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-colors shadow-sm"
+      >
+        <span>Go to Unified Report</span>
+        <span>&rarr;</span>
+      </a>
+    </aside>
 
     <!-- Top Minimalist Institutional Breadcrumb & Header Bar -->
     <header class="p-5 sm:p-6 rounded-2xl border border-slate-800 bg-slate-900/80 shadow-xl backdrop-blur-sm">
@@ -151,7 +185,7 @@ const pageDescription = `Interactive unabridged institutional research memo and 
             <h2 class="text-lg sm:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
               <span>Complete Institutional Analyst Report</span>
             </h2>
-            <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+            <span class="text-[10px] font-mono uppercase tracking-wider text-emerald-400 bg-emerald-950/80 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold pl-5">
               Unabridged Dossier
             </span>
           </div>
@@ -235,7 +269,9 @@ const pageDescription = `Interactive unabridged institutional research memo and 
       <!-- Active Content Container with Enhanced Typography & Chapter Parsing -->
       <div
         id="memo-body-container"
-        class="prose prose-invert prose-emerald max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-emerald-400 hover:prose-a:text-emerald-300 prose-table:border prose-table:border-slate-800 prose-th:bg-slate-900/90 prose-th:p-3 prose-th:text-xs prose-th:font-mono prose-th:text-slate-300 prose-td:p-3 prose-td:border prose-td:border-slate-800 prose-td:text-xs leading-relaxed"
+        data-ticker={report.ticker}
+        data-company-name={report.companyName}
+        class="prose prose-invert prose-emerald max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-emerald-400 hover:prose-a:text-emerald-300 leading-relaxed"
       >
         <ContentComponent />
       </div>
@@ -317,42 +353,225 @@ const pageDescription = `Interactive unabridged institutional research memo and 
 
   /* Table Container Styling with Action Toolbar */
   :global(.interactive-table-wrapper) {
-    margin: 1.5rem 0;
-    border-radius: 0.75rem;
-    border: 1px solid rgba(51, 65, 85, 0.8);
-    background: rgba(15, 23, 42, 0.6);
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    margin: 2rem 0;
+    border-radius: 1rem;
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.85) 0%, rgba(2, 6, 23, 0.95) 100%);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  :global(.interactive-table-wrapper:hover) {
+    border-color: rgba(71, 85, 105, 0.9);
+    box-shadow: 0 14px 28px -4px rgba(0, 0, 0, 0.5), 0 0 15px rgba(16, 185, 129, 0.05);
   }
   :global(.table-toolbar) {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    padding: 0.5rem 0.85rem;
+    gap: 0.75rem;
+    padding: 0.75rem 1.15rem;
     background: rgba(15, 23, 42, 0.95);
-    border-bottom: 1px solid rgba(51, 65, 85, 0.7);
+    border-bottom: 1px solid rgba(51, 65, 85, 0.75);
+    border-top-left-radius: 0.95rem;
+    border-top-right-radius: 0.95rem;
+    backdrop-blur-md: blur(8px);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.7rem;
+    font-size: 0.725rem;
     color: #94a3b8;
+  }
+  :global(.table-toolbar-left) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  :global(.table-tag-badge) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+  :global(.table-title-text) {
+    font-weight: 700;
+    color: #f1f5f9;
+    font-size: 0.8rem;
+    letter-spacing: -0.01em;
+  }
+  :global(.table-record-pill) {
+    font-size: 0.675rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.375rem;
+    background: rgba(30, 41, 59, 0.7);
+    color: #94a3b8;
+    border: 1px solid rgba(51, 65, 85, 0.6);
+  }
+  :global(.table-toolbar-right) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  :global(.table-action-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid rgba(71, 85, 105, 0.7);
+    color: #cbd5e1;
+    font-size: 0.675rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  :global(.table-action-btn:hover) {
+    background: rgba(51, 65, 85, 0.95);
+    border-color: rgba(16, 185, 129, 0.4);
+    color: #ffffff;
+  }
+  :global(.table-action-btn.active) {
+    background: rgba(16, 185, 129, 0.18);
+    border-color: rgba(16, 185, 129, 0.5);
+    color: #34d399;
   }
   :global(.table-scroll-container) {
     overflow-x: auto;
     max-width: 100%;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(51, 65, 85, 0.8) rgba(15, 23, 42, 0.5);
+  }
+  :global(.table-scroll-container::-webkit-scrollbar) {
+    height: 7px;
+  }
+  :global(.table-scroll-container::-webkit-scrollbar-track) {
+    background: rgba(15, 23, 42, 0.6);
+  }
+  :global(.table-scroll-container::-webkit-scrollbar-thumb) {
+    background: rgba(51, 65, 85, 0.8);
+    border-radius: 9999px;
+  }
+  :global(.table-scroll-container::-webkit-scrollbar-thumb:hover) {
+    background: rgba(100, 116, 139, 0.9);
   }
   :global(.table-scroll-container table) {
     margin: 0 !important;
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    text-align: left;
+    font-size: 0.775rem;
+    line-height: 1.5;
+  }
+  :global(.table-scroll-container thead) {
+    background: rgba(15, 23, 42, 0.98);
   }
   :global(.table-scroll-container thead th) {
     position: sticky;
     top: 0;
-    background: rgba(15, 23, 42, 0.95) !important;
     z-index: 2;
+    padding: 0.85rem 1rem !important;
+    font-size: 0.7rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    color: #94a3b8 !important;
+    background: rgba(15, 23, 42, 0.98) !important;
+    border-bottom: 2px solid rgba(51, 65, 85, 0.9) !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: 1px solid rgba(30, 41, 59, 0.6) !important;
+    white-space: nowrap;
+  }
+  :global(.table-scroll-container thead th:last-child) {
+    border-right: none !important;
+  }
+  :global(.table-scroll-container tbody tr) {
+    border-bottom: 1px solid rgba(30, 41, 59, 0.75);
+    transition: background-color 0.15s ease;
+  }
+  :global(.table-scroll-container tbody tr:last-child) {
+    border-bottom: none;
+  }
+  :global(.table-scroll-container tbody tr:nth-child(even)) {
+    background-color: rgba(15, 23, 42, 0.35);
+  }
+  :global(.table-scroll-container tbody tr:nth-child(odd)) {
+    background-color: rgba(2, 6, 23, 0.25);
   }
   :global(.table-scroll-container tbody tr:hover) {
-    background: rgba(30, 41, 59, 0.5);
+    background-color: rgba(30, 41, 59, 0.65) !important;
+  }
+  :global(.table-scroll-container tbody tr.row-highlight-target) {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-left: 3px solid #10b981;
+  }
+  :global(.table-scroll-container tbody tr.row-highlight-summary) {
+    background: rgba(15, 23, 42, 0.85) !important;
+    font-weight: 700;
+    border-top: 2px solid rgba(51, 65, 85, 0.9);
+  }
+  :global(.table-scroll-container tbody td) {
+    padding: 0.75rem 1rem !important;
+    color: #cbd5e1 !important;
+    border-top: none !important;
+    border-bottom: 1px solid rgba(30, 41, 59, 0.7) !important;
+    border-left: none !important;
+    border-right: 1px solid rgba(30, 41, 59, 0.45) !important;
+    vertical-align: middle;
+  }
+  :global(.table-scroll-container tbody td:last-child) {
+    border-right: none !important;
+  }
+  :global(.table-scroll-container tbody td strong) {
+    color: #f8fafc;
+    font-weight: 600;
+  }
+  :global(.table-scroll-container tbody td code) {
+    background: rgba(30, 41, 59, 0.8);
+    color: #38bdf8;
+    padding: 0.2rem 0.45rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(51, 65, 85, 0.65);
+    font-size: 0.725rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -0.01em;
+  }
+  :global(.table-scroll-container table.table-dense thead th) {
+    padding: 0.45rem 0.75rem !important;
+    font-size: 0.65rem !important;
+  }
+  :global(.table-scroll-container table.table-dense tbody td) {
+    padding: 0.4rem 0.75rem !important;
+    font-size: 0.725rem !important;
+  }
+  :global(.table-footer-strip) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1.15rem;
+    background: rgba(15, 23, 42, 0.8);
+    border-top: 1px solid rgba(51, 65, 85, 0.5);
+    border-bottom-left-radius: 0.95rem;
+    border-bottom-right-radius: 0.95rem;
+    font-size: 0.675rem;
+    color: #64748b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  :global(.table-footer-hint) {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
   }
 
   /* Deductive Step Chains Flow */
@@ -441,26 +660,152 @@ const pageDescription = `Interactive unabridged institutional research memo and 
       });
     }
 
-    // 5. Enhance Tables (Wrap in Interactive Toolbar + Sticky Header + Copy to CSV)
+    // 5. Enhance Tables with Professional Institutional UI Toolkit
+    const ticker = memoBody.getAttribute('data-ticker') || '';
+    const companyName = memoBody.getAttribute('data-company-name') || '';
     const tables = memoBody.querySelectorAll('table');
+
     tables.forEach((table, index) => {
       // Check if already enhanced
       if (table.closest('.interactive-table-wrapper')) return;
 
+      // Extract header text to determine dataset semantic type
+      const headerThs = Array.from(table.querySelectorAll('thead th'));
+      const headerText = headerThs.map((th) => th.innerText.toLowerCase().trim()).join(' ');
+
+      let datasetCategory = 'Financial Dataset';
+      let datasetIcon = '📊';
+      let datasetAccent = 'emerald';
+
+      if (headerText.includes('session metric') || headerText.includes('analytical parameter') || headerText.includes('trading venue') || headerText.includes('observed level')) {
+        datasetCategory = 'Trading & Liquidity Telemetry';
+        datasetIcon = '⚡';
+        datasetAccent = 'sky';
+      } else if (headerText.includes('quarter') && (headerText.includes('diluted eps') || headerText.includes('beat/miss'))) {
+        datasetCategory = 'Historical Quarterly EPS Audit';
+        datasetIcon = '📈';
+        datasetAccent = 'indigo';
+      } else if (headerText.includes('moat pillar') || headerText.includes('assessment')) {
+        datasetCategory = 'Economic Moat Structural Decomposition';
+        datasetIcon = '🏰';
+        datasetAccent = 'amber';
+      } else if (headerText.includes('ticker') && (headerText.includes('market cap') || headerText.includes('pe') || headerText.includes('ev/ebitda'))) {
+        datasetCategory = 'Institutional Peer Benchmarking Matrix';
+        datasetIcon = '⚖️';
+        datasetAccent = 'purple';
+      } else if (headerText.includes('valuation methodology') || headerText.includes('calculated fair value') || headerText.includes('implied upside')) {
+        datasetCategory = 'Multi-Model Valuation & DCF Suite';
+        datasetIcon = '💎';
+        datasetAccent = 'emerald';
+      }
+
+      // Format header cells: enhance column headers with icons, clean typography, and uppercase labels
+      headerThs.forEach((th, thIdx) => {
+        th.classList.add('tracking-wider');
+      });
+
+      // Scan and enhance body rows and cells
+      const tbodyRows = Array.from(table.querySelectorAll('tbody tr'));
+      tbodyRows.forEach((row) => {
+        const rowText = row.innerText.trim();
+        const rowTextLower = rowText.toLowerCase();
+
+        // 1. Highlight target company in peer matrix
+        if (ticker && (rowText.includes(`(${ticker})`) || rowText.includes(` ${ticker} `) || rowText.startsWith(ticker) || (companyName && rowTextLower.includes(companyName.toLowerCase().slice(0, 10))))) {
+          row.classList.add('row-highlight-target');
+        }
+
+        // 2. Highlight summary or consensus row
+        if (rowTextLower.includes('consensus fair value target') || rowTextLower.includes('weighted consensus') || rowTextLower.includes('total / average')) {
+          row.classList.add('row-highlight-summary');
+        }
+
+        // 3. Enhance specific cells with badges & colored tags
+        const cells = Array.from(row.querySelectorAll('td'));
+        cells.forEach((cell) => {
+          const raw = cell.innerHTML.trim();
+          const text = cell.innerText.trim();
+
+          // Numerical upside / downside pill formatting
+          if (/^[-+]?\d+(\.\d+)?%$/.test(text)) {
+            const isNeg = text.startsWith('-');
+            const isPos = text.startsWith('+') && parseFloat(text) > 0;
+            const badgeClass = isNeg
+              ? 'bg-rose-950/70 text-rose-300 border border-rose-800/60 px-2 py-0.5 rounded font-mono text-[11px] font-bold'
+              : (isPos ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-800/60 px-2 py-0.5 rounded font-mono text-[11px] font-bold' : 'font-mono text-slate-300');
+            cell.innerHTML = `<span class="${badgeClass}">${text}</span>`;
+          }
+          // Moat strength pills
+          else if (['wide', 'narrow', 'none'].includes(text.toLowerCase())) {
+            let color = 'bg-slate-800 text-slate-300 border-slate-700';
+            if (text.toLowerCase() === 'wide') color = 'bg-emerald-950 text-emerald-300 border-emerald-700/60';
+            if (text.toLowerCase() === 'narrow') color = 'bg-sky-950 text-sky-300 border-sky-700/60';
+            if (text.toLowerCase() === 'none') color = 'bg-slate-800 text-slate-400 border-slate-700';
+            cell.innerHTML = `<span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider border ${color}">${text}</span>`;
+          }
+          // Overvalued / Undervalued status chips
+          else if (text.includes('Significantly Overvalued')) {
+            cell.innerHTML = raw.replace('Significantly Overvalued', '<span class="px-2 py-0.5 rounded bg-rose-950/80 text-rose-300 border border-rose-800/60 text-[10px] font-bold">Significantly Overvalued</span>');
+          } else if (text.includes('Significantly Undervalued')) {
+            cell.innerHTML = raw.replace('Significantly Undervalued', '<span class="px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 text-[10px] font-bold">Significantly Undervalued</span>');
+          } else if (text.includes('Fairly Valued')) {
+            cell.innerHTML = raw.replace('Fairly Valued', '<span class="px-2 py-0.5 rounded bg-amber-950/80 text-amber-300 border border-amber-800/60 text-[10px] font-bold">Fairly Valued</span>');
+          }
+        });
+      });
+
+      // Construct Wrapper and Toolbar
       const wrapper = document.createElement('div');
       wrapper.className = 'interactive-table-wrapper not-prose';
 
       const toolbar = document.createElement('div');
       toolbar.className = 'table-toolbar';
-      
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'font-semibold text-slate-300';
-      titleSpan.innerHTML = `📊 Dataset Table #${index + 1} (${table.querySelectorAll('tr').length - 1} records)`;
 
+      // Left Toolbar Section (Badge + Title + Record Count)
+      const leftPart = document.createElement('div');
+      leftPart.className = 'table-toolbar-left';
+
+      const tagBadge = document.createElement('span');
+      tagBadge.className = 'table-tag-badge';
+      tagBadge.innerHTML = `<span>${datasetIcon}</span><span>${datasetCategory}</span>`;
+
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'table-title-text';
+      titleSpan.textContent = `Table #${index + 1}`;
+
+      const countPill = document.createElement('span');
+      countPill.className = 'table-record-pill';
+      const recordCount = tbodyRows.length;
+      countPill.textContent = `${recordCount} ${recordCount === 1 ? 'row' : 'rows'}`;
+
+      leftPart.appendChild(tagBadge);
+      leftPart.appendChild(titleSpan);
+      leftPart.appendChild(countPill);
+
+      // Right Toolbar Section (Density Toggle + Copy CSV Button)
+      const rightPart = document.createElement('div');
+      rightPart.className = 'table-toolbar-right';
+
+      // Quick Density toggle button
+      const denseBtn = document.createElement('button');
+      denseBtn.type = 'button';
+      denseBtn.className = 'table-action-btn';
+      denseBtn.title = 'Toggle condensed row padding';
+      denseBtn.innerHTML = `<span>↕</span><span>Compact</span>`;
+      let isTableDense = false;
+      denseBtn.addEventListener('click', () => {
+        isTableDense = !isTableDense;
+        table.classList.toggle('table-dense', isTableDense);
+        denseBtn.classList.toggle('active', isTableDense);
+        denseBtn.innerHTML = isTableDense ? `<span>↕</span><span>Relaxed</span>` : `<span>↕</span><span>Compact</span>`;
+      });
+
+      // Copy CSV Button
       const copyBtn = document.createElement('button');
       copyBtn.type = 'button';
-      copyBtn.className = 'px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[10px] font-mono font-semibold text-emerald-400 hover:text-emerald-300 border border-slate-700 transition-colors flex items-center gap-1 cursor-pointer';
-      copyBtn.innerHTML = `<span>📋</span><span>Copy Table Data</span>`;
+      copyBtn.className = 'table-action-btn';
+      copyBtn.title = 'Copy dataset to clipboard in tab-separated spreadsheet format';
+      copyBtn.innerHTML = `<span>📋</span><span>Export TSV</span>`;
 
       copyBtn.addEventListener('click', () => {
         const rows = Array.from(table.querySelectorAll('tr'));
@@ -470,23 +815,45 @@ const pageDescription = `Interactive unabridged institutional research memo and 
         }).join('\n');
 
         navigator.clipboard.writeText(csv).then(() => {
-          copyBtn.innerHTML = `<span>✓</span><span>Copied to Clipboard!</span>`;
+          copyBtn.innerHTML = `<span>✓</span><span>Copied!</span>`;
+          copyBtn.classList.add('active');
           setTimeout(() => {
-            copyBtn.innerHTML = `<span>📋</span><span>Copy Table Data</span>`;
+            copyBtn.innerHTML = `<span>📋</span><span>Export TSV</span>`;
+            copyBtn.classList.remove('active');
           }, 2000);
         });
       });
 
-      toolbar.appendChild(titleSpan);
-      toolbar.appendChild(copyBtn);
+      rightPart.appendChild(denseBtn);
+      rightPart.appendChild(copyBtn);
 
+      toolbar.appendChild(leftPart);
+      toolbar.appendChild(rightPart);
+
+      // Scrollable Table Container
       const scrollDiv = document.createElement('div');
       scrollDiv.className = 'table-scroll-container';
 
+      // Footer Strip with Responsive Scroll Hint and Metadata
+      const footerStrip = document.createElement('div');
+      footerStrip.className = 'table-footer-strip';
+      
+      const footerHint = document.createElement('div');
+      footerHint.className = 'table-footer-hint';
+
+      const footerMeta = document.createElement('span');
+      footerMeta.className = 'text-slate-500';
+      footerMeta.textContent = `EquiSight Institutional Engine v2.4`;
+
+      footerStrip.appendChild(footerHint);
+      footerStrip.appendChild(footerMeta);
+
+      // Insert wrapper into DOM
       table.parentNode?.insertBefore(wrapper, table);
       scrollDiv.appendChild(table);
       wrapper.appendChild(toolbar);
       wrapper.appendChild(scrollDiv);
+      wrapper.appendChild(footerStrip);
     });
 
     // 6. Enhance Deductive Chains (Transform 'A -> B -> C' into Visual Flowchips)

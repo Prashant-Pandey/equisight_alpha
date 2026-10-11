@@ -1,6 +1,8 @@
 import assert from 'assert';
 import {
   EXECUTIVE_SUMMARY_SCHEMA,
+  REPORT_PART1_SCHEMA,
+  REPORT_PART2_SCHEMA,
   MAIN_REPORT_SCHEMA,
   TIER1_SENTIMENT_SCHEMA,
   sanitizeJson,
@@ -15,6 +17,18 @@ assert.strictEqual(EXECUTIVE_SUMMARY_SCHEMA.type, 'object');
 assert.ok(Array.isArray(EXECUTIVE_SUMMARY_SCHEMA.required));
 assert.ok(EXECUTIVE_SUMMARY_SCHEMA.required.includes('catalystHeadline'));
 assert.ok(EXECUTIVE_SUMMARY_SCHEMA.required.includes('formattedMarkdown'));
+
+assert.strictEqual(REPORT_PART1_SCHEMA.type, 'object');
+assert.ok(Array.isArray(REPORT_PART1_SCHEMA.required));
+assert.ok(REPORT_PART1_SCHEMA.required.includes('title'));
+assert.ok(REPORT_PART1_SCHEMA.required.includes('markdownBody'));
+assert.ok(REPORT_PART1_SCHEMA.required.includes('extractedFigures'));
+
+assert.strictEqual(REPORT_PART2_SCHEMA.type, 'object');
+assert.ok(Array.isArray(REPORT_PART2_SCHEMA.required));
+assert.ok(REPORT_PART2_SCHEMA.required.includes('theses'));
+assert.ok(REPORT_PART2_SCHEMA.required.includes('markdownBody'));
+assert.ok(REPORT_PART2_SCHEMA.required.includes('socialHooks'));
 
 assert.strictEqual(MAIN_REPORT_SCHEMA.type, 'object');
 assert.ok(Array.isArray(MAIN_REPORT_SCHEMA.required));

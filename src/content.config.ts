@@ -61,6 +61,8 @@ const reportsCollection = defineCollection({
     industryQuestions: z.any().optional(),
     industryDeepDive: z.any().optional(),
     macroConditionSimplified: z.string().optional(),
+    obstaclesAndChallengesSimplified: z.string().optional(),
+    economicPoliticalCulturalRisksSimplified: z.string().optional(),
 
     // Valuation Models & Ratings
     valuationModels: z.any().optional(),

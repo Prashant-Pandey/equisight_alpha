@@ -2,14 +2,18 @@ import { execFile } from 'child_process';
 import { CONFIG } from '../config.js';
 import { fetchWithRetry } from '../utils/httpClient.js';
 import {
-  buildSystemPrompt,
-  buildUserPrompt,
   buildExecutiveSummarySystemPrompt,
-  buildExecutiveSummaryUserPrompt
+  buildExecutiveSummaryUserPrompt,
+  buildReportPart1SystemPrompt,
+  buildReportPart1UserPrompt,
+  buildReportPart2SystemPrompt,
+  buildReportPart2UserPrompt
 } from './prompts.js';
 import {
   EXECUTIVE_SUMMARY_SCHEMA,
   MAIN_REPORT_SCHEMA,
+  REPORT_PART1_SCHEMA,
+  REPORT_PART2_SCHEMA,
   safeParseJson
 } from './schemas.js';
 import { factChecker } from './factChecker.js';
@@ -33,6 +37,8 @@ import type {
   MacroBackdrop,
   SocialSentiment,
   LLMAnalysisOutput,
+  ReportPart1Output,
+  ReportPart2Output,
   ExecutiveSummaryData,
   ThesisPoint,
   ValuationModels,
@@ -57,20 +63,29 @@ export class LLMSynthesisAgent {
   ): Promise<LLMAnalysisOutput> {
     console.log(`[LLMSynthesisAgent] Synthesizing research report for ${mover.ticker} (${mover.category})...`);
 
-    const mainSystemPrompt = buildSystemPrompt();
-    const mainUserPrompt = buildUserPrompt(mover, fundamentals, macro, sentiment);
+    const part1SystemPrompt = buildReportPart1SystemPrompt();
+    const part1UserPrompt = buildReportPart1UserPrompt(mover, fundamentals, macro, sentiment);
+
+    const part2SystemPrompt = buildReportPart2SystemPrompt();
+    const part2UserPrompt = buildReportPart2UserPrompt(mover, fundamentals, macro, sentiment);
 
     const execSystemPrompt = buildExecutiveSummarySystemPrompt();
     const execUserPrompt = buildExecutiveSummaryUserPrompt(mover, fundamentals, macro, sentiment);
 
-    // Execute TWO parallel LLM calls concurrently
-    console.log(`[LLMSynthesisAgent] Launching PARALLEL LLM calls: [1] Full Report & [2] Executive Summary & Session Catalyst for $${mover.ticker}...`);
-    const [mainOutput, execOutput] = await Promise.all([
-      this.executeLLMCall<LLMAnalysisOutput>(
-        mainSystemPrompt,
-        mainUserPrompt,
-        `MainReport-${mover.ticker}`,
-        MAIN_REPORT_SCHEMA
+    // Launch parallel LLM calls dividing Full Report into 2 pieces to reduce hallucination
+    console.log(`[LLMSynthesisAgent] Launching PARALLEL LLM calls: [1] Report Part 1 (Financials & Solvency), [2] Report Part 2 (Moat, Valuation & Theses), and [3] Executive Summary for $${mover.ticker}...`);
+    const [part1Output, part2Output, execOutput] = await Promise.all([
+      this.executeLLMCall<ReportPart1Output>(
+        part1SystemPrompt,
+        part1UserPrompt,
+        `ReportPart1-${mover.ticker}`,
+        REPORT_PART1_SCHEMA
+      ),
+      this.executeLLMCall<ReportPart2Output>(
+        part2SystemPrompt,
+        part2UserPrompt,
+        `ReportPart2-${mover.ticker}`,
+        REPORT_PART2_SCHEMA
       ),
       this.executeLLMCall<ExecutiveSummaryData>(
         execSystemPrompt,
@@ -80,32 +95,100 @@ export class LLMSynthesisAgent {
       )
     ]);
 
-    let rawOutput: LLMAnalysisOutput | null = mainOutput;
+    let rawOutput: LLMAnalysisOutput | null = null;
 
-    // Fallback: Deterministic Algorithmic Synthesis Engine (institutional-grade template)
-    if (!rawOutput) {
+    if (part1Output && part2Output) {
+      console.log(`[LLMSynthesisAgent] Successfully received both Report Part 1 and Part 2 for $${mover.ticker}. Stitching sections...`);
+      const p1Body = part1Output.markdownBody.trim().replace(/\n---\s*$/, '');
+      const p2Body = part2Output.markdownBody.trim().replace(/^\s*---\n*/, '');
+      const combinedMarkdown = `${p1Body}\n\n---\n\n${p2Body}`;
+
+      rawOutput = {
+        title: part1Output.title,
+        seoDescription: part1Output.seoDescription,
+        slug: part1Output.slug,
+        primaryKeywords: part1Output.primaryKeywords,
+        secondaryKeywords: part1Output.secondaryKeywords,
+        catalystSummary: part1Output.catalystSummary,
+        catalystAlignment: part1Output.catalystAlignment || sentiment.catalystAlignment || 'ALIGNED',
+        catalystSynthesis: part1Output.catalystSynthesis || sentiment.catalystSynthesis,
+        macroConditionSimplified: part2Output.macroConditionSimplified || fundamentals.sectorDynamics?.macroConditionSimplified,
+        obstaclesAndChallengesSimplified: part2Output.obstaclesAndChallengesSimplified || fundamentals.sectorDynamics?.obstaclesAndChallengesSimplified,
+        economicPoliticalCulturalRisksSimplified: part2Output.economicPoliticalCulturalRisksSimplified || fundamentals.sectorDynamics?.economicPoliticalCulturalRisksSimplified,
+        markdownBody: combinedMarkdown,
+        extractedFigures: part1Output.extractedFigures,
+        theses: part2Output.theses,
+        socialHooks: part2Output.socialHooks
+      };
+    } else if (part1Output && !part2Output) {
+      console.warn(`[LLMSynthesisAgent] Report Part 2 failed for $${mover.ticker}. Using deterministic fallback for Part 2...`);
+      const det = this.generateDeterministicReport(mover, fundamentals, macro, sentiment);
+      const detPart2Markdown = this.extractReportPart2FromMarkdown(det.markdownBody);
+      const p1Body = part1Output.markdownBody.trim().replace(/\n---\s*$/, '');
+      const combinedMarkdown = detPart2Markdown ? `${p1Body}\n\n---\n\n${detPart2Markdown}` : p1Body;
+
+      rawOutput = {
+        ...det,
+        title: part1Output.title,
+        seoDescription: part1Output.seoDescription,
+        slug: part1Output.slug,
+        primaryKeywords: part1Output.primaryKeywords,
+        secondaryKeywords: part1Output.secondaryKeywords,
+        catalystSummary: part1Output.catalystSummary,
+        catalystAlignment: part1Output.catalystAlignment || det.catalystAlignment,
+        catalystSynthesis: part1Output.catalystSynthesis || det.catalystSynthesis,
+        markdownBody: combinedMarkdown,
+        extractedFigures: part1Output.extractedFigures || det.extractedFigures
+      };
+    } else if (!part1Output && part2Output) {
+      console.warn(`[LLMSynthesisAgent] Report Part 1 failed for $${mover.ticker}. Using deterministic fallback for Part 1...`);
+      const det = this.generateDeterministicReport(mover, fundamentals, macro, sentiment);
+      const detPart1Markdown = this.extractReportPart1FromMarkdown(det.markdownBody);
+      const p2Body = part2Output.markdownBody.trim().replace(/^\s*---\n*/, '');
+      const combinedMarkdown = detPart1Markdown ? `${detPart1Markdown}\n\n---\n\n${p2Body}` : p2Body;
+
+      rawOutput = {
+        ...det,
+        macroConditionSimplified: part2Output.macroConditionSimplified || det.macroConditionSimplified,
+        obstaclesAndChallengesSimplified: part2Output.obstaclesAndChallengesSimplified || det.obstaclesAndChallengesSimplified,
+        economicPoliticalCulturalRisksSimplified: part2Output.economicPoliticalCulturalRisksSimplified || det.economicPoliticalCulturalRisksSimplified,
+        theses: part2Output.theses || det.theses,
+        socialHooks: part2Output.socialHooks || det.socialHooks,
+        markdownBody: combinedMarkdown
+      };
+    } else {
       console.log(`[LLMSynthesisAgent] Using built-in deterministic synthesis engine for ${mover.ticker}...`);
       rawOutput = this.generateDeterministicReport(mover, fundamentals, macro, sentiment);
-    } else {
-      if (!rawOutput.catalystAlignment && sentiment.catalystAlignment) {
-        rawOutput.catalystAlignment = sentiment.catalystAlignment;
-      }
-      if (!rawOutput.catalystSynthesis && sentiment.catalystSynthesis) {
-        rawOutput.catalystSynthesis = sentiment.catalystSynthesis;
-      }
-      if (!rawOutput.filteredHeadlines && sentiment.filteredHeadlines) {
-        rawOutput.filteredHeadlines = sentiment.filteredHeadlines;
-      }
-      if (rawOutput.macroConditionSimplified) {
-        if (!rawOutput.industryDeepDive) {
-          rawOutput.industryDeepDive = {
-            industryCondition: fundamentals.industryQuestions?.industryCondition ?? `The ${fundamentals.sector} sector operates within broader macroeconomic and interest rate cycles.`,
-            macroConditionSimplified: rawOutput.macroConditionSimplified,
-            obstaclesAndChallenges: fundamentals.industryQuestions?.obstaclesAndChallenges ?? `Primary hurdles include competitive positioning, input costs, and regulatory compliance.`,
-            economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? `Macro exposures involve monetary policy shifts and economic cycle dynamics.`
-          };
-        } else {
+    }
+
+    if (!rawOutput.catalystAlignment && sentiment.catalystAlignment) {
+      rawOutput.catalystAlignment = sentiment.catalystAlignment;
+    }
+    if (!rawOutput.catalystSynthesis && sentiment.catalystSynthesis) {
+      rawOutput.catalystSynthesis = sentiment.catalystSynthesis;
+    }
+    if (!rawOutput.filteredHeadlines && sentiment.filteredHeadlines) {
+      rawOutput.filteredHeadlines = sentiment.filteredHeadlines;
+    }
+    if (rawOutput.macroConditionSimplified || rawOutput.obstaclesAndChallengesSimplified || rawOutput.economicPoliticalCulturalRisksSimplified) {
+      if (!rawOutput.industryDeepDive) {
+        rawOutput.industryDeepDive = {
+          industryCondition: fundamentals.industryQuestions?.industryCondition ?? `The ${fundamentals.sector} sector operates within broader macroeconomic and interest rate cycles.`,
+          macroConditionSimplified: rawOutput.macroConditionSimplified,
+          obstaclesAndChallenges: fundamentals.industryQuestions?.obstaclesAndChallenges ?? `Primary hurdles include competitive positioning, input costs, and regulatory compliance.`,
+          obstaclesAndChallengesSimplified: rawOutput.obstaclesAndChallengesSimplified,
+          economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? `Macro exposures involve monetary policy shifts and economic cycle dynamics.`,
+          economicPoliticalCulturalRisksSimplified: rawOutput.economicPoliticalCulturalRisksSimplified
+        };
+      } else {
+        if (rawOutput.macroConditionSimplified) {
           rawOutput.industryDeepDive.macroConditionSimplified = rawOutput.macroConditionSimplified;
+        }
+        if (rawOutput.obstaclesAndChallengesSimplified) {
+          rawOutput.industryDeepDive.obstaclesAndChallengesSimplified = rawOutput.obstaclesAndChallengesSimplified;
+        }
+        if (rawOutput.economicPoliticalCulturalRisksSimplified) {
+          rawOutput.industryDeepDive.economicPoliticalCulturalRisksSimplified = rawOutput.economicPoliticalCulturalRisksSimplified;
         }
       }
     }
@@ -300,12 +383,12 @@ export class LLMSynthesisAgent {
         ],
         response_format: jsonSchema
           ? {
-              type: 'json_schema',
-              json_schema: {
-                name: callerTag.replace(/[^a-zA-Z0-9_-]/g, '_'),
-                schema: jsonSchema
-              }
+            type: 'json_schema',
+            json_schema: {
+              name: callerTag.replace(/[^a-zA-Z0-9_-]/g, '_'),
+              schema: jsonSchema
             }
+          }
           : { type: 'json_object' },
         temperature: 0.2
       })
@@ -369,6 +452,29 @@ export class LLMSynthesisAgent {
     }
     return `${trimmedNew}\n\n---\n\n${markdownBody}`;
   }
+
+  /**
+   * Extracts Sections 1-4 from a full report markdown body.
+   */
+  public extractReportPart1FromMarkdown(markdown: string): string {
+    const sec1Match = markdown.match(/(## 1\.[\s\S]*?)(?=(?:\n---\n\s*## 5\.|\n## 5\.))/);
+    if (sec1Match) {
+      return sec1Match[1].trim();
+    }
+    return markdown;
+  }
+
+  /**
+   * Extracts Sections 5-9 from a full report markdown body.
+   */
+  public extractReportPart2FromMarkdown(markdown: string): string {
+    const sec5Match = markdown.match(/(## 5\.[\s\S]*$)/);
+    if (sec5Match) {
+      return sec5Match[1].trim();
+    }
+    return '';
+  }
+
 
   /**
    * Generates a high-fidelity, deterministic Executive Summary & Session Catalyst data structure.
@@ -669,7 +775,9 @@ ${expectationsVsReality}
       industryCondition: f.industryQuestions?.industryCondition ?? `The ${f.sector} sector operates within broader macroeconomic and interest rate cycles.`,
       macroConditionSimplified: f.industryQuestions?.macroConditionSimplified ?? f.sectorDynamics?.macroConditionSimplified,
       obstaclesAndChallenges: f.industryQuestions?.obstaclesAndChallenges ?? `Primary hurdles include competitive positioning, input costs, and regulatory compliance.`,
-      economicPoliticalCulturalRisks: f.industryQuestions?.economicPoliticalCulturalRisks ?? `Macro exposures involve monetary policy shifts and economic cycle dynamics.`
+      obstaclesAndChallengesSimplified: f.industryQuestions?.obstaclesAndChallengesSimplified ?? f.sectorDynamics?.obstaclesAndChallengesSimplified,
+      economicPoliticalCulturalRisks: f.industryQuestions?.economicPoliticalCulturalRisks ?? `Macro exposures involve monetary policy shifts and economic cycle dynamics.`,
+      economicPoliticalCulturalRisksSimplified: f.industryQuestions?.economicPoliticalCulturalRisksSimplified ?? f.sectorDynamics?.economicPoliticalCulturalRisksSimplified
     };
 
     // 8. Multi-Model Valuation Suite (Inherited directly from verified fundamentals, NO fake multipliers)
@@ -977,6 +1085,8 @@ ${compiledTheses.bear.map((b, idx) => `${idx + 1}. **${b.point.split('.')[0]}:**
       companyDeepDive,
       industryDeepDive,
       macroConditionSimplified: industryDeepDive.macroConditionSimplified,
+      obstaclesAndChallengesSimplified: industryDeepDive.obstaclesAndChallengesSimplified,
+      economicPoliticalCulturalRisksSimplified: industryDeepDive.economicPoliticalCulturalRisksSimplified,
       valuationModels,
       optionGammaImbalance,
       freeFloatConcentration,

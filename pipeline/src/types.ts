@@ -123,7 +123,9 @@ export interface IndustryQuestions {
   industryCondition: string;
   macroConditionSimplified?: string;
   obstaclesAndChallenges: string;
+  obstaclesAndChallengesSimplified?: string;
   economicPoliticalCulturalRisks: string;
+  economicPoliticalCulturalRisksSimplified?: string;
 }
 
 export interface SegmentBreakdownItem {
@@ -365,7 +367,9 @@ export interface FundamentalMetrics {
     industryCondition: string;
     macroConditionSimplified?: string;
     obstaclesAndChallenges: string;
+    obstaclesAndChallengesSimplified?: string;
     economicPoliticalCulturalRisks: string;
+    economicPoliticalCulturalRisksSimplified?: string;
   };
 
   // Competitor Benchmarking & Morningstar Rating Engine
@@ -483,6 +487,47 @@ export interface ExecutiveSummaryData {
   formattedMarkdown?: string;
 }
 
+export interface ReportPart1Output {
+  title: string;
+  seoDescription: string;
+  slug: string;
+  primaryKeywords: string[];
+  secondaryKeywords: string[];
+  catalystSummary: string;
+  catalystAlignment?: CatalystAlignment;
+  catalystSynthesis?: string;
+  extractedFigures: {
+    peRatio?: number | null;
+    revenueTTM?: number;
+    operatingMargin?: number;
+    freeCashFlow?: number | null;
+    netDebt?: number;
+    movePercent?: number;
+  };
+  markdownBody: string;
+}
+
+export interface ReportPart2Output {
+  macroConditionSimplified?: string;
+  obstaclesAndChallengesSimplified?: string;
+  economicPoliticalCulturalRisksSimplified?: string;
+  theses?: {
+    bull: ThesisPoint[];
+    bear: ThesisPoint[];
+  };
+  socialHooks: {
+    twitterThread: string[];
+    redditPost: {
+      title: string;
+      bodyMarkdown: string;
+      flair?: string;
+    };
+    telegramAlert: string;
+  };
+  markdownBody: string;
+}
+
+
 export interface LLMAnalysisOutput {
   title: string;
   seoDescription: string;
@@ -549,11 +594,15 @@ export interface LLMAnalysisOutput {
   businessSummary?: string;
   segmentRevenueBreakdown?: SegmentBreakdownItem[];
   macroConditionSimplified?: string;
+  obstaclesAndChallengesSimplified?: string;
+  economicPoliticalCulturalRisksSimplified?: string;
   sectorDynamics?: {
     industryCondition: string;
     macroConditionSimplified?: string;
     obstaclesAndChallenges: string;
+    obstaclesAndChallengesSimplified?: string;
     economicPoliticalCulturalRisks: string;
+    economicPoliticalCulturalRisksSimplified?: string;
   };
 }
 
@@ -640,6 +689,8 @@ export interface FinalReportFrontmatter {
   companyDeepDive?: CompanyQuestions;
   industryDeepDive?: IndustryQuestions;
   macroConditionSimplified?: string;
+  obstaclesAndChallengesSimplified?: string;
+  economicPoliticalCulturalRisksSimplified?: string;
 
   // Multi-model Valuations
   valuationModels: ValuationModels;
@@ -683,7 +734,10 @@ export interface FinalReportFrontmatter {
   segmentRevenueBreakdown?: SegmentBreakdownItem[];
   sectorDynamics?: {
     industryCondition: string;
+    macroConditionSimplified?: string;
     obstaclesAndChallenges: string;
+    obstaclesAndChallengesSimplified?: string;
     economicPoliticalCulturalRisks: string;
+    economicPoliticalCulturalRisksSimplified?: string;
   };
 }

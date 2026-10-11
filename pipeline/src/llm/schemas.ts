@@ -52,6 +52,157 @@ export const EXECUTIVE_SUMMARY_SCHEMA = {
   ]
 } as const;
 
+export const REPORT_PART1_SCHEMA = {
+  type: 'object',
+  properties: {
+    title: { type: 'string' },
+    seoDescription: { type: 'string' },
+    slug: { type: 'string' },
+    primaryKeywords: {
+      type: 'array',
+      items: { type: 'string' }
+    },
+    secondaryKeywords: {
+      type: 'array',
+      items: { type: 'string' }
+    },
+    catalystSummary: { type: 'string' },
+    catalystAlignment: {
+      type: 'string',
+      enum: [
+        'ALIGNED',
+        'DIVERGENT_SELL_THE_NEWS',
+        'DIVERGENT_RELIEF_RALLY',
+        'MACRO_DOMINATED',
+        'NOISE_SPECULATION'
+      ]
+    },
+    catalystSynthesis: { type: 'string' },
+    markdownBody: {
+      type: 'string',
+      description: 'Markdown containing Section 1 (Trading Activity), Section 2 (Balance Sheet & Solvency), Section 3 (Profitability & Operating Health), and Section 4 (Qualitative Deep Dive: 4 Key Company Questions).'
+    },
+    extractedFigures: {
+      type: 'object',
+      properties: {
+        peRatio: { type: ['number', 'null'] },
+        revenueTTM: { type: 'number' },
+        operatingMargin: { type: 'number' },
+        freeCashFlow: { type: ['number', 'null'] },
+        netDebt: { type: 'number' },
+        movePercent: { type: 'number' }
+      }
+    }
+  },
+  required: [
+    'title',
+    'seoDescription',
+    'slug',
+    'primaryKeywords',
+    'secondaryKeywords',
+    'catalystSummary',
+    'markdownBody',
+    'extractedFigures'
+  ]
+} as const;
+
+export const REPORT_PART2_SCHEMA = {
+  type: 'object',
+  properties: {
+    macroConditionSimplified: {
+      type: 'string',
+      description: 'Macro Condition for the industry in simplified terms (plain, non-technical language explaining how the industry is doing, avoiding dense financial jargon).'
+    },
+    obstaclesAndChallengesSimplified: {
+      type: 'string',
+      description: 'Industry obstacles and challenges in simplified terms (plain, non-technical language explaining operational hurdles for retail investors).'
+    },
+    economicPoliticalCulturalRisksSimplified: {
+      type: 'string',
+      description: 'Economic, political, and cultural risks in simplified terms (plain, non-technical language explaining macro and regulatory risks for retail investors).'
+    },
+    markdownBody: {
+      type: 'string',
+      description: 'Markdown containing Section 5 (Industry Deep Dive), Section 6 (Management & 5 Moat Pillars & Peer Benchmarking), Section 7 (Multi-Model Valuation Suite), Section 8 (Macro Headwinds), and Section 9 (Evidence-Based Bull & Bear Theses).'
+    },
+    theses: {
+      type: 'object',
+      properties: {
+        bull: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              point: { type: 'string' },
+              sources: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string' },
+                    url: { type: 'string' }
+                  },
+                  required: ['name', 'url']
+                }
+              },
+              deductionChain: { type: 'string' }
+            },
+            required: ['point', 'sources', 'deductionChain']
+          }
+        },
+        bear: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              point: { type: 'string' },
+              sources: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string' },
+                    url: { type: 'string' }
+                  },
+                  required: ['name', 'url']
+                }
+              },
+              deductionChain: { type: 'string' }
+            },
+            required: ['point', 'sources', 'deductionChain']
+          }
+        }
+      },
+      required: ['bull', 'bear']
+    },
+    socialHooks: {
+      type: 'object',
+      properties: {
+        twitterThread: {
+          type: 'array',
+          items: { type: 'string' }
+        },
+        redditPost: {
+          type: 'object',
+          properties: {
+            title: { type: 'string' },
+            bodyMarkdown: { type: 'string' },
+            flair: { type: 'string' }
+          },
+          required: ['title', 'bodyMarkdown']
+        },
+        telegramAlert: { type: 'string' }
+      },
+      required: ['twitterThread', 'redditPost', 'telegramAlert']
+    }
+  },
+  required: [
+    'markdownBody',
+    'theses',
+    'socialHooks'
+  ]
+} as const;
+
 export const MAIN_REPORT_SCHEMA = {
   type: 'object',
   properties: {
@@ -81,6 +232,14 @@ export const MAIN_REPORT_SCHEMA = {
     macroConditionSimplified: {
       type: 'string',
       description: 'Macro Condition for the industry in simplified terms (plain, non-technical language explaining how the industry is doing, avoiding dense financial jargon).'
+    },
+    obstaclesAndChallengesSimplified: {
+      type: 'string',
+      description: 'Industry obstacles and challenges in simplified terms (plain, non-technical language explaining operational hurdles for retail investors).'
+    },
+    economicPoliticalCulturalRisksSimplified: {
+      type: 'string',
+      description: 'Economic, political, and cultural risks in simplified terms (plain, non-technical language explaining macro and regulatory risks for retail investors).'
     },
     markdownBody: { type: 'string' },
     extractedFigures: {

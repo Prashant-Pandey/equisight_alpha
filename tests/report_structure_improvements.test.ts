@@ -14,8 +14,11 @@ const distDir = path.resolve('dist');
 const reportsDir = path.join(distDir, 'reports');
 
 // Test 1: Verify distribution files exist
-const fslyWebHtmlPath = path.join(reportsDir, '2026-10-10-fsly-gain-16-percent-fundamental-analysis', 'index.html');
-const fslyPrintHtmlPath = path.join(reportsDir, '2026-10-10-fsly-gain-16-percent-fundamental-analysis', 'print', 'index.html');
+const fslyDirName = fs.existsSync(reportsDir)
+  ? (fs.readdirSync(reportsDir).find(d => d.includes('fsly-gain-16-percent-fundamental-analysis')) || '2026-10-10-fsly-gain-16-percent-fundamental-analysis')
+  : '2026-10-10-fsly-gain-16-percent-fundamental-analysis';
+const fslyWebHtmlPath = path.join(reportsDir, fslyDirName, 'index.html');
+const fslyPrintHtmlPath = path.join(reportsDir, fslyDirName, 'print', 'index.html');
 
 assert(fs.existsSync(fslyWebHtmlPath), `Web report page should exist at ${fslyWebHtmlPath}`);
 assert(fs.existsSync(fslyPrintHtmlPath), `Institutional PDF print page should exist at ${fslyPrintHtmlPath}`);

@@ -21,13 +21,12 @@ import {
   getEconomicMoat
 } from '../../../src/utils/financialClassification.js';
 
-import { improveExistingTitle } from '../../../src/utils/titleGenerator.js';
+import { improveExistingTitle, cleanCompanyName } from '../../../src/utils/titleGenerator.js';
 
 export { formatPriceTimestamp };
 
 function getQualityBullTheses(companyName: string, ticker: string, f: FundamentalMetrics): ThesisPoint[] {
-  const isNorbit = ticker.toUpperCase() === 'NORBIT' || companyName.toLowerCase().includes('norbit');
-  const cleanName = isNorbit ? 'Norbit' : companyName.replace(/,\s*(?:Inc\.?|Corp\.?|Corporation|Ltd\.?|Limited|plc|PLC|ASA|AG|S\.A\.|SA|NV|N\.V\.|SE|Holdings?|Co\.)(?:\s*Class\s*[A-Z])?$/i, '').trim();
+  const cleanName = cleanCompanyName(companyName);
 
   return [
     {
@@ -58,10 +57,9 @@ function getQualityBullTheses(companyName: string, ticker: string, f: Fundamenta
 }
 
 function getQualityBearTheses(companyName: string, ticker: string, f: FundamentalMetrics): ThesisPoint[] {
-  const isNorbit = ticker.toUpperCase() === 'NORBIT' || companyName.toLowerCase().includes('norbit');
-  const cleanName = isNorbit ? 'Norbit' : companyName.replace(/,\s*(?:Inc\.?|Corp\.?|Corporation|Ltd\.?|Limited|plc|PLC|ASA|AG|S\.A\.|SA|NV|N\.V\.|SE|Holdings?|Co\.)(?:\s*Class\s*[A-Z])?$/i, '').trim();
+  const cleanName = cleanCompanyName(companyName);
 
-  const concentrationVertical = isNorbit
+  const concentrationVertical = (f.sector?.toLowerCase().includes('defense') || f.industry?.toLowerCase().includes('defense'))
     ? 'Defense'
     : (f.sector?.toLowerCase().includes('tech') || f.industry?.toLowerCase().includes('software'))
       ? 'Enterprise'
@@ -79,9 +77,7 @@ function getQualityBearTheses(companyName: string, ticker: string, f: Fundamenta
       deductionChain: 'Heavy reliance on primary vertical tailwinds -> Rising revenue concentration -> Outsized downside volatility if customer procurement budgets moderate.'
     },
     {
-      point: isNorbit
-        ? 'Ambitious targets. Management expects 19% organic annual growth through 2030. This is very ambitious, especially as Norbit is now much larger than in previous strategic plans. Analyst forecasts are more conservative suggesting that the market is not fully assuming management’s long-term growth target'
-        : `Ambitious targets. Management expects ambitious organic annual growth targets. This is very ambitious, especially as ${cleanName} is now much larger than in previous strategic plans. Analyst forecasts are more conservative suggesting that the market is not fully assuming management’s long-term growth target`,
+      point: `Ambitious targets. Management expects ambitious organic annual growth targets. This is very ambitious, especially as ${cleanName} is now much larger than in previous strategic plans. Analyst forecasts are more conservative suggesting that the market is not fully assuming management’s long-term growth target`,
       sources: [
         { name: 'Long-Term Strategic Plan & Consensus Analyst Estimates', url: 'https://www.sec.gov/edgar/searchedgar/companysearch' },
         { name: 'Consensus Analyst Revisions & Guidance Audit', url: 'https://www.sec.gov/edgar/searchedgar/companysearch' }
@@ -265,7 +261,9 @@ export class ProgrammaticAdInjector {
       industryCondition: fundamentals.industryQuestions?.industryCondition ?? (analysis.industryDeepDive?.industryCondition || 'Not Available'),
       macroConditionSimplified: analysis.macroConditionSimplified ?? analysis.industryDeepDive?.macroConditionSimplified ?? fundamentals.industryQuestions?.macroConditionSimplified,
       obstaclesAndChallenges: fundamentals.industryQuestions?.obstaclesAndChallenges ?? (analysis.industryDeepDive?.obstaclesAndChallenges || 'Not Available'),
-      economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? (analysis.industryDeepDive?.economicPoliticalCulturalRisks || 'Not Available')
+      obstaclesAndChallengesSimplified: analysis.obstaclesAndChallengesSimplified ?? analysis.industryDeepDive?.obstaclesAndChallengesSimplified ?? fundamentals.industryQuestions?.obstaclesAndChallengesSimplified,
+      economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? (analysis.industryDeepDive?.economicPoliticalCulturalRisks || 'Not Available'),
+      economicPoliticalCulturalRisksSimplified: analysis.economicPoliticalCulturalRisksSimplified ?? analysis.industryDeepDive?.economicPoliticalCulturalRisksSimplified ?? fundamentals.industryQuestions?.economicPoliticalCulturalRisksSimplified
     };
 
     // 6. Management Quality & Competitive Moat
@@ -472,6 +470,8 @@ export class ProgrammaticAdInjector {
       companyDeepDive,
       industryDeepDive,
       macroConditionSimplified: industryDeepDive.macroConditionSimplified,
+      obstaclesAndChallengesSimplified: industryDeepDive.obstaclesAndChallengesSimplified,
+      economicPoliticalCulturalRisksSimplified: industryDeepDive.economicPoliticalCulturalRisksSimplified,
 
       // Multi-model Valuations
       valuationModels,

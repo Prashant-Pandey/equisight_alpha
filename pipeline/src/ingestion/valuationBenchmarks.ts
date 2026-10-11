@@ -157,7 +157,9 @@ export interface SectorDynamics {
   industryCondition: string;
   macroConditionSimplified?: string;
   obstaclesAndChallenges: string;
+  obstaclesAndChallengesSimplified?: string;
   economicPoliticalCulturalRisks: string;
+  economicPoliticalCulturalRisksSimplified?: string;
 }
 
 /**
@@ -194,39 +196,63 @@ export function deriveSectorDynamics(
 
   let condition: string;
   let simplifiedCondition: string;
+  let simplifiedObstacles: string;
+  let simplifiedRisks: string;
   if (sector === 'Utilities') {
     condition = `The Utilities sector (${industry}), ${peStr}, operates within regulated capital return frameworks sensitive to prevailing 10-Year sovereign yields of ${y10.toFixed(2)}%. Operating conditions require ongoing balancing between capital expenditure obligations, grid transmission maintenance, and cost-of-debt hurdles, with return on equity governed by regulatory rate-case filings.`;
     simplifiedCondition = `Utility companies provide essential services like power and water under government regulation, benefiting from steady demand but facing higher financing costs when interest rates rise.`;
+    simplifiedObstacles = `High spending needed to upgrade power grids and maintain infrastructure, along with state regulators limiting how quickly customer rates can be raised.`;
+    simplifiedRisks = `Rising interest rates make large debt loads more expensive, while extreme weather and changing clean-energy rules create operational uncertainty.`;
   } else if (sector === 'Technology') {
     condition = `The Technology sector (${industry}), ${peStr}, is influenced by enterprise capital allocation cycles, technology adoption velocity, and discount-rate sensitivity from prevailing ${y10.toFixed(2)}% Treasury yields on long-duration equity cash flows.`;
     simplifiedCondition = `Tech companies are seeing strong adoption of software and digital tools, but corporate customers are scrutinizing their budgets carefully given current borrowing costs.`;
+    simplifiedObstacles = `Companies face longer customer sales cycles, tight corporate software budgets, and fierce competition to deliver rapid product innovation.`;
+    simplifiedRisks = `Fast-changing technology cycles, potential antitrust or data privacy regulations, and broader corporate pullbacks in technology spending.`;
   } else if (sector === 'Energy') {
     condition = `The Energy sector (${industry}), ${peStr}, operates against benchmark crude prices of $${oil.toFixed(2)}/bbl, balancing operational reinvestment rates against balance-sheet discipline and cash returns across global commodity cycles.`;
     simplifiedCondition = `Energy producers depend on global oil and fuel prices, focusing on operational discipline and returning cash to shareholders rather than aggressive new drilling.`;
+    simplifiedObstacles = `Managing fluctuating oil and gas prices, rising equipment and extraction costs, and complying with stricter environmental guidelines.`;
+    simplifiedRisks = `Geopolitical conflicts disrupting energy transit routes, government carbon reduction policies, and global recessions reducing energy demand.`;
   } else if (sector === 'Financial Services') {
     condition = `Financial institutions in ${industry}, ${peStr}, navigate yield curve dynamics between 10-Year yields at ${y10.toFixed(2)}% and the policy rate at ${fedRate.toFixed(2)}%, managing deposit beta pressures and credit quality across economic cycles.`;
     simplifiedCondition = `Banks and financial firms earn money on the difference between borrowing and lending rates, balancing loan growth against deposit costs and borrower credit risk.`;
+    simplifiedObstacles = `Higher interest paid to keep depositor savings, slowing loan demand, and cautious lending standards across commercial borrowers.`;
+    simplifiedRisks = `Unanticipated shifts in central bank interest rate policies, stricter regulatory capital rules, and potential loan losses if the economy weakens.`;
   } else if (sector === 'Healthcare') {
     condition = `The Healthcare sector (${industry}), ${peStr}, is guided by clinical research timelines, commercial patent protection cycles, and payor reimbursement trends alongside broader healthcare labor and supply input costs.`;
     simplifiedCondition = `Healthcare and biotech businesses rely on clinical trial milestones and insurance coverage, supported by steady medical demand despite ongoing regulatory and research costs.`;
+    simplifiedObstacles = `High research and development costs, lengthy drug approval timelines, and price negotiation pressures from insurers and healthcare agencies.`;
+    simplifiedRisks = `FDA approval delays or rejections, loss of patent protections to generic competitors, and government healthcare policy changes.`;
   } else if (sector === 'Real Estate') {
     condition = `Real Estate operators in ${industry}, ${peStr}, face capitalization rate adjustments driven by the ${y10.toFixed(2)}% 10-Year Treasury yield, refinancing spreads, and commercial occupancy patterns.`;
     simplifiedCondition = `Real estate companies manage rental properties and buildings, but higher interest rates make financing new developments and refinancing existing mortgages more expensive.`;
+    simplifiedObstacles = `High borrowing rates depressing property sales, changing tenant demand for office and commercial space, and rising property maintenance costs.`;
+    simplifiedRisks = `Falling commercial property values, looming mortgage refinancings at higher rates, and local tax or zoning policy adjustments.`;
   } else if (sector === 'Consumer Cyclical') {
     condition = `The Consumer Cyclical sector (${industry}), ${peStr}, is shaped by household disposable income, consumer sentiment, and financing rates on discretionary purchases.`;
     simplifiedCondition = `Discretionary consumer businesses depend on household spending confidence and interest rates, seeing sales fluctuate with broader consumer budget trends.`;
+    simplifiedObstacles = `Shoppers cutting back on non-essential spending due to inflation, increased promotional discounting to clear inventory, and supply chain expenses.`;
+    simplifiedRisks = `Weakening consumer sentiment during economic slowdowns, rapid shifts in buyer trends, and tariff or import policy changes.`;
   } else if (sector === 'Consumer Defensive') {
     condition = `The Consumer Defensive sector (${industry}), ${peStr}, benefits from non-discretionary grocery and household demand, managing commodity input inflation and retailer pricing power.`;
     simplifiedCondition = `Consumer staples companies produce essential everyday items, enjoying stable customer demand but managing packaging and ingredient cost pressures.`;
+    simplifiedObstacles = `Consumer pushback against further price hikes, rising costs for agricultural ingredients and packaging, and store-brand competition.`;
+    simplifiedRisks = `Supply chain interruptions for raw ingredients, sudden food and safety regulations, and inflationary pinches on consumer household budgets.`;
   } else if (sector === 'Basic Materials') {
     condition = `The Basic Materials sector (${industry}), ${peStr}, operates across international raw material cycles, industrial production volume, and global supply-chain inventories.`;
     simplifiedCondition = `Materials companies provide raw resources and chemicals to manufacturers, with revenue closely tied to global factory activity and commodity prices.`;
+    simplifiedObstacles = `High energy costs for processing materials, volatile raw commodity prices, and fluctuating orders from industrial customers.`;
+    simplifiedRisks = `Slowdowns in global construction and manufacturing, trade barriers or tariffs, and stringent environmental permitting standards.`;
   } else if (sector === 'Industrials') {
     condition = `The Industrials sector (${industry}), ${peStr}, is driven by business capital equipment investment, supply-chain logistics, and commercial manufacturing activity.`;
     simplifiedCondition = `Industrial companies build machinery, equipment, and transportation infrastructure, depending on commercial business investment and shipping activity.`;
+    simplifiedObstacles = `Shortages of skilled technical labor, delays in parts and components, and customers postponing large factory equipment orders.`;
+    simplifiedRisks = `Broader industrial cycle slowdowns, trade conflicts impacting exported machinery, and fluctuating freight and energy prices.`;
   } else {
     condition = `The ${sector} sector (${industry}), ${peStr}, operates in a macroeconomic environment anchored by a US 10-Year yield of ${y10.toFixed(2)}% and policy rates at ${fedRate.toFixed(2)}%, where operating execution, margin resilience, and capital allocation determine competitive performance.`;
     simplifiedCondition = `Companies in ${industry} navigate current customer demand and operational expenses within broader interest rate and economic trends.`;
+    simplifiedObstacles = `Managing elevated borrowing costs, maintaining healthy profit margins amid inflationary expenses, and retaining customer demand.`;
+    simplifiedRisks = `Uncertainty in interest rate policies, shifts in regulatory and legal requirements, and broader economic cycle volatility.`;
   }
 
   const obstacles = `Primary operational obstacles across ${industry} include managing ${rateHurdle}, navigating labor and input expenses (CPI inflation at ${cpi.toFixed(1)}%), and defending unit margins amid competitive market positioning.`;
@@ -237,7 +263,9 @@ export function deriveSectorDynamics(
     industryCondition: condition,
     macroConditionSimplified: simplifiedCondition,
     obstaclesAndChallenges: obstacles,
-    economicPoliticalCulturalRisks: risks
+    obstaclesAndChallengesSimplified: simplifiedObstacles,
+    economicPoliticalCulturalRisks: risks,
+    economicPoliticalCulturalRisksSimplified: simplifiedRisks
   };
 }
 
