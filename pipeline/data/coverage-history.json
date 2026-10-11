@@ -133,5 +133,176 @@
     "category": "loser",
     "movePercent": -5.80665,
     "slug": "optu-loss-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HD",
+    "companyName": "The Home Depot, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:41:45.368Z",
+    "category": "gainer",
+    "movePercent": 2.79,
+    "slug": "hd-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "GOOGL",
+    "companyName": "Alphabet Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:17:12.891Z",
+    "category": "gainer",
+    "movePercent": 2.38,
+    "slug": "googl-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MSFT",
+    "companyName": "Microsoft Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:18:53.735Z",
+    "category": "gainer",
+    "movePercent": 3.39,
+    "slug": "msft-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "V",
+    "companyName": "Visa Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:20:37.917Z",
+    "category": "gainer",
+    "movePercent": 6.87,
+    "slug": "v-gain-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "JNJ",
+    "companyName": "Johnson & Johnson",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:22:24.656Z",
+    "category": "gainer",
+    "movePercent": 2.11,
+    "slug": "jnj-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LLY",
+    "companyName": "Eli Lilly and Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:24:13.185Z",
+    "category": "gainer",
+    "movePercent": 3.19,
+    "slug": "lly-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NVDA",
+    "companyName": "NVIDIA Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:26:06.420Z",
+    "category": "loser",
+    "movePercent": -2,
+    "slug": "nvda-loss-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "GE",
+    "companyName": "GE Aerospace",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:27:48.201Z",
+    "category": "loser",
+    "movePercent": -0.44,
+    "slug": "ge-loss-0-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NFLX",
+    "companyName": "Netflix, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:29:33.339Z",
+    "category": "gainer",
+    "movePercent": 4.83,
+    "slug": "nflx-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "COST",
+    "companyName": "Costco Wholesale Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:31:14.367Z",
+    "category": "gainer",
+    "movePercent": 2.85,
+    "slug": "cost-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "ADBE",
+    "companyName": "Adobe Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:32:54.823Z",
+    "category": "gainer",
+    "movePercent": 1.93,
+    "slug": "adbe-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NKE",
+    "companyName": "NIKE, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:34:39.348Z",
+    "category": "gainer",
+    "movePercent": 2.48,
+    "slug": "nke-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MDT",
+    "companyName": "Medtronic plc",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:36:24.652Z",
+    "category": "gainer",
+    "movePercent": 2.43,
+    "slug": "mdt-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SBUX",
+    "companyName": "Starbucks Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:38:11.744Z",
+    "category": "loser",
+    "movePercent": -4.18,
+    "slug": "sbux-loss-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TXN",
+    "companyName": "Texas Instruments Incorporated",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:39:56.410Z",
+    "category": "loser",
+    "movePercent": -3.42,
+    "slug": "txn-loss-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AMAT",
+    "companyName": "Applied Materials, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-11T21:43:27.339Z",
+    "category": "loser",
+    "movePercent": -6.11,
+    "slug": "amat-loss-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "UNH",
+    "companyName": "UnitedHealth Group Incorporated",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:45:37.717Z",
+    "category": "gainer",
+    "movePercent": 1.99,
+    "slug": "unh-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CAT",
+    "companyName": "Caterpillar Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:47:28.132Z",
+    "category": "loser",
+    "movePercent": -5.32,
+    "slug": "cat-loss-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "JPM",
+    "companyName": "JPMorgan Chase & Co.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-11T21:49:16.403Z",
+    "category": "gainer",
+    "movePercent": 0.18,
+    "slug": "jpm-gain-0-percent-fundamental-analysis"
   }
 ]
