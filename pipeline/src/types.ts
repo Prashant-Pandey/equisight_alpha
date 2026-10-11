@@ -121,6 +121,7 @@ export interface CompanyQuestions {
 
 export interface IndustryQuestions {
   industryCondition: string;
+  macroConditionSimplified?: string;
   obstaclesAndChallenges: string;
   economicPoliticalCulturalRisks: string;
 }
@@ -362,6 +363,7 @@ export interface FundamentalMetrics {
   segmentRevenueBreakdown?: SegmentBreakdownItem[];
   sectorDynamics?: {
     industryCondition: string;
+    macroConditionSimplified?: string;
     obstaclesAndChallenges: string;
     economicPoliticalCulturalRisks: string;
   };
@@ -546,8 +548,10 @@ export interface LLMAnalysisOutput {
   moatSources?: MoatSources;
   businessSummary?: string;
   segmentRevenueBreakdown?: SegmentBreakdownItem[];
+  macroConditionSimplified?: string;
   sectorDynamics?: {
     industryCondition: string;
+    macroConditionSimplified?: string;
     obstaclesAndChallenges: string;
     economicPoliticalCulturalRisks: string;
   };
@@ -635,6 +639,7 @@ export interface FinalReportFrontmatter {
   industryQuestions: IndustryQuestions;
   companyDeepDive?: CompanyQuestions;
   industryDeepDive?: IndustryQuestions;
+  macroConditionSimplified?: string;
 
   // Multi-model Valuations
   valuationModels: ValuationModels;

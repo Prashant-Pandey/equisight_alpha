@@ -67,13 +67,32 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
      * Present a structured comparison table benchmarking the focal company against 2–3 sector peers across Market Cap, P/E, EV/EBITDA, Moat Rating, and ROIC.
      * Provide institutional commentary explaining relative valuation discounts/premiums and competitive positioning.
    - Thoroughly answer the 4 Key Company Questions & 3 Key Industry Questions grounded in operational facts:
-     * For "How Does <company> Make Money?", you MUST demonstrate using bullet points across business segments with this exact structure:
+     * For "How Does <company> Make Money?", you MUST demonstrate using bullet points across business segments without trimming, abbreviating, or truncating any details, using this exact structure:
        "[Company] makes money through [N] business segments:
        - [Segment 1 Name]. [Specific products/maritime/technology/services sold, margin profile, and demand drivers/target customer base]
        - [Segment 2 Name]. [Products/software sold, recurring revenue vs transaction, subscriptions/services]
        - [Segment 3 Name]. [R&D, manufacturing capacity, or commercial product lines]
        
        [Concluding paragraph]: Most activities are cyclical and depend on contracts with limited visibility. However, because there are [N] different activities the cycles do not always move in perfect synchronisation which helps smooth cyclicality."
+     * For "Core Products & Resilient Demand Rationale":
+       - Show concise introductory sentence(s).
+       - Show structured bullet points, using bolding to highlight key phrases (e.g. mission-critical utility, customer switching friction, secular tailwinds).
+       - Footer must be concise, conclusive, and specific to the company.
+     * For "Historical Operational & Financial Performance":
+       - Show bullet points detailing key operational and financial metrics (TTM revenue, operating margin EBIT, ROIC, debt-to-equity leverage, cash reserves) and significant events/periods for the company.
+       - Footer must be concise, conclusive, and specific to the company.
+     * For "Medium-Term Growth & Profitability Roadmap":
+       - Show company-specific introduction sentence.
+       - Show bullet points with key drivers of growth and profitability (capacity expansion, operating leverage, ROIC vs WACC value spread creation, disciplined reinvestment).
+       - Footer must be concise, conclusive, and specific to the company.
+     * In "Industry Research Deep-Dive: Sector Dynamics & Headwinds":
+       - For all sections, present pills, badges, and highlight key phrases/metrics using bolding.
+       - For "Macro Condition in Simplified Terms":
+         * Generate a "Macro Condition" in simplified terms (in plain, non-technical language that an everyday retail investor can easily understand).
+         * Clearly explain how the overall industry is performing, current customer demand, and secular trends without using confusing financial jargon, discount-rate formulas, or benchmark ETF multiples.
+         * Ground this directly in the company's real industry context, rather than using generic, misleading platitudes.
+         * Populate the "macroConditionSimplified" JSON property with this non-technical summary.
+       - For the technical institutional breakdown, synthesize the full macroeconomic backdrop.
 
 6. Multi-Model Valuation Engine (Refined 3-Stage DCF with Moat Fade):
    Evaluate the security across 8 recognized valuation methodologies:
@@ -186,9 +205,10 @@ Description: ${fundamentals.businessSummary || fundamentals.description}
 ${fundamentals.segmentRevenueBreakdown && fundamentals.segmentRevenueBreakdown.length > 0 ? `Reporting Segments (10-K):\n${fundamentals.segmentRevenueBreakdown.map(s => `- ${s.segment}${s.revenue ? `: $${(s.revenue / 1e9).toFixed(2)}B` : ''}`).join('\n')}` : 'Reporting Segments: Disclosed under consolidated operating entity'}
 
 === SECTOR DYNAMICS ===
-Sector Backdrop: ${fundamentals.sectorDynamics?.industryCondition || fundamentals.industryQuestions.industryCondition}
+Technical Macro Condition: ${fundamentals.sectorDynamics?.industryCondition || fundamentals.industryQuestions.industryCondition}
 Key Sector Obstacles: ${fundamentals.sectorDynamics?.obstaclesAndChallenges || fundamentals.industryQuestions.obstaclesAndChallenges}
 Macro/Regulatory Risks: ${fundamentals.sectorDynamics?.economicPoliticalCulturalRisks || fundamentals.industryQuestions.economicPoliticalCulturalRisks}
+Macro Condition Directive: Provide "macroConditionSimplified" summarizing this industry's macro condition in clear, simplified terms (plain, non-technical language for retail investors, avoiding complex jargon or misleading generic templates).
 
 === QUALITATIVE MOAT (5 MORNINGSTAR PILLARS) & MANAGEMENT ===
 Management Quality Rating: ${fundamentals.managementQuality.rating}

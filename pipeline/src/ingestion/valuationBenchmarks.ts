@@ -155,6 +155,7 @@ export const SECTOR_ETF_MAP: Record<SectorKey, string> = {
 
 export interface SectorDynamics {
   industryCondition: string;
+  macroConditionSimplified?: string;
   obstaclesAndChallenges: string;
   economicPoliticalCulturalRisks: string;
 }
@@ -192,20 +193,40 @@ export function deriveSectorDynamics(
   const volRegime = vix > 20 ? 'elevated market volatility' : 'subdued volatility conditions';
 
   let condition: string;
+  let simplifiedCondition: string;
   if (sector === 'Utilities') {
     condition = `The Utilities sector (${industry}), ${peStr}, operates within regulated capital return frameworks sensitive to prevailing 10-Year sovereign yields of ${y10.toFixed(2)}%. Operating conditions require ongoing balancing between capital expenditure obligations, grid transmission maintenance, and cost-of-debt hurdles, with return on equity governed by regulatory rate-case filings.`;
+    simplifiedCondition = `Utility companies provide essential services like power and water under government regulation, benefiting from steady demand but facing higher financing costs when interest rates rise.`;
   } else if (sector === 'Technology') {
     condition = `The Technology sector (${industry}), ${peStr}, is influenced by enterprise capital allocation cycles, technology adoption velocity, and discount-rate sensitivity from prevailing ${y10.toFixed(2)}% Treasury yields on long-duration equity cash flows.`;
+    simplifiedCondition = `Tech companies are seeing strong adoption of software and digital tools, but corporate customers are scrutinizing their budgets carefully given current borrowing costs.`;
   } else if (sector === 'Energy') {
     condition = `The Energy sector (${industry}), ${peStr}, operates against benchmark crude prices of $${oil.toFixed(2)}/bbl, balancing operational reinvestment rates against balance-sheet discipline and cash returns across global commodity cycles.`;
+    simplifiedCondition = `Energy producers depend on global oil and fuel prices, focusing on operational discipline and returning cash to shareholders rather than aggressive new drilling.`;
   } else if (sector === 'Financial Services') {
     condition = `Financial institutions in ${industry}, ${peStr}, navigate yield curve dynamics between 10-Year yields at ${y10.toFixed(2)}% and the policy rate at ${fedRate.toFixed(2)}%, managing deposit beta pressures and credit quality across economic cycles.`;
+    simplifiedCondition = `Banks and financial firms earn money on the difference between borrowing and lending rates, balancing loan growth against deposit costs and borrower credit risk.`;
   } else if (sector === 'Healthcare') {
     condition = `The Healthcare sector (${industry}), ${peStr}, is guided by clinical research timelines, commercial patent protection cycles, and payor reimbursement trends alongside broader healthcare labor and supply input costs.`;
+    simplifiedCondition = `Healthcare and biotech businesses rely on clinical trial milestones and insurance coverage, supported by steady medical demand despite ongoing regulatory and research costs.`;
   } else if (sector === 'Real Estate') {
     condition = `Real Estate operators in ${industry}, ${peStr}, face capitalization rate adjustments driven by the ${y10.toFixed(2)}% 10-Year Treasury yield, refinancing spreads, and commercial occupancy patterns.`;
+    simplifiedCondition = `Real estate companies manage rental properties and buildings, but higher interest rates make financing new developments and refinancing existing mortgages more expensive.`;
+  } else if (sector === 'Consumer Cyclical') {
+    condition = `The Consumer Cyclical sector (${industry}), ${peStr}, is shaped by household disposable income, consumer sentiment, and financing rates on discretionary purchases.`;
+    simplifiedCondition = `Discretionary consumer businesses depend on household spending confidence and interest rates, seeing sales fluctuate with broader consumer budget trends.`;
+  } else if (sector === 'Consumer Defensive') {
+    condition = `The Consumer Defensive sector (${industry}), ${peStr}, benefits from non-discretionary grocery and household demand, managing commodity input inflation and retailer pricing power.`;
+    simplifiedCondition = `Consumer staples companies produce essential everyday items, enjoying stable customer demand but managing packaging and ingredient cost pressures.`;
+  } else if (sector === 'Basic Materials') {
+    condition = `The Basic Materials sector (${industry}), ${peStr}, operates across international raw material cycles, industrial production volume, and global supply-chain inventories.`;
+    simplifiedCondition = `Materials companies provide raw resources and chemicals to manufacturers, with revenue closely tied to global factory activity and commodity prices.`;
+  } else if (sector === 'Industrials') {
+    condition = `The Industrials sector (${industry}), ${peStr}, is driven by business capital equipment investment, supply-chain logistics, and commercial manufacturing activity.`;
+    simplifiedCondition = `Industrial companies build machinery, equipment, and transportation infrastructure, depending on commercial business investment and shipping activity.`;
   } else {
     condition = `The ${sector} sector (${industry}), ${peStr}, operates in a macroeconomic environment anchored by a US 10-Year yield of ${y10.toFixed(2)}% and policy rates at ${fedRate.toFixed(2)}%, where operating execution, margin resilience, and capital allocation determine competitive performance.`;
+    simplifiedCondition = `Companies in ${industry} navigate current customer demand and operational expenses within broader interest rate and economic trends.`;
   }
 
   const obstacles = `Primary operational obstacles across ${industry} include managing ${rateHurdle}, navigating labor and input expenses (CPI inflation at ${cpi.toFixed(1)}%), and defending unit margins amid competitive market positioning.`;
@@ -214,6 +235,7 @@ export function deriveSectorDynamics(
 
   return {
     industryCondition: condition,
+    macroConditionSimplified: simplifiedCondition,
     obstaclesAndChallenges: obstacles,
     economicPoliticalCulturalRisks: risks
   };

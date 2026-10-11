@@ -141,14 +141,17 @@ function parseBulletSection(text: string) {
 
   for (const line of lines) {
     const trimmed = line.trim();
-    if (!trimmed) continue;
     if (trimmed.startsWith('- ') || trimmed.startsWith('* ') || trimmed.startsWith('• ')) {
       foundFirstBullet = true;
       bulletLines.push(trimmed.replace(/^[-*•]\s*/, '').trim());
     } else if (!foundFirstBullet) {
-      introLines.push(trimmed);
+      if (introLines.length > 0 || trimmed) {
+        introLines.push(line);
+      }
     } else {
-      outroLines.push(trimmed);
+      if (outroLines.length > 0 || trimmed) {
+        outroLines.push(line);
+      }
     }
   }
 
@@ -157,9 +160,9 @@ function parseBulletSection(text: string) {
   }
 
   return {
-    intro: introLines.join(' ').trim(),
+    intro: introLines.join('\n').trim(),
     bullets: bulletLines,
-    outro: outroLines.join(' ').trim()
+    outro: outroLines.join('\n').trim()
   };
 }
 
@@ -443,19 +446,19 @@ const catalystHeadline = execSummary.catalystHeadline || report.catalystSynthesi
 
       <div class="module-subheading">Business Profile & Operational Architecture</div>
       {parsedMakesMoney.intro && (
-        <p style="font-size: 9pt; color: #334155; margin-bottom: 6px;">
+        <p style="font-size: 9pt; color: #334155; margin-bottom: 6px; white-space: pre-line;">
           {parsedMakesMoney.intro}
         </p>
       )}
       {parsedMakesMoney.bullets.length > 0 && (
         <ul style="margin: 4px 0 6px 18px; padding: 0; font-size: 8.5pt; color: #334155; line-height: 1.45;">
           {parsedMakesMoney.bullets.map((b: string) => (
-            <li style="margin-bottom: 3px;">{b}</li>
+            <li style="margin-bottom: 3px; white-space: pre-line;">{b}</li>
           ))}
         </ul>
       )}
       {parsedMakesMoney.outro && (
-        <p style="font-size: 9pt; color: #334155; margin-bottom: 8px;">
+        <p style="font-size: 9pt; color: #334155; margin-bottom: 8px; white-space: pre-line;">
           {parsedMakesMoney.outro}
         </p>
       )}

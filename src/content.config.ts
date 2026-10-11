@@ -59,6 +59,8 @@ const reportsCollection = defineCollection({
     competitiveMoat: z.any().optional(),
     companyQuestions: z.any().optional(),
     industryQuestions: z.any().optional(),
+    industryDeepDive: z.any().optional(),
+    macroConditionSimplified: z.string().optional(),
 
     // Valuation Models & Ratings
     valuationModels: z.any().optional(),

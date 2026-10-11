@@ -141,7 +141,27 @@ assert(fslyMoneyText.includes('- Security Solutions.'), 'Fastly Security Solutio
 assert(fslyMoneyText.includes('- Edge Applications & Compute.'), 'Fastly Compute bullet verified');
 assert(fslyMoneyText.includes('Most activities are cyclical and depend on contracts with a limited visibility.'), 'Fastly cyclicality text verified');
 
-console.log('✓ "How Does <company> Make Money?" bulleted structure and cyclicality synthesis verified.');
+// 2.3 Business summary derived segments test - full untrimmed content
+const longSentence1 = 'Novavax, Inc., a biotechnology company, engages in the discovery, development, and commercialization of vaccines to prevent serious infectious diseases in the United States, Europe, and internationally.';
+const longSentence2 = 'The company commercializes Nuvaxovid, a COVID-19 vaccine; and R21 Matrix-M adjuvant malaria vaccine across diverse worldwide healthcare channels.';
+const longSentence3 = 'It has license and collaboration agreements with Sanofi, Pfizer Inc., Takeda Pharmaceutical Company Limited, and Serum Life Sciences Limited for the to develop, manufacture, and commercialize the COVID-19 vaccine.';
+const longSentence4 = 'The company was incorporated in 1987 and is headquartered in Gaithersburg, Maryland.';
+
+const nvaxRaw: any = {
+  companyName: 'Novavax, Inc.',
+  sector: 'Healthcare',
+  industry: 'Biological Products',
+  businessSummary: `${longSentence1} ${longSentence2} ${longSentence3} ${longSentence4}`
+};
+const nvaxMoneyText = formatHowCompanyMakesMoney(nvaxRaw);
+
+assert(nvaxMoneyText.includes(longSentence1), 'Long sentence 1 must be preserved in full without trimming');
+assert(nvaxMoneyText.includes(longSentence2), 'Long sentence 2 must be preserved in full without trimming');
+assert(nvaxMoneyText.includes(longSentence3), 'Long sentence 3 must be preserved in full without trimming');
+assert(nvaxMoneyText.includes(longSentence4), 'Remaining sentence 4 must be included without being dropped or trimmed');
+assert(!nvaxMoneyText.includes('...'), 'Untrimmed text must not contain truncation ellipsis');
+
+console.log('✓ "How Does <company> Make Money?" bulleted structure and untrimmed content synthesis verified.');
 
 // =========================================================================
 // TEST 3: Bullish & Bearish Quality Theses Integration
@@ -348,5 +368,128 @@ assert(
 );
 
 console.log('✓ Build artifacts HTML verified with improved titles, bulleted segment monetization, and quality theses.');
+
+// =========================================================================
+// TEST 5: Simplified "Macro Condition" (Non-Technical Language) & No Misleading Defaults
+// =========================================================================
+console.log('\n--- Test 5: Simplified "Macro Condition" & Removal of Misleading Defaults ---');
+
+import { deriveSectorDynamics } from '../pipeline/src/ingestion/valuationBenchmarks.js';
+import { buildSystemPrompt, buildUserPrompt } from '../pipeline/src/llm/prompts.js';
+import { MAIN_REPORT_SCHEMA } from '../pipeline/src/llm/schemas.js';
+
+// 5.1 Test deriveSectorDynamics produces technical condition and non-technical simplified condition
+const techDynamics = deriveSectorDynamics('Technology', 'Services-Prepackaged Software');
+assert(techDynamics.industryCondition.length > 0, 'Technical industryCondition must be present');
+assert(techDynamics.macroConditionSimplified && techDynamics.macroConditionSimplified.length > 0, 'Simplified macroCondition must be present');
+assert(
+  techDynamics.macroConditionSimplified.includes('Tech companies are seeing strong adoption'),
+  'Simplified condition should be in plain, non-technical language'
+);
+
+const healthDynamics = deriveSectorDynamics('Healthcare', 'Biological Products');
+assert(healthDynamics.macroConditionSimplified && healthDynamics.macroConditionSimplified.length > 0, 'Healthcare simplified condition present');
+assert(
+  healthDynamics.macroConditionSimplified.includes('Healthcare and biotech businesses rely on'),
+  'Healthcare simplified condition should be in plain, non-technical language'
+);
+
+// 5.2 Test System and User Prompts instruct LLM for simplified Macro Condition
+const sysPrompt = buildSystemPrompt();
+assert(
+  sysPrompt.includes('Macro Condition in Simplified Terms') &&
+  sysPrompt.includes('macroConditionSimplified') &&
+  sysPrompt.includes('non-technical language'),
+  'System prompt must instruct LLM to generate Macro Condition in simplified terms'
+);
+
+const test5Mover: any = {
+  ticker: 'TEST',
+  name: 'Test Inc',
+  exchange: 'NASDAQ',
+  region: 'US',
+  price: 50,
+  changePercent: 5,
+  volume: 1000000,
+  avgVolume: 500000,
+  category: 'gainer',
+  isPennyStock: false,
+  moneyMarketTradingVenue: 'Nasdaq Global Select'
+};
+const test5Fundamentals: any = {
+  ...mockFundamentals,
+  fiftyTwoWeekLow: 40,
+  fiftyTwoWeekHigh: 80,
+  earningsPerShare: { currentTTM: 2.0 },
+  managementQuality: { rating: 'Exemplary', trackRecord: 'Strong' },
+  competitiveMoat: { rating: 'Wide', summary: 'Moat' },
+  companyQuestions: { howCompanyMakesMoney: 'A', productsDemandAndWhy: 'B', pastPerformanceSummary: 'C', growthAndProfitabilityOutlook: 'D' },
+  industryQuestions: { industryCondition: 'Technical backdrop text', obstaclesAndChallenges: 'Hurdles', economicPoliticalCulturalRisks: 'Risks' },
+  sectorDynamics: { industryCondition: 'Technical backdrop text', macroConditionSimplified: 'Plain English macro condition', obstaclesAndChallenges: 'Hurdles', economicPoliticalCulturalRisks: 'Risks' },
+  valuationModels: {
+    consensusFairValue: 65,
+    verdict: 'Undervalued',
+    dcf: { fairValue: 70, upsidePercent: 40 },
+    ddm: { fairValue: 60, upsidePercent: 20 },
+    relativeValuation: { fairValue: 65, upsidePercent: 30 },
+    rapidStockValuation: { fairValue: 64, upsidePercent: 28 },
+    residualIncomeModel: { fairValue: 66, upsidePercent: 32 },
+    assetBasedValuation: { fairValue: 50, upsidePercent: 0 },
+    excessReturnModel: { fairValue: 65, upsidePercent: 30 },
+    industrySpecificModel: { fairValue: 68, upsidePercent: 36 }
+  }
+};
+const test5Macro: any = {
+  us10YearYield: 4.25,
+  us2YearYield: 4.0,
+  fedFundsRate: 4.75,
+  ecbPolicyRate: 3.5,
+  vixIndex: 15,
+  crudeOilWTI: 75,
+  sectorImpactSummary: 'Benign'
+};
+const test5Sentiment: any = {
+  bullishPercent: 70,
+  bearishPercent: 30,
+  volumeAnomalyRatio: 2.0,
+  artificialInflationRisk: 'Low',
+  majorPriceDriver: 'Earnings',
+  dominantThemes: ['growth']
+};
+
+const userPrompt = buildUserPrompt(test5Mover, test5Fundamentals, test5Macro, test5Sentiment);
+assert(
+  userPrompt.includes('Technical Macro Condition:') &&
+  userPrompt.includes('Macro Condition Directive:') &&
+  userPrompt.includes('macroConditionSimplified'),
+  'User prompt must clearly designate technical Macro Condition and direct generation of simplified Macro Condition'
+);
+
+// 5.3 Test MAIN_REPORT_SCHEMA includes macroConditionSimplified
+assert(
+  'macroConditionSimplified' in MAIN_REPORT_SCHEMA.properties,
+  'MAIN_REPORT_SCHEMA must include macroConditionSimplified property'
+);
+
+// 5.4 Test slug.astro does NOT contain misleading static default
+const slugAstroPath = path.resolve(process.cwd(), 'src/pages/reports/[slug].astro');
+const slugAstroContent = fs.readFileSync(slugAstroPath, 'utf-8');
+const misleadingDefault = 'The ${report.industry} sector is driven by steady commercial demand, ongoing digital transformation, and broad economic capital spending cycles.';
+assert(
+  !slugAstroContent.includes(misleadingDefault),
+  'slug.astro must NOT contain the misleading static default'
+);
+
+// 5.5 Test generated HTML renders simplified layman view and technical popover data
+assert(
+  reportHtml.includes('Tech companies are seeing strong adoption of software and digital tools'),
+  'Report HTML must display the simplified Macro Condition in layman terms'
+);
+assert(
+  reportHtml.includes('data-technical="The Technology sector (Services-Prepackaged Software), trading at a benchmark P/E of 32.5x'),
+  'Report HTML info button must retain the technical Macro Condition in data-technical'
+);
+
+console.log('✓ Simplified "Macro Condition" generation, prompt enforcement, and removal of misleading defaults verified.');
 
 console.log('\n🎉 ALL REPORT FEEDBACK IMPROVEMENT TESTS PASSED SUCCESSFULLY!\n');

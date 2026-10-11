@@ -78,6 +78,10 @@ export const MAIN_REPORT_SCHEMA = {
       ]
     },
     catalystSynthesis: { type: 'string' },
+    macroConditionSimplified: {
+      type: 'string',
+      description: 'Macro Condition for the industry in simplified terms (plain, non-technical language explaining how the industry is doing, avoiding dense financial jargon).'
+    },
     markdownBody: { type: 'string' },
     extractedFigures: {
       type: 'object',

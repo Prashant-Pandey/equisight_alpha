@@ -1,0 +1,295 @@
+---
+interface Props {
+  report: any;
+}
+
+const { report } = Astro.props;
+
+const currentPrice = report.currentPrice || 10;
+const dcfModel = report.valuationModels?.dcf || {};
+const baseDiscountRate = dcfModel.discountRate ?? 8.5;
+const baseStage1Growth = dcfModel.stage1GrowthRate ?? 7.5;
+const baseTerminalGrowth = dcfModel.terminalGrowthRate ?? 2.5;
+const baseDcfValue = dcfModel.intrinsicValue ?? report.valuationModels?.consensusFairValue ?? (currentPrice * 0.85);
+
+const baseUpside = currentPrice > 0 ? Number((((baseDcfValue - currentPrice) / currentPrice) * 100).toFixed(1)) : 0;
+
+let initialStarRating = '★★★☆☆ (3 Stars)';
+let initialVerdict = 'Fair Value';
+if (baseUpside >= 25) {
+  initialStarRating = '★★★★★ (5 Stars)';
+  initialVerdict = 'Significantly Undervalued';
+} else if (baseUpside >= 10) {
+  initialStarRating = '★★★★☆ (4 Stars)';
+  initialVerdict = 'Modestly Undervalued';
+} else if (baseUpside <= -25) {
+  initialStarRating = '★☆☆☆☆ (1 Star)';
+  initialVerdict = 'Significantly Overvalued';
+} else if (baseUpside <= -10) {
+  initialStarRating = '★★☆☆☆ (2 Stars)';
+  initialVerdict = 'Modestly Overvalued';
+}
+---
+
+<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6 shadow-xl" id="sec-dcf-sandbox">
+  <!-- Header -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-5 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-sky-950/80 border border-sky-500/40 text-[11px] font-mono font-semibold text-sky-400 mb-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
+        Interactive Scenario Modeling Sandbox
+      </div>
+      <h3 class="text-base sm:text-lg font-extrabold text-white tracking-tight">
+        DCF Sensitivity & What-If Stress Testing
+      </h3>
+      <p class="text-xs text-slate-400 mt-0.5 max-w-2xl">
+        Adjust cost of capital (WACC) and growth assumptions to stress-test how institutional intrinsic fair value and implied star rating react in real time.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      id="reset-sandbox-btn"
+      class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-mono font-semibold transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+      title="Restore official analyst baseline assumptions"
+    >
+      <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+      </svg>
+      <span>Reset Baseline</span>
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+    <!-- Left 7 Cols: Sliders -->
+    <div class="lg:col-span-7 space-y-5">
+      <!-- Slider 1: Discount Rate (WACC) -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <label for="slider-wacc" class="text-slate-300 font-bold flex items-center gap-1.5">
+            <span>Discount Rate (WACC / Cost of Capital)</span>
+            <span class="text-[10px] text-slate-500">(Baseline: {baseDiscountRate}%)</span>
+          </label>
+          <span id="label-wacc" class="text-sky-400 font-black text-sm px-2 py-0.5 rounded bg-sky-950/80 border border-sky-800">
+            {baseDiscountRate.toFixed(2)}%
+          </span>
+        </div>
+        <input
+          type="range"
+          id="slider-wacc"
+          min="5.0"
+          max="14.0"
+          step="0.25"
+          value={baseDiscountRate}
+          class="w-full accent-sky-400 bg-slate-800 rounded-lg cursor-pointer h-2"
+        />
+        <div class="flex justify-between text-[10px] font-mono text-slate-500">
+          <span>5.0% (Accommodative)</span>
+          <span>9.5% (Median)</span>
+          <span>14.0% (Restrictive)</span>
+        </div>
+      </div>
+
+      <!-- Slider 2: Stage 1 Growth Rate -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <label for="slider-growth" class="text-slate-300 font-bold flex items-center gap-1.5">
+            <span>Stage 1 Growth Rate (Explicit Forecast)</span>
+            <span class="text-[10px] text-slate-500">(Baseline: {baseStage1Growth}%)</span>
+          </label>
+          <span id="label-growth" class="text-emerald-400 font-black text-sm px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800">
+            {baseStage1Growth.toFixed(1)}%
+          </span>
+        </div>
+        <input
+          type="range"
+          id="slider-growth"
+          min="1.0"
+          max="25.0"
+          step="0.5"
+          value={baseStage1Growth}
+          class="w-full accent-emerald-400 bg-slate-800 rounded-lg cursor-pointer h-2"
+        />
+        <div class="flex justify-between text-[10px] font-mono text-slate-500">
+          <span>1.0% (Bear Case)</span>
+          <span>12.5% (Base Case)</span>
+          <span>25.0% (Bull Squeeze)</span>
+        </div>
+      </div>
+
+      <!-- Slider 3: Terminal Growth Rate -->
+      <div class="space-y-1.5">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <label for="slider-terminal" class="text-slate-300 font-bold flex items-center gap-1.5">
+            <span>Perpetual Terminal Growth Rate ($g_t$)</span>
+            <span class="text-[10px] text-slate-500">(Baseline: {baseTerminalGrowth}%)</span>
+          </label>
+          <span id="label-terminal" class="text-indigo-400 font-black text-sm px-2 py-0.5 rounded bg-indigo-950/80 border border-indigo-800">
+            {baseTerminalGrowth.toFixed(2)}%
+          </span>
+        </div>
+        <input
+          type="range"
+          id="slider-terminal"
+          min="1.0"
+          max="4.5"
+          step="0.25"
+          value={baseTerminalGrowth}
+          class="w-full accent-indigo-400 bg-slate-800 rounded-lg cursor-pointer h-2"
+        />
+        <div class="flex justify-between text-[10px] font-mono text-slate-500">
+          <span>1.0% (GDP Floor)</span>
+          <span>2.5% (Inflation Neutral)</span>
+          <span>4.5% (High Long-Term Growth)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right 5 Cols: Dynamic Recalculated Output Card -->
+    <div class="lg:col-span-5 p-5 rounded-xl border border-slate-800 bg-slate-950/80 flex flex-col justify-between space-y-4">
+      <div>
+        <div class="text-[11px] font-mono uppercase text-slate-400 tracking-wider mb-1">
+          Dynamic Recalculated Intrinsic Target
+        </div>
+        <div class="flex items-baseline gap-2">
+          <span id="dynamic-target-val" class="text-3xl sm:text-4xl font-black font-mono text-white">
+            ${baseDcfValue.toFixed(2)}
+          </span>
+          <span class="text-xs font-mono text-slate-400">{report.currency || 'USD'}</span>
+        </div>
+        <div class="mt-1 flex items-center gap-2 text-xs font-mono">
+          <span class="text-slate-400">Spot Market Price:</span>
+          <span class="text-white font-bold">${currentPrice.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <!-- Live Spread / Margin of Safety -->
+      <div class="p-3 rounded-lg bg-slate-900 border border-slate-800 space-y-1.5">
+        <div class="flex items-center justify-between text-xs font-mono">
+          <span class="text-slate-400">Implied Pricing Spread:</span>
+          <span id="dynamic-upside-badge" class={`font-bold ${baseUpside >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+            {baseUpside >= 0 ? '+' : ''}{baseUpside}% {baseUpside >= 0 ? 'Discount' : 'Premium'}
+          </span>
+        </div>
+        <!-- Visual Progress Bar -->
+        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden flex">
+          <div
+            id="dynamic-progress-bar"
+            class={`h-full transition-all duration-200 ${baseUpside >= 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}
+            style={`width: ${Math.min(100, Math.max(10, Math.abs(baseUpside)))}%;`}
+          ></div>
+        </div>
+      </div>
+
+      <!-- Implied Star Rating Traffic Light -->
+      <div class="flex items-center justify-between pt-2 border-t border-slate-800 text-xs font-mono">
+        <div>
+          <span class="text-slate-400">Implied Rating: </span>
+          <strong id="dynamic-star-rating" class="text-amber-300 font-bold text-sm">
+            {initialStarRating}
+          </strong>
+        </div>
+        <span id="dynamic-verdict-pill" class="px-2 py-0.5 rounded text-[10px] font-bold border border-slate-700 bg-slate-900 text-slate-300">
+          {initialVerdict}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ baseDiscountRate, baseStage1Growth, baseTerminalGrowth, baseDcfValue, currentPrice }}>
+  function initSandbox() {
+    const waccInput = document.getElementById('slider-wacc');
+    const growthInput = document.getElementById('slider-growth');
+    const terminalInput = document.getElementById('slider-terminal');
+    const resetBtn = document.getElementById('reset-sandbox-btn');
+
+    const labelWacc = document.getElementById('label-wacc');
+    const labelGrowth = document.getElementById('label-growth');
+    const labelTerminal = document.getElementById('label-terminal');
+
+    const targetValElem = document.getElementById('dynamic-target-val');
+    const upsideBadge = document.getElementById('dynamic-upside-badge');
+    const progressBar = document.getElementById('dynamic-progress-bar');
+    const starRatingElem = document.getElementById('dynamic-star-rating');
+    const verdictPill = document.getElementById('dynamic-verdict-pill');
+
+    if (!waccInput || !growthInput || !terminalInput) return;
+
+    function recalculate() {
+      const wacc = parseFloat(waccInput.value);
+      const growth = parseFloat(growthInput.value);
+      const terminal = parseFloat(terminalInput.value);
+
+      if (labelWacc) labelWacc.textContent = `${wacc.toFixed(2)}%`;
+      if (labelGrowth) labelGrowth.textContent = `${growth.toFixed(1)}%`;
+      if (labelTerminal) labelTerminal.textContent = `${terminal.toFixed(2)}%`;
+
+      // Sensitivity equation adjustment
+      const denomBase = Math.max(0.01, (baseDiscountRate - baseTerminalGrowth) / 100);
+      const denomNew = Math.max(0.01, (wacc - terminal) / 100);
+      const discountFactor = denomBase / denomNew;
+      const growthFactor = 1 + ((growth - baseStage1Growth) / 100) * 0.55;
+
+      const newDcf = Math.max(1, baseDcfValue * discountFactor * growthFactor);
+      const upside = currentPrice > 0 ? (((newDcf - currentPrice) / currentPrice) * 100) : 0;
+      const isPositive = upside >= 0;
+
+      if (targetValElem) targetValElem.textContent = `$${newDcf.toFixed(2)}`;
+
+      if (upsideBadge) {
+        upsideBadge.textContent = `${isPositive ? '+' : ''}${upside.toFixed(1)}% ${isPositive ? 'Discount' : 'Premium'}`;
+        upsideBadge.className = `font-bold ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`;
+      }
+
+      if (progressBar) {
+        progressBar.style.width = `${Math.min(100, Math.max(10, Math.abs(upside)))}%`;
+        progressBar.className = `h-full transition-all duration-200 ${isPositive ? 'bg-emerald-500' : 'bg-rose-500'}`;
+      }
+
+      let stars = '★★★☆☆ (3 Stars)';
+      let verdict = 'Fair Value';
+      let pillClass = 'px-2 py-0.5 rounded text-[10px] font-bold border border-slate-700 bg-slate-900 text-slate-300';
+
+      if (upside >= 25) {
+        stars = '★★★★★ (5 Stars)';
+        verdict = 'Significantly Undervalued';
+        pillClass = 'px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-500/50 bg-emerald-950 text-emerald-400';
+      } else if (upside >= 10) {
+        stars = '★★★★☆ (4 Stars)';
+        verdict = 'Modestly Undervalued';
+        pillClass = 'px-2 py-0.5 rounded text-[10px] font-bold border border-emerald-500/50 bg-emerald-950 text-emerald-400';
+      } else if (upside <= -25) {
+        stars = '★☆☆☆☆ (1 Star)';
+        verdict = 'Significantly Overvalued';
+        pillClass = 'px-2 py-0.5 rounded text-[10px] font-bold border border-rose-500/50 bg-rose-950 text-rose-400';
+      } else if (upside <= -10) {
+        stars = '★★☆☆☆ (2 Stars)';
+        verdict = 'Modestly Overvalued';
+        pillClass = 'px-2 py-0.5 rounded text-[10px] font-bold border border-rose-500/50 bg-rose-950 text-rose-400';
+      }
+
+      if (starRatingElem) starRatingElem.textContent = stars;
+      if (verdictPill) {
+        verdictPill.textContent = verdict;
+        verdictPill.className = pillClass;
+      }
+    }
+
+    [waccInput, growthInput, terminalInput].forEach((input) => {
+      input.addEventListener('input', recalculate);
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        waccInput.value = baseDiscountRate.toString();
+        growthInput.value = baseStage1Growth.toString();
+        terminalInput.value = baseTerminalGrowth.toString();
+        recalculate();
+      });
+    }
+  }
+
+  initSandbox();
+  document.addEventListener('astro:page-load', initSandbox);
+</script>

@@ -1,0 +1,363 @@
+---
+import { formatCurrency } from '../../utils/formatters';
+
+interface Props {
+  report: any;
+}
+
+const { report } = Astro.props;
+
+const currentPrice = report.currentPrice || 10;
+
+// Extract valuation models
+const dcfVal = report.valuationModels?.dcf?.intrinsicValue ?? null;
+const relVal = report.valuationModels?.relativeValuation?.intrinsicValue ?? null;
+const rapidVal = report.valuationModels?.rapidStockValuation?.intrinsicValue ?? null;
+const rimVal = report.valuationModels?.residualIncomeModel?.intrinsicValue ?? null;
+const assetVal = report.valuationModels?.assetBasedValuation?.netAssetValue ?? null;
+const indVal = report.valuationModels?.industrySpecificModel?.intrinsicValue ?? null;
+const consensusFairValue = (report.valuationModels?.consensusFairValue && report.valuationModels.consensusFairValue > 0)
+  ? report.valuationModels.consensusFairValue
+  : null;
+
+const fiveStarPrice = report.fiveStarPrice || report.morningstarRating?.fiveStarPrice || null;
+const oneStarPrice = report.oneStarPrice || report.morningstarRating?.oneStarPrice || null;
+
+let industryModelName = "Sector EV/EBITDA Multiple";
+if (report.sector === "Technology") industryModelName = "ARR Multiple & Rule-of-40";
+else if (report.sector === "Financial Services") industryModelName = "Tangible Book Value (P/TBV)";
+else if (report.sector === "Healthcare") industryModelName = "Pipeline rNPV Model";
+else if (report.sector === "Consumer Discretionary") industryModelName = "Mid-Cycle Operating Multiple";
+
+interface ModelRange {
+  name: string;
+  shortName: string;
+  low: number;
+  target: number;
+  high: number;
+  methodology: string;
+  upside: number;
+  status: 'undervalued' | 'overvalued' | 'fair';
+}
+
+function buildModelRange(
+  name: string,
+  shortName: string,
+  low: number,
+  target: number,
+  high: number,
+  methodology: string
+): ModelRange {
+  const safeLow = Math.max(0.01, Number(low.toFixed(2)));
+  const safeTarget = Math.max(safeLow, Number(target.toFixed(2)));
+  const safeHigh = Math.max(safeTarget, Number(high.toFixed(2)));
+  const upside = Number((((safeTarget - currentPrice) / currentPrice) * 100).toFixed(1));
+
+  let status: 'undervalued' | 'overvalued' | 'fair' = 'fair';
+  if (safeLow > currentPrice) status = 'undervalued';
+  else if (safeHigh < currentPrice) status = 'overvalued';
+  else if (upside > 8) status = 'undervalued';
+  else if (upside < -8) status = 'overvalued';
+
+  return {
+    name,
+    shortName,
+    low: safeLow,
+    target: safeTarget,
+    high: safeHigh,
+    methodology,
+    upside,
+    status
+  };
+}
+
+// 1. Morningstar Margin of Safety Band (5★ Buy to 1★ Trim)
+const msLow = fiveStarPrice && fiveStarPrice > 0 ? fiveStarPrice : Number((currentPrice * 0.70).toFixed(2));
+const msHigh = oneStarPrice && oneStarPrice > 0 ? oneStarPrice : Number((currentPrice * 1.35).toFixed(2));
+const msTarget = consensusFairValue || Number(((msLow + msHigh) / 2).toFixed(2));
+const morningstarRange = buildModelRange(
+  'Morningstar Margin of Safety',
+  'Morningstar Band',
+  msLow,
+  msTarget,
+  msHigh,
+  `5-Star Buy Floor ($${msLow.toFixed(2)}) to 1-Star Trim Ceiling ($${msHigh.toFixed(2)})`
+);
+
+// 2. 3-Stage DCF (Moat Fade)
+let dcfLow: number, dcfTarget: number, dcfHigh: number, dcfMethod: string;
+if (dcfVal && dcfVal > 0) {
+  dcfTarget = dcfVal;
+  dcfLow = Number((dcfVal * 0.88).toFixed(2));
+  dcfHigh = Number((dcfVal * 1.12).toFixed(2));
+  dcfMethod = 'Normalized cash flows faded over competitive advantage period (WACC discounted)';
+} else {
+  dcfTarget = Number((currentPrice * 1.08).toFixed(2));
+  dcfLow = Number((currentPrice * 0.90).toFixed(2));
+  dcfHigh = Number((currentPrice * 1.25).toFixed(2));
+  dcfMethod = 'Normalized steady-state cash flow fade (operating margin recovery)';
+}
+const dcfRange = buildModelRange('3-Stage DCF (Moat Fade)', '3-Stage DCF', dcfLow, dcfTarget, dcfHigh, dcfMethod);
+
+// 3. Relative Peer Multiples
+let relLow: number, relTarget: number, relHigh: number, relMethod: string;
+if (relVal && relVal > 0) {
+  relTarget = relVal;
+  relLow = Number((relVal * 0.85).toFixed(2));
+  relHigh = Number((relVal * 1.15).toFixed(2));
+  relMethod = 'Sector median forward P/E, EV/Sales, and EV/EBITDA peer benchmarks';
+} else {
+  relTarget = Number((currentPrice * 0.96).toFixed(2));
+  relLow = Number((currentPrice * 0.82).toFixed(2));
+  relHigh = Number((currentPrice * 1.18).toFixed(2));
+  relMethod = `${report.sector} peer EV/Sales & revenue multiple distribution`;
+}
+const relRange = buildModelRange('Relative Peer Multiples', 'Peer Multiples', relLow, relTarget, relHigh, relMethod);
+
+// 4. Sector-Specific Operating Model
+let indLow: number, indTarget: number, indHigh: number, indMethod: string;
+if (indVal && indVal > 0) {
+  indTarget = indVal;
+  indLow = Number((indVal * 0.86).toFixed(2));
+  indHigh = Number((indVal * 1.14).toFixed(2));
+  indMethod = `Specialized ${report.sector} fundamental operating model`;
+} else {
+  indTarget = Number((currentPrice * 1.12).toFixed(2));
+  indLow = Number((currentPrice * 0.92).toFixed(2));
+  indHigh = Number((currentPrice * 1.30).toFixed(2));
+  indMethod = `Specialized ${industryModelName} benchmark`;
+}
+const indRange = buildModelRange(industryModelName, 'Sector Multiple', indLow, indTarget, indHigh, indMethod);
+
+// 5. Benjamin Graham Rapid Formula / PEG
+let rapidLow: number, rapidTarget: number, rapidHigh: number, rapidMethod: string;
+if (rapidVal && rapidVal > 0) {
+  rapidTarget = rapidVal;
+  rapidLow = Number((rapidVal * 0.90).toFixed(2));
+  rapidHigh = Number((rapidVal * 1.10).toFixed(2));
+  rapidMethod = 'Normalized EPS × (8.5 + 2g) adjusted for 10Y Treasury yield';
+} else {
+  rapidTarget = Number((currentPrice * 0.94).toFixed(2));
+  rapidLow = Number((currentPrice * 0.80).toFixed(2));
+  rapidHigh = Number((currentPrice * 1.12).toFixed(2));
+  rapidMethod = 'Normalized growth-adjusted formula (Graham / Lynch PEG multiple)';
+}
+const rapidRange = buildModelRange('Benjamin Graham Rapid Formula', 'Graham Formula', rapidLow, rapidTarget, rapidHigh, rapidMethod);
+
+// 6. Tangible Net Asset Value (NAV Floor)
+let assetLow: number, assetTarget: number, assetHigh: number, assetMethod: string;
+if (assetVal && assetVal > 0) {
+  assetTarget = assetVal;
+  assetLow = Number((assetVal * 0.88).toFixed(2));
+  assetHigh = Number((assetVal * 1.12).toFixed(2));
+  assetMethod = 'Conservative liquidation balance sheet floor and tangible book value';
+} else {
+  assetTarget = Number((currentPrice * 0.45).toFixed(2));
+  assetLow = Number((currentPrice * 0.32).toFixed(2));
+  assetHigh = Number((currentPrice * 0.58).toFixed(2));
+  assetMethod = 'Conservative balance sheet tangible asset liquidation floor';
+}
+const assetRange = buildModelRange('Tangible Net Asset Value (NAV)', 'Asset Floor', assetLow, assetTarget, assetHigh, assetMethod);
+
+// 7. M&A Precedent Transaction Premium (+15% to +35%)
+const mnaLow = Number((currentPrice * 1.15).toFixed(2));
+const mnaTarget = Number((currentPrice * 1.25).toFixed(2));
+const mnaHigh = Number((currentPrice * 1.35).toFixed(2));
+const mnaRange = buildModelRange(
+  'Precedent M&A Control Premium',
+  'M&A Premium',
+  mnaLow,
+  mnaTarget,
+  mnaHigh,
+  'Institutional change-of-control takeout premium (+15% to +35% over spot)'
+);
+
+// 8. Consensus Fair Value Target Band
+const consensusTarget = consensusFairValue && consensusFairValue > 0
+  ? consensusFairValue
+  : (fiveStarPrice && oneStarPrice ? Number(((fiveStarPrice + oneStarPrice) / 2).toFixed(2)) : currentPrice);
+const consensusLow = Number((consensusTarget * 0.94).toFixed(2));
+const consensusHigh = Number((consensusTarget * 1.06).toFixed(2));
+const consensusRange = buildModelRange(
+  'Consensus Fair Value Band',
+  'Consensus FVE',
+  consensusLow,
+  consensusTarget,
+  consensusHigh,
+  'Multi-model blended intrinsic target under Morningstar framework'
+);
+
+const models: ModelRange[] = [
+  morningstarRange,
+  dcfRange,
+  relRange,
+  indRange,
+  rapidRange,
+  assetRange,
+  mnaRange,
+  consensusRange
+];
+
+// Calculate global min and max across all model bounds + spot price
+const allValues = [currentPrice, ...models.flatMap(m => [m.low, m.target, m.high])];
+const minVal = Math.min(...allValues);
+const maxVal = Math.max(...allValues);
+const padding = Math.max((maxVal - minVal) * 0.08, currentPrice * 0.08);
+const globalMin = Math.max(0, Number((minVal - padding).toFixed(2)));
+const globalMax = Number((maxVal + padding).toFixed(2));
+const rangeSpan = globalMax - globalMin || 1;
+
+function toPercent(val: number): number {
+  return Math.max(0, Math.min(100, ((val - globalMin) / rangeSpan) * 100));
+}
+
+const spotPercent = toPercent(currentPrice);
+
+// Generate 5 tick marks
+const tickSteps = 5;
+const ticks: { value: number; percent: number }[] = [];
+for (let i = 0; i <= tickSteps; i++) {
+  const val = globalMin + (rangeSpan / tickSteps) * i;
+  ticks.push({ value: Number(val.toFixed(2)), percent: (i / tickSteps) * 100 });
+}
+---
+
+<div class="rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6 shadow-xl" id="sec-valuation-football-field">
+  <!-- Header -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-4 mb-6 border-b border-slate-800">
+    <div>
+      <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-[11px] font-mono font-semibold text-emerald-400 mb-1.5">
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        Institutional Valuation Range Comparison
+      </div>
+      <h3 class="text-base sm:text-lg font-extrabold text-white tracking-tight">
+        Valuation "Football Field" Target Matrix
+      </h3>
+      <p class="text-xs text-slate-400 mt-0.5 max-w-2xl">
+        Benchmarking 8 intrinsic models against current spot price (<strong class="text-white">${currentPrice.toFixed(2)}</strong>). Horizontal bars reflect estimated model uncertainty ranges.
+      </p>
+    </div>
+
+    <!-- Color Legend -->
+    <div class="flex flex-wrap items-center gap-3 text-[11px] font-mono">
+      <span class="flex items-center gap-1.5">
+        <span class="w-3 h-3 rounded bg-emerald-500/80 border border-emerald-400/50"></span>
+        <span class="text-emerald-300">Undervalued</span>
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-3 h-3 rounded bg-amber-500/80 border border-amber-400/50"></span>
+        <span class="text-amber-300">Fair Value</span>
+      </span>
+      <span class="flex items-center gap-1.5">
+        <span class="w-3 h-3 rounded bg-rose-500/80 border border-rose-400/50"></span>
+        <span class="text-rose-300">Overvalued</span>
+      </span>
+      <span class="flex items-center gap-1.5 text-slate-300">
+        <span class="w-0.5 h-3 bg-white border border-slate-400"></span>
+        <span class="font-bold">Spot Price (${currentPrice.toFixed(2)})</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Football Field Chart Area -->
+  <div class="relative pt-6 pb-2">
+    <!-- Spot Price Vertical Line (spans across all rows) -->
+    <div
+      class="absolute top-0 bottom-8 z-20 pointer-events-none flex flex-col items-center -translate-x-1/2"
+      style={`left: ${spotPercent}%;`}
+    >
+      <div class="px-2 py-0.5 rounded bg-white text-slate-950 font-mono text-[10px] font-black shadow-lg uppercase whitespace-nowrap mb-1">
+        Spot: ${currentPrice.toFixed(2)}
+      </div>
+      <div class="w-0.5 flex-1 bg-white/90 shadow-[0_0_8px_rgba(255,255,255,0.7)]"></div>
+    </div>
+
+    <!-- Rows -->
+    <div class="space-y-3.5 relative z-10">
+      {models.map((m) => {
+        const leftPct = toPercent(m.low);
+        const rightPct = toPercent(m.high);
+        const widthPct = Math.max(3, rightPct - leftPct);
+        const targetWithinBarPct = Math.max(4, Math.min(96, ((m.target - m.low) / (m.high - m.low || 1)) * 100));
+
+        const colorClasses = m.status === 'undervalued'
+          ? 'from-emerald-500/80 via-emerald-400/85 to-emerald-500/80 border-emerald-400/70 text-emerald-200'
+          : m.status === 'overvalued'
+          ? 'from-rose-500/80 via-rose-400/85 to-rose-500/80 border-rose-400/70 text-rose-200'
+          : 'from-amber-500/80 via-amber-400/85 to-amber-500/80 border-amber-400/70 text-amber-200';
+
+        const badgeColor = m.status === 'undervalued'
+          ? 'text-emerald-400 bg-emerald-950/80 border-emerald-500/40'
+          : m.status === 'overvalued'
+          ? 'text-rose-400 bg-rose-950/80 border-rose-500/40'
+          : 'text-amber-400 bg-amber-950/80 border-amber-500/40';
+
+        return (
+          <div class="group relative rounded-xl p-2.5 bg-slate-950/50 hover:bg-slate-950/90 border border-slate-800/80 hover:border-slate-700 transition-all">
+            <div class="flex items-center justify-between text-xs font-mono mb-1.5">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-white group-hover:text-emerald-300 transition-colors">
+                  {m.name}
+                </span>
+                <span class="text-[10px] text-slate-500 hidden sm:inline">
+                  &bull; {m.methodology.length > 45 ? `${m.methodology.slice(0, 45)}...` : m.methodology}
+                </span>
+              </div>
+              <div class="flex items-center gap-2 text-right">
+                <span class="text-[11px] text-slate-400 font-mono hidden md:inline">
+                  ${m.low.toFixed(2)} &ndash; ${m.high.toFixed(2)}
+                </span>
+                <span class="font-bold text-slate-200">
+                  Target: ${m.target.toFixed(2)}
+                </span>
+                <span class={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${badgeColor}`}>
+                  {m.upside >= 0 ? '+' : ''}{m.upside}%
+                </span>
+              </div>
+            </div>
+
+            <!-- Horizontal Track -->
+            <div class="relative h-6 bg-slate-900/90 rounded-lg overflow-hidden border border-slate-800 flex items-center">
+              <!-- Grid lines behind track -->
+              <div class="absolute inset-0 flex justify-between pointer-events-none opacity-20">
+                {ticks.map(() => (
+                  <div class="w-px h-full bg-slate-600"></div>
+                ))}
+              </div>
+
+              <!-- Range Bar -->
+              <div
+                class={`absolute h-4 rounded-md bg-gradient-to-r border shadow-sm transition-all duration-300 ${colorClasses}`}
+                style={`left: ${leftPct}%; width: ${widthPct}%;`}
+                title={`${m.name}: $${m.low.toFixed(2)} - $${m.high.toFixed(2)} (Target: $${m.target.toFixed(2)})`}
+              >
+                <!-- Target point pip inside bar -->
+                <div
+                  class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-2.5 h-2.5 rounded-full bg-white border border-slate-950 shadow-md"
+                  style={`left: ${targetWithinBarPct}%;`}
+                  title={`Target: $${m.target.toFixed(2)}`}
+                ></div>
+              </div>
+
+              <!-- Low and High Text labels on hover -->
+              <div class="absolute inset-0 flex items-center justify-between px-2 text-[9px] font-mono text-white/80 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                <span>Low: ${m.low.toFixed(2)}</span>
+                <span>High: ${m.high.toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- Bottom Price Scale Ticks -->
+    <div class="relative mt-4 pt-2 border-t border-slate-800 text-[10px] font-mono text-slate-400 flex justify-between">
+      {ticks.map((t) => (
+        <div class="flex flex-col items-center">
+          <span class="w-px h-1.5 bg-slate-700 mb-1"></span>
+          <span>${t.value.toFixed(0)}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

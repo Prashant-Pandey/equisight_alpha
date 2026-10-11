@@ -1,0 +1,222 @@
+---
+import { formatCurrency } from '../../utils/formatters';
+import { getEconomicMoat, getMoatTrend, getStarRatingString } from '../../utils/financialClassification';
+
+interface Props {
+  report: any;
+  printUrl: string;
+}
+
+const { report, printUrl } = Astro.props;
+
+// Valuation & Star Ratings
+const starRating = report.starRating || report.morningstarRating?.starRating || null;
+const starRatingString = getStarRatingString(
+  report.starRatingString || report.morningstarRating?.starRatingString,
+  starRating
+);
+const uncertaintyRating = report.uncertaintyRating || report.morningstarRating?.uncertaintyRating || 'Medium';
+
+// Moat Analysis
+const moatResult = getEconomicMoat({
+  existingRating: report.competitiveMoat?.rating || report.morningstarRating?.economicMoat,
+  existingSummary: report.competitiveMoat?.summary,
+  isPennyStock: report.isPennyStock
+});
+const moatRating = moatResult.rating;
+const moatTrend = getMoatTrend({
+  existingTrend: report.moatTrend || report.competitiveMoat?.trend,
+  revenueGrowthYoY: report.revenueGrowthYoY,
+  roic: report.roic ?? report.returnOnInvestedCapital ?? null
+});
+const moatSources = report.moatSources || report.competitiveMoat?.sources || null;
+
+// Solvency & Debt
+const debt = report.debtAnalysis || {};
+const totalDebt = debt.totalDebt ?? report.totalDebt ?? 0;
+const shortTermDebt = debt.shortTermDebt ?? report.shortTermDebt ?? 0;
+const cashFlow = report.cashFlow || {};
+const freeCashFlow = cashFlow.freeCashFlow ?? report.freeCashFlow ?? null;
+const cashBalance = report.cashAndEquivalents ?? report.totalCash ?? 90000000;
+const isSolvencySafe = (shortTermDebt === 0 || (shortTermDebt < (totalDebt * 0.25)));
+
+const navLinks = [
+  { id: 'sec-executive-summary', label: 'Executive Summary & Takeaways' },
+  { id: 'sec-valuation-football-field', label: 'Valuation Football Field' },
+  { id: 'sec-dcf-sandbox', label: 'DCF Sensitivity Sandbox' },
+  { id: 'sec-business-model', label: 'Core Business Architecture' },
+  { id: 'sec-industry-dynamics', label: 'Industry Dynamics & Headwinds' },
+  { id: 'sec-analyst-markdown', label: 'Analyst Qualitative Thesis' },
+  { id: 'sec-related-research', label: 'Related Equity Research' },
+  { id: 'sec-syndication-hub', label: 'Syndication & Community' }
+];
+---
+
+<aside class="sticky top-28 space-y-5 no-print" aria-label="Analyst Desk Sidebar & Navigation">
+  
+  <!-- Table of Contents Card -->
+  <div class="p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/80 shadow-lg backdrop-blur-md">
+    <div class="flex items-center justify-between pb-3 mb-3 border-b border-slate-800">
+      <div class="flex items-center gap-2">
+        <svg class="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+        </svg>
+        <h4 class="text-xs font-mono font-bold text-white uppercase tracking-wider">
+          Report Table of Contents
+        </h4>
+      </div>
+      <span class="text-[10px] font-mono text-slate-500">Jump to section</span>
+    </div>
+
+    <nav class="space-y-1 text-xs font-mono" id="toc-nav">
+      {navLinks.map((link) => (
+        <a
+          href={`#${link.id}`}
+          class="toc-link block px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-emerald-300 hover:bg-slate-800/60 transition-all truncate border border-transparent"
+          data-target={link.id}
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+
+  <!-- Solvency & Health Quick-Card -->
+  <div class="p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/80 shadow-lg">
+    <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-800">
+      <h4 class="text-xs font-mono font-bold text-white uppercase tracking-wider">
+        Solvency & Balance Sheet
+      </h4>
+      <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${isSolvencySafe ? 'bg-emerald-950 text-emerald-400 border-emerald-500/30' : 'bg-amber-950 text-amber-400 border-amber-500/30'}`}>
+        {isSolvencySafe ? 'Secure Runway' : 'Watch Debt'}
+      </span>
+    </div>
+
+    <!-- Cash vs Debt Bar -->
+    <div class="space-y-2 text-xs font-mono">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400">Cash Reserves:</span>
+        <span class="font-bold text-emerald-400">{formatCurrency(cashBalance)}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400">Total Debt:</span>
+        <span class="font-bold text-rose-400">{formatCurrency(totalDebt)}</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400">Due in &lt;12M:</span>
+        <span class="font-bold text-white">{formatCurrency(shortTermDebt)}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Competitive Moat & Stars Card -->
+  <div class="p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/80 shadow-lg">
+    <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-slate-800">
+      <h4 class="text-xs font-mono font-bold text-white uppercase tracking-wider">
+        Moat & Capital Stewardship
+      </h4>
+      <span class="text-amber-300 font-mono font-black text-sm">
+        {starRatingString || '★★★☆☆'}
+      </span>
+    </div>
+
+    <div class="space-y-2 text-xs font-mono">
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400">Economic Moat:</span>
+        <span class="font-bold text-white px-2 py-0.5 rounded bg-slate-800 border border-slate-700">
+          {moatRating} ({moatTrend})
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-slate-400">Uncertainty:</span>
+        <span class="font-bold text-slate-200">{uncertaintyRating}</span>
+      </div>
+    </div>
+
+    <!-- Moat 5 pillars pill summary -->
+    <div class="mt-3 pt-3 border-t border-slate-800">
+      <div class="text-[10px] font-mono text-slate-500 uppercase mb-1.5">5 Moat Pillars</div>
+      <div class="flex flex-wrap gap-1.5 text-[9px] font-mono">
+        <span class={`px-1.5 py-0.5 rounded border ${moatSources?.intangibleAssets?.rating === 'Wide' ? 'bg-emerald-950 text-emerald-300 border-emerald-600' : 'bg-slate-950 text-slate-500 border-slate-800'}`}>Intangibles</span>
+        <span class={`px-1.5 py-0.5 rounded border ${moatSources?.switchingCosts?.rating === 'Wide' ? 'bg-emerald-950 text-emerald-300 border-emerald-600' : 'bg-slate-950 text-slate-500 border-slate-800'}`}>Switching</span>
+        <span class={`px-1.5 py-0.5 rounded border ${moatSources?.networkEffect?.rating === 'Wide' ? 'bg-emerald-950 text-emerald-300 border-emerald-600' : 'bg-slate-950 text-slate-500 border-slate-800'}`}>Network</span>
+        <span class={`px-1.5 py-0.5 rounded border ${moatSources?.costAdvantage?.rating === 'Wide' ? 'bg-emerald-950 text-emerald-300 border-emerald-600' : 'bg-slate-950 text-slate-500 border-slate-800'}`}>Cost Adv</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Utility Actions -->
+  <div class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg space-y-2 text-xs font-mono">
+    <!-- PDF Export -->
+    <a
+      href={`${printUrl}?autoprint=true`}
+      target="_blank"
+      rel="noopener"
+      class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition-all shadow-md cursor-pointer border border-emerald-400/30"
+      title="Export research report formatted to Morningstar 7-Module standards (⌘P)"
+    >
+      <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 2l3 3h-3V4zm-1 9V9h-2v4H6l4 4 4-4h-2z" clip-rule="evenodd"/>
+      </svg>
+      <span>Export Institutional PDF</span>
+    </a>
+
+    <!-- Download Model CSV -->
+    <button
+      type="button"
+      id="sidebar-download-csv-btn"
+      class="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold transition-all border border-slate-700 cursor-pointer"
+      title="Download complete valuation spreadsheet model as .CSV"
+    >
+      <svg class="w-3.5 h-3.5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <span>Download Model (.CSV)</span>
+    </button>
+  </div>
+</aside>
+
+<script>
+  function setupScrollSpy() {
+    const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+    const sections: HTMLElement[] = [];
+
+    tocLinks.forEach((link) => {
+      const targetId = link.dataset.target;
+      if (targetId) {
+        const el = document.getElementById(targetId);
+        if (el) sections.push(el);
+      }
+    });
+
+    if (!sections.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach((link) => {
+              if (link.dataset.target === id) {
+                link.classList.add('bg-emerald-950/80', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
+                link.classList.remove('text-slate-400', 'border-transparent');
+              } else {
+                link.classList.remove('bg-emerald-950/80', 'text-emerald-300', 'border-emerald-500/40', 'font-bold');
+                link.classList.add('text-slate-400', 'border-transparent');
+              }
+            });
+          }
+        });
+      },
+      {
+        rootMargin: '-20% 0px -70% 0px',
+        threshold: 0
+      }
+    );
+
+    sections.forEach((sec) => observer.observe(sec));
+  }
+
+  setupScrollSpy();
+  document.addEventListener('astro:page-load', setupScrollSpy);
+</script>

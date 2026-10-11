@@ -96,6 +96,18 @@ export class LLMSynthesisAgent {
       if (!rawOutput.filteredHeadlines && sentiment.filteredHeadlines) {
         rawOutput.filteredHeadlines = sentiment.filteredHeadlines;
       }
+      if (rawOutput.macroConditionSimplified) {
+        if (!rawOutput.industryDeepDive) {
+          rawOutput.industryDeepDive = {
+            industryCondition: fundamentals.industryQuestions?.industryCondition ?? `The ${fundamentals.sector} sector operates within broader macroeconomic and interest rate cycles.`,
+            macroConditionSimplified: rawOutput.macroConditionSimplified,
+            obstaclesAndChallenges: fundamentals.industryQuestions?.obstaclesAndChallenges ?? `Primary hurdles include competitive positioning, input costs, and regulatory compliance.`,
+            economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? `Macro exposures involve monetary policy shifts and economic cycle dynamics.`
+          };
+        } else {
+          rawOutput.industryDeepDive.macroConditionSimplified = rawOutput.macroConditionSimplified;
+        }
+      }
     }
 
     // Integrate dedicated parallel Executive Summary LLM data
@@ -655,6 +667,7 @@ ${expectationsVsReality}
     // 7. 3 Industry Questions
     const industryDeepDive: IndustryQuestions = {
       industryCondition: f.industryQuestions?.industryCondition ?? `The ${f.sector} sector operates within broader macroeconomic and interest rate cycles.`,
+      macroConditionSimplified: f.industryQuestions?.macroConditionSimplified ?? f.sectorDynamics?.macroConditionSimplified,
       obstaclesAndChallenges: f.industryQuestions?.obstaclesAndChallenges ?? `Primary hurdles include competitive positioning, input costs, and regulatory compliance.`,
       economicPoliticalCulturalRisks: f.industryQuestions?.economicPoliticalCulturalRisks ?? `Macro exposures involve monetary policy shifts and economic cycle dynamics.`
     };
@@ -963,6 +976,7 @@ ${compiledTheses.bear.map((b, idx) => `${idx + 1}. **${b.point.split('.')[0]}:**
       competitiveMoat,
       companyDeepDive,
       industryDeepDive,
+      macroConditionSimplified: industryDeepDive.macroConditionSimplified,
       valuationModels,
       optionGammaImbalance,
       freeFloatConcentration,

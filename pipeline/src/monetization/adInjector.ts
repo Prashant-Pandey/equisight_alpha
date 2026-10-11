@@ -263,6 +263,7 @@ export class ProgrammaticAdInjector {
 
     const industryDeepDive = {
       industryCondition: fundamentals.industryQuestions?.industryCondition ?? (analysis.industryDeepDive?.industryCondition || 'Not Available'),
+      macroConditionSimplified: analysis.macroConditionSimplified ?? analysis.industryDeepDive?.macroConditionSimplified ?? fundamentals.industryQuestions?.macroConditionSimplified,
       obstaclesAndChallenges: fundamentals.industryQuestions?.obstaclesAndChallenges ?? (analysis.industryDeepDive?.obstaclesAndChallenges || 'Not Available'),
       economicPoliticalCulturalRisks: fundamentals.industryQuestions?.economicPoliticalCulturalRisks ?? (analysis.industryDeepDive?.economicPoliticalCulturalRisks || 'Not Available')
     };
@@ -329,7 +330,11 @@ export class ProgrammaticAdInjector {
         intrinsicValue: rawVM.industrySpecificModel.intrinsicValue ?? rawVM.industrySpecificModel.fairValue ?? null,
         description: rawVM.industrySpecificModel.description ?? rawVM.industrySpecificModel.sectorMetric ?? 'Industry specific valuation'
       } : (rawVM.industrySpecificModel ?? {}),
-      consensusFairValue: rawVM.consensusFairValue ?? 0,
+      consensusFairValue: (rawVM.consensusFairValue && rawVM.consensusFairValue > 0)
+        ? rawVM.consensusFairValue
+        : (fundamentals.morningstarRating?.fiveStarPrice && fundamentals.morningstarRating?.oneStarPrice
+          ? Number(((fundamentals.morningstarRating.fiveStarPrice + fundamentals.morningstarRating.oneStarPrice) / 2).toFixed(2))
+          : (rawVM.consensusFairValue ?? null)),
       verdict: rawVM.verdict ?? 'Fairly Valued'
     };
 
@@ -466,6 +471,7 @@ export class ProgrammaticAdInjector {
       industryQuestions: industryDeepDive,
       companyDeepDive,
       industryDeepDive,
+      macroConditionSimplified: industryDeepDive.macroConditionSimplified,
 
       // Multi-model Valuations
       valuationModels,
