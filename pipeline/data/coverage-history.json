@@ -439,5 +439,50 @@
     "category": "gainer",
     "movePercent": 4.78,
     "slug": "pg-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MCD",
+    "companyName": "McDonald's Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T20:00:50.555Z",
+    "category": "gainer",
+    "movePercent": 1.13,
+    "slug": "mcd-gain-1-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "OKLO",
+    "companyName": "Oklo Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T20:02:39.685Z",
+    "category": "loser",
+    "movePercent": -10.34,
+    "slug": "oklo-loss-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PL",
+    "companyName": "Planet Labs PBC",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T20:04:30.409Z",
+    "category": "loser",
+    "movePercent": -7.92,
+    "slug": "pl-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "KO",
+    "companyName": "The Coca-Cola Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T20:06:18.165Z",
+    "category": "gainer",
+    "movePercent": 3.67,
+    "slug": "ko-gain-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "ABT",
+    "companyName": "Abbott Laboratories",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T20:08:02.590Z",
+    "category": "gainer",
+    "movePercent": 1.68,
+    "slug": "abt-gain-2-percent-fundamental-analysis"
   }
 ]
