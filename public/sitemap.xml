@@ -2,25 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/</loc>
-    <lastmod>2026-10-11T21:49:16.464Z</lastmod>
+    <lastmod>2026-10-12T13:22:11.703Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/reports/</loc>
-    <lastmod>2026-10-11T21:49:16.464Z</lastmod>
+    <lastmod>2026-10-12T13:22:11.703Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/definitions/</loc>
-    <lastmod>2026-10-11T21:49:16.464Z</lastmod>
+    <lastmod>2026-10-12T13:22:11.703Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/disclaimer/</loc>
-    <lastmod>2026-10-11T21:49:16.464Z</lastmod>
+    <lastmod>2026-10-12T13:22:11.703Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -637,6 +637,186 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-augo-gain-11-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:05:38.842Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-augo-gain-11-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:05:38.842Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-augo-gain-11-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:05:38.842Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-avnt-loss-8-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:16:38.596Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-avnt-loss-8-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:16:38.596Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-avnt-loss-8-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:16:38.596Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-bkd-loss-7-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:18:36.105Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-bkd-loss-7-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:18:36.105Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-bkd-loss-7-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:18:36.105Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-hims-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:07:33.786Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-hims-gain-10-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:07:33.786Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-hims-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:07:33.786Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-hpq-loss-7-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:22:11.619Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-hpq-loss-7-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:22:11.619Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-hpq-loss-7-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:22:11.619Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-iova-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:09:26.142Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-iova-gain-10-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:09:26.142Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-iova-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:09:26.142Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-lumn-loss-8-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:14:55.341Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-lumn-loss-8-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:14:55.341Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-lumn-loss-8-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:14:55.341Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-pcvx-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:11:17.771Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-pcvx-gain-10-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:11:17.771Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-pcvx-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:11:17.771Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-rsi-loss-7-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:20:27.565Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-rsi-loss-7-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:20:27.565Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-rsi-loss-7-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:20:27.565Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-sezl-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:13:01.854Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/reports/2026-10-12-sezl-gain-10-percent-fundamental-analysis/print/</loc>
+    <lastmod>2026-10-12T13:13:01.854Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/institutional-summary/2026-10-12-sezl-gain-10-percent-fundamental-analysis/</loc>
+    <lastmod>2026-10-12T13:13:01.854Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/adbe/</loc>
     <lastmod>2026-10-11T21:32:54.814Z</lastmod>
     <changefreq>daily</changefreq>
@@ -651,6 +831,24 @@
   <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/asts/</loc>
     <lastmod>2026-10-11T12:06:33.616Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/augo/</loc>
+    <lastmod>2026-10-12T13:05:38.842Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/avnt/</loc>
+    <lastmod>2026-10-12T13:16:38.596Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/bkd/</loc>
+    <lastmod>2026-10-12T13:18:36.105Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
@@ -703,8 +901,26 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/hims/</loc>
+    <lastmod>2026-10-12T13:07:33.786Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/hpq/</loc>
+    <lastmod>2026-10-12T13:22:11.619Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/hum/</loc>
     <lastmod>2026-10-11T12:02:51.482Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/iova/</loc>
+    <lastmod>2026-10-12T13:09:26.142Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
@@ -729,6 +945,12 @@
   <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/lly/</loc>
     <lastmod>2026-10-11T21:24:13.175Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/lumn/</loc>
+    <lastmod>2026-10-12T13:14:55.341Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
@@ -787,14 +1009,32 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/pcvx/</loc>
+    <lastmod>2026-10-12T13:11:17.771Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/plce/</loc>
     <lastmod>2026-10-11T12:17:08.896Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/rsi/</loc>
+    <lastmod>2026-10-12T13:20:27.565Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/sbux/</loc>
     <lastmod>2026-10-11T21:38:11.735Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://prashant-pandey.github.io/equisight_alpha/tickers/sezl/</loc>
+    <lastmod>2026-10-12T13:13:01.854Z</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>

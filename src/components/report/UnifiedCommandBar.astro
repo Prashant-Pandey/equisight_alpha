@@ -142,11 +142,6 @@ const tabs = [
             ${currentPrice.toFixed(2)} <span class="text-xs text-[#8e8e8e] font-normal">{report.currency || 'USD'}</span>
           </div>
         </div>
-
-        <div class={`text-right px-3 py-1.5 border ${isPositive ? 'border-[#00cc66] text-[#00cc66]' : 'border-[#ff3344] text-[#ff3344]'}`}>
-          <div class="text-[9px] uppercase tracking-wider text-[#8e8e8e]">SESSION MOVE</div>
-          <div class="text-lg font-black">{isPositive ? '+' : ''}{report.movePercent.toFixed(2)}%</div>
-        </div>
       </div>
     </div>
 

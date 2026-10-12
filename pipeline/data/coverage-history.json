@@ -304,5 +304,95 @@
     "category": "gainer",
     "movePercent": 0.18,
     "slug": "jpm-gain-0-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AUGO",
+    "companyName": "Aura Minerals Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-12T13:05:38.862Z",
+    "category": "gainer",
+    "movePercent": 10.6315975,
+    "slug": "augo-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HIMS",
+    "companyName": "Hims & Hers Health, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T13:07:33.793Z",
+    "category": "gainer",
+    "movePercent": 10.1924,
+    "slug": "hims-gain-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "IOVA",
+    "companyName": "Iovance Biotherapeutics, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-12T13:09:26.151Z",
+    "category": "gainer",
+    "movePercent": 9.842219,
+    "slug": "iova-gain-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PCVX",
+    "companyName": "Vaxcyte, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-12T13:11:17.779Z",
+    "category": "gainer",
+    "movePercent": 9.790045,
+    "slug": "pcvx-gain-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SEZL",
+    "companyName": "Sezzle Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-12T13:13:01.861Z",
+    "category": "gainer",
+    "movePercent": 9.742363,
+    "slug": "sezl-gain-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LUMN",
+    "companyName": "Lumen Technologies, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-12T13:14:55.345Z",
+    "category": "loser",
+    "movePercent": -8.173909,
+    "slug": "lumn-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AVNT",
+    "companyName": "Avient Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T13:16:38.605Z",
+    "category": "loser",
+    "movePercent": -7.78428,
+    "slug": "avnt-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BKD",
+    "companyName": "Brookdale Senior Living Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T13:18:36.112Z",
+    "category": "loser",
+    "movePercent": -7.07071,
+    "slug": "bkd-loss-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "RSI",
+    "companyName": "Rush Street Interactive, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T13:20:27.571Z",
+    "category": "loser",
+    "movePercent": -6.98819,
+    "slug": "rsi-loss-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HPQ",
+    "companyName": "HP Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T13:22:11.628Z",
+    "category": "loser",
+    "movePercent": -6.90505,
+    "slug": "hpq-loss-7-percent-fundamental-analysis"
   }
 ]
