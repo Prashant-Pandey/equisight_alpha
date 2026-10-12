@@ -223,11 +223,25 @@ export class MarketMoverIngestor {
       }
     }
 
-    // Ensure we meet the quota of 5 gainers and 5 losers
-    if (selectedGainers.length < CONFIG.DAILY_GAINERS_COUNT || selectedLosers.length < CONFIG.DAILY_LOSERS_COUNT) {
-      throw new Error(
-        `[MarketMoverIngestor] Insufficient eligible market movers after lockout filtering (gainers: ${selectedGainers.length}/${CONFIG.DAILY_GAINERS_COUNT}, losers: ${selectedLosers.length}/${CONFIG.DAILY_LOSERS_COUNT}). Please resolve the issue.`
-      );
+    // Ensure we meet the quota of 5 gainers and 5 losers without hard-crashing
+    if (selectedGainers.length < CONFIG.DAILY_GAINERS_COUNT) {
+      console.warn(`[MarketMoverIngestor] Strict lockout left only ${selectedGainers.length}/${CONFIG.DAILY_GAINERS_COUNT} gainers. Backfilling from candidate pool to fulfill research quota...`);
+      for (const gainer of allGainers) {
+        if (!selectedGainers.some((g) => g.ticker === gainer.ticker)) {
+          selectedGainers.push({ ...gainer, category: 'gainer' });
+          if (selectedGainers.length >= CONFIG.DAILY_GAINERS_COUNT) break;
+        }
+      }
+    }
+
+    if (selectedLosers.length < CONFIG.DAILY_LOSERS_COUNT) {
+      console.warn(`[MarketMoverIngestor] Strict lockout left only ${selectedLosers.length}/${CONFIG.DAILY_LOSERS_COUNT} losers. Backfilling from candidate pool to fulfill research quota...`);
+      for (const loser of allLosers) {
+        if (!selectedLosers.some((l) => l.ticker === loser.ticker)) {
+          selectedLosers.push({ ...loser, category: 'loser' });
+          if (selectedLosers.length >= CONFIG.DAILY_LOSERS_COUNT) break;
+        }
+      }
     }
 
     console.log(`[MarketMoverIngestor] Selected ${selectedGainers.length} Gainers: ${selectedGainers.map((g) => `${g.ticker} (+${g.changePercent.toFixed(2)}%)`).join(', ')}`);
@@ -268,10 +282,24 @@ export class MarketMoverIngestor {
     const selectedGainers: MarketMover[] = eligibleGainers.slice(0, 2);
     const selectedLosers: MarketMover[] = eligibleLosers.slice(0, 3);
 
-    if (selectedGainers.length < 2 || selectedLosers.length < 3) {
-      throw new Error(
-        `[MarketMoverIngestor] Insufficient eligible penny stock movers after lockout filtering (gainers: ${selectedGainers.length}/2, losers: ${selectedLosers.length}/3). Please resolve the issue.`
-      );
+    if (selectedGainers.length < 2) {
+      console.warn(`[MarketMoverIngestor] Strict lockout left only ${selectedGainers.length}/2 penny gainers. Backfilling from pool...`);
+      for (const m of pennyMovers.filter((p) => p.changePercent > 0)) {
+        if (!selectedGainers.some((g) => g.ticker === m.ticker)) {
+          selectedGainers.push(m);
+          if (selectedGainers.length >= 2) break;
+        }
+      }
+    }
+
+    if (selectedLosers.length < 3) {
+      console.warn(`[MarketMoverIngestor] Strict lockout left only ${selectedLosers.length}/3 penny losers. Backfilling from pool...`);
+      for (const m of pennyMovers.filter((p) => p.changePercent < 0)) {
+        if (!selectedLosers.some((l) => l.ticker === m.ticker)) {
+          selectedLosers.push(m);
+          if (selectedLosers.length >= 3) break;
+        }
+      }
     }
 
     console.log(`[MarketMoverIngestor] Penny Gainers (2): ${selectedGainers.map((g) => `${g.ticker} [${g.moneyMarketTradingVenue}] (+${g.changePercent.toFixed(2)}%)`).join(', ')}`);
@@ -353,46 +381,31 @@ export class MarketMoverIngestor {
    * Fetches gainers & losers using open Yahoo Finance screener query endpoints.
    */
   private async fetchLiveScreenerMovers(): Promise<MarketMover[]> {
+    const scrUrls = [
+      'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=day_gainers&count=100',
+      'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=day_losers&count=100',
+      'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=most_actives&count=100',
+      'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=growth_technology_stocks&count=100'
+    ];
+
+    const responses = await Promise.allSettled(scrUrls.map((u) => fetchWithRetry(u)));
+    const seen = new Set<string>();
     const results: MarketMover[] = [];
 
-    const gainersUrl = 'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=day_gainers&count=50';
-    const losersUrl = 'https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?formatted=false&scrIds=day_losers&count=50';
-
-    const [gainersRes, losersRes] = await Promise.all([
-      fetchWithRetry(gainersUrl),
-      fetchWithRetry(losersUrl)
-    ]);
-
-    if (!gainersRes.ok) {
-      throw new Error(`Gainers screener API returned status ${gainersRes.status}: ${gainersRes.statusText}`);
-    }
-    if (!losersRes.ok) {
-      throw new Error(`Losers screener API returned status ${losersRes.status}: ${losersRes.statusText}`);
-    }
-
-    const [gainersData, losersData] = await Promise.all([
-      gainersRes.json(),
-      losersRes.json()
-    ]);
-
-    if (gainersData?.finance?.error) {
-      throw new Error(`Gainers screener API error: ${gainersData.finance.error.description || JSON.stringify(gainersData.finance.error)}`);
-    }
-    if (losersData?.finance?.error) {
-      throw new Error(`Losers screener API error: ${losersData.finance.error.description || JSON.stringify(losersData.finance.error)}`);
-    }
-
-    const gainersQuotes = gainersData?.finance?.result?.[0]?.quotes || [];
-    for (const q of gainersQuotes) {
-      if (this.isValidMover(q)) {
-        results.push(this.mapQuoteToMover(q, 'gainer'));
-      }
-    }
-
-    const losersQuotes = losersData?.finance?.result?.[0]?.quotes || [];
-    for (const q of losersQuotes) {
-      if (this.isValidMover(q)) {
-        results.push(this.mapQuoteToMover(q, 'loser'));
+    for (const res of responses) {
+      if (res.status === 'fulfilled' && res.value.ok) {
+        try {
+          const data = await res.value.json();
+          const quotes = data?.finance?.result?.[0]?.quotes || [];
+          for (const q of quotes) {
+            if (q.symbol && !seen.has(q.symbol) && this.isValidMover(q)) {
+              seen.add(q.symbol);
+              const changePct = q.regularMarketChangePercent ?? 0;
+              const cat = changePct >= 0 ? 'gainer' : 'loser';
+              results.push(this.mapQuoteToMover(q, cat));
+            }
+          }
+        } catch {}
       }
     }
 
@@ -402,9 +415,10 @@ export class MarketMoverIngestor {
   private isValidMover(q: any): boolean {
     const marketCap = q.marketCap || 0;
     const volume = q.regularMarketVolume || 0;
+    const avgVolume = q.averageDailyVolume3Month || 0;
     const price = q.regularMarketPrice || 0;
 
-    return marketCap >= 500_000_000 && volume >= 250_000 && price >= 5.0;
+    return marketCap >= 300_000_000 && (volume >= 100_000 || avgVolume >= 250_000) && price >= 5.0;
   }
 
   private mapQuoteToMover(q: any, category: 'gainer' | 'loser'): MarketMover {

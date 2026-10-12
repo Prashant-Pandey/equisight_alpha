@@ -394,5 +394,50 @@
     "category": "loser",
     "movePercent": -6.90505,
     "slug": "hpq-loss-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CSCO",
+    "companyName": "Cisco Systems, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-12T19:30:55.965Z",
+    "category": "gainer",
+    "movePercent": 2.51,
+    "slug": "csco-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AAPL",
+    "companyName": "Apple Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-12T19:32:46.480Z",
+    "category": "gainer",
+    "movePercent": 2.23,
+    "slug": "aapl-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MA",
+    "companyName": "Mastercard Incorporated",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T19:34:47.093Z",
+    "category": "gainer",
+    "movePercent": 5.6,
+    "slug": "ma-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "DE",
+    "companyName": "Deere & Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T19:36:31.588Z",
+    "category": "loser",
+    "movePercent": -7.2,
+    "slug": "de-loss-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PG",
+    "companyName": "The Procter & Gamble Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-12T19:38:27.736Z",
+    "category": "gainer",
+    "movePercent": 4.78,
+    "slug": "pg-gain-5-percent-fundamental-analysis"
   }
 ]
