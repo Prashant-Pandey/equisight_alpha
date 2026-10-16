@@ -396,6 +396,36 @@ async function runArchetypeTestSuite() {
 
   console.log('✓ Pass: All quantitative mathematical engines verified.\n');
 
+  // =========================================================================
+  // Test 10: Pipeline:run 20-Stock Execution Guarantee (5 from Each Category)
+  // =========================================================================
+  console.log('--- Test 10: Pipeline:run 20-Stock Execution Guarantee (5 from each category) ---');
+  const pipelineRunMovers = await marketMoverIngestor.getArchetypeMovers('all', 5);
+
+  assert.strictEqual(pipelineRunMovers.length, 20, 'pipeline:run must output exactly 20 stocks after filtering');
+
+  const categoryCounts: Record<string, number> = {};
+  const seenTickers = new Set<string>();
+
+  for (const m of pipelineRunMovers) {
+    assert.ok(m.archetype, `Stock $${m.ticker} must have an assigned archetype category`);
+    categoryCounts[m.archetype] = (categoryCounts[m.archetype] || 0) + 1;
+
+    assert.ok(!seenTickers.has(m.ticker), `Stock $${m.ticker} must be unique (duplicate found across categories)`);
+    seenTickers.add(m.ticker);
+  }
+
+  assert.strictEqual(categoryCounts['moat'], 5, 'Must output exactly 5 stocks from moat category');
+  assert.strictEqual(categoryCounts['pead'], 5, 'Must output exactly 5 stocks from pead category');
+  assert.strictEqual(categoryCounts['contrarian'], 5, 'Must output exactly 5 stocks from contrarian category');
+  assert.strictEqual(categoryCounts['quant'], 5, 'Must output exactly 5 stocks from quant category');
+
+  console.log(`✓ Pass: pipeline:run outputs exactly 20 unique stocks with 5 from each category:`);
+  console.log(`  - Moat (5): ${pipelineRunMovers.filter((m) => m.archetype === 'moat').map((m) => m.ticker).join(', ')}`);
+  console.log(`  - PEAD (5): ${pipelineRunMovers.filter((m) => m.archetype === 'pead').map((m) => m.ticker).join(', ')}`);
+  console.log(`  - Contrarian (5): ${pipelineRunMovers.filter((m) => m.archetype === 'contrarian').map((m) => m.ticker).join(', ')}`);
+  console.log(`  - Quant (5): ${pipelineRunMovers.filter((m) => m.archetype === 'quant').map((m) => m.ticker).join(', ')}\n`);
+
   console.log('════════════════════════════════════════════════════════════════════════');
   console.log('🎉 ALL INSTITUTIONAL EQUITY SELECTION ARCHETYPE TESTS PASSED (100%)');
   console.log('════════════════════════════════════════════════════════════════════════\n');

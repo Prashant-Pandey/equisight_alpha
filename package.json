@@ -8,7 +8,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "pipeline:run": "tsx pipeline/src/orchestrator.ts --run-now",
+    "pipeline:run": "tsx pipeline/src/orchestrator.ts --run-now --archetype=all",
     "pipeline:run:tickers": "tsx pipeline/src/orchestrator.ts --tickers",
     "pipeline:archetype": "tsx pipeline/src/orchestrator.ts --archetype",
     "pipeline:archetype:all": "tsx pipeline/src/orchestrator.ts --archetype=all",

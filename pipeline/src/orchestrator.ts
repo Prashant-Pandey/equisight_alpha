@@ -158,7 +158,7 @@ export class PipelineOrchestrator {
         console.log(`[PipelineOrchestrator] Target movers queue established (Legacy Mode): ${targetMovers.length} equities`);
       } else {
         // Institutional Equity Selection Archetype Mode (§8.1)
-        const archetype = options.archetype || getScheduledDayArchetype();
+        const archetype = options.archetype || (cycleName === 'CLI_RUN_NOW' ? 'all' : getScheduledDayArchetype());
         console.log(`[PipelineOrchestrator] Executing Institutional Equity Selection Archetype (Mode: ${archetype.toUpperCase()})...`);
         try {
           targetMovers = await marketMoverIngestor.getArchetypeMovers(archetype, 5, { ignoreLockout: options.ignoreLockout });
@@ -167,11 +167,11 @@ export class PipelineOrchestrator {
         }
 
         // Multi-tiered resilient fallback:
-        // Tier 1: If scheduled archetype has 0 candidates under lockout, screen across all archetypes
-        if (targetMovers.length === 0) {
-          console.warn(`[PipelineOrchestrator] Archetype "${archetype}" returned 0 candidates under lockout. Searching across all institutional archetypes...`);
+        // Tier 1: If archetype === 'all' and fewer than 20 candidates, or if 0 candidates under lockout
+        if ((archetype === 'all' && targetMovers.length < 20) || targetMovers.length === 0) {
+          console.warn(`[PipelineOrchestrator] Archetype "${archetype}" returned ${targetMovers.length} candidates. Applying resilient fill to guarantee full cohort...`);
           try {
-            targetMovers = await marketMoverIngestor.getArchetypeMovers('all', 5, { ignoreLockout: options.ignoreLockout });
+            targetMovers = await marketMoverIngestor.getArchetypeMovers(archetype, 5, { ignoreLockout: true });
           } catch {}
         }
 
@@ -187,13 +187,22 @@ export class PipelineOrchestrator {
           }
         }
 
-        // Tier 3: If still 0, relax lockout on primary archetype to sustain operational cycle
-        if (targetMovers.length === 0) {
-          console.warn('[PipelineOrchestrator] All options exhausted under strict lockout. Relaxing 12-month lockout window to sustain coverage cycle...');
-          targetMovers = await marketMoverIngestor.getArchetypeMovers(archetype, 5, { ignoreLockout: true });
-        }
-
         console.log(`[PipelineOrchestrator] Target movers queue established: ${targetMovers.length} institutional equities (${targetMovers.map(m => `$${m.ticker}${m.archetype ? ` [${m.archetype.toUpperCase()}]` : ''}`).join(', ')})`);
+
+        if (archetype === 'all' || targetMovers.length === 20) {
+          console.log('\n================================================================================');
+          console.log(`[PipelineOrchestrator] Filtered Selection: ${targetMovers.length} Stocks Selected (5 per Category)`);
+          console.log('================================================================================');
+          const categories: StockArchetype[] = ['moat', 'pead', 'contrarian', 'quant'];
+          for (const cat of categories) {
+            const catMovers = targetMovers.filter((m) => m.archetype === cat);
+            console.log(`Category: [${cat.toUpperCase()}] (${catMovers.length} stocks):`);
+            catMovers.forEach((m, idx) => {
+              console.log(`  ${idx + 1}. $${m.ticker.padEnd(5)} | Price: $${m.price.toFixed(2).padStart(7)} | ${m.name} (Score: ${m.archetypeScore?.toFixed(4) ?? 'N/A'})`);
+            });
+          }
+          console.log('================================================================================\n');
+        }
       }
 
       // 2. Ingest Global Macro Context
@@ -406,9 +415,9 @@ if (hasTickersFlag) {
     process.exit(1);
   });
 } else if (process.argv.includes('--run-now')) {
-  const archetype = parseArchetypeFromArgv(process.argv);
-  console.log(`[CLI] Detected --run-now argument${archetype ? ` (archetype: ${archetype})` : ''}${hasIgnoreLockoutFlag ? ' (--ignore-lockout enabled)' : ''}. Executing immediate cycle...`);
-  orchestrator.runExecutionCycle('CLI_RUN_NOW', { archetype: archetype || undefined, ignoreLockout: hasIgnoreLockoutFlag }).then(() => {
+  const archetype = parseArchetypeFromArgv(process.argv) || 'all';
+  console.log(`[CLI] Detected --run-now argument (archetype: ${archetype})${hasIgnoreLockoutFlag ? ' (--ignore-lockout enabled)' : ''}. Executing immediate cycle...`);
+  orchestrator.runExecutionCycle('CLI_RUN_NOW', { archetype, ignoreLockout: hasIgnoreLockoutFlag }).then(() => {
     console.log('[CLI] Execution cycle finished.');
     process.exit(0);
   }).catch((err) => {

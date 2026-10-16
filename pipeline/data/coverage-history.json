@@ -484,5 +484,140 @@
     "category": "gainer",
     "movePercent": 1.68,
     "slug": "abt-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AVGO",
+    "companyName": "Broadcom Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T14:12:40.600Z",
+    "category": "loser",
+    "movePercent": -6.66,
+    "slug": "avgo-loss-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AAOI",
+    "companyName": "Applied Optoelectronics, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T14:01:14.325Z",
+    "category": "loser",
+    "movePercent": -27.49,
+    "slug": "aaoi-loss-27-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SPGI",
+    "companyName": "S&P Global Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:02:50.017Z",
+    "category": "gainer",
+    "movePercent": 6.14,
+    "slug": "spgi-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TMO",
+    "companyName": "Thermo Fisher Scientific Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:04:31.790Z",
+    "category": "gainer",
+    "movePercent": 5.32,
+    "slug": "tmo-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "META",
+    "companyName": "Meta Platforms, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T14:06:07.284Z",
+    "category": "gainer",
+    "movePercent": 1.58,
+    "slug": "meta-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AMZN",
+    "companyName": "Amazon.com, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T14:07:45.430Z",
+    "category": "loser",
+    "movePercent": -3.42,
+    "slug": "amzn-loss-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AMD",
+    "companyName": "Advanced Micro Devices, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T14:09:22.642Z",
+    "category": "loser",
+    "movePercent": -10.83,
+    "slug": "amd-loss-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NOW",
+    "companyName": "ServiceNow, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:10:57.571Z",
+    "category": "gainer",
+    "movePercent": 5.16,
+    "slug": "now-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CVS",
+    "companyName": "CVS Health Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:14:15.916Z",
+    "category": "gainer",
+    "movePercent": 7.85,
+    "slug": "cvs-gain-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TGT",
+    "companyName": "Target Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:15:51.252Z",
+    "category": "gainer",
+    "movePercent": 3.33,
+    "slug": "tgt-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PYPL",
+    "companyName": "PayPal Holdings, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T14:17:25.319Z",
+    "category": "gainer",
+    "movePercent": 3.98,
+    "slug": "pypl-gain-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "DHR",
+    "companyName": "Danaher Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:18:59.522Z",
+    "category": "gainer",
+    "movePercent": 4.75,
+    "slug": "dhr-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "UPS",
+    "companyName": "United Parcel Service, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:20:38.627Z",
+    "category": "gainer",
+    "movePercent": 5.15,
+    "slug": "ups-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "WM",
+    "companyName": "Waste Management, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:22:15.882Z",
+    "category": "gainer",
+    "movePercent": 8.46,
+    "slug": "wm-gain-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AA",
+    "companyName": "Alcoa Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T14:23:53.454Z",
+    "category": "gainer",
+    "movePercent": 2.24,
+    "slug": "aa-gain-2-percent-fundamental-analysis"
   }
 ]

@@ -63,7 +63,7 @@ Return STRICT JSON ONLY adhering to the catalyst analysis schema.`;
       '-p',
       prompt,
       '--model',
-      CONFIG.TIER1_LLM_MODEL || 'gemini-3.6-flash-low',
+      CONFIG.TIER1_LLM_MODEL || 'gemini-3.8-flash-low',
       '--effort',
       'low',
       '--output-format',
@@ -74,7 +74,7 @@ Return STRICT JSON ONLY adhering to the catalyst analysis schema.`;
     ];
 
     try {
-      console.log(`[SocialSentimentIngestor] Invoking Tier 1 agy (${CONFIG.TIER1_LLM_MODEL || 'gemini-3.6-flash-low'}) [Native Schema Enforced] for $${cleanTicker} catalysts...`);
+      console.log(`[SocialSentimentIngestor] Invoking Tier 1 agy (${CONFIG.TIER1_LLM_MODEL || 'gemini-3.8-flash-low'}) [Native Schema Enforced] for $${cleanTicker} catalysts...`);
       const outputText = await new Promise<string>((resolve, reject) => {
         execFile(
           agyBin,
