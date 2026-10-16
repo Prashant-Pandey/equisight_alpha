@@ -147,28 +147,28 @@
     "ticker": "GOOGL",
     "companyName": "Alphabet Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-11T21:17:12.891Z",
-    "category": "gainer",
-    "movePercent": 2.38,
-    "slug": "googl-gain-2-percent-fundamental-analysis"
+    "coveredAt": "2026-10-16T16:02:56.631Z",
+    "category": "loser",
+    "movePercent": -2.05,
+    "slug": "googl-loss-2-percent-fundamental-analysis"
   },
   {
     "ticker": "MSFT",
     "companyName": "Microsoft Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-11T21:18:53.735Z",
-    "category": "gainer",
-    "movePercent": 3.39,
-    "slug": "msft-gain-3-percent-fundamental-analysis"
+    "coveredAt": "2026-10-16T16:01:10.721Z",
+    "category": "loser",
+    "movePercent": -0.77,
+    "slug": "msft-loss-1-percent-fundamental-analysis"
   },
   {
     "ticker": "V",
     "companyName": "Visa Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-11T21:20:37.917Z",
+    "coveredAt": "2026-10-16T16:04:40.430Z",
     "category": "gainer",
-    "movePercent": 6.87,
-    "slug": "v-gain-7-percent-fundamental-analysis"
+    "movePercent": 4.61,
+    "slug": "v-gain-5-percent-fundamental-analysis"
   },
   {
     "ticker": "JNJ",
@@ -619,5 +619,158 @@
     "category": "gainer",
     "movePercent": 2.24,
     "slug": "aa-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CBRS",
+    "companyName": "Cerebras Systems Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T15:39:47.835Z",
+    "category": "loser",
+    "movePercent": -19.93,
+    "slug": "cbrs-loss-20-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "IREN",
+    "companyName": "IREN Limited",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T15:41:28.035Z",
+    "category": "loser",
+    "movePercent": -20.19,
+    "slug": "iren-loss-20-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "ORCL",
+    "companyName": "Oracle Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T15:43:26.718Z",
+    "category": "loser",
+    "movePercent": -8.08,
+    "slug": "orcl-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LRCX",
+    "companyName": "Lam Research Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T15:45:13.586Z",
+    "category": "loser",
+    "movePercent": -15.92,
+    "slug": "lrcx-loss-16-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TSLA",
+    "companyName": "Tesla, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T15:46:58.021Z",
+    "category": "loser",
+    "movePercent": -5.95,
+    "slug": "tsla-loss-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "VRNS",
+    "companyName": "Varonis Systems, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T15:48:44.878Z",
+    "category": "loser",
+    "movePercent": -2.8,
+    "slug": "vrns-loss-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HST",
+    "companyName": "Host Hotels & Resorts, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T15:50:33.131Z",
+    "category": "gainer",
+    "movePercent": 9.36,
+    "slug": "hst-gain-9-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "OVV",
+    "companyName": "Ovintiv Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T15:52:20.442Z",
+    "category": "gainer",
+    "movePercent": 6.24,
+    "slug": "ovv-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AR",
+    "companyName": "Antero Resources Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T15:53:58.967Z",
+    "category": "gainer",
+    "movePercent": 5.32,
+    "slug": "ar-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CENX",
+    "companyName": "Century Aluminum Company",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T15:55:47.883Z",
+    "category": "loser",
+    "movePercent": -1.44,
+    "slug": "cenx-loss-1-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BDX",
+    "companyName": "Becton, Dickinson and Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T15:57:33.500Z",
+    "category": "gainer",
+    "movePercent": 4.9,
+    "slug": "bdx-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "DIS",
+    "companyName": "The Walt Disney Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T15:59:26.698Z",
+    "category": "gainer",
+    "movePercent": 4.13,
+    "slug": "dis-gain-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PLNT",
+    "companyName": "Planet Fitness, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T16:06:30.873Z",
+    "category": "gainer",
+    "movePercent": 7.77,
+    "slug": "plnt-gain-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "INTC",
+    "companyName": "Intel Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-16T16:08:15.881Z",
+    "category": "loser",
+    "movePercent": -12.57,
+    "slug": "intc-loss-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BSX",
+    "companyName": "Boston Scientific Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T16:09:56.078Z",
+    "category": "gainer",
+    "movePercent": 2.98,
+    "slug": "bsx-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TJX",
+    "companyName": "The TJX Companies, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T16:11:56.635Z",
+    "category": "gainer",
+    "movePercent": 6.15,
+    "slug": "tjx-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "ETN",
+    "companyName": "Eaton Corporation plc",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-16T16:13:39.920Z",
+    "category": "loser",
+    "movePercent": -7.71,
+    "slug": "etn-loss-8-percent-fundamental-analysis"
   }
 ]
