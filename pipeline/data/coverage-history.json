@@ -138,46 +138,46 @@
     "ticker": "HD",
     "companyName": "The Home Depot, Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-11T21:41:45.368Z",
+    "coveredAt": "2026-10-17T04:38:53.213Z",
     "category": "gainer",
-    "movePercent": 2.79,
-    "slug": "hd-gain-3-percent-fundamental-analysis"
+    "movePercent": 6.5,
+    "slug": "hd-gain-7-percent-fundamental-analysis"
   },
   {
     "ticker": "GOOGL",
     "companyName": "Alphabet Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-16T16:02:56.631Z",
+    "coveredAt": "2026-10-17T02:14:43.765Z",
     "category": "loser",
-    "movePercent": -2.05,
-    "slug": "googl-loss-2-percent-fundamental-analysis"
+    "movePercent": -3.15,
+    "slug": "googl-loss-3-percent-fundamental-analysis"
   },
   {
     "ticker": "MSFT",
     "companyName": "Microsoft Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-16T16:01:10.721Z",
+    "coveredAt": "2026-10-17T01:36:57.103Z",
     "category": "loser",
-    "movePercent": -0.77,
+    "movePercent": -1.13,
     "slug": "msft-loss-1-percent-fundamental-analysis"
   },
   {
     "ticker": "V",
     "companyName": "Visa Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-16T16:04:40.430Z",
+    "coveredAt": "2026-10-17T02:30:37.197Z",
     "category": "gainer",
-    "movePercent": 4.61,
-    "slug": "v-gain-5-percent-fundamental-analysis"
+    "movePercent": 4.45,
+    "slug": "v-gain-4-percent-fundamental-analysis"
   },
   {
     "ticker": "JNJ",
     "companyName": "Johnson & Johnson",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-11T21:22:24.656Z",
-    "category": "gainer",
-    "movePercent": 2.11,
-    "slug": "jnj-gain-2-percent-fundamental-analysis"
+    "coveredAt": "2026-10-17T04:03:51.911Z",
+    "category": "loser",
+    "movePercent": -2.25,
+    "slug": "jnj-loss-2-percent-fundamental-analysis"
   },
   {
     "ticker": "LLY",
@@ -772,5 +772,140 @@
     "category": "loser",
     "movePercent": -7.71,
     "slug": "etn-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "GLXY",
+    "companyName": "Galaxy Digital",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-17T01:19:14.156Z",
+    "category": "loser",
+    "movePercent": -20.61,
+    "slug": "glxy-loss-21-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "APLD",
+    "companyName": "Applied Digital Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-17T01:21:04.348Z",
+    "category": "loser",
+    "movePercent": -23.78,
+    "slug": "apld-loss-24-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CMCSA",
+    "companyName": "Comcast Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-17T01:23:00.233Z",
+    "category": "gainer",
+    "movePercent": 6,
+    "slug": "cmcsa-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BAC",
+    "companyName": "Bank of America Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T01:24:53.028Z",
+    "category": "loser",
+    "movePercent": -5.69,
+    "slug": "bac-loss-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LMT",
+    "companyName": "Lockheed Martin Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T01:26:31.953Z",
+    "category": "gainer",
+    "movePercent": 8.34,
+    "slug": "lmt-gain-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CRGY",
+    "companyName": "Crescent Energy Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T01:28:25.306Z",
+    "category": "gainer",
+    "movePercent": 8.77,
+    "slug": "crgy-gain-9-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "RTX",
+    "companyName": "RTX Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T01:30:09.817Z",
+    "category": "gainer",
+    "movePercent": 4.27,
+    "slug": "rtx-gain-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BTI",
+    "companyName": "British American Tobacco p.l.c.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T01:31:50.600Z",
+    "category": "gainer",
+    "movePercent": 8.11,
+    "slug": "bti-gain-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "TALO",
+    "companyName": "Talos Energy Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T01:33:29.666Z",
+    "category": "gainer",
+    "movePercent": 5.77,
+    "slug": "talo-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "OXY",
+    "companyName": "Occidental Petroleum Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T01:35:16.987Z",
+    "category": "gainer",
+    "movePercent": 3.78,
+    "slug": "oxy-gain-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MTDR",
+    "companyName": "Matador Resources Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T05:31:45.544Z",
+    "category": "gainer",
+    "movePercent": 5.97,
+    "slug": "mtdr-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NOG",
+    "companyName": "Northern Oil and Gas, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T08:00:00.926Z",
+    "category": "gainer",
+    "movePercent": 9.69,
+    "slug": "nog-gain-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SM",
+    "companyName": "SM Energy Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T09:19:53.027Z",
+    "category": "gainer",
+    "movePercent": 6.76,
+    "slug": "sm-gain-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MUR",
+    "companyName": "Murphy Oil Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T10:10:35.477Z",
+    "category": "gainer",
+    "movePercent": 7.91,
+    "slug": "mur-gain-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "EQNR",
+    "companyName": "Equinor ASA",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-17T11:19:35.996Z",
+    "category": "gainer",
+    "movePercent": 9.23,
+    "slug": "eqnr-gain-9-percent-fundamental-analysis"
   }
 ]
