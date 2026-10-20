@@ -138,46 +138,46 @@
     "ticker": "HD",
     "companyName": "The Home Depot, Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T20:45:16.981Z",
+    "coveredAt": "2026-10-20T19:33:53.296Z",
     "category": "gainer",
-    "movePercent": 6.5,
+    "movePercent": 7.45,
     "slug": "hd-gain-7-percent-fundamental-analysis"
   },
   {
     "ticker": "GOOGL",
     "companyName": "Alphabet Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-17T18:49:06.748Z",
+    "coveredAt": "2026-10-20T19:28:35.771Z",
     "category": "loser",
-    "movePercent": -3.15,
-    "slug": "googl-loss-3-percent-fundamental-analysis"
+    "movePercent": -4.1,
+    "slug": "googl-loss-4-percent-fundamental-analysis"
   },
   {
     "ticker": "MSFT",
     "companyName": "Microsoft Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-17T18:00:27.132Z",
+    "coveredAt": "2026-10-20T19:26:55.567Z",
     "category": "loser",
-    "movePercent": -1.13,
-    "slug": "msft-loss-1-percent-fundamental-analysis"
+    "movePercent": -2.1,
+    "slug": "msft-loss-2-percent-fundamental-analysis"
   },
   {
     "ticker": "V",
     "companyName": "Visa Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T19:28:12.687Z",
+    "coveredAt": "2026-10-20T19:30:22.794Z",
     "category": "gainer",
-    "movePercent": 4.45,
-    "slug": "v-gain-4-percent-fundamental-analysis"
+    "movePercent": 2.88,
+    "slug": "v-gain-3-percent-fundamental-analysis"
   },
   {
     "ticker": "JNJ",
     "companyName": "Johnson & Johnson",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T20:20:03.003Z",
-    "category": "loser",
-    "movePercent": -2.25,
-    "slug": "jnj-loss-2-percent-fundamental-analysis"
+    "coveredAt": "2026-10-20T19:32:10.240Z",
+    "category": "gainer",
+    "movePercent": 4.15,
+    "slug": "jnj-gain-4-percent-fundamental-analysis"
   },
   {
     "ticker": "LLY",
@@ -1042,5 +1042,140 @@
     "category": "gainer",
     "movePercent": 6.15,
     "slug": "fang-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LGN",
+    "companyName": "Legence Corp.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:09:39.546Z",
+    "category": "loser",
+    "movePercent": -13.66,
+    "slug": "lgn-loss-14-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "FIG",
+    "companyName": "Figma, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-20T19:11:22.448Z",
+    "category": "gainer",
+    "movePercent": 5.56,
+    "slug": "fig-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "STRL",
+    "companyName": "Sterling Infrastructure, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:13:05.651Z",
+    "category": "loser",
+    "movePercent": -17.35,
+    "slug": "strl-loss-17-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "IONQ",
+    "companyName": "IonQ, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-20T19:14:48.618Z",
+    "category": "loser",
+    "movePercent": -9.27,
+    "slug": "ionq-loss-9-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CHTR",
+    "companyName": "Charter Communications, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:16:29.261Z",
+    "category": "gainer",
+    "movePercent": 2.71,
+    "slug": "chtr-gain-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BRZE",
+    "companyName": "Braze, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:18:17.019Z",
+    "category": "gainer",
+    "movePercent": 57.09,
+    "slug": "brze-gain-57-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LION",
+    "companyName": "Lionsgate Studios Corp.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-20T19:20:04.290Z",
+    "category": "gainer",
+    "movePercent": 11.33,
+    "slug": "lion-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "RCUS",
+    "companyName": "Arcus Biosciences, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-20T19:21:43.059Z",
+    "category": "gainer",
+    "movePercent": 7.42,
+    "slug": "rcus-gain-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "QGEN",
+    "companyName": "Qiagen N.V.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-20T19:23:24.114Z",
+    "category": "gainer",
+    "movePercent": 8.75,
+    "slug": "qgen-gain-9-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HAS",
+    "companyName": "Hasbro, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:25:17.426Z",
+    "category": "gainer",
+    "movePercent": 13.46,
+    "slug": "has-gain-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SLS",
+    "companyName": "SELLAS Life Sciences Group, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:35:33.336Z",
+    "category": "loser",
+    "movePercent": -3.75,
+    "slug": "sls-loss-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "KVYO",
+    "companyName": "Klaviyo, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-20T19:37:16.524Z",
+    "category": "gainer",
+    "movePercent": 17.06,
+    "slug": "kvyo-gain-17-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "EQPT",
+    "companyName": "EquipmentShare.com Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:38:59.183Z",
+    "category": "gainer",
+    "movePercent": 1.5,
+    "slug": "eqpt-gain-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "EFX",
+    "companyName": "Equifax Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-20T19:40:38.703Z",
+    "category": "gainer",
+    "movePercent": 18.72,
+    "slug": "efx-gain-19-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HTFL",
+    "companyName": "Heartflow, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-20T19:42:19.889Z",
+    "category": "gainer",
+    "movePercent": 11.25,
+    "slug": "htfl-gain-11-percent-fundamental-analysis"
   }
 ]
