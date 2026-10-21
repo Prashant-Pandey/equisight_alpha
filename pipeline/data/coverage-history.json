@@ -138,46 +138,46 @@
     "ticker": "HD",
     "companyName": "The Home Depot, Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-20T19:33:53.296Z",
+    "coveredAt": "2026-10-21T17:25:08.118Z",
     "category": "gainer",
-    "movePercent": 7.45,
-    "slug": "hd-gain-7-percent-fundamental-analysis"
+    "movePercent": 6.45,
+    "slug": "hd-gain-6-percent-fundamental-analysis"
   },
   {
     "ticker": "GOOGL",
     "companyName": "Alphabet Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-20T19:28:35.771Z",
+    "coveredAt": "2026-10-21T17:19:52.308Z",
     "category": "loser",
-    "movePercent": -4.1,
+    "movePercent": -4.02,
     "slug": "googl-loss-4-percent-fundamental-analysis"
   },
   {
     "ticker": "MSFT",
     "companyName": "Microsoft Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-20T19:26:55.567Z",
+    "coveredAt": "2026-10-21T17:18:09.114Z",
     "category": "loser",
-    "movePercent": -2.1,
-    "slug": "msft-loss-2-percent-fundamental-analysis"
+    "movePercent": -0.16,
+    "slug": "msft-loss-0-percent-fundamental-analysis"
   },
   {
     "ticker": "V",
     "companyName": "Visa Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-20T19:30:22.794Z",
+    "coveredAt": "2026-10-21T17:21:39.703Z",
     "category": "gainer",
-    "movePercent": 2.88,
-    "slug": "v-gain-3-percent-fundamental-analysis"
+    "movePercent": 4.54,
+    "slug": "v-gain-5-percent-fundamental-analysis"
   },
   {
     "ticker": "JNJ",
     "companyName": "Johnson & Johnson",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-20T19:32:10.240Z",
+    "coveredAt": "2026-10-21T17:23:21.983Z",
     "category": "gainer",
-    "movePercent": 4.15,
-    "slug": "jnj-gain-4-percent-fundamental-analysis"
+    "movePercent": 0.91,
+    "slug": "jnj-gain-1-percent-fundamental-analysis"
   },
   {
     "ticker": "LLY",
@@ -1177,5 +1177,140 @@
     "category": "gainer",
     "movePercent": 11.25,
     "slug": "htfl-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MTZ",
+    "companyName": "MasTec, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-21T17:00:49.810Z",
+    "category": "loser",
+    "movePercent": -8.01,
+    "slug": "mtz-loss-8-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "DY",
+    "companyName": "Dycom Industries, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-21T17:02:33.211Z",
+    "category": "loser",
+    "movePercent": -8.78,
+    "slug": "dy-loss-9-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "BKNG",
+    "companyName": "Booking Holdings Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:04:22.045Z",
+    "category": "loser",
+    "movePercent": -1.62,
+    "slug": "bkng-loss-2-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CRWD",
+    "companyName": "CrowdStrike Holdings, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:06:07.687Z",
+    "category": "loser",
+    "movePercent": -3.6,
+    "slug": "crwd-loss-4-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "FICO",
+    "companyName": "Fair Isaac Corporation",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-21T17:07:52.559Z",
+    "category": "gainer",
+    "movePercent": 11.17,
+    "slug": "fico-gain-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SMCI",
+    "companyName": "Super Micro Computer, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:09:38.751Z",
+    "category": "loser",
+    "movePercent": -0.35,
+    "slug": "smci-loss-0-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "UAL",
+    "companyName": "United Airlines Holdings, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:11:35.334Z",
+    "category": "gainer",
+    "movePercent": 5.37,
+    "slug": "ual-gain-5-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "AMKR",
+    "companyName": "Amkor Technology, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:13:13.941Z",
+    "category": "loser",
+    "movePercent": -2.83,
+    "slug": "amkr-loss-3-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NTNX",
+    "companyName": "Nutanix, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:14:52.325Z",
+    "category": "gainer",
+    "movePercent": 0.3,
+    "slug": "ntnx-gain-0-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "PLTR",
+    "companyName": "Palantir Technologies Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:16:30.449Z",
+    "category": "loser",
+    "movePercent": -0.47,
+    "slug": "pltr-loss-0-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "ASST",
+    "companyName": "Strive, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:26:47.953Z",
+    "category": "gainer",
+    "movePercent": 23.14,
+    "slug": "asst-gain-23-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SEI",
+    "companyName": "Solaris Energy Infrastructure, Inc.",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-21T17:28:28.288Z",
+    "category": "gainer",
+    "movePercent": 0.81,
+    "slug": "sei-gain-1-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SPCX",
+    "companyName": "Space Exploration Technologies Corp.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:30:07.462Z",
+    "category": "gainer",
+    "movePercent": 6.89,
+    "slug": "spcx-gain-7-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MANE",
+    "companyName": "Veradermics, Incorporated",
+    "exchange": "NYSE",
+    "coveredAt": "2026-10-21T17:31:54.564Z",
+    "category": "gainer",
+    "movePercent": 22.51,
+    "slug": "mane-gain-23-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "INOD",
+    "companyName": "Innodata Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-10-21T17:33:36.513Z",
+    "category": "gainer",
+    "movePercent": 13.26,
+    "slug": "inod-gain-13-percent-fundamental-analysis"
   }
 ]
