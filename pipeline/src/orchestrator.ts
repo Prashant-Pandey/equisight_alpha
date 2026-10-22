@@ -128,11 +128,11 @@ export class PipelineOrchestrator {
       let targetMovers: MarketMover[] = [];
 
       if (options.specificTickers && options.specificTickers.length > 0) {
-        console.log(`[PipelineOrchestrator] Targeted ticker execution mode: [${options.specificTickers.join(', ')}]`);
+        console.log(`[PipelineOrchestrator] Targeted ticker execution mode: [${options.specificTickers.join(', ')}]${options.ignoreLockout ? ' (trailing 12-month lockout bypassed)' : ''}`);
         for (const rawTicker of options.specificTickers) {
           try {
             const mover = await marketMoverIngestor.getMoverForTicker(rawTicker);
-            if (!historyTracker.isEligible(mover.ticker)) {
+            if (!options.ignoreLockout && !historyTracker.isEligible(mover.ticker)) {
               console.log(`[PipelineOrchestrator] Notice: $${mover.ticker} was covered within trailing 12-month lockout. Processing explicitly requested ticker.`);
             }
             targetMovers.push(mover);
@@ -307,7 +307,7 @@ export function parseTickersFromArgv(argv: string[]): string[] {
   const rawArgs = tickerFlagIdx !== -1 ? argv.slice(tickerFlagIdx + 1) : [];
 
   for (const raw of rawArgs) {
-    if (raw.startsWith('--')) break; // Stop if another option flag is reached
+    if (raw.startsWith('--')) continue; // Skip other option flags like --ignore-lockout without breaking ticker collection
     const cleaned = raw.replace(/[\[\]"',]/g, ' ').split(/\s+/);
     for (const token of cleaned) {
       const sym = token.trim().toUpperCase();
