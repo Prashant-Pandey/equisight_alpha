@@ -299,7 +299,7 @@ for (let i = 0; i <= tickSteps; i++) {
                 <span class="font-bold text-white group-hover:text-emerald-300 transition-colors">
                   {m.name}
                 </span>
-                <span class="text-[10px] text-slate-500 hidden sm:inline">
+                <span class="text-[10px] text-slate-400 hidden sm:inline">
                   &bull; {m.methodology.length > 45 ? `${m.methodology.slice(0, 45)}...` : m.methodology}
                 </span>
               </div>
@@ -321,7 +321,7 @@ for (let i = 0; i <= tickSteps; i++) {
               <!-- Grid lines behind track -->
               <div class="absolute inset-0 flex justify-between pointer-events-none opacity-20">
                 {ticks.map(() => (
-                  <div class="w-px h-full bg-slate-600"></div>
+                  <div class="w-px h-full bg-slate-400"></div>
                 ))}
               </div>
 

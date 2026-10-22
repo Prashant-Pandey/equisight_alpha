@@ -128,7 +128,7 @@ const competitorBenchmarking = report.competitorBenchmarking || null;
       <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase">Total Debt Obligations</div>
         <div class="text-base sm:text-lg font-bold font-mono text-white mt-1">{formatCurrency(totalDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Funded Balance Sheet Debt</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Funded Balance Sheet Debt</div>
       </div>
 
       <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
@@ -136,19 +136,19 @@ const competitorBenchmarking = report.competitorBenchmarking || null;
         <div class="text-base sm:text-lg font-bold font-mono text-amber-400 mt-1">
           {debtToEquity !== null && debtToEquity !== undefined ? `${debtToEquity.toFixed(2)}x` : 'N/A'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5">{debtLeverageLabel}</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">{debtLeverageLabel}</div>
       </div>
 
       <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase">Short-Term Debt (Due &lt;1Y)</div>
         <div class="text-base sm:text-lg font-bold font-mono text-white mt-1">{formatCurrency(shortTermDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Immediate 12-Month Liquidity Drain</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Immediate 12-Month Liquidity Drain</div>
       </div>
 
       <div class="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase">Long-Term Debt Notes</div>
         <div class="text-base sm:text-lg font-bold font-mono text-white mt-1">{formatCurrency(longTermDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5">Multi-Year Notes & Bank Credit</div>
+        <div class="text-[10px] text-slate-400 mt-0.5">Multi-Year Notes & Bank Credit</div>
       </div>
     </div>
 
@@ -329,7 +329,7 @@ const competitorBenchmarking = report.competitorBenchmarking || null;
       <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase">Operating Cash Flow</div>
         <div class="text-lg font-bold font-mono text-white mt-1">{formatCurrency(operatingCashFlow)}</div>
-        <div class="text-[10px] text-slate-500 mt-1">Cash Generated from Core Business</div>
+        <div class="text-[10px] text-slate-400 mt-1">Cash Generated from Core Business</div>
       </div>
 
       <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800">
@@ -337,7 +337,7 @@ const competitorBenchmarking = report.competitorBenchmarking || null;
         <div class={`text-lg font-bold font-mono mt-1 ${freeCashFlow !== null && freeCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
           {formatCurrency(freeCashFlow)}
         </div>
-        <div class="text-[10px] text-slate-500 mt-1">Operating Cash Flow minus Capital Expenditures</div>
+        <div class="text-[10px] text-slate-400 mt-1">Operating Cash Flow minus Capital Expenditures</div>
       </div>
 
       <div class="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col justify-between">

@@ -42,9 +42,9 @@ const pageDescription = `Historical equity research reports, valuation multiples
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumb Bar -->
     <nav class="flex items-center gap-2 text-xs text-[#8e8e8e] mb-4 font-mono">
-      <a href={path('/')} class="hover:text-[#0055ff] transition-none">RADAR</a>
+      <a href={path('/')} class="hover:text-[#38bdf8] transition-none">RADAR</a>
       <span>&rsaquo;</span>
-      <a href={path('/reports')} class="hover:text-[#0055ff] transition-none">DATABASE</a>
+      <a href={path('/reports')} class="hover:text-[#38bdf8] transition-none">DATABASE</a>
       <span>&rsaquo;</span>
       <span class="text-white">${ticker} ARCHIVE</span>
     </nav>
@@ -52,7 +52,7 @@ const pageDescription = `Historical equity research reports, valuation multiples
     <!-- Header -->
     <div class="mb-6 pb-4 border-b border-[#2e2e2e] font-mono">
       <div class="flex items-center gap-3 mb-2">
-        <span class="font-black text-xl text-white bg-[#181818] px-3 py-1 border border-[#0055ff]">
+        <span class="font-black text-xl text-white bg-[#181818] px-3 py-1 border border-[#38bdf8]">
           ${ticker}
         </span>
         <div>
@@ -91,13 +91,13 @@ const pageDescription = `Historical equity research reports, valuation multiples
                 <span>&bull;</span>
                 <span>CAP: <strong class="text-white">${(report.data.marketCap / 1e9).toFixed(1)}B</strong></span>
               </div>
-              <h3 class="text-sm font-bold text-white hover:text-[#0055ff] transition-none truncate">
+              <h3 class="text-sm font-bold text-white hover:text-[#38bdf8] transition-none truncate">
                 <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
               </h3>
             </div>
             <a
               href={path(`/reports/${report.slug}`)}
-              class="shrink-0 px-3 py-1 bg-[#121212] hover:bg-[#0055ff] hover:text-white text-[#0055ff] border border-[#2e2e2e] font-bold text-xs transition-none tap-target"
+              class="shrink-0 px-3 py-1 bg-[#121212] hover:bg-[#38bdf8] hover:text-slate-950 text-[#38bdf8] border border-[#4b5563] font-bold text-xs transition-none tap-target"
             >
               [ VIEW REPORT ]
             </a>

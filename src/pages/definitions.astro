@@ -21,7 +21,7 @@ const categories = Object.keys(definitionsByCategory);
     <!-- Header Bar -->
     <div class="mb-6 pb-4 border-b border-[#2e2e2e] font-mono">
       <div class="flex flex-wrap items-center justify-between gap-4 mb-2">
-        <div class="inline-block px-2 py-0.5 text-xs font-bold bg-[#181818] border border-[#0055ff] text-[#0055ff] uppercase">
+        <div class="inline-block px-2 py-0.5 text-xs font-bold bg-[#181818] border border-[#38bdf8] text-[#38bdf8] uppercase">
           HEURISTICS & ALGORITHMIC SPECIFICATION REGISTRY
         </div>
         <div class="text-xs text-[#8e8e8e]">
@@ -41,7 +41,7 @@ const categories = Object.keys(definitionsByCategory);
         {categories.map((cat, idx) => (
           <a
             href={`#cat-${idx}`}
-            class="text-xs px-2.5 py-1 bg-[#181818] border border-[#2e2e2e] text-[#e5e5e5] hover:border-[#0055ff] hover:text-[#0055ff] transition-none"
+            class="text-xs px-2.5 py-1 bg-[#181818] border border-[#2e2e2e] text-[#e5e5e5] hover:border-[#38bdf8] hover:text-[#38bdf8] transition-none"
           >
             {cat}
           </a>
@@ -51,7 +51,7 @@ const categories = Object.keys(definitionsByCategory);
 
     <!-- Reviewer Notice Box -->
     <div class="mb-8 p-4 bg-[#181818] border border-[#2e2e2e] flex items-start gap-3 font-mono text-xs">
-      <div class="px-2 py-1 bg-[#121212] border border-[#2e2e2e] text-[#0055ff] font-bold shrink-0">
+      <div class="px-2 py-1 bg-[#121212] border border-[#2e2e2e] text-[#38bdf8] font-bold shrink-0">
         AUDIT
       </div>
       <div class="text-[#8e8e8e] leading-relaxed space-y-1">
@@ -69,7 +69,7 @@ const categories = Object.keys(definitionsByCategory);
         return (
           <section id={`cat-${catIdx}`} class="scroll-mt-20 font-mono">
             <div class="flex items-center gap-2 mb-4 pb-2 border-b border-[#2e2e2e]">
-              <span class="w-2 h-2 bg-[#0055ff]"></span>
+              <span class="w-2 h-2 bg-[#38bdf8]"></span>
               <h2 class="text-base font-bold text-white uppercase tracking-tight">
                 {category}
               </h2>
@@ -84,7 +84,7 @@ const categories = Object.keys(definitionsByCategory);
                   <!-- Definition Card Header -->
                   <div class="p-4 border-b border-[#2e2e2e] bg-[#141414] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <div class="text-[10px] text-[#0055ff] uppercase tracking-wider mb-0.5 font-bold">
+                      <div class="text-[10px] text-[#38bdf8] uppercase tracking-wider mb-0.5 font-bold">
                         RULE ID: {def.id}
                       </div>
                       <h3 class="text-sm sm:text-base font-bold text-white uppercase">
@@ -167,7 +167,7 @@ const categories = Object.keys(definitionsByCategory);
 
     <!-- Bottom Back to Top / Links -->
     <div class="mt-8 pt-4 border-t border-[#2e2e2e] flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-      <a href="#cat-0" class="text-[#0055ff] hover:underline flex items-center gap-1">
+      <a href="#cat-0" class="text-[#38bdf8] hover:underline flex items-center gap-1">
         [&uarr; TOP OF REGISTRY]
       </a>
       <div class="flex gap-4 text-[#8e8e8e]">

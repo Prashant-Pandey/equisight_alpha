@@ -295,7 +295,7 @@ if (hasNegEPS && !hasPosEPS) {
         <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {formatCurrency(marketCap)}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Consolidated Equity</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Consolidated Equity</div>
       </div>
 
       <!-- Trailing P/E -->
@@ -304,7 +304,7 @@ if (hasNegEPS && !hasPosEPS) {
         <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {peRatio ? `${peRatio.toFixed(1)}x` : 'N/A (Deficit)'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Price / TTM EPS</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Price / TTM EPS</div>
       </div>
 
       <!-- Forward P/E -->
@@ -313,7 +313,7 @@ if (hasNegEPS && !hasPosEPS) {
         <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {forwardPE ? `${forwardPE.toFixed(1)}x` : 'N/A'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">NTM Consensus</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">NTM Consensus</div>
       </div>
 
       <!-- Return on Equity (ROE) -->
@@ -322,7 +322,7 @@ if (hasNegEPS && !hasPosEPS) {
         <div class="text-base sm:text-lg font-bold font-mono text-emerald-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {returnOnEquity !== null && returnOnEquity !== undefined ? `${returnOnEquity.toFixed(1)}%` : 'N/A'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Net Income / Equity</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Net Income / Equity</div>
       </div>
 
       <!-- Earnings Per Share (TTM) -->
@@ -331,7 +331,7 @@ if (hasNegEPS && !hasPosEPS) {
         <div class="text-base sm:text-lg font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">
           {currentTTM !== null && currentTTM !== undefined ? formatEPS(currentTTM) : 'N/A'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Trailing 12-Month</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Trailing 12-Month</div>
       </div>
 
       <!-- Volatility Index / Beta -->
@@ -343,7 +343,7 @@ if (hasNegEPS && !hasPosEPS) {
             {volRating.replace(' Volatility', '')}
           </span>
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Relative to S&P 500</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Relative to S&P 500</div>
       </div>
     </div>
   </div>
@@ -394,7 +394,7 @@ if (hasNegEPS && !hasPosEPS) {
           </svg>
         </div>
       </div>
-      <div class="text-[10px] text-slate-500 mt-2 flex justify-between">
+      <div class="text-[10px] text-slate-400 mt-2 flex justify-between">
         <span>Current: <strong class="text-slate-300 font-mono">{currentPB !== null ? `${currentPB.toFixed(2)}x` : 'N/A'}</strong></span>
         <span>Industry: <strong class="text-slate-300 font-mono">{industryAvgPB !== null ? `${industryAvgPB.toFixed(2)}x` : 'N/A'}</strong></span>
         <span>5Y Avg: <strong class="text-slate-300 font-mono">{hist5YAvgPB !== null ? `${hist5YAvgPB.toFixed(2)}x` : 'Not Reported in SEC Summaries'}</strong></span>
@@ -459,7 +459,7 @@ if (hasNegEPS && !hasPosEPS) {
           </svg>
         </div>
       </div>
-      <div class="text-[10px] text-slate-500 mt-2 flex justify-between">
+      <div class="text-[10px] text-slate-400 mt-2 flex justify-between">
         <span>Current: <strong class="text-slate-300 font-mono">{isPEProfitable && currentPE ? `${currentPE.toFixed(1)}x` : 'N/A'}</strong></span>
         <span>Industry: <strong class="text-slate-300 font-mono">{industryAvgPE !== null ? `${industryAvgPE.toFixed(1)}x` : 'N/A'}</strong></span>
         <span>5Y Avg: <strong class="text-slate-300 font-mono">{hist5YAvgPE !== null ? `${hist5YAvgPE.toFixed(1)}x` : 'Not Reported in SEC Summaries'}</strong></span>
@@ -617,25 +617,25 @@ if (hasNegEPS && !hasPosEPS) {
       <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Total Debt</div>
         <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(totalDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Funded Obligations</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Funded Obligations</div>
       </div>
 
       <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Debt-to-Equity (D/E)</div>
         <div class="text-base font-bold font-mono text-amber-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{debtToEquity !== null && debtToEquity !== undefined ? `${debtToEquity.toFixed(2)}x` : 'N/A'}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{debtLeverageLabel}</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{debtLeverageLabel}</div>
       </div>
 
       <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Short-Term Debt</div>
         <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(shortTermDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Due Within 12 Months</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Due Within 12 Months</div>
       </div>
 
       <div class="flex-1 min-w-[160px] max-w-full p-3 rounded-lg bg-slate-900/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Long-Term Debt</div>
         <div class="text-base font-bold font-mono text-white mt-0.5 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(longTermDebt)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Multi-Year Notes & Bonds</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Multi-Year Notes & Bonds</div>
       </div>
     </div>
 
@@ -669,7 +669,7 @@ if (hasNegEPS && !hasPosEPS) {
       <div class="flex-1 min-w-[200px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
         <div class="text-[10px] font-mono text-slate-400 uppercase whitespace-nowrap max-sm:whitespace-normal">Operating Cash Flow</div>
         <div class="text-lg font-bold font-mono text-white mt-1 whitespace-nowrap max-sm:whitespace-normal">{formatCurrency(operatingCashFlow)}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Core Operations Generation</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Core Operations Generation</div>
       </div>
 
       <div class="flex-1 min-w-[200px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800">
@@ -677,7 +677,7 @@ if (hasNegEPS && !hasPosEPS) {
         <div class={`text-lg font-bold font-mono mt-1 whitespace-nowrap max-sm:whitespace-normal ${freeCashFlow >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
           {formatCurrency(freeCashFlow)}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Operating CF minus CapEx</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 whitespace-nowrap max-sm:whitespace-normal">Operating CF minus CapEx</div>
       </div>
 
       <div class="flex-1 min-w-[220px] max-w-full p-3.5 rounded-lg bg-slate-900/70 border border-slate-800 flex flex-col justify-between min-w-0 relative group/cf">
@@ -725,7 +725,7 @@ if (hasNegEPS && !hasPosEPS) {
           {trackRecord}
         </p>
       </div>
-      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
+      <div class="text-[10px] text-slate-400 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
         Executive Tenure & Governance Standard
       </div>
     </div>
@@ -756,29 +756,29 @@ if (hasNegEPS && !hasPosEPS) {
             <div class="grid grid-cols-2 gap-1.5 text-[11px] font-mono">
               <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
                 <span class="text-slate-400 text-[10px]">Intangibles:</span>
-                <span class={`font-bold ${moatSources.intangibleAssets?.rating === 'Wide' ? 'text-emerald-400' : moatSources.intangibleAssets?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.intangibleAssets?.rating || 'None'}</span>
+                <span class={`font-bold ${moatSources.intangibleAssets?.rating === 'Wide' ? 'text-emerald-400' : moatSources.intangibleAssets?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-400'}`}>{moatSources.intangibleAssets?.rating || 'None'}</span>
               </div>
               <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
                 <span class="text-slate-400 text-[10px]">Switching Costs:</span>
-                <span class={`font-bold ${moatSources.switchingCosts?.rating === 'Wide' ? 'text-emerald-400' : moatSources.switchingCosts?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.switchingCosts?.rating || 'None'}</span>
+                <span class={`font-bold ${moatSources.switchingCosts?.rating === 'Wide' ? 'text-emerald-400' : moatSources.switchingCosts?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-400'}`}>{moatSources.switchingCosts?.rating || 'None'}</span>
               </div>
               <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
                 <span class="text-slate-400 text-[10px]">Network Effect:</span>
-                <span class={`font-bold ${moatSources.networkEffect?.rating === 'Wide' ? 'text-emerald-400' : moatSources.networkEffect?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.networkEffect?.rating || 'None'}</span>
+                <span class={`font-bold ${moatSources.networkEffect?.rating === 'Wide' ? 'text-emerald-400' : moatSources.networkEffect?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-400'}`}>{moatSources.networkEffect?.rating || 'None'}</span>
               </div>
               <div class="flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
                 <span class="text-slate-400 text-[10px]">Cost Advantage:</span>
-                <span class={`font-bold ${moatSources.costAdvantage?.rating === 'Wide' ? 'text-emerald-400' : moatSources.costAdvantage?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.costAdvantage?.rating || 'None'}</span>
+                <span class={`font-bold ${moatSources.costAdvantage?.rating === 'Wide' ? 'text-emerald-400' : moatSources.costAdvantage?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-400'}`}>{moatSources.costAdvantage?.rating || 'None'}</span>
               </div>
               <div class="col-span-2 flex items-center justify-between px-2 py-1 rounded bg-slate-900/80 border border-slate-800">
                 <span class="text-slate-400 text-[10px]">Efficient Scale:</span>
-                <span class={`font-bold ${moatSources.efficientScale?.rating === 'Wide' ? 'text-emerald-400' : moatSources.efficientScale?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-500'}`}>{moatSources.efficientScale?.rating || 'None'}</span>
+                <span class={`font-bold ${moatSources.efficientScale?.rating === 'Wide' ? 'text-emerald-400' : moatSources.efficientScale?.rating === 'Narrow' ? 'text-sky-400' : 'text-slate-400'}`}>{moatSources.efficientScale?.rating || 'None'}</span>
               </div>
             </div>
           </div>
         )}
       </div>
-      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
+      <div class="text-[10px] text-slate-400 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
         Economic Barrier to Entry Rating
       </div>
     </div>
@@ -802,7 +802,7 @@ if (hasNegEPS && !hasPosEPS) {
           ))}
         </div>
       </div>
-      <div class="text-[10px] text-slate-500 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
+      <div class="text-[10px] text-slate-400 font-mono mt-3 pt-2 border-t border-slate-800/80 whitespace-nowrap max-sm:whitespace-normal">
         Synthesized Balance Sheet & Operating Risk
       </div>
     </div>
@@ -899,19 +899,19 @@ if (hasNegEPS && !hasPosEPS) {
       <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
         <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Volume Anomaly</div>
         <div class="text-base font-bold font-mono text-white mt-0.5 leading-tight">{volumeAnomalyRatio !== null && volumeAnomalyRatio !== undefined ? `${volumeAnomalyRatio.toFixed(2)}x normal` : 'N/A'}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">{volumeStatusLabel}</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 leading-tight">{volumeStatusLabel}</div>
       </div>
 
       <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
         <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Major Price Driver</div>
         <div class="text-xs font-bold text-slate-200 mt-1 line-clamp-2 leading-tight">{majorPriceDriver}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">Primary Order Catalyst</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 leading-tight">Primary Order Catalyst</div>
       </div>
 
       <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
         <div class="text-[10px] font-mono text-slate-400 uppercase leading-tight">Sentiment Score</div>
         <div class="text-base font-bold font-mono text-emerald-400 mt-0.5 leading-tight">{sentimentScore !== null && sentimentScore !== undefined ? `${(sentimentScore * 100).toFixed(0)} / 100` : 'N/A'}</div>
-        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">{sentimentLabel}</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 leading-tight">{sentimentLabel}</div>
       </div>
 
       <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
@@ -919,7 +919,7 @@ if (hasNegEPS && !hasPosEPS) {
         <div class={`text-base font-bold font-mono mt-0.5 leading-tight ${isInflated ? 'text-rose-400' : 'text-emerald-400'}`}>
           {isInflated ? 'High Alert' : 'Minimal (Under 5%)'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight">Wash Trading / Bot Audit</div>
+        <div class="text-[10px] text-slate-400 mt-0.5 leading-tight">Wash Trading / Bot Audit</div>
       </div>
 
       <div class="flex-1 min-w-[140px] sm:min-w-[150px] max-w-full p-3 rounded-lg bg-slate-900/60 border border-slate-800/80">
@@ -930,7 +930,7 @@ if (hasNegEPS && !hasPosEPS) {
         }`}>
           {optionGamma?.riskLevel ? `${optionGamma.riskLevel} Risk` : 'Balanced'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight break-words" title={optionGamma?.imbalanceRatio !== null && optionGamma?.imbalanceRatio !== undefined ? `${optionGamma.imbalanceRatio.toFixed(2)}x Call/Put Ratio` : (optionGamma?.netGammaExposure || 'Neutral Gamma')}>
+        <div class="text-[10px] text-slate-400 mt-0.5 leading-tight break-words" title={optionGamma?.imbalanceRatio !== null && optionGamma?.imbalanceRatio !== undefined ? `${optionGamma.imbalanceRatio.toFixed(2)}x Call/Put Ratio` : (optionGamma?.netGammaExposure || 'Neutral Gamma')}>
           {optionGamma?.imbalanceRatio !== null && optionGamma?.imbalanceRatio !== undefined ? `${optionGamma.imbalanceRatio.toFixed(2)}x Call/Put Ratio` : (optionGamma?.netGammaExposure || 'Neutral Gamma')}
         </div>
       </div>
@@ -943,7 +943,7 @@ if (hasNegEPS && !hasPosEPS) {
         }`}>
           {freeFloat?.concentrationLevel ? `${freeFloat.concentrationLevel} Tier` : 'Normal Float'}
         </div>
-        <div class="text-[10px] text-slate-500 mt-0.5 leading-tight break-words" title={freeFloat?.freeFloatPercent !== null && freeFloat?.freeFloatPercent !== undefined ? `${freeFloat.freeFloatPercent.toFixed(1)}% Float (${freeFloat.floatTurnoverRatio !== null ? `${(freeFloat.floatTurnoverRatio * 100).toFixed(1)}%` : '0%'} T/O)` : 'Standard Liquid Float'}>
+        <div class="text-[10px] text-slate-400 mt-0.5 leading-tight break-words" title={freeFloat?.freeFloatPercent !== null && freeFloat?.freeFloatPercent !== undefined ? `${freeFloat.freeFloatPercent.toFixed(1)}% Float (${freeFloat.floatTurnoverRatio !== null ? `${(freeFloat.floatTurnoverRatio * 100).toFixed(1)}%` : '0%'} T/O)` : 'Standard Liquid Float'}>
           {freeFloat?.freeFloatPercent !== null && freeFloat?.freeFloatPercent !== undefined ? `${freeFloat.freeFloatPercent.toFixed(1)}% Float (${freeFloat.floatTurnoverRatio !== null ? `${(freeFloat.floatTurnoverRatio * 100).toFixed(1)}%` : '0%'} T/O)` : 'Standard Liquid Float'}
         </div>
       </div>
@@ -1028,7 +1028,7 @@ if (hasNegEPS && !hasPosEPS) {
     <div class="flex items-center gap-2">
       <span>Market Session Close:</span>
       <span class="text-slate-100 font-bold font-mono text-sm">{currentPrice ? `$${currentPrice.toFixed(2)} ${currency}` : 'N/A'}</span>
-      <span class="text-slate-600">&bull;</span>
+      <span class="text-slate-400">&bull;</span>
       <span>Annualized Div Yield: <strong class="text-slate-200 font-mono">{dividendYield !== null && dividendYield !== undefined && dividendYield > 0 ? `${dividendYield.toFixed(2)}%` : '0.00%'}</strong></span>
     </div>
     <div class="text-[11px] font-mono text-slate-400">

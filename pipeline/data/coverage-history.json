@@ -21,10 +21,10 @@
     "ticker": "CCI",
     "companyName": "Crown Castle Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-11T11:58:56.520Z",
-    "category": "gainer",
-    "movePercent": 15.6046,
-    "slug": "cci-gain-16-percent-fundamental-analysis"
+    "coveredAt": "2026-10-22T15:35:22.909Z",
+    "category": "loser",
+    "movePercent": -0.9,
+    "slug": "cci-loss-1-percent-fundamental-analysis"
   },
   {
     "ticker": "MRNA",
@@ -91,12 +91,12 @@
   },
   {
     "ticker": "CCM",
-    "companyName": "Concord Medical Services Holdin",
+    "companyName": "Concord Medical Services Holdings Limited",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-11T12:13:34.502Z",
+    "coveredAt": "2026-10-22T15:37:06.720Z",
     "category": "gainer",
-    "movePercent": 25.1613,
-    "slug": "ccm-gain-25-percent-fundamental-analysis"
+    "movePercent": 4.85,
+    "slug": "ccm-gain-5-percent-fundamental-analysis"
   },
   {
     "ticker": "MOGU",
@@ -624,10 +624,10 @@
     "ticker": "CBRS",
     "companyName": "Cerebras Systems Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-16T15:39:47.835Z",
+    "coveredAt": "2026-10-22T15:33:42.594Z",
     "category": "loser",
-    "movePercent": -19.93,
-    "slug": "cbrs-loss-20-percent-fundamental-analysis"
+    "movePercent": -23.21,
+    "slug": "cbrs-loss-23-percent-fundamental-analysis"
   },
   {
     "ticker": "IREN",
@@ -705,10 +705,10 @@
     "ticker": "CENX",
     "companyName": "Century Aluminum Company",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-16T15:55:47.883Z",
+    "coveredAt": "2026-10-22T15:38:46.519Z",
     "category": "loser",
-    "movePercent": -1.44,
-    "slug": "cenx-loss-1-percent-fundamental-analysis"
+    "movePercent": -5.67,
+    "slug": "cenx-loss-6-percent-fundamental-analysis"
   },
   {
     "ticker": "BDX",

@@ -32,9 +32,9 @@ function getVerdictBadgeClass(verdict?: string | null): string {
 
 function getMoatBadgeClass(rating?: string | null): string {
   const r = (rating || '').toLowerCase();
-  if (r.includes('wide')) return 'text-[#0055ff] border-[#0055ff]';
+  if (r.includes('wide')) return 'text-[#38bdf8] border-[#38bdf8]';
   if (r.includes('narrow')) return 'text-[#e5e5e5] border-[#444444]';
-  return 'text-[#666666] border-[#2e2e2e]';
+  return 'text-[#8e8e8e] border-[#4b5563]';
 }
 ---
 
@@ -42,7 +42,7 @@ function getMoatBadgeClass(rating?: string | null): string {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header -->
     <div class="mb-6 pb-4 border-b border-[#2e2e2e]">
-      <div class="inline-block px-2 py-0.5 text-xs font-mono font-bold bg-[#181818] border border-[#0055ff] text-[#0055ff] mb-2 uppercase">
+      <div class="inline-block px-2 py-0.5 text-xs font-mono font-bold bg-[#181818] border border-[#38bdf8] text-[#38bdf8] mb-2 uppercase">
         ARCHIVE REPOSITORY // FULL REGISTRY
       </div>
       <h1 class="text-2xl sm:text-3xl font-mono font-black text-white tracking-tight uppercase">
@@ -59,13 +59,13 @@ function getMoatBadgeClass(rating?: string | null): string {
       <div class="space-y-2">
         <div class="text-[10px] font-mono text-[#8e8e8e] uppercase tracking-wider flex items-center justify-between">
           <span>INSTITUTIONAL STRATEGY PRESETS (1-CLICK QUICK SCREENS)</span>
-          <span id="active-preset-label" class="text-[#0055ff] font-bold">ALL SECURITIES</span>
+          <span id="active-preset-label" class="text-[#38bdf8] font-bold">ALL SECURITIES</span>
         </div>
         <div class="flex flex-wrap gap-1.5" id="preset-buttons-container">
           <button
             type="button"
             data-preset="all"
-            class="preset-btn px-2.5 py-1 text-xs font-mono font-bold border transition-none cursor-pointer bg-[#0055ff] text-white border-[#0055ff]"
+            class="preset-btn px-2.5 py-1 text-xs font-mono font-bold border transition-none cursor-pointer bg-[#38bdf8] text-slate-950 border-[#38bdf8]"
           >
             [ ALL SECURITIES ]
           </button>
@@ -79,7 +79,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           <button
             type="button"
             data-preset="wide-moat"
-            class="preset-btn px-2.5 py-1 text-xs font-mono font-bold border transition-none cursor-pointer bg-[#121212] text-[#0055ff] border-[#2e2e2e] hover:border-[#0055ff]"
+            class="preset-btn px-2.5 py-1 text-xs font-mono font-bold border transition-none cursor-pointer bg-[#121212] text-[#38bdf8] border-[#4b5563] hover:border-[#38bdf8]"
           >
             🛡️ WIDE MOAT COMPOUNDERS
           </button>
@@ -122,7 +122,7 @@ function getMoatBadgeClass(rating?: string | null): string {
             type="text"
             id="filter-search"
             placeholder="FILTER TICKER (e.g. AAPL, NVDA, ADBE) OR COMPANY NAME..."
-            class="w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] text-white placeholder-[#666666] text-xs font-mono focus:outline-none focus:border-[#0055ff] transition-none tap-target"
+            class="w-full px-3 py-2 bg-[#121212] border border-[#4b5563] text-white placeholder-slate-400 text-xs font-mono focus:outline-none focus:border-[#38bdf8] transition-none tap-target"
           />
         </div>
 
@@ -131,7 +131,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           <div class="relative min-w-[220px]">
             <select
               id="filter-sort"
-              class="w-full px-3 py-2 bg-[#121212] border border-[#2e2e2e] text-white text-xs font-mono focus:outline-none focus:border-[#0055ff] cursor-pointer appearance-none pr-8 tap-target"
+              class="w-full px-3 py-2 bg-[#121212] border border-[#4b5563] text-white text-xs font-mono focus:outline-none focus:border-[#38bdf8] cursor-pointer appearance-none pr-8 tap-target"
             >
               <option value="newest">SORT: NEWEST COVERAGE</option>
               <option value="oldest">SORT: OLDEST COVERAGE</option>
@@ -163,7 +163,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           </label>
           <select
             id="filter-stance"
-            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#4b5563] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#38bdf8]"
           >
             <option value="all">ALL VALUATIONS</option>
             <option value="5star">5-STAR BARGAIN (DEEP DISCOUNT)</option>
@@ -182,7 +182,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           </label>
           <select
             id="filter-moat"
-            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#4b5563] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#38bdf8]"
           >
             <option value="all">ALL MOATS &amp; QUALITY</option>
             <option value="wide">WIDE MOAT (DURABLE ADVANTAGE)</option>
@@ -200,7 +200,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           </label>
           <select
             id="filter-catalyst"
-            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#4b5563] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#38bdf8]"
           >
             <option value="all">ALL FLOW &amp; CATALYSTS</option>
             <option value="high-rvol">VOLUME SURGE (RVOL &ge; 1.5x)</option>
@@ -218,7 +218,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           </label>
           <select
             id="filter-cap"
-            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#4b5563] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#38bdf8]"
           >
             <option value="all">ALL CAPITALIZATIONS</option>
             <option value="mega">MEGA CAP (&gt; $200B)</option>
@@ -236,7 +236,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           </label>
           <select
             id="filter-risk-profile"
-            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#4b5563] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#38bdf8]"
           >
             <option value="all">ALL RISK PROFILES</option>
             <option value="low-risk">LOW RISK SCORE (&le; 4/10)</option>
@@ -255,7 +255,7 @@ function getMoatBadgeClass(rating?: string | null): string {
           </label>
           <select
             id="filter-sector"
-            class="w-full px-2 py-1.5 bg-[#121212] border border-[#2e2e2e] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#0055ff]"
+            class="w-full px-2 py-1.5 bg-[#121212] border border-[#4b5563] text-xs font-mono text-[#e5e5e5] focus:outline-none focus:border-[#38bdf8]"
           >
             <option value="all">ALL SECTORS</option>
             {allSectors.map((sector) => (
@@ -273,7 +273,7 @@ function getMoatBadgeClass(rating?: string | null): string {
 
         <!-- Dynamic Counter -->
         <div class="text-xs font-mono text-[#8e8e8e]">
-          MATCHED: <span id="visible-count" class="font-bold text-[#0055ff]">{sortedReports.length}</span> / <span id="total-count" class="font-bold text-white">{sortedReports.length}</span> SECURITIES
+          MATCHED: <span id="visible-count" class="font-bold text-[#38bdf8]">{sortedReports.length}</span> / <span id="total-count" class="font-bold text-white">{sortedReports.length}</span> SECURITIES
         </div>
       </div>
     </section>
@@ -287,7 +287,7 @@ function getMoatBadgeClass(rating?: string | null): string {
       <button
         id="empty-reset-btn"
         type="button"
-        class="px-4 py-1.5 bg-[#0055ff] hover:bg-[#0044cc] text-white text-xs font-mono font-bold border border-[#0055ff] transition-none cursor-pointer tap-target"
+        class="px-4 py-1.5 bg-[#38bdf8] hover:bg-[#7dd3fc] text-slate-950 text-xs font-mono font-bold border border-[#38bdf8] transition-none cursor-pointer tap-target"
       >
         [ RESET ALL FILTERS ]
       </button>
@@ -327,7 +327,7 @@ function getMoatBadgeClass(rating?: string | null): string {
 
         return (
           <article
-            class="report-card p-4 border border-[#2e2e2e] bg-[#181818] hover:border-[#0055ff] transition-none flex flex-col justify-between"
+            class="report-card p-4 border border-[#2e2e2e] bg-[#181818] hover:border-[#38bdf8] transition-none flex flex-col justify-between"
             data-ticker={d.ticker.toLowerCase()}
             data-company={d.companyName.toLowerCase()}
             data-title={d.title.toLowerCase()}
@@ -357,7 +357,7 @@ function getMoatBadgeClass(rating?: string | null): string {
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <a
                     href={path(`/tickers/${d.ticker.toLowerCase()}`)}
-                    class="font-black text-white bg-[#121212] px-2 py-0.5 border border-[#2e2e2e] hover:border-[#0055ff] transition-none"
+                    class="font-black text-white bg-[#121212] px-2 py-0.5 border border-[#2e2e2e] hover:border-[#38bdf8] transition-none"
                     title={`View all research for $${d.ticker}`}
                   >
                     ${d.ticker}
@@ -380,7 +380,7 @@ function getMoatBadgeClass(rating?: string | null): string {
               </div>
 
               <!-- Report Title -->
-              <h2 class="text-sm font-mono font-bold text-white hover:text-[#0055ff] transition-none line-clamp-2 leading-snug">
+              <h2 class="text-sm font-mono font-bold text-white hover:text-[#38bdf8] transition-none line-clamp-2 leading-snug">
                 <a href={path(`/reports/${report.slug}`)}>{d.title}</a>
               </h2>
 
@@ -427,7 +427,7 @@ function getMoatBadgeClass(rating?: string | null): string {
               </span>
               <a
                 href={path(`/reports/${report.slug}`)}
-                class="text-[#0055ff] hover:text-white hover:bg-[#0055ff] px-2 py-0.5 border border-[#2e2e2e] font-bold text-xs transition-none tap-target"
+                class="text-[#38bdf8] hover:text-slate-950 hover:bg-[#38bdf8] px-2 py-0.5 border border-[#4b5563] font-bold text-xs transition-none tap-target"
               >
                 [ VIEW REPORT ]
               </a>
@@ -479,13 +479,13 @@ function getMoatBadgeClass(rating?: string | null): string {
       presetButtons.forEach((btn) => {
         const preset = btn.dataset.preset;
         if (preset === activePreset) {
-          btn.className = 'preset-btn px-2.5 py-1 text-xs font-mono font-bold border transition-none cursor-pointer bg-[#0055ff] text-white border-[#0055ff]';
+          btn.className = 'preset-btn px-2.5 py-1 text-xs font-mono font-bold border transition-none cursor-pointer bg-[#38bdf8] text-slate-950 border-[#38bdf8]';
         } else {
           // Restore thematic button outlines
           let textClass = 'text-[#e5e5e5]';
-          let borderHover = 'hover:border-[#0055ff]';
+          let borderHover = 'hover:border-[#38bdf8]';
           if (preset === 'buy-5star') { textClass = 'text-[#00cc66]'; borderHover = 'hover:border-[#00cc66]'; }
-          else if (preset === 'wide-moat') { textClass = 'text-[#0055ff]'; borderHover = 'hover:border-[#0055ff]'; }
+          else if (preset === 'wide-moat') { textClass = 'text-[#38bdf8]'; borderHover = 'hover:border-[#38bdf8]'; }
           else if (preset === 'catalyst-drift') { textClass = 'text-[#ffaa00]'; borderHover = 'hover:border-[#ffaa00]'; }
           else if (preset === 'contrarian-dip') { textClass = 'text-[#00e5ff]'; borderHover = 'hover:border-[#00e5ff]'; }
           else if (preset === 'sell-overvalued') { textClass = 'text-[#ff3344]'; borderHover = 'hover:border-[#ff3344]'; }

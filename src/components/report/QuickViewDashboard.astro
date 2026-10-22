@@ -107,7 +107,7 @@ const positiveQuarters = quarterlyEPS.filter((q: any) => Number(q.eps) > 0).leng
   <!-- Top Bar: First Glance Section Indicator -->
   <div class="flex flex-wrap items-center justify-between gap-3 pb-3 mb-4 border-b border-[#222222]">
     <div class="flex items-center gap-2">
-      <span class="w-2 h-2 bg-[#0055ff]"></span>
+      <span class="w-2 h-2 bg-[#38bdf8]"></span>
       <h2 class="text-xs font-bold uppercase tracking-wider text-white">
         EXECUTIVE TRIAGE DASHBOARD // 3-SECOND RAPID AUDIT
       </h2>
@@ -166,7 +166,7 @@ const positiveQuarters = quarterlyEPS.filter((q: any) => Number(q.eps) > 0).leng
           </div>
           <div class="flex items-center justify-between">
             <span class="text-[#8e8e8e]">INTRINSIC FVE:</span>
-            <span class="font-bold text-[#0055ff]">
+            <span class="font-bold text-[#38bdf8]">
               {consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}
             </span>
           </div>
@@ -254,13 +254,13 @@ const positiveQuarters = quarterlyEPS.filter((q: any) => Number(q.eps) > 0).leng
         <div class="mb-3">
           <div class="text-[9px] text-[#8e8e8e] uppercase mb-1">COMPETITIVE PILLARS:</div>
           <div class="grid grid-cols-3 gap-1 text-[10px] text-center">
-            <div class={`p-1 border bg-[#121212] ${moatSources?.intangibleAssets?.rating === 'Wide' ? 'border-[#0055ff] text-[#0055ff] font-bold' : 'border-[#2e2e2e] text-[#8e8e8e]'}`}>
+            <div class={`p-1 border bg-[#121212] ${moatSources?.intangibleAssets?.rating === 'Wide' ? 'border-[#38bdf8] text-[#38bdf8] font-bold' : 'border-[#2e2e2e] text-[#8e8e8e]'}`}>
               INTANGIBLES
             </div>
-            <div class={`p-1 border bg-[#121212] ${moatSources?.switchingCosts?.rating === 'Wide' ? 'border-[#0055ff] text-[#0055ff] font-bold' : 'border-[#2e2e2e] text-[#8e8e8e]'}`}>
+            <div class={`p-1 border bg-[#121212] ${moatSources?.switchingCosts?.rating === 'Wide' ? 'border-[#38bdf8] text-[#38bdf8] font-bold' : 'border-[#2e2e2e] text-[#8e8e8e]'}`}>
               SWITCHING
             </div>
-            <div class={`p-1 border bg-[#121212] ${moatSources?.networkEffect?.rating === 'Wide' ? 'border-[#0055ff] text-[#0055ff] font-bold' : 'border-[#2e2e2e] text-[#8e8e8e]'}`}>
+            <div class={`p-1 border bg-[#121212] ${moatSources?.networkEffect?.rating === 'Wide' ? 'border-[#38bdf8] text-[#38bdf8] font-bold' : 'border-[#2e2e2e] text-[#8e8e8e]'}`}>
               NETWORK
             </div>
           </div>

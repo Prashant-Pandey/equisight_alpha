@@ -74,12 +74,12 @@ function getVerdictBadgeStyle(verdict?: string | null) {
 function getMoatBadgeStyle(rating?: string | null) {
   const r = (rating || '').toLowerCase();
   if (r.includes('wide')) {
-    return 'bg-[#181818] text-[#0055ff] border border-[#0055ff]';
+    return 'bg-[#181818] text-[#38bdf8] border border-[#38bdf8]';
   }
   if (r.includes('narrow')) {
     return 'bg-[#181818] text-[#e5e5e5] border border-[#3a3a3a]';
   }
-  return 'bg-[#181818] text-[#8e8e8e] border border-[#2e2e2e]';
+  return 'bg-[#181818] text-[#8e8e8e] border border-[#4b5563]';
 }
 
 // Strategy Definitions
@@ -137,7 +137,7 @@ const STRATEGIES = [
     <div class="max-w-7xl mx-auto">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#222222]">
         <div>
-          <div class="font-mono text-xs text-[#0055ff] font-bold uppercase tracking-wider mb-1">
+          <div class="font-mono text-xs text-[#38bdf8] font-bold uppercase tracking-wider mb-1">
             EQUITY RESEARCH ENGINE // BATCH-CYCLE 2026.10
           </div>
           <h1 class="text-2xl sm:text-3xl font-mono font-black text-white tracking-tight uppercase">
@@ -152,7 +152,7 @@ const STRATEGIES = [
         <div class="flex flex-wrap items-center gap-2 font-mono text-xs">
           <a
             href={path('/reports')}
-            class="px-4 py-2.5 bg-[#0055ff] hover:bg-[#0044cc] text-white font-bold border border-[#0055ff] transition-none tap-target flex items-center gap-2"
+            class="px-4 py-2.5 bg-[#38bdf8] hover:bg-[#7dd3fc] text-slate-950 font-bold border border-[#38bdf8] transition-none tap-target flex items-center gap-2"
           >
             <span>[ SEARCH ARCHIVE ({totalReportsCount}) ]</span>
           </a>
@@ -201,7 +201,7 @@ const STRATEGIES = [
         <!-- Metric 3 -->
         <div class="p-4 font-mono">
           <div class="text-[10px] uppercase text-[#8e8e8e] tracking-wider">WIDE MOAT ASSETS</div>
-          <div class="text-xl font-bold text-[#0055ff] mt-0.5">{wideMoatReports.length} <span class="text-xs text-[#8e8e8e] font-normal">EQUITIES</span></div>
+          <div class="text-xl font-bold text-[#38bdf8] mt-0.5">{wideMoatReports.length} <span class="text-xs text-[#8e8e8e] font-normal">EQUITIES</span></div>
           <div class="text-[10px] text-[#8e8e8e] mt-1">Durable ROIC Advantage</div>
         </div>
 
@@ -231,7 +231,7 @@ const STRATEGIES = [
       <div class="flex flex-wrap items-center gap-1 font-mono text-xs" id="strategy-tabs-container">
         <button
           type="button"
-          class="strategy-tab-btn px-3 py-1 bg-[#0055ff] text-white border border-[#0055ff] font-bold tap-target cursor-pointer"
+          class="strategy-tab-btn px-3 py-1 bg-[#38bdf8] text-slate-950 border border-[#38bdf8] font-bold tap-target cursor-pointer"
           data-tab="all"
         >
           ALL STRATEGIES ({totalArchetypeStocks})
@@ -302,7 +302,7 @@ const STRATEGIES = [
                       <td class="py-2.5 px-3 font-bold text-white whitespace-nowrap">
                         <a
                           href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
-                          class="text-[#0055ff] hover:underline"
+                          class="text-[#38bdf8] hover:underline"
                         >
                           ${report.data.ticker}
                         </a>
@@ -368,7 +368,7 @@ const STRATEGIES = [
                       <td class="py-2.5 px-3 text-right whitespace-nowrap">
                         <a
                           href={path(`/reports/${report.slug}`)}
-                          class="px-2.5 py-1 bg-[#121212] hover:bg-[#0055ff] hover:text-white text-[#0055ff] border border-[#2e2e2e] font-bold text-xs transition-none tap-target inline-block"
+                          class="px-2.5 py-1 bg-[#121212] hover:bg-[#38bdf8] hover:text-slate-950 text-[#38bdf8] border border-[#4b5563] font-bold text-xs transition-none tap-target inline-block"
                         >
                           [ DEEP DIVE ]
                         </a>
@@ -402,7 +402,7 @@ const STRATEGIES = [
         </div>
         <a
           href={path('/reports')}
-          class="px-3 py-1.5 bg-[#0055ff] hover:bg-[#0044cc] text-white font-mono text-xs font-bold border border-[#0055ff] transition-none tap-target"
+          class="px-3 py-1.5 bg-[#38bdf8] hover:bg-[#7dd3fc] text-slate-950 font-mono text-xs font-bold border border-[#38bdf8] transition-none tap-target"
         >
           VIEW ALL {totalReportsCount} REPORTS &rarr;
         </a>
@@ -420,7 +420,7 @@ const STRATEGIES = [
                 <!-- Ticker badge -->
                 <a
                   href={path(`/tickers/${report.data.ticker.toLowerCase()}`)}
-                  class="font-black text-[#0055ff] bg-[#121212] px-2 py-1 border border-[#2e2e2e] hover:border-[#0055ff] shrink-0"
+                  class="font-black text-[#38bdf8] bg-[#121212] px-2 py-1 border border-[#4b5563] hover:border-[#38bdf8] shrink-0"
                 >
                   ${report.data.ticker}
                 </a>
@@ -439,7 +439,7 @@ const STRATEGIES = [
                       <span class="text-[#e5e5e5] font-bold">[{strat.code}]</span>
                     )}
                   </div>
-                  <h3 class="text-sm font-bold text-white hover:text-[#0055ff] transition-none truncate">
+                  <h3 class="text-sm font-bold text-white hover:text-[#38bdf8] transition-none truncate">
                     <a href={path(`/reports/${report.slug}`)}>{report.data.title}</a>
                   </h3>
                 </div>
@@ -456,7 +456,7 @@ const STRATEGIES = [
 
                 <a
                   href={path(`/reports/${report.slug}`)}
-                  class="px-3 py-1 bg-[#121212] hover:bg-[#0055ff] hover:text-white text-[#0055ff] border border-[#2e2e2e] font-bold transition-none tap-target"
+                  class="px-3 py-1 bg-[#121212] hover:bg-[#38bdf8] hover:text-slate-950 text-[#38bdf8] border border-[#4b5563] font-bold transition-none tap-target"
                 >
                   OPEN &rarr;
                 </a>
@@ -484,13 +484,13 @@ const STRATEGIES = [
 
         // Reset buttons to utilitarian base state
         tabButtons.forEach((b) => {
-          b.classList.remove('bg-[#0055ff]', 'text-white', 'border-[#0055ff]');
+          b.classList.remove('bg-[#38bdf8]', 'text-slate-950', 'border-[#38bdf8]');
           b.classList.add('bg-[#181818]', 'text-[#8e8e8e]', 'border-[#2e2e2e]');
         });
 
         // Set active button
         btn.classList.remove('bg-[#181818]', 'text-[#8e8e8e]', 'border-[#2e2e2e]');
-        btn.classList.add('bg-[#0055ff]', 'text-white', 'border-[#0055ff]');
+        btn.classList.add('bg-[#38bdf8]', 'text-slate-950', 'border-[#38bdf8]');
 
         // Toggle sections
         sections.forEach((sec) => {

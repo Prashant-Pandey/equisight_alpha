@@ -74,7 +74,7 @@ const tabs = [
       <div class="flex flex-wrap items-center gap-2 text-xs">
         <a
           href={path(`/tickers/${report.ticker.toLowerCase()}`)}
-          class="font-black px-2 py-0.5 bg-[#121212] text-white border border-[#0055ff] hover:bg-[#0055ff] transition-none"
+          class="font-black px-2 py-0.5 bg-[#121212] text-white border border-[#38bdf8] hover:bg-[#38bdf8] hover:text-slate-950 transition-none"
         >
           ${report.ticker}
         </a>
@@ -96,7 +96,7 @@ const tabs = [
           target="_blank"
           rel="noopener"
           id="export-pdf-action-btn"
-          class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#0055ff] hover:bg-[#0044cc] text-white text-xs font-bold transition-none border border-[#0055ff] cursor-pointer tap-target"
+          class="inline-flex items-center gap-1.5 px-3 py-1 bg-[#38bdf8] hover:bg-[#7dd3fc] text-slate-950 text-xs font-bold transition-none border border-[#38bdf8] cursor-pointer tap-target"
           title="Print / Export Report"
         >
           [ PDF EXPORT ]
@@ -152,7 +152,7 @@ const tabs = [
           52-WEEK RANGE & INTRINSIC FVE SPREAD
         </span>
         <span class="text-xs">
-          CONSENSUS FAIR VALUE: <strong class="text-[#0055ff]">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
+          CONSENSUS FAIR VALUE: <strong class="text-[#38bdf8]">{consensusFairValue !== null ? `$${consensusFairValue.toFixed(2)}` : 'N/A'}</strong>
         </span>
       </div>
 
@@ -176,7 +176,7 @@ const tabs = [
         <!-- Consensus FVE Target Line -->
         {consensusFairValue && (
           <div
-            class="absolute top-0 bottom-0 w-0.5 bg-[#0055ff] -translate-x-1/2 z-10"
+            class="absolute top-0 bottom-0 w-0.5 bg-[#38bdf8] -translate-x-1/2 z-10"
             style={`left: ${fvePct}%;`}
           ></div>
         )}
@@ -194,7 +194,7 @@ const tabs = [
         <div>52W LOW: <strong class="text-white">${lowBound.toFixed(2)}</strong></div>
         {fiveStarPrice && <div>5★ BUY &lt; <strong class="text-[#00cc66]">${fiveStarPrice.toFixed(2)}</strong></div>}
         <div class="text-white font-bold">SPOT: ${currentPrice.toFixed(2)}</div>
-        {consensusFairValue && <div>FVE: <strong class="text-[#0055ff]">${consensusFairValue.toFixed(2)}</strong></div>}
+        {consensusFairValue && <div>FVE: <strong class="text-[#38bdf8]">${consensusFairValue.toFixed(2)}</strong></div>}
         {oneStarPrice && <div>1★ TRIM &gt; <strong class="text-[#ff3344]">${oneStarPrice.toFixed(2)}</strong></div>}
         <div>52W HIGH: <strong class="text-white">${highBound.toFixed(2)}</strong></div>
       </div>
