@@ -1,0 +1,661 @@
+---
+import { formatCurrency, formatPercent } from '../../utils/formatters';
+import { generateForensicAnalysisFromReport, type ForensicAlertSeverity } from '../../utils/forensicsEngine';
+import { path } from '../../utils/paths';
+
+interface Props {
+  report: any;
+}
+
+const { report } = Astro.props;
+
+// Compute or extract the complete forensic analysis
+const forensic = generateForensicAnalysisFromReport(report);
+const { compositeScore, compositeSeverity, compositeLabel, compositeSummary, pillars, activeAlerts, auditNotes } = forensic;
+
+// Severity styling helpers
+function getSeverityBadgeClass(sev: ForensicAlertSeverity) {
+  switch (sev) {
+    case 'LOW':
+      return 'bg-emerald-950/80 text-emerald-400 border-emerald-800/80';
+    case 'MODERATE':
+      return 'bg-amber-950/80 text-amber-300 border-amber-800/80';
+    case 'HIGH':
+      return 'bg-orange-950/80 text-orange-300 border-orange-800/80';
+    case 'CRITICAL':
+      return 'bg-rose-950/90 text-rose-300 border-rose-800/80 animate-pulse';
+    default:
+      return 'bg-slate-800 text-slate-300 border-slate-700';
+  }
+}
+
+function getScoreColorClass(score: number) {
+  if (score < 25) return 'text-emerald-400';
+  if (score < 50) return 'text-amber-300';
+  if (score < 75) return 'text-orange-400';
+  return 'text-rose-400';
+}
+
+function getMeterGradient(score: number) {
+  if (score < 25) return 'bg-gradient-to-r from-emerald-500 to-emerald-400';
+  if (score < 50) return 'bg-gradient-to-r from-emerald-500 via-amber-400 to-amber-500';
+  if (score < 75) return 'bg-gradient-to-r from-amber-500 via-orange-500 to-orange-400';
+  return 'bg-gradient-to-r from-orange-500 via-rose-500 to-rose-600';
+}
+
+const p1 = pillars.hiddenDebt;
+const p2 = pillars.circularRevenue;
+const p3 = pillars.unitEconomics;
+const p4 = pillars.institutionalRetreat;
+---
+
+<section id="forensic-detection-module" class="space-y-8 text-slate-100 font-sans" aria-label="Forensic Accounting and Structural Risk Module">
+  <!-- FORENSIC HERO SUMMARY CARD -->
+  <div class="rounded-2xl border border-slate-800 bg-slate-900/90 p-6 sm:p-8 backdrop-blur shadow-2xl relative overflow-hidden">
+    <div class="absolute -right-20 -top-20 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
+      <div>
+        <div class="flex items-center gap-2.5 flex-wrap">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-indigo-950 text-indigo-300 border border-indigo-700/60 shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            Forensic Risk & Red Flag Surveillance
+          </span>
+          <span class={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider border shadow-sm ${getSeverityBadgeClass(compositeSeverity)}`}>
+            {compositeSeverity} RISK
+          </span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-3 tracking-tight">
+          Financial Engineering & Structural Integrity Audit
+        </h2>
+        <p class="text-slate-400 text-sm mt-1 max-w-2xl leading-relaxed">
+          Automated forensic surveillance of 10-K footnote commitments, off-balance sheet SPVs, circular client round-tripping, GAAP-to-Non-GAAP earnings manipulation, and institutional retreat signals.
+        </p>
+      </div>
+
+      <!-- COMPOSITE SCORE GAUGE -->
+      <div class="flex items-center gap-4 bg-slate-950/80 border border-slate-800 px-5 py-4 rounded-xl shrink-0 shadow-inner">
+        <div class="text-right">
+          <div class="text-[11px] font-mono text-slate-400 uppercase tracking-wider">Composite Risk Score</div>
+          <div class="text-xs font-medium text-slate-300 mt-0.5">{compositeLabel}</div>
+        </div>
+        <div class="w-16 h-16 rounded-xl bg-slate-900 border border-slate-700/80 flex flex-col items-center justify-center shadow-lg">
+          <span class={`text-2xl font-black font-mono ${getScoreColorClass(compositeScore)}`}>
+            {compositeScore}
+          </span>
+          <span class="text-[9px] font-mono text-slate-400 -mt-1">/ 100</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RISK PROGRESS BAR -->
+    <div class="mt-6">
+      <div class="flex items-center justify-between text-xs font-mono text-slate-400 mb-2">
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span> Low Risk (0-24)
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-amber-400 inline-block"></span> Moderate (25-49)
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-orange-400 inline-block"></span> High (50-74)
+        </span>
+        <span class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-rose-400 inline-block"></span> Critical Alert (75-100)
+        </span>
+      </div>
+      <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden p-0.5 border border-slate-800">
+        <div
+          class={`h-full rounded-full transition-all duration-1000 ${getMeterGradient(compositeScore)}`}
+          style={`width: ${Math.max(4, Math.min(100, compositeScore))}%`}
+        ></div>
+      </div>
+      <p class="text-xs text-slate-400 mt-3 italic leading-relaxed">
+        {compositeSummary}
+      </p>
+    </div>
+  </div>
+
+  <!-- ACTIVE ALERT FLAGS CAROUSEL / CALLOUT -->
+  {activeAlerts && activeAlerts.length > 0 && (
+    <div class="rounded-xl border border-rose-900/60 bg-gradient-to-r from-rose-950/40 via-slate-900 to-rose-950/20 p-5 shadow-lg">
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping"></span>
+          <h3 class="text-sm font-bold font-mono uppercase tracking-wider text-rose-300">
+            Active Forensic Alert Triggers ({activeAlerts.length})
+          </h3>
+        </div>
+        <span class="text-[11px] font-mono text-slate-400">Statutory & Heuristic Surveillance</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+        {activeAlerts.map((alert) => (
+          <div class="p-3.5 rounded-lg bg-slate-950/80 border border-slate-800/80 hover:border-rose-700/50 transition-colors">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs font-bold text-white tracking-wide">{alert.title}</span>
+              <span class={`text-[10px] font-mono px-2 py-0.5 rounded border uppercase font-semibold ${getSeverityBadgeClass(alert.severity)}`}>
+                {alert.severity}
+              </span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1.5 leading-snug">{alert.description}</p>
+            <div class="mt-2 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-mono">
+              <span class="text-slate-400">{alert.metricLabel}: <strong class="text-rose-400">{alert.metricValue}</strong></span>
+              <span class="text-slate-400">Hurdle: <strong class="text-slate-300">{alert.thresholdValue}</strong></span>
+            </div>
+            <div class="mt-1 text-[10px] font-mono text-slate-400 truncate">
+              Anchor: {alert.statutoryStandard}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  <!-- THE 4 CORE FORENSIC PILLARS GRID -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    
+    <!-- PILLAR 1: HIDDEN DEBT AND FINANCIAL ENGINEERING -->
+    <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col justify-between hover:border-slate-700 transition-colors shadow-lg">
+      <div>
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-950 text-blue-300 border border-blue-800">
+                PILLAR 1
+              </span>
+              <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${getSeverityBadgeClass(p1.severity)}`}>
+                {p1.severity}
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-1.5">
+              1. Hidden Debt & Financial Engineering
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              FASB ASC 842 & ASC 440 Footnote Capitalization, SPVs, CapEx/OCF Divergence & Dilution Reversal
+            </p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class={`text-xl font-black font-mono ${getScoreColorClass(p1.score)}`}>{p1.score}</span>
+            <span class="text-[10px] font-mono text-slate-400 block -mt-1">/ 100</span>
+          </div>
+        </div>
+
+        <!-- Metric Table -->
+        <div class="mt-5 space-y-2.5 text-xs">
+          <!-- Footnotes Scrutiny -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Footnotes: Unrecognized Commitments
+              </span>
+              <span class="font-mono font-bold text-white">{formatPercent(p1.offBalanceSheetRatioPct)} of Debt</span>
+            </div>
+            <div class="mt-1.5 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Reported: {formatCurrency(p1.reportedDebtUSD)}</span>
+              <span>True Adjusted: <strong class="text-blue-300">{formatCurrency(p1.trueAdjustedDebtUSD)}</strong></span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">
+              Includes {formatCurrency(p1.capitalizedOperatingLeasesUSD)} capitalized leases & {formatCurrency(p1.undisclosedPurchaseCommitmentsUSD)} purchase obligations.
+            </div>
+          </div>
+
+          <!-- SPVs and Keepwell Backstops -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                Special Purpose Vehicles (SPVs) & VIEs
+              </span>
+              <span class="font-mono font-bold text-white">{p1.unconsolidatedSpvLiabilitiesUSD > 0 ? formatCurrency(p1.unconsolidatedSpvLiabilitiesUSD) : 'Clean (0.00)'}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">
+              {p1.unconsolidatedSpvLiabilitiesUSD > 0 
+                ? 'Potential backstops, debt guarantees, or keepwell covenants flagged in unconsolidated partnerships.'
+                : 'No off-balance sheet joint-venture guarantees or variable interest entity debt backstops identified.'}
+            </div>
+          </div>
+
+          <!-- CapEx Funding vs OCF -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                CapEx Organic Funding Ratio (OCF / CapEx)
+              </span>
+              <span class={`font-mono font-bold ${p1.capExFundingRatio >= 1.0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {p1.capExFundingRatio.toFixed(2)}x
+              </span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>OCF: {formatCurrency(p1.operatingCashFlowUSD)}</span>
+              <span>CapEx: {formatCurrency(p1.grossCapExUSD)}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              {p1.capExFundingRatio >= 1.0 
+                ? 'CapEx is completely covered by internal operational cash flow without debt reliance.'
+                : 'CapEx expansion exceeds cash flow; dependent on bond issuance or external debt to finance physical asset growth.'}
+            </div>
+          </div>
+
+          <!-- Share Issuance vs Buybacks -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+                Net Dilution Rate (Share Issuance Creep)
+              </span>
+              <span class={`font-mono font-bold ${p1.netDilutionShareCreepPct > 3.0 ? 'text-rose-400' : 'text-slate-200'}`}>
+                {p1.netDilutionShareCreepPct > 0 ? `+${p1.netDilutionShareCreepPct.toFixed(1)}%` : `${p1.netDilutionShareCreepPct.toFixed(1)}%`}
+              </span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">
+              {p1.netDilutionShareCreepPct > 3.0 
+                ? 'Flagged: Shift from buybacks to equity dilution / FPOs to fund operational burn.'
+                : 'Capital returns prioritized; no severe dilutive equity offerings or FPO capital raises.'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Findings List -->
+      <div class="mt-4 pt-3 border-t border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 mb-1">Key Audit Findings:</div>
+        <ul class="space-y-1 text-xs text-slate-300">
+          {p1.findings.map((f) => (
+            <li class="flex items-start gap-1.5">
+              <span class="text-blue-400 mt-0.5">▸</span>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- PILLAR 2: CIRCULAR REVENUE AND CUSTOMER CONCENTRATION -->
+    <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col justify-between hover:border-slate-700 transition-colors shadow-lg">
+      <div>
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-950 text-amber-300 border border-amber-800">
+                PILLAR 2
+              </span>
+              <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${getSeverityBadgeClass(p2.severity)}`}>
+                {p2.severity}
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-1.5">
+              2. Circular Revenue & Customer Concentration
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              ASC 280 Disclosures (&gt;10% Threshold), Ecosystem Round-Tripping & Client Runway Stress Test
+            </p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class={`text-xl font-black font-mono ${getScoreColorClass(p2.score)}`}>{p2.score}</span>
+            <span class="text-[10px] font-mono text-slate-400 block -mt-1">/ 100</span>
+          </div>
+        </div>
+
+        <!-- Metric Table -->
+        <div class="mt-5 space-y-2.5 text-xs">
+          <!-- Statutory Concentration -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                Statutory ASC 280 Concentration
+              </span>
+              <span class={`font-mono font-bold ${p2.hasSingleCustomerOver10Pct ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {p2.hasSingleCustomerOver10Pct ? '≥10% Triggered' : 'Compliant (<10%)'}
+              </span>
+            </div>
+            <div class="mt-1.5 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Top Customer: <strong class="text-white">{p2.topCustomerConcentrationPct.toFixed(1)}%</strong></span>
+              <span>Top 3 Accounts: <strong class="text-white">{p2.top3CustomerConcentrationPct.toFixed(1)}%</strong></span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">
+              SEC Item 101 mandates reporting single accounts generating &ge;10% of revenue. High concentration indicates severe monopsony counterparty exposure.
+            </div>
+          </div>
+
+          <!-- Round-Tripping & Unbilled Assets -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                Unbilled Contract Assets & Round-Tripping
+              </span>
+              <span class={`font-mono font-bold ${p2.unbilledReceivablesPct > 12.0 ? 'text-rose-400' : 'text-slate-200'}`}>
+                {p2.unbilledReceivablesPct.toFixed(1)}% of Rev
+              </span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>DSO: {p2.dsoDays} days ({p2.dsoYoYChangeDays >= 0 ? `+${p2.dsoYoYChangeDays}` : p2.dsoYoYChangeDays}d YoY)</span>
+              <span>Unbilled: {formatCurrency(p2.unbilledReceivablesUSD)}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              {p2.roundTrippingRisk 
+                ? 'Flagged: Spiking unbilled receivables and investor-customer overlaps suggest circular revenue loops.'
+                : 'Receivables conversion aligns with cash inflows; no vendor financing barter anomalies detected.'}
+            </div>
+          </div>
+
+          <!-- Client Financial Runway Stress Test -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                End-Client Solvency & Altman Z Stress
+              </span>
+              <span class={`font-mono font-bold ${p2.customerAltmanZScoreAvg < 1.81 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                Z-Score: {p2.customerAltmanZScoreAvg.toFixed(2)}
+              </span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Status: <strong class="text-slate-200">{p2.customerAltmanZStatus}</strong></span>
+              <span>Solvency Runway: <strong class="text-slate-200">{p2.customerAltmanZScoreAvg > 2.9 ? '> 24 months' : '< 12 months'}</strong></span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              Stress-tests the cash runway and Altman Z of top customers to ensure enterprise backlog is not propped up by cash-burning startups.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Findings List -->
+      <div class="mt-4 pt-3 border-t border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 mb-1">Key Audit Findings:</div>
+        <ul class="space-y-1 text-xs text-slate-300">
+          {p2.findings.map((f) => (
+            <li class="flex items-start gap-1.5">
+              <span class="text-amber-400 mt-0.5">▸</span>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- PILLAR 3: FLAWED UNIT ECONOMICS AND ZERO MOAT -->
+    <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col justify-between hover:border-slate-700 transition-colors shadow-lg">
+      <div>
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-950 text-emerald-300 border border-emerald-800">
+                PILLAR 3
+              </span>
+              <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${getSeverityBadgeClass(p3.severity)}`}>
+                {p3.severity}
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-1.5">
+              3. Flawed Unit Economics & Zero Moat
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              GAAP vs Non-GAAP Earnings Wedge, True Cost of Delivery (TCoD) & Switching Friction (SFS)
+            </p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class={`text-xl font-black font-mono ${getScoreColorClass(p3.score)}`}>{p3.score}</span>
+            <span class="text-[10px] font-mono text-slate-400 block -mt-1">/ 100</span>
+          </div>
+        </div>
+
+        <!-- Metric Table -->
+        <div class="mt-5 space-y-2.5 text-xs">
+          <!-- GAAP vs Non-GAAP Reconciliation -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                GAAP vs Non-GAAP Earnings Wedge
+              </span>
+              <span class={`font-mono font-bold ${p3.earningsQualityWedgePct > 25.0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {p3.earningsQualityWedgePct.toFixed(1)}% Wedge
+              </span>
+            </div>
+            <div class="mt-1.5 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>GAAP EBIT: {formatCurrency(p3.gaapOperatingIncomeUSD)}</span>
+              <span>Non-GAAP EBITDA: <strong class="text-white">{formatCurrency(p3.nonGaapAdjustedEbitdaUSD)}</strong></span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">
+              SEC Reg G limits misleading non-GAAP adjustments. Severe add-backs for "one-time" restructuring and SBC mask structural operational deficits.
+            </div>
+          </div>
+
+          <!-- True Cost of Delivery (TCoD) & Compute Elasticity -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
+                </svg>
+                True Cost of Delivery (Compute Drag Elasticity)
+              </span>
+              <span class={`font-mono font-bold ${p3.computeElasticityRatio > 1.25 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {p3.computeElasticityRatio.toFixed(2)}x
+              </span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Infra Scaling: {p3.computeElasticityRatio > 1.0 ? 'Diseconomies of Scale' : 'Operating Leverage'}</span>
+              <span>CAC Payback: {p3.cacPaybackMonths} mos</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              Measures if fully-loaded infrastructure/cloud servicing costs outpace revenue growth. Elasticity &gt; 1.25 proves the product is being artificially subsidized.
+            </div>
+          </div>
+
+          <!-- Friction of Switching & Moat Fragility -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-lime-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Switching Friction Score (0-100)
+              </span>
+              <span class={`font-mono font-bold ${p3.switchingFrictionScore >= 60 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                {p3.switchingFrictionScore} / 100
+              </span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Moat Durability: <strong class="text-white">{p3.moatVulnerability}</strong></span>
+              <span>Decay Rate: {p3.moatDecayRatePct.toFixed(1)}%</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              Evaluates workflow friction, data migration lock-in, and proprietary software barriers. SFS &lt; 40 indicates frictionless competitor migration (Zero Moat).
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Findings List -->
+      <div class="mt-4 pt-3 border-t border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 mb-1">Key Audit Findings:</div>
+        <ul class="space-y-1 text-xs text-slate-300">
+          {p3.findings.map((f) => (
+            <li class="flex items-start gap-1.5">
+              <span class="text-emerald-400 mt-0.5">▸</span>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <!-- PILLAR 4: INSTITUTIONAL RETREAT AND VALUATION DISCONNECT -->
+    <div class="rounded-xl border border-slate-800 bg-slate-900/80 p-6 flex flex-col justify-between hover:border-slate-700 transition-colors shadow-lg">
+      <div>
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-950 text-rose-300 border border-rose-800">
+                PILLAR 4
+              </span>
+              <span class={`px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${getSeverityBadgeClass(p4.severity)}`}>
+                {p4.severity}
+              </span>
+            </div>
+            <h3 class="text-lg font-bold text-white mt-1.5">
+              4. Institutional Retreat & Valuation Disconnect
+            </h3>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Credit Spreads (OAS &gt;350 bps), Prime Broker Margin Haircuts, Form 4 / 13F Smart Money Exits & Multiple Stretches
+            </p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class={`text-xl font-black font-mono ${getScoreColorClass(p4.score)}`}>{p4.score}</span>
+            <span class="text-[10px] font-mono text-slate-400 block -mt-1">/ 100</span>
+          </div>
+        </div>
+
+        <!-- Metric Table -->
+        <div class="mt-5 space-y-2.5 text-xs">
+          <!-- Credit Ratings and Bond Spreads -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                </svg>
+                Credit Ratings & Bond Yield Spreads
+              </span>
+              <span class={`font-mono font-bold ${p4.creditSpreadOasBps > 350 ? 'text-rose-400' : 'text-slate-200'}`}>
+                {p4.creditSpreadOasBps} bps OAS
+              </span>
+            </div>
+            <div class="mt-1.5 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Implied Rating: <strong class="text-white">{p4.syntheticCreditRating}</strong></span>
+              <span>Bond Status: <strong class={p4.creditSpreadOasBps > 350 ? 'text-rose-300' : 'text-emerald-300'}>{p4.creditSpreadOasBps > 350 ? 'High Yield / Junk Risk' : 'Investment Grade'}</strong></span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-1">
+              Secondary corporate bond yields and Option-Adjusted Spreads (OAS) over benchmark Treasuries. OAS &gt; 350 bps flags institutional debt market distress.
+            </div>
+          </div>
+
+          <!-- Collateral Acceptance and Margin Haircuts -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                Prime Broker Collateral Acceptance
+              </span>
+              <span class={`font-mono font-bold ${p4.primeBrokerMarginHaircutPct > 35.0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                {p4.primeBrokerMarginHaircutPct.toFixed(1)}% Haircut
+              </span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>Collateral Status: {p4.primeBrokerMarginHaircutPct >= 50.0 ? 'Non-Marginable / Restricted' : 'Standard Marginable'}</span>
+              <span>Lending Risk: {p4.primeBrokerMarginHaircutPct > 35.0 ? 'Spiked Haircut Penalty' : 'Tier-1 Liquidity'}</span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              Tracks investment bank acceptance of equity as loan collateral. Haircut spikes &gt; 35% indicate prime brokers view shares as illiquid or overvalued.
+            </div>
+          </div>
+
+          <!-- Insider and Smart Money Exits (13F & Form 4) -->
+          <div class="p-3 rounded-lg bg-slate-950/60 border border-slate-800/80">
+            <div class="flex justify-between items-center text-slate-300 font-medium">
+              <span class="flex items-center gap-1.5">
+                <svg class="w-3.5 h-3.5 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Smart Money Flows (13F & Form 4)
+              </span>
+              <span class={`font-mono font-bold ${p4.insiderSellToBuyRatio > 4.0 ? 'text-rose-400' : 'text-slate-200'}`}>
+                Insider S/B: {p4.insiderSellToBuyRatio.toFixed(1)}x
+              </span>
+            </div>
+            <div class="mt-1 flex justify-between text-[11px] font-mono text-slate-400">
+              <span>13F Institutional Delta: <strong class={p4.institutional13FNetChangePct < 0 ? 'text-rose-400' : 'text-emerald-400'}>{p4.institutional13FNetChangePct.toFixed(1)}%</strong></span>
+              <span>Multiple Divergence: <strong class="text-white">{p4.multipleDivergenceScore} / 100</strong></span>
+            </div>
+            <div class="text-[10px] text-slate-400 mt-0.5">
+              Monitors active institutional net liquidations and C-suite open-market dispositions. A red flag occurs when early institutional backers liquidate while retail interest peaks.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Findings List -->
+      <div class="mt-4 pt-3 border-t border-slate-800/80">
+        <div class="text-[11px] font-mono text-slate-400 mb-1">Key Audit Findings:</div>
+        <ul class="space-y-1 text-xs text-slate-300">
+          {p4.findings.map((f) => (
+            <li class="flex items-start gap-1.5">
+              <span class="text-rose-400 mt-0.5">▸</span>
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AUDIT TRAIL & GOVERNANCE DIRECTIVES -->
+  <div class="rounded-xl border border-slate-800 bg-slate-950/80 p-5 sm:p-6 shadow-md">
+    <div class="flex items-center justify-between pb-3 border-b border-slate-800/80">
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-0.5 rounded text-[11px] font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700">
+          CFA / CPA Forensic Governance
+        </span>
+        <h4 class="text-xs font-mono text-slate-400 uppercase tracking-wider">Automated Audit Trail</h4>
+      </div>
+      <a
+        href={path('/definitions')}
+        class="text-xs font-mono text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1 transition-colors"
+      >
+        <span>View Definitions Registry</span>
+        <span>→</span>
+      </a>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-300">
+      <div>
+        <span class="text-[11px] font-mono text-slate-400 block mb-1">Model Recalibration Directives:</span>
+        <ul class="space-y-1.5 list-disc list-inside text-slate-300 leading-relaxed">
+          {auditNotes && auditNotes.length > 0 ? (
+            auditNotes.map((note) => <li>{note}</li>)
+          ) : (
+            <li>Capitalize off-balance commitments into Enterprise Value: EV = Market Cap + True Adjusted Debt - Cash.</li>
+          )}
+        </ul>
+      </div>
+      <div>
+        <span class="text-[11px] font-mono text-slate-400 block mb-1">Statutory Anchors & Regulatory Disclosures:</span>
+        <div class="space-y-1 text-slate-400 text-[11px] font-mono">
+          <p>• <strong>Pillar 1:</strong> FASB ASC 842-20-50, ASC 440-10, ASC 810 (VIEs), SEC Reg S-K 303</p>
+          <p>• <strong>Pillar 2:</strong> FASB ASC 280-10-50-42, ASC 606, SEC Reg S-K Item 101(c)</p>
+          <p>• <strong>Pillar 3:</strong> SEC Regulation G, Item 10(e) of Regulation S-K</p>
+          <p>• <strong>Pillar 4:</strong> FINRA Rule 6700 (TRACE), SEC Form 4, SEC Form 13F</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

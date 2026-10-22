@@ -189,7 +189,19 @@ const reportsCollection = defineCollection({
     archetype: z.enum(['moat', 'pead', 'contrarian', 'quant']).nullable().optional(),
     archetypeScore: z.number().nullable().optional(),
     archetypeRank: z.number().nullable().optional(),
-    archetypeThesis: z.string().nullable().optional()
+    archetypeThesis: z.string().nullable().optional(),
+
+    // Forensic Accounting & Structural Risk Detection (4 Pillars)
+    forensicAnalysis: z.object({
+      compositeScore: z.number().default(15),
+      compositeSeverity: z.enum(['LOW', 'MODERATE', 'HIGH', 'CRITICAL']).default('LOW'),
+      compositeLabel: z.string().default('Clean Accounting & High Moat Durability'),
+      compositeSummary: z.string().default('No critical accounting anomalies or off-balance sheet leverage risks detected.'),
+      pillars: z.any().optional(),
+      activeAlerts: z.array(z.any()).default([]),
+      auditNotes: z.array(z.string()).default([]),
+      generatedAt: z.string().optional()
+    }).passthrough().optional()
   }).passthrough()
 });
 

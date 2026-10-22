@@ -27,6 +27,11 @@ export function formatEPS(val: number | null | undefined): string {
   return `$${val.toFixed(2)}`;
 }
 
+export function formatPercent(val: number | null | undefined, decimals = 1): string {
+  if (val === undefined || val === null || isNaN(val)) return '0.0%';
+  return `${val.toFixed(decimals)}%`;
+}
+
 export function formatPriceTimestamp(dateInput: string | Date, explicitTimestamp?: string): string {
   if (explicitTimestamp && explicitTimestamp.trim().length > 0) {
     return explicitTimestamp.startsWith('Price on') ? explicitTimestamp : `Price on ${explicitTimestamp}`;

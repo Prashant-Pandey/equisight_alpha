@@ -11,6 +11,7 @@ export async function getStaticPaths() {
 
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import QuickViewDashboard from '../../components/report/QuickViewDashboard.astro';
+import ReportTabsNav from '../../components/report/ReportTabsNav.astro';
 import UnifiedCommandBar from '../../components/report/UnifiedCommandBar.astro';
 import ValuationFootballField from '../../components/report/ValuationFootballField.astro';
 import DcfSensitivitySandbox from '../../components/report/DcfSensitivitySandbox.astro';
@@ -18,6 +19,7 @@ import AnalysisSidebarToC from '../../components/report/AnalysisSidebarToC.astro
 import ThesisModule from '../../components/report/ThesisModule.astro';
 import ValuationModule from '../../components/report/ValuationModule.astro';
 import SolvencyModule from '../../components/report/SolvencyModule.astro';
+import ForensicDetectionModule from '../../components/report/ForensicDetectionModule.astro';
 import MicrostructureModule from '../../components/report/MicrostructureModule.astro';
 import ComplianceDisclaimer from '../../components/ComplianceDisclaimer.astro';
 import AffiliateBanner from '../../components/AffiliateBanner.astro';
@@ -331,6 +333,9 @@ const keyTakeaways = report.executiveSummaryData?.keyTakeaways || [
         <AdSlot slotId="report-top-ad" format="horizontal" minHeight="100px" />
       </div>
     )}
+
+    <!-- Interactive Modules Tab Navigation -->
+    <ReportTabsNav defaultTab="overview" />
 
     <!-- ==================== TAB PANELS CONTAINER ==================== -->
 
@@ -1021,7 +1026,12 @@ const keyTakeaways = report.executiveSummaryData?.keyTakeaways || [
       <SolvencyModule report={report} />
     </div>
 
-    <!-- TAB PANEL 5: MARKET FLOW & MICROSTRUCTURE -->
+    <!-- TAB PANEL 5: FORENSIC RISK & RED FLAGS -->
+    <div id="tab-panel-forensics" class="report-tab-panel hidden" hidden>
+      <ForensicDetectionModule report={report} />
+    </div>
+
+    <!-- TAB PANEL 6: MARKET FLOW & MICROSTRUCTURE -->
     <div id="tab-panel-microstructure" class="report-tab-panel hidden" hidden>
       <MicrostructureModule report={report} />
     </div>

@@ -192,10 +192,10 @@
     "ticker": "NVDA",
     "companyName": "NVIDIA Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-11T21:26:06.420Z",
-    "category": "loser",
-    "movePercent": -2,
-    "slug": "nvda-loss-2-percent-fundamental-analysis"
+    "coveredAt": "2026-10-22T03:12:25.688Z",
+    "category": "gainer",
+    "movePercent": 4,
+    "slug": "nvda-q3-accelerating-moat-test"
   },
   {
     "ticker": "GE",

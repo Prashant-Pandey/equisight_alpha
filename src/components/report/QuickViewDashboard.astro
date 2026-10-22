@@ -8,6 +8,7 @@ import {
   getStarRatingString,
   getDebtLeverageLabel
 } from '../../utils/financialClassification';
+import { generateForensicAnalysisFromReport } from '../../utils/forensicsEngine';
 
 interface Props {
   report: any;
@@ -66,6 +67,9 @@ const volumeAnomalyRatio = art.volumeAnomalyRatio ?? report.volumeAnomalyRatio ?
 const freeFloat = art.freeFloatConcentration || report.freeFloatConcentration || null;
 const optionGamma = art.optionGammaImbalance || report.optionGammaImbalance || null;
 
+// Forensic Risk Engine
+const forensic = generateForensicAnalysisFromReport(report);
+
 // Moat Analysis
 const moatResult = getEconomicMoat({
   existingRating: report.competitiveMoat?.rating || report.morningstarRating?.economicMoat,
@@ -116,6 +120,21 @@ const positiveQuarters = quarterlyEPS.filter((q: any) => Number(q.eps) > 0).leng
       <span class={`px-1.5 py-0.5 text-[10px] font-bold border ${consensusVerdictColor} bg-[#121212] uppercase`}>
         {consensusVerdict}
       </span>
+      <span class="text-[#666666]">|</span>
+      <button
+        type="button"
+        onclick="const btn = document.getElementById('tab-btn-forensics'); if(btn) btn.click();"
+        class={`px-1.5 py-0.5 text-[10px] font-bold border rounded cursor-pointer transition-colors ${
+          forensic.compositeSeverity === 'LOW'
+            ? 'border-emerald-600/70 text-emerald-400 bg-emerald-950/40 hover:bg-emerald-900/50'
+            : forensic.compositeSeverity === 'MODERATE'
+              ? 'border-amber-600/70 text-amber-300 bg-amber-950/40 hover:bg-amber-900/50'
+              : 'border-rose-600/70 text-rose-300 bg-rose-950/40 hover:bg-rose-900/50'
+        }`}
+        title="View Forensic Risk & Red Flag Surveillance"
+      >
+        FORENSIC: {forensic.compositeScore}/100 ({forensic.compositeSeverity})
+      </button>
     </div>
   </div>
 

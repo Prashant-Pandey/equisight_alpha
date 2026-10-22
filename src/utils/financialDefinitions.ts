@@ -14,7 +14,8 @@ export type DefinitionCategory =
   | 'Economic Moat & Competitive Dynamics'
   | 'Systematic Risk & Market Sensitivity'
   | 'Intrinsic Valuation & Margin of Safety'
-  | 'Exchange Structure & Trading Venue';
+  | 'Exchange Structure & Trading Venue'
+  | 'Forensic Accounting & Structural Risk';
 
 export interface DefinitionTier {
   code: string;
@@ -143,6 +144,40 @@ export const FINANCIAL_THRESHOLDS = {
     highDebtFloor: 1.8,
     mediumBetaFloor: 0.85,
     tiers: ['Low', 'Medium', 'High', 'Very High', 'Extreme'] as const
+  },
+  forensicRisk: {
+    hiddenDebt: {
+      offBalanceSheetWarningThresholdPct: 20.0,
+      minCapExFundingRatio: 0.8,
+      maxNetDilutionShareCreepPct: 3.0,
+      spvLiabilityToEquityWarningRatio: 0.15,
+    },
+    circularRevenue: {
+      singleCustomerConcentrationThresholdPct: 10.0,
+      top3CustomerConcentrationThresholdPct: 30.0,
+      dsoSpikeYoYDaysThreshold: 15.0,
+      unbilledReceivablesMaxPct: 12.0,
+      customerAltmanZStressFloor: 1.81,
+    },
+    unitEconomics: {
+      earningsQualityWedgeMaxPct: 25.0,
+      computeElasticityRatioMax: 1.25,
+      cacPaybackMonthsMax: 18.0,
+      switchingFrictionMinScore: 40.0,
+      moatDecayRateMax: 0.15,
+    },
+    institutionalRetreat: {
+      creditSpreadBlowoutBps: 350.0,
+      primeBrokerMarginHaircutFloorPct: 35.0,
+      institutionalNetSellingPct: 15.0,
+      insiderSellToBuyRatioFloor: 4.0,
+      multipleDivergenceScoreFloor: 60.0,
+    },
+    compositeScore: {
+      lowCeiling: 25.0,
+      moderateCeiling: 50.0,
+      highCeiling: 75.0,
+    }
   }
 } as const;
 
@@ -704,6 +739,193 @@ export const FINANCIAL_DEFINITIONS: Record<string, FinancialDomainDefinition> = 
     thresholds: {
       majorExchanges: ['NASDAQ', 'NYSE', 'LSE', 'EURONEXT', 'DAX']
     }
+  },
+
+  forensicHiddenDebt: {
+    id: 'forensic-hidden-debt',
+    term: 'Pillar 1: Hidden Debt, Off-Balance Sheet Obligations & Capital Engineering',
+    category: 'Forensic Accounting & Structural Risk',
+    regulatoryStandard: 'FASB ASC 842 (Leases), ASC 440 (Commitments), ASC 810 (Consolidation of VIEs), SEC Reg S-K Item 303',
+    academicOrMethodologyAnchor: "Damodaran Synthetic Debt Capitalization & Moody's Adjusted Leverage Framework",
+    formulaOrLogicSummary:
+      'Adjusted Debt = Reported Debt + Capitalized Off-Balance Sheet Leases + SPV Liabilities + Undisclosed Purchase Obligations; CapEx Funding Ratio = Operating Cash Flow / Gross CapEx; Net Dilution Rate = % Δ Diluted Shares Outstanding.',
+    methodologyRationale:
+      'Firms masking structural debt via footnoted commitments or variable interest entities present synthetic solvency risks. An OCF-to-CapEx ratio below 0.8x proves reliance on continuous debt financing or dilutive equity issuance to sustain baseline operations.',
+    reviewerNotes:
+      'Inspect 10-K Note 7 (Commitments & Contingencies) and Note 12 (Leases). Verify if headline share repurchases are negated by executive stock-based compensation creep (>3% net share growth).',
+    thresholds: {
+      offBalanceSheetWarningThresholdPct: FINANCIAL_THRESHOLDS.forensicRisk.hiddenDebt.offBalanceSheetWarningThresholdPct,
+      minCapExFundingRatio: FINANCIAL_THRESHOLDS.forensicRisk.hiddenDebt.minCapExFundingRatio,
+      maxNetDilutionShareCreepPct: FINANCIAL_THRESHOLDS.forensicRisk.hiddenDebt.maxNetDilutionShareCreepPct,
+      spvLiabilityToEquityWarningRatio: FINANCIAL_THRESHOLDS.forensicRisk.hiddenDebt.spvLiabilityToEquityWarningRatio,
+    },
+    tiers: [
+      {
+        code: 'LOW',
+        label: 'Transparent Capital Structure',
+        criteria: 'Off-balance sheet obligations < 10% of debt; OCF fully funds CapEx (> 1.0x); share count stable or contracting',
+        analystImplication: 'Reported balance sheet accurately captures total corporate claims; low debt engineering risk.'
+      },
+      {
+        code: 'MODERATE',
+        label: 'Moderate Financial Engineering',
+        criteria: 'Off-balance sheet obligations 10-20% of debt; OCF/CapEx between 0.8x and 1.0x; net share dilution 1-3%',
+        analystImplication: 'Secondary leverage dependencies present; monitor cash conversion and lease maturities.'
+      },
+      {
+        code: 'HIGH',
+        label: 'Severe Hidden Leverage',
+        criteria: 'Off-balance sheet commitments > 20% of debt; OCF/CapEx < 0.8x; net dilution > 3%',
+        analystImplication: 'Elevated refinancing and recapitalization risk; adjust enterprise value upward for hidden claims.'
+      },
+      {
+        code: 'CRITICAL',
+        label: 'Distressed Capital Structure / SPV Arbitrage',
+        criteria: 'SPV liabilities > 15% equity, negative OCF with aggressive CapEx, extreme dilution creep (> 6%)',
+        analystImplication: 'Severe structural red flag; imminent dilutive secondary or covenant breach vulnerability.'
+      }
+    ]
+  },
+
+  forensicCircularRevenue: {
+    id: 'forensic-circular-revenue',
+    term: 'Pillar 2: Circular Revenue, Unbilled Assets & Customer Concentration Stress',
+    category: 'Forensic Accounting & Structural Risk',
+    regulatoryStandard: 'FASB ASC 280 (Segment Reporting - Major Customers § 280-10-50-42), ASC 606 (Revenue Recognition), SEC Staff Accounting Bulletin No. 104',
+    academicOrMethodologyAnchor: 'Altman Customer Counterparty Credit Risk & Beneish M-Score Days Sales in Receivables Index (DSRI)',
+    formulaOrLogicSummary:
+      'Customer Concentration = Max Single Customer Revenue / Total Revenue; DSO = (Accounts Receivable / Annual Revenue) * 365; Unbilled Ratio = Contract Assets / Total Revenue; Counterparty Health = Weighted Altman Z-Score of key customers.',
+    methodologyRationale:
+      'Reliance on a single customer for >= 10% of revenue exposes the firm to acute counterparty solvency shock. Rapidly expanding unbilled receivables and ballooning DSO signal channel-stuffing, customer payment disputes, or round-tripping arrangements.',
+    reviewerNotes:
+      'Confirm whether single customers contribute >= 10% under ASC 280-10-50-42. Evaluate whether key customer solvency is stressed (Altman Z < 1.81). Look for barter or circular equity-for-services transactions.',
+    thresholds: {
+      singleCustomerConcentrationThresholdPct: FINANCIAL_THRESHOLDS.forensicRisk.circularRevenue.singleCustomerConcentrationThresholdPct,
+      top3CustomerConcentrationThresholdPct: FINANCIAL_THRESHOLDS.forensicRisk.circularRevenue.top3CustomerConcentrationThresholdPct,
+      dsoSpikeYoYDaysThreshold: FINANCIAL_THRESHOLDS.forensicRisk.circularRevenue.dsoSpikeYoYDaysThreshold,
+      unbilledReceivablesMaxPct: FINANCIAL_THRESHOLDS.forensicRisk.circularRevenue.unbilledReceivablesMaxPct,
+      customerAltmanZStressFloor: FINANCIAL_THRESHOLDS.forensicRisk.circularRevenue.customerAltmanZStressFloor,
+    },
+    tiers: [
+      {
+        code: 'LOW',
+        label: 'Diversified & High-Quality Revenue',
+        criteria: 'No customer >= 10% of revenue; DSO stable; unbilled assets < 5% of revenue; clients financially solvent',
+        analystImplication: 'Durable customer base with verified payment realization; low revenue recognition risk.'
+      },
+      {
+        code: 'MODERATE',
+        label: 'Emerging Counterparty Concentration',
+        criteria: 'Single customer between 10% and 15%; DSO rising by 5-15 days; unbilled assets 5-12%',
+        analystImplication: 'Customer dependency exists; track accounts receivable aging and quarterly concentration disclosures.'
+      },
+      {
+        code: 'HIGH',
+        label: 'Fragile Revenue Engine',
+        criteria: 'Single customer > 15% or top-3 > 30%; DSO jump > 15 days YoY; key client Altman Z in gray zone (< 2.6)',
+        analystImplication: 'Elevated risk of revenue cliff if key relationship contracts or counterparty defaults.'
+      },
+      {
+        code: 'CRITICAL',
+        label: 'Circular / Round-Tripping Red Flag',
+        criteria: 'Single customer > 25%, unbilled assets > 12% of revenue, customer in distress (< 1.81) or related-party entity',
+        analystImplication: 'Severe forensic audit flag; revenue quality severely impaired with risk of restatement.'
+      }
+    ]
+  },
+
+  forensicUnitEconomics: {
+    id: 'forensic-unit-economics',
+    term: 'Pillar 3: Flawed Unit Economics, Earnings Quality Wedge & Zero-Moat Commoditization',
+    category: 'Forensic Accounting & Structural Risk',
+    regulatoryStandard: 'SEC Regulation G (Non-GAAP Disclosures), Regulation S-K Item 10(e), CFA Institute Financial Statement Analysis Standards',
+    academicOrMethodologyAnchor: 'Dechow & Dichev Accrual Quality Model & Microeconomic Cost Elasticity Theory',
+    formulaOrLogicSummary:
+      'Earnings Quality Wedge (EQW) = (Non-GAAP Adjusted EBITDA - GAAP Operating Income) / Revenue * 100; Compute Elasticity = % Δ Cloud Delivery COGS / % Δ Revenue; Switching Friction Score (SFS 0-100); CAC Payback Months = Sales & Marketing / (Gross Profit * Net New ARR).',
+    methodologyRationale:
+      'A widening divergence between GAAP and non-GAAP results proves that baseline profitability relies on excluding persistent, real operating costs (e.g. stock compensation, data/compute infrastructure, recurring leases). If delivery compute costs scale > 1.25x revenue, gross margins degrade with scale.',
+    reviewerNotes:
+      'Scrutinize non-GAAP reconciliation footnotes for recurrent "non-recurring" items, stock-based compensation (>15% revenue), and compute hosting burdens. When CAC payback exceeds 18 months alongside SFS < 40, unit economics are structurally unviable.',
+    thresholds: {
+      earningsQualityWedgeMaxPct: FINANCIAL_THRESHOLDS.forensicRisk.unitEconomics.earningsQualityWedgeMaxPct,
+      computeElasticityRatioMax: FINANCIAL_THRESHOLDS.forensicRisk.unitEconomics.computeElasticityRatioMax,
+      cacPaybackMonthsMax: FINANCIAL_THRESHOLDS.forensicRisk.unitEconomics.cacPaybackMonthsMax,
+      switchingFrictionMinScore: FINANCIAL_THRESHOLDS.forensicRisk.unitEconomics.switchingFrictionMinScore,
+      moatDecayRateMax: FINANCIAL_THRESHOLDS.forensicRisk.unitEconomics.moatDecayRateMax,
+    },
+    tiers: [
+      {
+        code: 'LOW',
+        label: 'Robust Unit Economics & Wide Moat',
+        criteria: 'EQW < 10%; compute cost elasticity < 1.0x; CAC payback < 12 months; SFS >= 70',
+        analystImplication: 'Economies of scale drive operating leverage; high customer retention and genuine GAAP profitability.'
+      },
+      {
+        code: 'MODERATE',
+        label: 'Standard Growth Dynamics',
+        criteria: 'EQW between 10% and 25%; elasticity 1.0x-1.25x; CAC payback 12-18 months; SFS 40-70',
+        analystImplication: 'Competitive pressure visible; margins require scale to absorb fixed delivery and sales overhead.'
+      },
+      {
+        code: 'HIGH',
+        label: 'Structural Margin Erosion',
+        criteria: 'EQW > 25%; compute costs scaling > 1.25x revenue; CAC payback > 18 months; SFS < 40',
+        analystImplication: 'Commoditized offering; growth consumes rather than generates economic value.'
+      },
+      {
+        code: 'CRITICAL',
+        label: 'Fatal Economic Treadmill',
+        criteria: 'EQW > 40%, negative gross margins on true delivery costs, rapid customer churn, zero pricing power',
+        analystImplication: 'Terminal business model defect; capital consumption without economic return.'
+      }
+    ]
+  },
+
+  forensicInstitutionalRetreat: {
+    id: 'forensic-institutional-retreat',
+    term: 'Pillar 4: Institutional Liquidity Retreat, Credit Spread Blowout & Multiple Disconnect',
+    category: 'Forensic Accounting & Structural Risk',
+    regulatoryStandard: 'SEC Form 4 (Insider Transactions), SEC Form 13F (Institutional Investment Managers), FINRA Rule 6700 (TRACE Corporate Bond Reporting)',
+    academicOrMethodologyAnchor: 'Merton Structural Credit Risk Model & Information Asymmetry Smarter Money Flow Theory',
+    formulaOrLogicSummary:
+      'Credit Spread OAS = Corporate Bond Yield - Benchmark Treasury; Prime Broker Haircut = % collateral margin required; Form 4 Insider Sell-to-Buy Ratio = Dispositions / Acquisitions; 13F Institutional Net Liquidations = % net shares shed by tier-1 institutional holders.',
+    methodologyRationale:
+      'Bond markets, credit rating agencies, prime brokers, and corporate insiders often detect insolvency and business model distress well before retail equity markets. An OAS spread blowout (> 350 bps) or spiked PB margin haircut (> 35%) exposes severe collateral and liquidity pressure.',
+    reviewerNotes:
+      'Compare debt market spreads against equity valuation multiples. If bonds trade at distressed spreads while the stock trades at an elevated valuation multiple, institutional smart money is fleeing while retail absorbs distribution.',
+    thresholds: {
+      creditSpreadBlowoutBps: FINANCIAL_THRESHOLDS.forensicRisk.institutionalRetreat.creditSpreadBlowoutBps,
+      primeBrokerMarginHaircutFloorPct: FINANCIAL_THRESHOLDS.forensicRisk.institutionalRetreat.primeBrokerMarginHaircutFloorPct,
+      institutionalNetSellingPct: FINANCIAL_THRESHOLDS.forensicRisk.institutionalRetreat.institutionalNetSellingPct,
+      insiderSellToBuyRatioFloor: FINANCIAL_THRESHOLDS.forensicRisk.institutionalRetreat.insiderSellToBuyRatioFloor,
+      multipleDivergenceScoreFloor: FINANCIAL_THRESHOLDS.forensicRisk.institutionalRetreat.multipleDivergenceScoreFloor,
+    },
+    tiers: [
+      {
+        code: 'LOW',
+        label: 'Institutional Accumulation & Prime Stability',
+        criteria: 'Credit spread OAS < 180 bps; PB margin haircut <= 20%; net institutional 13F accumulation; insider alignment',
+        analystImplication: 'Tier-1 institutions and debt markets confirm enterprise creditworthiness and equity durability.'
+      },
+      {
+        code: 'MODERATE',
+        label: 'Neutral Capital Market Flows',
+        criteria: 'OAS between 180 and 350 bps; PB haircut 20-35%; mild institutional trimming; normal executive diversification',
+        analystImplication: 'Normal market dynamics without acute credit or smart-money divergence signals.'
+      },
+      {
+        code: 'HIGH',
+        label: 'Smart Money Distribution & Credit Stress',
+        criteria: 'OAS > 350 bps; PB haircut > 35%; institutional net liquidation > 15%; insider sell-to-buy ratio > 4:1',
+        analystImplication: 'Institutional capital exiting; repo/collateral terms tightening; high valuation compression risk.'
+      },
+      {
+        code: 'CRITICAL',
+        label: 'Credit Freeze & C-Suite Capitulation',
+        criteria: 'OAS > 600 bps (distressed debt), PB haircut > 50%, mass insider dumping, multiple standard deviations divergent',
+        analystImplication: 'Acute refinancing crisis imminent; credit markets pricing default while equity distributes.'
+      }
+    ]
   }
 };
 

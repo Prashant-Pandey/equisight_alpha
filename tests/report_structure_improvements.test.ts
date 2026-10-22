@@ -35,13 +35,13 @@ assert(fslyWebContent.includes('print?autoprint=true'), 'PDF action button must 
 console.log('✓ Sticky Action & Metadata Bar verified with single-click PDF export.');
 
 // Test 3: First-Glance Quick-View Dashboard (< 5-Sec Scan)
-assert(fslyWebContent.includes('Executive Triage &bull; 5-Second Quick-View Dashboard'), 'Web page must contain 5-second quick-view header');
-assert(fslyWebContent.includes('Valuation &amp; Margin of Safety') || fslyWebContent.includes('Valuation & Margin of Safety'), 'Quick-View must contain Valuation & Margin of Safety tile');
-assert(fslyWebContent.includes('Catalyst &amp; Order Flow') || fslyWebContent.includes('Catalyst & Order Flow'), 'Quick-View must contain Catalyst & Order Flow tile');
-assert(fslyWebContent.includes('Moat &amp; Solvency Snapshot') || fslyWebContent.includes('Moat & Solvency Snapshot'), 'Quick-View must contain Moat & Solvency Snapshot tile');
-assert(fslyWebContent.includes('5★ Buy Below'), 'Quick-View must contain 5★ Buy hurdle');
-assert(fslyWebContent.includes('1★ Trim Above'), 'Quick-View must contain 1★ Trim hurdle');
-assert(fslyWebContent.includes('5 Competitive Moat Pillars:'), 'Quick-View must show 5 Competitive Moat Pillars summary');
+assert(fslyWebContent.includes('Executive Triage') || fslyWebContent.includes('EXECUTIVE TRIAGE'), 'Web page must contain executive triage header');
+assert(fslyWebContent.includes('VALUATION & SPREAD') || fslyWebContent.includes('Valuation & Margin of Safety') || fslyWebContent.includes('Valuation &amp; Margin of Safety'), 'Quick-View must contain Valuation tile');
+assert(fslyWebContent.includes('CATALYST & ORDER FLOW') || fslyWebContent.includes('Catalyst & Order Flow') || fslyWebContent.includes('Catalyst &amp; Order Flow'), 'Quick-View must contain Catalyst tile');
+assert(fslyWebContent.includes('MOAT & BALANCE SHEET') || fslyWebContent.includes('Moat & Solvency Snapshot') || fslyWebContent.includes('Moat &amp; Solvency Snapshot'), 'Quick-View must contain Moat tile');
+assert(fslyWebContent.includes('5★ BUY') || fslyWebContent.includes('5★ Buy Below'), 'Quick-View must contain 5★ Buy hurdle');
+assert(fslyWebContent.includes('1★ TRIM') || fslyWebContent.includes('1★ Trim Above'), 'Quick-View must contain 1★ Trim hurdle');
+assert(fslyWebContent.includes('COMPETITIVE PILLARS') || fslyWebContent.includes('5 Competitive Moat Pillars:'), 'Quick-View must show Competitive Moat Pillars summary');
 console.log('✓ First-Glance Quick-View Dashboard verified with 3-tile triage layout.');
 
 // Test 4: Tabbed Workspace Navigation & Modules

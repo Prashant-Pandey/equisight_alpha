@@ -611,6 +611,7 @@ export interface LLMAnalysisOutput {
     economicPoliticalCulturalRisks: string;
     economicPoliticalCulturalRisksSimplified?: string;
   };
+  forensicAnalysis?: any;
 }
 
 export interface CoverageRecord {
@@ -747,4 +748,5 @@ export interface FinalReportFrontmatter {
     economicPoliticalCulturalRisks: string;
     economicPoliticalCulturalRisksSimplified?: string;
   };
+  forensicAnalysis?: any;
 }
