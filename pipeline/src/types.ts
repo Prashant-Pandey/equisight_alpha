@@ -534,6 +534,92 @@ export interface ReportPart2Output {
   markdownBody: string;
 }
 
+// ============================================================================
+// SPECIALIZED SUB-SECTION AGENT OUTPUTS
+// ============================================================================
+
+export interface TitleAndExecOutput {
+  title: string;
+  seoDescription: string;
+  slug: string;
+  primaryKeywords: string[];
+  secondaryKeywords: string[];
+  catalystSummary: string;
+  catalystAlignment?: CatalystAlignment;
+  catalystSynthesis?: string;
+  extractedFigures: {
+    peRatio?: number | null;
+    revenueTTM?: number;
+    operatingMargin?: number;
+    freeCashFlow?: number | null;
+    netDebt?: number;
+    movePercent?: number;
+  };
+  executiveSummaryData?: ExecutiveSummaryData;
+  sectionMarkdown: string;
+}
+
+export interface TradingActivityOutput {
+  sectionMarkdown: string;
+  sentimentScore?: number;
+  tacticalTimingRegime?: string;
+  volumeAnomalyRatio?: number;
+  majorPriceDriver?: string;
+}
+
+export interface BalanceSheetSolvencyOutput {
+  sectionMarkdown: string;
+  totalDebt?: number | null;
+  shortTermDebt?: number | null;
+  longTermDebt?: number | null;
+  debtToEquity?: number | null;
+  currentRatio?: number | null;
+  solvencyVerdict?: string;
+}
+
+export interface ProfitabilityOperatingOutput {
+  sectionMarkdown: string;
+  grossMargin?: number | null;
+  operatingMargin?: number | null;
+  returnOnEquity?: number | null;
+  roic?: number | null;
+}
+
+export interface MoatAndCompetitorOutput {
+  sectionMarkdown: string;
+  macroConditionSimplified?: string;
+  obstaclesAndChallengesSimplified?: string;
+  economicPoliticalCulturalRisksSimplified?: string;
+  managementQualityRating?: string;
+  economicMoatRating?: string;
+  moatTrend?: string;
+}
+
+export interface ValuationEngineOutput {
+  sectionMarkdown: string;
+  consensusFairValue?: number | null;
+  starRating?: number | null;
+  verdict?: string;
+  uncertaintyRating?: string;
+}
+
+export interface BullBearThesesOutput {
+  sectionMarkdown: string;
+  theses: {
+    bull: ThesisPoint[];
+    bear: ThesisPoint[];
+  };
+  socialHooks: {
+    twitterThread: string[];
+    redditPost: {
+      title: string;
+      bodyMarkdown: string;
+      flair?: string;
+    };
+    telegramAlert: string;
+  };
+}
+
 
 export interface LLMAnalysisOutput {
   title: string;

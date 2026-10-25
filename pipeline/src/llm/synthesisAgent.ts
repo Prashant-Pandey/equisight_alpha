@@ -14,8 +14,25 @@ import {
   MAIN_REPORT_SCHEMA,
   REPORT_PART1_SCHEMA,
   REPORT_PART2_SCHEMA,
+  TITLE_AND_EXEC_SCHEMA,
+  TRADING_ACTIVITY_SCHEMA,
+  BALANCE_SHEET_SOLVENCY_SCHEMA,
+  PROFITABILITY_OPERATING_SCHEMA,
+  MOAT_AND_COMPETITOR_SCHEMA,
+  VALUATION_ENGINE_SCHEMA,
+  BULL_BEAR_THESES_SCHEMA,
   safeParseJson
 } from './schemas.js';
+import {
+  titleAndExecAgent,
+  tradingActivityAgent,
+  balanceSheetSolvencyAgent,
+  profitabilityOperatingAgent,
+  moatAndCompetitorAgent,
+  valuationEngineAgent,
+  bullBearThesesAgent,
+  type SubSectionAgentContext
+} from './subSectionAgents.js';
 import { factChecker } from './factChecker.js';
 import { buildTheses } from '../monetization/adInjector.js';
 import {
@@ -94,42 +111,44 @@ export class LLMSynthesisAgent {
     });
     console.log(`[Phase 4 -> Phase 2 Memory] Loaded ${institutionalLessons.length} persistent institutional lessons for $${mover.ticker} (${fundamentals.sector}).`);
 
-    const part1SystemPrompt = buildReportPart1SystemPrompt();
-    const part1UserPrompt = `${buildReportPart1UserPrompt(mover, fundamentals, macro, sentiment)}\n\n${groundTruthPromptBlock}`;
-
-    const part2SystemPrompt = buildReportPart2SystemPrompt();
-    const part2UserPrompt = `${buildReportPart2UserPrompt(mover, fundamentals, macro, sentiment)}\n\n${groundTruthPromptBlock}`;
-
-    const execSystemPrompt = buildExecutiveSummarySystemPrompt();
-    const execUserPrompt = `${buildExecutiveSummaryUserPrompt(mover, fundamentals, macro, sentiment)}\n\n${groundTruthPromptBlock}`;
-
     // =========================================================================
-    // PHASE 2 & PHASE 3 PARALLEL EXECUTION:
-    // - Report Part 1 (Financials, Solvency & Microstructure)
-    // - Report Part 2 (Moat, 8-Model Valuation & Theses)
-    // - Executive Summary
-    // - Phase 2 Adversarial Bull vs. Bear Dialectical Cross-Examination
+    // PARALLEL EXECUTION OF 7 SPECIALIZED SUB-SECTION AGENTS + DIALECTICAL DEBATE:
+    // 1. Title & Executive Summary
+    // 2. Trading Activity, Catalyst-Price Alignment & Artificial Inflation Analysis
+    // 3. Balance Sheet & Solvency Stress Test (with Full Debt Breakdown)
+    // 4. Profitability, Operating Health & Segment Dynamics
+    // 5. Management Quality, 5 Moat Pillars & Competitor Benchmarking Matrix
+    // 6. Multi-Model Valuation Engine (Refined 3-Stage DCF with Moat Fade)
+    // 7. Objective Bull & Bear Theses with Cited Sources & Deduction Chains
+    // 8. Phase 2 Adversarial Bull vs. Bear Dialectical Cross-Examination
     // =========================================================================
-    console.log(`[LLMSynthesisAgent] Launching PARALLEL LLM calls: [1] Report Part 1, [2] Report Part 2, [3] Executive Summary, and [4] Phase 2 Adversarial Bull/Bear Dialectic Debate for $${mover.ticker}...`);
-    const [part1Output, part2Output, execOutput, debateTranscript] = await Promise.all([
-      this.executeLLMCall<ReportPart1Output>(
-        part1SystemPrompt,
-        part1UserPrompt,
-        `ReportPart1-${mover.ticker}`,
-        REPORT_PART1_SCHEMA
-      ),
-      this.executeLLMCall<ReportPart2Output>(
-        part2SystemPrompt,
-        part2UserPrompt,
-        `ReportPart2-${mover.ticker}`,
-        REPORT_PART2_SCHEMA
-      ),
-      this.executeLLMCall<ExecutiveSummaryData>(
-        execSystemPrompt,
-        execUserPrompt,
-        `ExecSummary-${mover.ticker}`,
-        EXECUTIVE_SUMMARY_SCHEMA
-      ),
+    const subContext: SubSectionAgentContext = {
+      mover,
+      fundamentals,
+      macro,
+      sentiment,
+      groundTruthPromptBlock,
+      executeLLM: this.executeLLMCall.bind(this)
+    };
+
+    console.log(`[LLMSynthesisAgent] Launching 7 PARALLEL specialized sub-section LLM calls + Phase 2 Adversarial Dialectic Debate for $${mover.ticker}...`);
+    const [
+      titleAndExecOutput,
+      tradingActivityOutput,
+      balanceSheetSolvencyOutput,
+      profitabilityOperatingOutput,
+      moatAndCompetitorOutput,
+      valuationEngineOutput,
+      bullBearThesesOutput,
+      debateTranscript
+    ] = await Promise.all([
+      titleAndExecAgent.execute(subContext),
+      tradingActivityAgent.execute(subContext),
+      balanceSheetSolvencyAgent.execute(subContext),
+      profitabilityOperatingAgent.execute(subContext),
+      moatAndCompetitorAgent.execute(subContext),
+      valuationEngineAgent.execute(subContext),
+      bullBearThesesAgent.execute(subContext),
       dialecticDebateEngine.runAdversarialDebate({
         mover,
         fundamentals,
@@ -159,71 +178,35 @@ export class LLMSynthesisAgent {
       executeLLM: this.executeLLMCall.bind(this)
     });
 
-    let rawOutput: LLMAnalysisOutput | null = null;
+    console.log(`[LLMSynthesisAgent] Stitching 7 specialized sub-sections into consolidated research dossier for $${mover.ticker}...`);
+    const combinedMarkdown = [
+      titleAndExecOutput.sectionMarkdown.trim(),
+      tradingActivityOutput.sectionMarkdown.trim(),
+      balanceSheetSolvencyOutput.sectionMarkdown.trim(),
+      profitabilityOperatingOutput.sectionMarkdown.trim(),
+      moatAndCompetitorOutput.sectionMarkdown.trim(),
+      valuationEngineOutput.sectionMarkdown.trim(),
+      bullBearThesesOutput.sectionMarkdown.trim()
+    ].join('\n\n---\n\n');
 
-    if (part1Output && part2Output) {
-      console.log(`[LLMSynthesisAgent] Successfully received both Report Part 1 and Part 2 for $${mover.ticker}. Stitching sections...`);
-      const p1Body = part1Output.markdownBody.trim().replace(/\n---\s*$/, '');
-      const p2Body = part2Output.markdownBody.trim().replace(/^\s*---\n*/, '');
-      const combinedMarkdown = `${p1Body}\n\n---\n\n${p2Body}`;
-
-      rawOutput = {
-        title: part1Output.title,
-        seoDescription: part1Output.seoDescription,
-        slug: part1Output.slug,
-        primaryKeywords: part1Output.primaryKeywords,
-        secondaryKeywords: part1Output.secondaryKeywords,
-        catalystSummary: part1Output.catalystSummary,
-        catalystAlignment: part1Output.catalystAlignment || sentiment.catalystAlignment || 'ALIGNED',
-        catalystSynthesis: part1Output.catalystSynthesis || sentiment.catalystSynthesis,
-        macroConditionSimplified: part2Output.macroConditionSimplified || fundamentals.sectorDynamics?.macroConditionSimplified,
-        obstaclesAndChallengesSimplified: part2Output.obstaclesAndChallengesSimplified || fundamentals.sectorDynamics?.obstaclesAndChallengesSimplified,
-        economicPoliticalCulturalRisksSimplified: part2Output.economicPoliticalCulturalRisksSimplified || fundamentals.sectorDynamics?.economicPoliticalCulturalRisksSimplified,
-        markdownBody: combinedMarkdown,
-        extractedFigures: part1Output.extractedFigures,
-        theses: part2Output.theses,
-        socialHooks: part2Output.socialHooks
-      };
-    } else if (part1Output && !part2Output) {
-      console.warn(`[LLMSynthesisAgent] Report Part 2 failed for $${mover.ticker}. Using deterministic fallback for Part 2...`);
-      const det = this.generateDeterministicReport(mover, fundamentals, macro, sentiment);
-      const detPart2Markdown = this.extractReportPart2FromMarkdown(det.markdownBody);
-      const p1Body = part1Output.markdownBody.trim().replace(/\n---\s*$/, '');
-      const combinedMarkdown = detPart2Markdown ? `${p1Body}\n\n---\n\n${detPart2Markdown}` : p1Body;
-
-      rawOutput = {
-        ...det,
-        title: part1Output.title,
-        seoDescription: part1Output.seoDescription,
-        slug: part1Output.slug,
-        primaryKeywords: part1Output.primaryKeywords,
-        secondaryKeywords: part1Output.secondaryKeywords,
-        catalystSummary: part1Output.catalystSummary,
-        catalystAlignment: part1Output.catalystAlignment || det.catalystAlignment,
-        catalystSynthesis: part1Output.catalystSynthesis || det.catalystSynthesis,
-        markdownBody: combinedMarkdown,
-        extractedFigures: part1Output.extractedFigures || det.extractedFigures
-      };
-    } else if (!part1Output && part2Output) {
-      console.warn(`[LLMSynthesisAgent] Report Part 1 failed for $${mover.ticker}. Using deterministic fallback for Part 1...`);
-      const det = this.generateDeterministicReport(mover, fundamentals, macro, sentiment);
-      const detPart1Markdown = this.extractReportPart1FromMarkdown(det.markdownBody);
-      const p2Body = part2Output.markdownBody.trim().replace(/^\s*---\n*/, '');
-      const combinedMarkdown = detPart1Markdown ? `${detPart1Markdown}\n\n---\n\n${p2Body}` : p2Body;
-
-      rawOutput = {
-        ...det,
-        macroConditionSimplified: part2Output.macroConditionSimplified || det.macroConditionSimplified,
-        obstaclesAndChallengesSimplified: part2Output.obstaclesAndChallengesSimplified || det.obstaclesAndChallengesSimplified,
-        economicPoliticalCulturalRisksSimplified: part2Output.economicPoliticalCulturalRisksSimplified || det.economicPoliticalCulturalRisksSimplified,
-        theses: part2Output.theses || det.theses,
-        socialHooks: part2Output.socialHooks || det.socialHooks,
-        markdownBody: combinedMarkdown
-      };
-    } else {
-      console.log(`[LLMSynthesisAgent] Using built-in deterministic synthesis engine for ${mover.ticker}...`);
-      rawOutput = this.generateDeterministicReport(mover, fundamentals, macro, sentiment);
-    }
+    let rawOutput: LLMAnalysisOutput = {
+      title: titleAndExecOutput.title,
+      seoDescription: titleAndExecOutput.seoDescription,
+      slug: titleAndExecOutput.slug,
+      primaryKeywords: titleAndExecOutput.primaryKeywords,
+      secondaryKeywords: titleAndExecOutput.secondaryKeywords,
+      catalystSummary: titleAndExecOutput.catalystSummary,
+      catalystAlignment: titleAndExecOutput.catalystAlignment || sentiment.catalystAlignment || 'ALIGNED',
+      catalystSynthesis: titleAndExecOutput.catalystSynthesis || sentiment.catalystSynthesis,
+      macroConditionSimplified: moatAndCompetitorOutput.macroConditionSimplified || fundamentals.sectorDynamics?.macroConditionSimplified,
+      obstaclesAndChallengesSimplified: moatAndCompetitorOutput.obstaclesAndChallengesSimplified || fundamentals.sectorDynamics?.obstaclesAndChallengesSimplified,
+      economicPoliticalCulturalRisksSimplified: moatAndCompetitorOutput.economicPoliticalCulturalRisksSimplified || fundamentals.sectorDynamics?.economicPoliticalCulturalRisksSimplified,
+      markdownBody: combinedMarkdown,
+      extractedFigures: titleAndExecOutput.extractedFigures,
+      theses: bullBearThesesOutput.theses,
+      socialHooks: bullBearThesesOutput.socialHooks,
+      executiveSummaryData: titleAndExecOutput.executiveSummaryData
+    };
 
     if (!rawOutput.catalystAlignment && sentiment.catalystAlignment) {
       rawOutput.catalystAlignment = sentiment.catalystAlignment;
@@ -257,19 +240,14 @@ export class LLMSynthesisAgent {
       }
     }
 
-    // Integrate dedicated parallel Executive Summary LLM data
-    const specializedExec = execOutput || this.generateDeterministicExecutiveSummary(mover, fundamentals, macro, sentiment);
-    if (specializedExec) {
-      console.log(`[LLMSynthesisAgent] Integrating specialized Executive Summary & Session Catalyst data into $${mover.ticker} report...`);
-      rawOutput.executiveSummaryData = specializedExec;
-      if (specializedExec.catalystHeadline) {
-        rawOutput.catalystSummary = specializedExec.catalystHeadline;
+    // Ensure executive summary metadata is cleanly populated
+    if (titleAndExecOutput.executiveSummaryData) {
+      rawOutput.executiveSummaryData = titleAndExecOutput.executiveSummaryData;
+      if (titleAndExecOutput.executiveSummaryData.catalystHeadline) {
+        rawOutput.catalystSummary = titleAndExecOutput.executiveSummaryData.catalystHeadline;
       }
-      if (specializedExec.expectationsVsReality) {
-        rawOutput.catalystSynthesis = specializedExec.expectationsVsReality;
-      }
-      if (specializedExec.formattedMarkdown) {
-        rawOutput.markdownBody = this.replaceExecutiveSummarySection(rawOutput.markdownBody, specializedExec.formattedMarkdown);
+      if (titleAndExecOutput.executiveSummaryData.expectationsVsReality) {
+        rawOutput.catalystSynthesis = titleAndExecOutput.executiveSummaryData.expectationsVsReality;
       }
     }
 

@@ -500,7 +500,7 @@ export class DialecticDebateEngine {
       round: 3,
       speaker: 'BULL_RESEARCHER',
       coreClaim: `Cross-examining the Bear Researcher's refinancing and ASC 842 stress test: ${cleanName} maintains $${cashM}M in cash and equivalents alongside $${fcfM}M in TTM free cash flow, providing internal self-funding capacity that insulates core R&D and capital allocation from capital-market freezes.`,
-      rebuttalToOpponent: `While the Bear Agent cites ASC 606/280 customer concentration and Reg G adjustments, vertical integration and embedded switching costs (${switchingRating}) allow ${cleanName} to pass through inflationary input costs (${macro.cpiInflationRate.toFixed(2)}% CPI) while preserving a ${f.grossMargin !== null ? `${f.grossMargin.toFixed(2)}% gross margin and ` : ''}${f.operatingMargin.toFixed(2)}% operating margin.`,
+      rebuttalToOpponent: `While the Bear Agent cites ASC 606/280 customer concentration and Reg G adjustments, vertical integration and embedded switching costs (${switchingRating}) allow ${cleanName} to pass through inflationary input costs (${(macro.cpiInflationRate ?? 2.80).toFixed(2)}% CPI) while preserving a ${f.grossMargin !== null ? `${f.grossMargin.toFixed(2)}% gross margin and ` : ''}${f.operatingMargin.toFixed(2)}% operating margin.`,
       citedStatutoryAndDeterministicEvidence: [
         `SEC Form 10-K Consolidated Statements of Cash Flows ($${fcfM}M FCF, $${cashM}M Cash)`,
         `SEC Form 10-Q Liquidity & Capital Resources Debt Maturity Schedule ($${shortTermDebtM}M Short-Term Debt)`,

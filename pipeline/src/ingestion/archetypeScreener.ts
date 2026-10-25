@@ -2177,7 +2177,6 @@ export class ArchetypeScreener {
         industry: 'Banks - Diversified',
         securityType: 'CS',
         country: 'US',
-        marketCapFloor: true,
         roe: 18.2, // Quality
         grossMarginStability: 0.8,
         assetTurnover: 0.04, // Banking assets

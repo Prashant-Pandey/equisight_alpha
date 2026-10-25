@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-25T05:16:37.794Z",
+  "updatedAt": "2026-10-25T05:44:50.133Z",
   "snapshots": [
     {
       "id": "ADBE-2026-10-11-adbe-gain-2-percent-fundamental-analysis",
@@ -2527,6 +2527,24 @@
       "bullCoreThesis": "Multi-Model Valuation Asymmetry (Market price of $32.26 trades relative to intrinsic DCF ($174.98))",
       "bearCoreThesis": "Macro & Multiple Friction (Risk-free sovereign yields above 4%)",
       "slug": "cenx-loss-6-percent-fundamental-analysis"
+    },
+    {
+      "id": "NVDA-2026-10-25-nvda-gain-5-percent-fundamental-analysis",
+      "ticker": "NVDA",
+      "companyName": "NVIDIA Corporation",
+      "sector": "Technology",
+      "recordedAt": "2026-10-25T05:44:50.133Z",
+      "priceAtCoverage": 135.5,
+      "consensusFairValue": 148.5,
+      "fundamentalRating": "Fairly Valued",
+      "starRating": 4,
+      "uncertaintyRating": "Very High",
+      "forensicCompositeScore": 14,
+      "debateWinningEdge": "BEAR_DOMINANT",
+      "riskGovernanceStatus": "CAUTION_ELEVATED_UNCERTAINTY",
+      "bullCoreThesis": "Vertical integration. NVIDIA develops AND manufactures most of what it sells. It gives the company control over product development, quality, supply chain, capacity management and reduces lead times from R&D to commercialization",
+      "bearCoreThesis": "Enterprise + customer concentration. A large share of recent growth has come from enterprise. The tailwind is currently strong but as enterprise becomes an increasingly important part of the revenue mix, the impact of any slowdown would also become more significant",
+      "slug": "nvda-gain-5-percent-fundamental-analysis"
     }
   ],
   "reflections": [

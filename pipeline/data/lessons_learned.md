@@ -1,8 +1,8 @@
 # EquiSight Alpha — Persistent Institutional Memory (`lessons_learned.md`)
 
 > **Architecture Reference:** Phase 4 Continuous Learning & Episodic Reflection Loop (arXiv:2412.20138 *TradingAgents* + *EquiSight Alpha* Deterministic Valuation & Forensic Synthesis).
-> **Last Updated:** 2026-10-25T05:16:37.794Z
-> **Tracked Dossier Snapshots:** 160 | **Completed Post-Mortem Reflections:** 25
+> **Last Updated:** 2026-10-25T05:44:50.133Z
+> **Tracked Dossier Snapshots:** 161 | **Completed Post-Mortem Reflections:** 25
 
 ---
 

@@ -383,6 +383,232 @@ export const TIER1_SENTIMENT_SCHEMA = {
   ]
 } as const;
 
+// ============================================================================
+// SPECIALIZED SUB-SECTION SCHEMAS (7 DEDICATED DOMAIN AGENTS)
+// ============================================================================
+
+export const TITLE_AND_EXEC_SCHEMA = {
+  type: 'object',
+  properties: {
+    title: { type: 'string' },
+    seoDescription: { type: 'string' },
+    slug: { type: 'string' },
+    primaryKeywords: {
+      type: 'array',
+      items: { type: 'string' }
+    },
+    secondaryKeywords: {
+      type: 'array',
+      items: { type: 'string' }
+    },
+    catalystSummary: { type: 'string' },
+    catalystAlignment: {
+      type: 'string',
+      enum: [
+        'ALIGNED',
+        'DIVERGENT_SELL_THE_NEWS',
+        'DIVERGENT_RELIEF_RALLY',
+        'MACRO_DOMINATED',
+        'NOISE_SPECULATION'
+      ]
+    },
+    catalystSynthesis: { type: 'string' },
+    extractedFigures: {
+      type: 'object',
+      properties: {
+        peRatio: { type: ['number', 'null'] },
+        revenueTTM: { type: 'number' },
+        operatingMargin: { type: 'number' },
+        freeCashFlow: { type: ['number', 'null'] },
+        netDebt: { type: 'number' },
+        movePercent: { type: 'number' }
+      }
+    },
+    sectionMarkdown: {
+      type: 'string',
+      description: 'The complete markdown section starting with ## Executive Summary & Session Catalyst'
+    }
+  },
+  required: [
+    'title',
+    'seoDescription',
+    'slug',
+    'primaryKeywords',
+    'secondaryKeywords',
+    'catalystSummary',
+    'sectionMarkdown'
+  ]
+} as const;
+
+export const TRADING_ACTIVITY_SCHEMA = {
+  type: 'object',
+  properties: {
+    sectionMarkdown: {
+      type: 'string',
+      description: 'The complete markdown section starting with ## 1. Trading Activity & Artificial Inflation Analysis'
+    },
+    sentimentScore: { type: 'number' },
+    tacticalTimingRegime: { type: 'string' },
+    volumeAnomalyRatio: { type: 'number' },
+    majorPriceDriver: { type: 'string' }
+  },
+  required: ['sectionMarkdown']
+} as const;
+
+export const BALANCE_SHEET_SOLVENCY_SCHEMA = {
+  type: 'object',
+  properties: {
+    sectionMarkdown: {
+      type: 'string',
+      description: 'The complete markdown section starting with ## 2. Balance Sheet & Solvency Stress Test (Debt Breakdown)'
+    },
+    totalDebt: { type: 'number' },
+    shortTermDebt: { type: ['number', 'null'] },
+    longTermDebt: { type: ['number', 'null'] },
+    debtToEquity: { type: ['number', 'null'] },
+    currentRatio: { type: ['number', 'null'] },
+    solvencyVerdict: { type: 'string' }
+  },
+  required: ['sectionMarkdown']
+} as const;
+
+export const PROFITABILITY_OPERATING_SCHEMA = {
+  type: 'object',
+  properties: {
+    sectionMarkdown: {
+      type: 'string',
+      description: 'The complete markdown containing ## 3. Profitability, Operating Health & Segment Dynamics and ## 4. Qualitative Deep Dive: 4 Key Company Questions'
+    },
+    grossMargin: { type: ['number', 'null'] },
+    operatingMargin: { type: ['number', 'null'] },
+    returnOnEquity: { type: ['number', 'null'] },
+    roic: { type: ['number', 'null'] }
+  },
+  required: ['sectionMarkdown']
+} as const;
+
+export const MOAT_AND_COMPETITOR_SCHEMA = {
+  type: 'object',
+  properties: {
+    macroConditionSimplified: {
+      type: 'string',
+      description: 'Macro Condition for the industry in simplified terms (plain, non-technical language for retail investors).'
+    },
+    obstaclesAndChallengesSimplified: {
+      type: 'string',
+      description: 'Industry obstacles and challenges in simplified terms (plain, non-technical language for retail investors).'
+    },
+    economicPoliticalCulturalRisksSimplified: {
+      type: 'string',
+      description: 'Economic, political, and cultural risks in simplified terms (plain, non-technical language for retail investors).'
+    },
+    sectionMarkdown: {
+      type: 'string',
+      description: 'The complete markdown containing ## 5. Industry Deep Dive & Sector Dynamics and ## 6. Management Quality, 5 Moat Pillars & Competitor Benchmarking Matrix'
+    },
+    managementQualityRating: { type: 'string' },
+    economicMoatRating: { type: 'string' },
+    moatTrend: { type: 'string' }
+  },
+  required: ['sectionMarkdown']
+} as const;
+
+export const VALUATION_ENGINE_SCHEMA = {
+  type: 'object',
+  properties: {
+    sectionMarkdown: {
+      type: 'string',
+      description: 'The complete markdown containing ## 7. Multi-Model Valuation Suite (Refined 3-Stage DCF & Morningstar Star Rating) and ## 8. Macroeconomic Headwinds & Sector Multiples'
+    },
+    consensusFairValue: { type: ['number', 'null'] },
+    starRating: { type: 'number' },
+    verdict: { type: 'string' },
+    uncertaintyRating: { type: 'string' }
+  },
+  required: ['sectionMarkdown']
+} as const;
+
+export const BULL_BEAR_THESES_SCHEMA = {
+  type: 'object',
+  properties: {
+    sectionMarkdown: {
+      type: 'string',
+      description: 'The complete markdown containing ## 9. Evidence-Based Bull & Bear Theses (with Deductive Chains)'
+    },
+    theses: {
+      type: 'object',
+      properties: {
+        bull: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              point: { type: 'string' },
+              sources: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string' },
+                    url: { type: 'string' }
+                  },
+                  required: ['name', 'url']
+                }
+              },
+              deductionChain: { type: 'string' }
+            },
+            required: ['point', 'sources', 'deductionChain']
+          }
+        },
+        bear: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              point: { type: 'string' },
+              sources: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string' },
+                    url: { type: 'string' }
+                  },
+                  required: ['name', 'url']
+                }
+              },
+              deductionChain: { type: 'string' }
+            },
+            required: ['point', 'sources', 'deductionChain']
+          }
+        }
+      },
+      required: ['bull', 'bear']
+    },
+    socialHooks: {
+      type: 'object',
+      properties: {
+        twitterThread: {
+          type: 'array',
+          items: { type: 'string' }
+        },
+        redditPost: {
+          type: 'object',
+          properties: {
+            title: { type: 'string' },
+            bodyMarkdown: { type: 'string' },
+            flair: { type: 'string' }
+          },
+          required: ['title', 'bodyMarkdown']
+        },
+        telegramAlert: { type: 'string' }
+      },
+      required: ['twitterThread', 'redditPost', 'telegramAlert']
+    }
+  },
+  required: ['sectionMarkdown', 'theses', 'socialHooks']
+} as const;
+
 /**
  * Sanitizes malformed escape sequences in JSON string payloads generated by LLMs.
  * Preserves standard JSON escapes (\", \\, \/, \b, \f, \n, \r, \t, \uXXXX) while stripping

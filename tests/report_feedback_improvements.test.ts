@@ -382,20 +382,20 @@ import { MAIN_REPORT_SCHEMA } from '../pipeline/src/llm/schemas.js';
 // 5.1 Test deriveSectorDynamics produces technical condition and non-technical simplified condition
 const techDynamics = deriveSectorDynamics('Technology', 'Services-Prepackaged Software');
 assert(techDynamics.industryCondition.length > 0, 'Technical industryCondition must be present');
-assert(techDynamics.macroConditionSimplified && techDynamics.macroConditionSimplified.length > 0, 'Simplified macroCondition must be present');
-assert(techDynamics.obstaclesAndChallengesSimplified && techDynamics.obstaclesAndChallengesSimplified.length > 0, 'Simplified obstaclesAndChallenges must be present');
-assert(techDynamics.economicPoliticalCulturalRisksSimplified && techDynamics.economicPoliticalCulturalRisksSimplified.length > 0, 'Simplified economicPoliticalCulturalRisks must be present');
+assert(Boolean(techDynamics.macroConditionSimplified && techDynamics.macroConditionSimplified.length > 0), 'Simplified macroCondition must be present');
+assert(Boolean(techDynamics.obstaclesAndChallengesSimplified && techDynamics.obstaclesAndChallengesSimplified.length > 0), 'Simplified obstaclesAndChallenges must be present');
+assert(Boolean(techDynamics.economicPoliticalCulturalRisksSimplified && techDynamics.economicPoliticalCulturalRisksSimplified.length > 0), 'Simplified economicPoliticalCulturalRisks must be present');
 assert(
-  techDynamics.macroConditionSimplified.includes('Tech companies are seeing strong adoption'),
+  Boolean(techDynamics.macroConditionSimplified && techDynamics.macroConditionSimplified.includes('Tech companies are seeing strong adoption')),
   'Simplified condition should be in plain, non-technical language'
 );
 
 const healthDynamics = deriveSectorDynamics('Healthcare', 'Biological Products');
-assert(healthDynamics.macroConditionSimplified && healthDynamics.macroConditionSimplified.length > 0, 'Healthcare simplified condition present');
-assert(healthDynamics.obstaclesAndChallengesSimplified && healthDynamics.obstaclesAndChallengesSimplified.length > 0, 'Healthcare simplified obstacles present');
-assert(healthDynamics.economicPoliticalCulturalRisksSimplified && healthDynamics.economicPoliticalCulturalRisksSimplified.length > 0, 'Healthcare simplified risks present');
+assert(Boolean(healthDynamics.macroConditionSimplified && healthDynamics.macroConditionSimplified.length > 0), 'Healthcare simplified condition present');
+assert(Boolean(healthDynamics.obstaclesAndChallengesSimplified && healthDynamics.obstaclesAndChallengesSimplified.length > 0), 'Healthcare simplified obstacles present');
+assert(Boolean(healthDynamics.economicPoliticalCulturalRisksSimplified && healthDynamics.economicPoliticalCulturalRisksSimplified.length > 0), 'Healthcare simplified risks present');
 assert(
-  healthDynamics.macroConditionSimplified.includes('Healthcare and biotech businesses rely on'),
+  Boolean(healthDynamics.macroConditionSimplified && healthDynamics.macroConditionSimplified.includes('Healthcare and biotech businesses rely on')),
   'Healthcare simplified condition should be in plain, non-technical language'
 );
 

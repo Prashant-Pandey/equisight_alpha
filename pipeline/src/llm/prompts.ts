@@ -739,3 +739,24 @@ Macro Summary: ${macro.sectorImpactSummary}
 Synthesize Part 2 (Sections 5 through 9) strictly according to the REPORT_PART2_SCHEMA.`;
 }
 
+// ============================================================================
+// SPECIALIZED SUB-SECTION PROMPT BUILDERS (7 DOMAIN AGENTS)
+// ============================================================================
+export {
+  buildTitleAndExecSystemPrompt,
+  buildTitleAndExecUserPrompt,
+  buildTradingActivitySystemPrompt,
+  buildTradingActivityUserPrompt,
+  buildBalanceSheetSolvencySystemPrompt,
+  buildBalanceSheetSolvencyUserPrompt,
+  buildProfitabilityOperatingSystemPrompt,
+  buildProfitabilityOperatingUserPrompt,
+  buildMoatAndCompetitorSystemPrompt,
+  buildMoatAndCompetitorUserPrompt,
+  buildValuationEngineSystemPrompt,
+  buildValuationEngineUserPrompt,
+  buildBullBearThesesSystemPrompt,
+  buildBullBearThesesUserPrompt
+} from './specializedPrompts.js';
+
+
