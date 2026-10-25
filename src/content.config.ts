@@ -173,6 +173,27 @@ const reportsCollection = defineCollection({
       formattedMarkdown: z.string().optional()
     }).passthrough().optional(),
 
+    // 3-Minute Briefing Layer (Plain-English Web UX for Busy Working Professionals)
+    webBriefing: z.object({
+      plainHeadline: z.string().optional(),
+      whatHappenedOneLiner: z.string().optional(),
+      noiseVsSignalVerdict: z.enum(['REAL_FUNDAMENTAL_NEWS', 'OVERREACTION', 'MACRO_DRAG', 'HYPE_OR_SQUEEZE']).optional(),
+      noiseVsSignalExplanation: z.string().optional(),
+      bottomLineSummary: z.string().optional(),
+      valuationPlain: z.object({
+        verdictBadge: z.enum(['On Sale', 'Fairly Priced', 'Priced High', 'Speculative']).optional(),
+        dollarForDollarAnalogy: z.string().optional(),
+        whyItTradesHere: z.string().optional()
+      }).optional(),
+      financialSafetyPlain: z.object({
+        status: z.enum(['Strong Cushion', 'Manageable Debt', 'Tight Cash — Watch Closely']).optional(),
+        cashVsBillsSummary: z.string().optional(),
+        cleanAccountingNote: z.string().optional()
+      }).optional(),
+      prosPlain: z.array(z.string()).optional(),
+      consPlain: z.array(z.string()).optional()
+    }).passthrough().optional(),
+
     // Morningstar Framework & Institutional Rigor
     morningstarRating: z.any().optional(),
     starRating: z.number().optional(),

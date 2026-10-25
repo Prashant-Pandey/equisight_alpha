@@ -3,6 +3,45 @@
  * Enforces native schema adherence in agy CLI and other structured LLM providers.
  */
 
+export const WEB_BRIEFING_SCHEMA = {
+  type: 'object',
+  description: 'Plain-English 3-Minute Briefing fields for busy working professionals with low-to-medium market knowledge.',
+  properties: {
+    plainHeadline: { type: 'string' },
+    whatHappenedOneLiner: { type: 'string' },
+    noiseVsSignalVerdict: {
+      type: 'string',
+      enum: ['REAL_FUNDAMENTAL_NEWS', 'OVERREACTION', 'MACRO_DRAG', 'HYPE_OR_SQUEEZE']
+    },
+    noiseVsSignalExplanation: { type: 'string' },
+    bottomLineSummary: { type: 'string' },
+    valuationPlain: {
+      type: 'object',
+      properties: {
+        verdictBadge: {
+          type: 'string',
+          enum: ['On Sale', 'Fairly Priced', 'Priced High', 'Speculative']
+        },
+        dollarForDollarAnalogy: { type: 'string' },
+        whyItTradesHere: { type: 'string' }
+      }
+    },
+    financialSafetyPlain: {
+      type: 'object',
+      properties: {
+        status: {
+          type: 'string',
+          enum: ['Strong Cushion', 'Manageable Debt', 'Tight Cash — Watch Closely']
+        },
+        cashVsBillsSummary: { type: 'string' },
+        cleanAccountingNote: { type: 'string' }
+      }
+    },
+    prosPlain: { type: 'array', items: { type: 'string' } },
+    consPlain: { type: 'array', items: { type: 'string' } }
+  }
+} as const;
+
 export const EXECUTIVE_SUMMARY_SCHEMA = {
   type: 'object',
   properties: {
@@ -241,6 +280,7 @@ export const MAIN_REPORT_SCHEMA = {
       type: 'string',
       description: 'Economic, political, and cultural risks in simplified terms (plain, non-technical language explaining macro and regulatory risks for retail investors).'
     },
+    webBriefing: WEB_BRIEFING_SCHEMA,
     markdownBody: { type: 'string' },
     extractedFigures: {
       type: 'object',
@@ -424,6 +464,7 @@ export const TITLE_AND_EXEC_SCHEMA = {
         movePercent: { type: 'number' }
       }
     },
+    webBriefing: WEB_BRIEFING_SCHEMA,
     sectionMarkdown: {
       type: 'string',
       description: 'The complete markdown section starting with ## Executive Summary & Session Catalyst'

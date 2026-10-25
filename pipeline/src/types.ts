@@ -494,6 +494,26 @@ export interface ExecutiveSummaryData {
   formattedMarkdown?: string;
 }
 
+export interface WebBriefingData {
+  plainHeadline?: string;
+  whatHappenedOneLiner?: string;
+  noiseVsSignalVerdict?: 'REAL_FUNDAMENTAL_NEWS' | 'OVERREACTION' | 'MACRO_DRAG' | 'HYPE_OR_SQUEEZE';
+  noiseVsSignalExplanation?: string;
+  bottomLineSummary?: string;
+  valuationPlain?: {
+    verdictBadge?: 'On Sale' | 'Fairly Priced' | 'Priced High' | 'Speculative';
+    dollarForDollarAnalogy?: string;
+    whyItTradesHere?: string;
+  };
+  financialSafetyPlain?: {
+    status?: 'Strong Cushion' | 'Manageable Debt' | 'Tight Cash — Watch Closely';
+    cashVsBillsSummary?: string;
+    cleanAccountingNote?: string;
+  };
+  prosPlain?: string[];
+  consPlain?: string[];
+}
+
 export interface ReportPart1Output {
   title: string;
   seoDescription: string;
@@ -556,6 +576,7 @@ export interface TitleAndExecOutput {
     movePercent?: number;
   };
   executiveSummaryData?: ExecutiveSummaryData;
+  webBriefing?: WebBriefingData;
   sectionMarkdown: string;
 }
 
@@ -629,6 +650,7 @@ export interface LLMAnalysisOutput {
   secondaryKeywords: string[];
   catalystSummary: string;
   executiveSummaryData?: ExecutiveSummaryData;
+  webBriefing?: WebBriefingData;
   markdownBody: string;
   extractedFigures: {
     peRatio?: number | null;
@@ -751,6 +773,7 @@ export interface FinalReportFrontmatter {
     telegram: string;
   };
   executiveSummaryData?: ExecutiveSummaryData;
+  webBriefing?: WebBriefingData;
 
   // Penny Stock & Trading Venue
   isPennyStock: boolean;
