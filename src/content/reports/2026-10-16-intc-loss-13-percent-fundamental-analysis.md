@@ -1016,9 +1016,7 @@ Intel experienced severe downward selling pressure (-12.57%) driven primarily by
 | **52-Week Range** | `$91.54 - $91.54` | Current: $91.54 |
 | **Social Sentiment** | `44.4% Bull / 55.6% Bear` | Major Driver: Chip equipment supply risks and AI chip sector rotation alongside operational disruptions |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1036,7 +1034,6 @@ Intel experienced severe downward selling pressure (-12.57%) driven primarily by
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

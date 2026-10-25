@@ -408,20 +408,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Methodological & Regulatory Disclosures
-
-    *This publication is prepared solely for general educational and
-    institutional informational purposes pursuant to the Publisher's Exemption
-    under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and
-    FINRA Rule 2210. This document does not constitute personalized investment
-    advice, a portfolio recommendation, an endorsement, or a solicitation to buy
-    or sell securities. Analytical evaluations, fair value benchmarks, and order
-    flow metrics are algorithmically generated via institutional quantitative
-    pipelines utilizing verified public filings (SEC EDGAR) and market data
-    feeds. All fundamental assertions are derived strictly from reported
-    corporate accounting metrics.*
   fundamentalImpact: >-
     From a fundamental perspective, the reported acquisition catalyst does not
     alter Lionsgate's trailing operational performance: official SEC EDGAR Form
@@ -1331,7 +1317,6 @@ From an ongoing fundamental perspective, the acquisition catalyst introduces a p
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1348,7 +1333,6 @@ From an ongoing fundamental perspective, the acquisition catalyst introduces a p
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metric Table
 
@@ -1374,12 +1358,6 @@ From an ongoing fundamental perspective, the acquisition catalyst introduces a p
 > - **Significant Valuation Disconnect:** Today's rally places the stock at a 46.9% premium (1.47x Price/Fair Value) above its multi-model Consensus Fair Value of $8.43, consistent with Morningstar's 3-Star (★★★) rating under Extreme Uncertainty and a 'None' Economic Moat.
 > - **Balance Sheet Leverage Dictates Strategic Urgency:** With $1.90B in total debt ($162.1M short-term) against $0.43B in cash and $0.10B in TTM Free Cash Flow, activist-led M&A optionality offers a crucial capital structure exit versus standalone operational headwinds.
 > - **Financing Obstacles in a 5.12% Rate Environment:** Elevated benchmark borrowing costs (US 10Y at 5.12%, Fed Funds at 4.23%) increase debt-service friction for prospective acquirers, giving well-capitalized strategic bidders an advantage over private equity while exposing shares to downside if buyout talks stall.
-
----
-
-### Methodological & Regulatory Disclosures
-*This publication is prepared solely for general educational and institutional informational purposes pursuant to the Publisher's Exemption under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This document does not constitute personalized investment advice, a portfolio recommendation, an endorsement, or a solicitation to buy or sell securities. Analytical evaluations, fair value benchmarks, and order flow metrics are algorithmically generated via institutional quantitative pipelines utilizing verified public filings (SEC EDGAR) and market data feeds. All fundamental assertions are derived strictly from reported corporate accounting metrics.*
-
 
 ---
 

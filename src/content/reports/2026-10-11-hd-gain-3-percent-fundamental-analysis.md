@@ -1035,9 +1035,7 @@ $HD rallied +2.79% driven by positive earnings follow-through (Q2 beat, reaffirm
 | **52-Week Range** | `$290.74 - $290.74` | Current: $290.74 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Q2 earnings beat with reaffirmed guidance and analyst upgrades |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1055,7 +1053,6 @@ $HD rallied +2.79% driven by positive earnings follow-through (Q2 beat, reaffirm
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

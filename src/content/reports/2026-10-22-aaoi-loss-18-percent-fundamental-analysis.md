@@ -1015,9 +1015,7 @@ Applied Optoelectronics ($AAOI) plunged -17.65% in a move directly triggered by 
 | **52-Week Range** | `$68.95 - $68.95` | Current: $68.95 |
 | **Social Sentiment** | `77.8% Bull / 22.2% Bear` | Major Driver: $600 Million Follow-On Equity Offering Dilution |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1035,7 +1033,6 @@ Applied Optoelectronics ($AAOI) plunged -17.65% in a move directly triggered by 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

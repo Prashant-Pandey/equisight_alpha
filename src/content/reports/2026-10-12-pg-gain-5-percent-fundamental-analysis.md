@@ -246,18 +246,6 @@ executiveSummaryData:
     - **Volume Fragility**: The 0.36x RVOL rally indicates limited cash
     participation; once option dealer delta-hedging flows subside, spot pricing
     faces potential mean-reversion risk toward underlying technical support.
-
-
-    ---
-
-    *Methodology & Compliance Disclosure: This analysis is algorithmically
-    compiled by automated quantitative research pipelines utilizing verified SEC
-    EDGAR filings (CIK 0000080424) and institutional market feeds. Prepared
-    solely for general educational and institutional informational purposes
-    under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S.
-    Investment Advisers Act of 1940 and FINRA Rule 2210. This material does not
-    constitute personalized investment advice, an endorsement, or a
-    recommendation of any security.*
   fundamentalImpact: >-
     The session confirms Procter & Gamble's Wide Economic Moat and stable
     operational moat trend across core global consumer categories, supported by
@@ -1144,7 +1132,6 @@ The advance occurred against a challenging macroeconomic hurdle: the **US 10-Yea
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1161,9 +1148,6 @@ The advance occurred against a challenging macroeconomic hurdle: the **US 10-Yea
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Compliance Disclosure: This analysis is algorithmically compiled by automated quantitative research pipelines utilizing verified SEC EDGAR filings (CIK 0000080424) and institutional market feeds. Prepared solely for general educational and institutional informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This material does not constitute personalized investment advice, an endorsement, or a recommendation of any security.*
-
 
 ---
 

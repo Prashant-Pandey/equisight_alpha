@@ -1024,9 +1024,7 @@ Despite bullish long-term notes from Morgan Stanley and expansion chatter around
 | **52-Week Range** | `$11.68 - $11.68` | Current: $11.68 |
 | **Social Sentiment** | `91.7% Bull / 8.3% Bear` | Major Driver: Earnings miss, high cash burn, and capital dilution amid sector rotation away from debt-funded AI infrastructure. |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1044,7 +1042,6 @@ Despite bullish long-term notes from Morgan Stanley and expansion chatter around
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

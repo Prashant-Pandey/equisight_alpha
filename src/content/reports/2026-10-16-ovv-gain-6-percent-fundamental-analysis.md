@@ -410,28 +410,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology & Regulatory Disclosures
-
-    * **Methodology & Automation Disclosure:** This executive summary and
-    session catalyst report is synthesized algorithmically utilizing automated
-    quantitative pipelines, real-time market microstructure feeds, and verified
-    regulatory filings from the U.S. Securities and Exchange Commission (SEC
-    EDGAR Form 10-K, CIK 0001792580, FY2025). Analytical evaluations are
-    conducted via institutional models that evaluate order flow anomalies,
-    option dealer gamma positioning, and multi-model discounted cash flow fair
-    values.
-
-    * **Publisher's Exemption & Non-Advisory Mandate:** This analysis is
-    published strictly for general educational and informational purposes under
-    the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940** and in alignment with **FINRA Rule 2210**. This
-    document does not constitute personalized investment advice, a portfolio
-    recommendation, an individualized price target, or an endorsement to execute
-    transactions in any security. All analytical deductions reflect impersonal,
-    empirical evaluations of public market data and verified financial metrics.
-    Market participants must perform independent due diligence.
   fundamentalImpact: >-
     The catalyst cluster reinforces Ovintiv's operational positioning as a
     disciplined, free-cash-flow generative upstream operator, but simultaneously
@@ -1301,7 +1279,6 @@ Fundamentally, the session move solidifies Ovintiv's position as a robust upstre
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1318,7 +1295,6 @@ Fundamentally, the session move solidifies Ovintiv's position as a robust upstre
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1365,13 +1341,6 @@ Fundamentally, the session move solidifies Ovintiv's position as a robust upstre
 2. **Intrinsic DCF Valuation Disconnect:** At **$67.86**, the equity trades at a **1.17x multiple** to the multi-model Consensus Fair Value of **$58.22**, sustaining a Morningstar **2-Star (Modestly Overvalued)** classification. Price has materially overshot baseline fundamental value anchors, implying vulnerability if operational guidance is merely in-line.
 3. **Restrictive Macro Discount Rate Pressure:** With the **US 10-Year yield at 5.08%** and **Fed Funds at 4.22%**, cost-of-capital parameters remain highly restrictive. Elevated sovereign yields cap sustainable terminal valuation multiples across cyclical capital-intensive resource equities.
 4. **Sentiment Extremity & Asymmetric Asymmetry:** Tracked sentiment metrics indicate **100% Bull / 0% Bear** alignment across retail forums. When sentiment reaches unanimous alignment in tandem with an overextended 1.17x Price/Fair Value multiple, any minor operational shortfall or crude pullback presents asymmetric downside risk.
-
----
-
-### Transparent Methodology & Regulatory Disclosures
-* **Methodology & Automation Disclosure:** This executive summary and session catalyst report is synthesized algorithmically utilizing automated quantitative pipelines, real-time market microstructure feeds, and verified regulatory filings from the U.S. Securities and Exchange Commission (SEC EDGAR Form 10-K, CIK 0001792580, FY2025). Analytical evaluations are conducted via institutional models that evaluate order flow anomalies, option dealer gamma positioning, and multi-model discounted cash flow fair values.
-* **Publisher's Exemption & Non-Advisory Mandate:** This analysis is published strictly for general educational and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in alignment with **FINRA Rule 2210**. This document does not constitute personalized investment advice, a portfolio recommendation, an individualized price target, or an endorsement to execute transactions in any security. All analytical deductions reflect impersonal, empirical evaluations of public market data and verified financial metrics. Market participants must perform independent due diligence.
-
 
 ---
 

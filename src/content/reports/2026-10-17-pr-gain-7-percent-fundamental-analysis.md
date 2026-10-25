@@ -1002,9 +1002,7 @@ Permian Resources ($PR) gained +6.77% driven by crude oil strength, positive ear
 | **52-Week Range** | `$24.59 - $24.59` | Current: $24.59 |
 | **Social Sentiment** | `87.5% Bull / 12.5% Bear` | Major Driver: Crude oil strength coupled with bullish Wall Street estimate revisions and target hikes ahead of Q3 earnings |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1022,7 +1020,6 @@ Permian Resources ($PR) gained +6.77% driven by crude oil strength, positive ear
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

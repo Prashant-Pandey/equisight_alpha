@@ -349,18 +349,6 @@ executiveSummaryData:
 
     | **Macroeconomic Yield Regime** | US 10Y: 5.08% \| Fed Funds: 4.22% | CBOE
     VIX: 16.4 \| WTI Crude: $95.73/bbl |
-
-
-    ---
-
-    *Methodology & Regulatory Compliance Disclosure: This analytical document is
-    produced via automated quantitative research pipelines synthesizing verified
-    regulatory filings from the SEC EDGAR system and real-time consolidated
-    market feeds. This publication is prepared strictly for general educational
-    and informational purposes under the Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule
-    2210. It does not constitute personalized investment advice, financial
-    planning, or a recommendation to buy, hold, or sell any security.*
   fundamentalImpact: >-
     The session's price dislocation does not alter the fundamental operational
     trajectory of Lam Research Corporation. The company maintains an entrenched
@@ -1295,7 +1283,6 @@ However, from an absolute valuation perspective, the equity’s Morningstar Rati
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1312,9 +1299,6 @@ However, from an absolute valuation perspective, the equity’s Morningstar Rati
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Regulatory Compliance Disclosure: This analytical document is produced via automated quantitative research pipelines synthesizing verified regulatory filings from the SEC EDGAR system and real-time consolidated market feeds. This publication is prepared strictly for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute personalized investment advice, financial planning, or a recommendation to buy, hold, or sell any security.*
-
 
 ---
 

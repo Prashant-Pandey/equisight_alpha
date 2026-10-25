@@ -1080,9 +1080,7 @@ The +2.86% intraday surge in $TRGP is propelled by an aggressive wave of bullish
 | **52-Week Range** | `$294.90 - $294.90` | Current: $294.90 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Pre-earnings wave of bullish Wall Street price target increases |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1100,7 +1098,6 @@ The +2.86% intraday surge in $TRGP is propelled by an aggressive wave of bullish
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

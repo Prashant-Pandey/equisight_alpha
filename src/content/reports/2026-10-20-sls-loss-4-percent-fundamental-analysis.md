@@ -1034,9 +1034,7 @@ While pre-clinical/early lab data for CDK9 inhibitor SLS009 in pancreatic cancer
 | **52-Week Range** | `$11.95 - $11.95` | Current: $11.95 |
 | **Social Sentiment** | `90.5% Bull / 9.5% Bear` | Major Driver: Retail anticipation and uncertainty surrounding Phase 3 REGAL trial readout compounded by disclosure probe noise |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1054,7 +1052,6 @@ While pre-clinical/early lab data for CDK9 inhibitor SLS009 in pancreatic cancer
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

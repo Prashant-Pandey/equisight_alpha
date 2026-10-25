@@ -292,27 +292,6 @@ executiveSummaryData:
     emphasizes vulnerability to Azure margin compression as massive capex
     depreciation converges with elevated data center energy costs (WTI at
     $97.97/bbl).
-
-
-    ---
-
-    ### Regulatory Compliance & Methodology Disclosures
-
-    * **Publisher's Exemption Notice:** This research report is authored and
-    disseminated strictly for general educational and informational purposes
-    under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S.
-    Investment Advisers Act of 1940 and FINRA Rule 2210.
-
-    * **No Personalized Investment Advice:** This document does not constitute
-    personalized financial advice, investment recommendations, or buy/sell
-    directives. All analyses are conducted impersonally based on publicly
-    available data, quantitative metrics, and macroeconomic indicators.
-
-    * **Automated Quantitative Pipeline:** Deductions, ratios, and valuations
-    presented herein are compiled algorithmically via quantitative models,
-    verified regulatory filings (including SEC EDGAR Form 10-K, CIK 0000789019,
-    filed 2026-07-29), and consolidated market feeds under standardized
-    institutional protocols.
   fundamentalImpact: >-
     Fundamentally, the cancellation of the UK Nscale project does not impair
     Microsoft's Wide Economic Moat or its core enterprise dominance, which
@@ -1260,7 +1239,6 @@ The microstructural attributes of the session highlight steady liquidity:
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1277,12 +1255,6 @@ The microstructural attributes of the session highlight steady liquidity:
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-### Regulatory Compliance & Methodology Disclosures
-* **Publisher's Exemption Notice:** This research report is authored and disseminated strictly for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210.
-* **No Personalized Investment Advice:** This document does not constitute personalized financial advice, investment recommendations, or buy/sell directives. All analyses are conducted impersonally based on publicly available data, quantitative metrics, and macroeconomic indicators.
-* **Automated Quantitative Pipeline:** Deductions, ratios, and valuations presented herein are compiled algorithmically via quantitative models, verified regulatory filings (including SEC EDGAR Form 10-K, CIK 0000789019, filed 2026-07-29), and consolidated market feeds under standardized institutional protocols.
-
 
 ---
 

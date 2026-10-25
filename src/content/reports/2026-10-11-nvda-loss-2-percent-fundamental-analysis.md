@@ -331,20 +331,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance, Automation & Methodology Disclosure
-
-
-    *Pursuant to the Publisher's Exemption of Section 202(a)(11)(D) of the U.S.
-    Investment Advisers Act of 1940 and FINRA Rule 2210, this report is prepared
-    solely for general educational and informational purposes and does not
-    constitute personalized investment advice, a portfolio recommendation, or an
-    offer to buy or sell securities. The deductions, metrics, and models
-    presented herein have been compiled algorithmically via quantitative
-    analytics pipelines synthesizing verified SEC EDGAR filings (CIK 0001045810)
-    and standardized market data feeds. Historical performance and valuation
-    models are not indicative of future returns.*
   fundamentalImpact: >-
     The prospective acquisition or expanded investment in Reflection AI
     reinforces NVIDIA's Wide Economic Moat (Trend: Positive) by augmenting its
@@ -1204,7 +1190,6 @@ NVIDIA Corporation ($NVDA) closed today's session at **$229.28**, registering an
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1221,7 +1206,6 @@ NVIDIA Corporation ($NVDA) closed today's session at **$229.28**, registering an
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1280,13 +1264,6 @@ This financial architecture renders bolt-on acquisitions—such as Reflection AI
 - **Stretched Valuation Anchor**: At $229.28, the equity trades at **1.50x Consensus Fair Value ($153.15)**, earning a Morningstar 1-Star rating. At these levels, the equity possesses minimal margin of safety against potential capex deceleration from primary hyperscale customers.
 - **Duration Sensitivity to Elevated Sovereign Yields**: A 5.24% 10-Year risk-free benchmark demands extraordinary equity risk premiums, leaving the current multiple vulnerable to multiple compression if growth rates normalize toward historical industry averages.
 - **Asymmetric Expectation Asymmetry**: As demonstrated by today's -2.00% decline on constructive news, positive catalysts are largely discounted, while any minor operational hiccup, export control tightening, or packaging bottleneck could trigger pronounced re-pricing.
-
----
-
-### Regulatory Compliance, Automation & Methodology Disclosure
-
-*Pursuant to the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210, this report is prepared solely for general educational and informational purposes and does not constitute personalized investment advice, a portfolio recommendation, or an offer to buy or sell securities. The deductions, metrics, and models presented herein have been compiled algorithmically via quantitative analytics pipelines synthesizing verified SEC EDGAR filings (CIK 0001045810) and standardized market data feeds. Historical performance and valuation models are not indicative of future returns.*
-
 
 ---
 

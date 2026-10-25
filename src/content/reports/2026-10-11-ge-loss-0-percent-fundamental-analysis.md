@@ -298,20 +298,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory, Compliance & Methodological Disclosures
-
-    *This publication is prepared solely for general educational and
-    informational purposes under the **Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and **FINRA Rule
-    2210**. This document does not constitute personalized investment advice, a
-    portfolio recommendation, a price target, or a solicitation to buy or sell
-    any security. All analytical deductions and structured metrics are generated
-    via automated quantitative research pipelines leveraging verified public
-    regulatory filings (SEC EDGAR) and standardized market data feeds.
-    Historical performance and valuation multiples are non-predictive of future
-    operational outcomes.*
   fundamentalImpact: >-
     The session's price consolidation does not impair GE Aerospace's long-term
     fundamental trajectory; rather, operational data confirms the company's Wide
@@ -1246,7 +1232,6 @@ The broader macro environment continues to impose discount rate hurdles on long-
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1263,11 +1248,6 @@ The broader macro environment continues to impose discount rate hurdles on long-
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-
-### Regulatory, Compliance & Methodological Disclosures
-*This publication is prepared solely for general educational and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and **FINRA Rule 2210**. This document does not constitute personalized investment advice, a portfolio recommendation, a price target, or a solicitation to buy or sell any security. All analytical deductions and structured metrics are generated via automated quantitative research pipelines leveraging verified public regulatory filings (SEC EDGAR) and standardized market data feeds. Historical performance and valuation multiples are non-predictive of future operational outcomes.*
-
 
 ---
 

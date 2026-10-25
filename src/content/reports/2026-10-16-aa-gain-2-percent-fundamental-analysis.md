@@ -908,9 +908,7 @@ Alcoa Corporation's session movement of +2.2% aligned with market participants a
 | **52-Week Range** | `$43.15 - $43.15` | Current: $43.15 |
 | **Social Sentiment** | `85.7% Bull / 14.3% Bear` | Major Driver: Quarterly Earnings Outperformance |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -928,7 +926,6 @@ Alcoa Corporation's session movement of +2.2% aligned with market participants a
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

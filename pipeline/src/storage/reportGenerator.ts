@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import { CONFIG } from '../config.js';
 import { historyTracker } from './historyTracker.js';
 import { sitemapGenerator } from '../seo/sitemapGenerator.js';
+import { stripRedundantDisclaimers } from '../llm/factChecker.js';
 import type { MarketMover, FinalReportFrontmatter } from '../types.js';
 
 export class ReportFileGenerator {
@@ -37,8 +38,16 @@ export class ReportFileGenerator {
     // Clean undefined fields to prevent YAML dump errors
     const sanitizedFrontmatter = JSON.parse(JSON.stringify(frontmatter));
 
+    // Strip redundant LLM-generated legal disclaimers; presentation layer handles them deterministically
+    const cleanedContent = stripRedundantDisclaimers(content);
+    if (sanitizedFrontmatter.executiveSummaryData?.formattedMarkdown) {
+      sanitizedFrontmatter.executiveSummaryData.formattedMarkdown = stripRedundantDisclaimers(
+        sanitizedFrontmatter.executiveSummaryData.formattedMarkdown
+      );
+    }
+
     // Serialize frontmatter and body with gray-matter
-    const fileContent = matter.stringify(content.trim() + '\n', sanitizedFrontmatter);
+    const fileContent = matter.stringify(cleanedContent.trim() + '\n', sanitizedFrontmatter);
 
     // Write file to disk
     await fs.promises.writeFile(targetPath, fileContent, 'utf-8');

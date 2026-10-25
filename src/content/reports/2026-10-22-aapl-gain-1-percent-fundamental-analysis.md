@@ -329,24 +329,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Editorial & Regulatory Compliance Disclosures
-
-    * **Publisher’s Exemption:** This analysis is prepared and distributed
-    strictly for educational, informational, and general market commentary
-    purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the
-    U.S. Investment Advisers Act of 1940 and FINRA Rule 2210.
-
-    * **No Personalized Advice:** Nothing within this publication constitutes
-    individualized investment advice, financial planning, portfolio guidance, or
-    an endorsement to buy, sell, or hold any security. All analytical
-    observations represent impersonal, quantitative deductions.
-
-    * **Automated Quantitative Methodology:** This research is synthesized via
-    automated quantitative intelligence pipelines integrating verified public
-    disclosures from SEC EDGAR filings (CIK 0000320193) and institutional
-    exchange feeds. Past performance is non-indicative of future outcomes.
   fundamentalImpact: >-
     The session price action confirms equity valuation insulation while leaving
     longer-term fundamental questions unanswered. From a baseline financial
@@ -1238,7 +1220,6 @@ Trading on the **Nasdaq Global Select Market**, price action demonstrated robust
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1255,7 +1236,6 @@ Trading on the **Nasdaq Global Select Market**, price action demonstrated robust
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Expectations vs. Reality Gap Analysis
 
@@ -1321,14 +1301,6 @@ From a cross-asset valuation perspective, Apple's capital structure and multiple
 | **Balance Sheet Liquidity** | Cash: **$39.54B** \| Total Debt: **$84.34B** | Short-Term Debt: **$13,004.0M** | High solvency tier; FCF exceeds total debt obligations |
 | **Derivatives Positioning** | Call/Put OI: **2.35x** | Option Gamma Skew: **High** | Asymmetric dealer hedging creates structural upward support |
 | **Macroeconomic Factors** | US 10Y: **5.01%** \| Fed Funds: **4.18%** | VIX: **19.3** \| WTI Crude: **$98.19/bbl** | High discount rate hurdle mitigated by benign volatility |
-
----
-
-### Editorial & Regulatory Compliance Disclosures
-* **Publisher’s Exemption:** This analysis is prepared and distributed strictly for educational, informational, and general market commentary purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210.
-* **No Personalized Advice:** Nothing within this publication constitutes individualized investment advice, financial planning, portfolio guidance, or an endorsement to buy, sell, or hold any security. All analytical observations represent impersonal, quantitative deductions.
-* **Automated Quantitative Methodology:** This research is synthesized via automated quantitative intelligence pipelines integrating verified public disclosures from SEC EDGAR filings (CIK 0000320193) and institutional exchange feeds. Past performance is non-indicative of future outcomes.
-
 
 ---
 

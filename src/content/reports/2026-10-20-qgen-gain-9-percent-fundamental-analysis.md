@@ -1028,9 +1028,7 @@ QIAGEN ($QGEN) surged +8.75% driven almost entirely by reports that private equi
 | **52-Week Range** | `$49.41 - $49.41` | Current: $49.41 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Advanced takeover and buyout talks with private equity firm EQT AB |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1048,7 +1046,6 @@ QIAGEN ($QGEN) surged +8.75% driven almost entirely by reports that private equi
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

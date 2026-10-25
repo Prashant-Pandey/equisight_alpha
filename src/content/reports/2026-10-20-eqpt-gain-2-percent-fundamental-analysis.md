@@ -981,9 +981,7 @@ EquipmentShare ($EQPT) gained +1.50% following an upward revision to its 2026 ou
 | **52-Week Range** | `$15.60 - $15.60` | Current: $15.60 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Raised 2026 outlook fueled by strengthening rental network performance |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1001,7 +999,6 @@ EquipmentShare ($EQPT) gained +1.50% following an upward revision to its 2026 ou
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

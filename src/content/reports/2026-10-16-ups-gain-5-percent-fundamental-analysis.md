@@ -916,9 +916,7 @@ United Parcel Service, Inc.'s session movement of +5.2% aligned with market part
 | **52-Week Range** | `$99.44 - $99.44` | Current: $99.44 |
 | **Social Sentiment** | `93.8% Bull / 6.3% Bear` | Major Driver: Quarterly Earnings Outperformance |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -936,7 +934,6 @@ United Parcel Service, Inc.'s session movement of +5.2% aligned with market part
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

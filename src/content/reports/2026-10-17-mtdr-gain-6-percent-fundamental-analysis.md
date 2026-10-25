@@ -1003,9 +1003,7 @@ Matador Resources (MTDR) surged +5.97% driven by strong energy sector tailwinds 
 | **52-Week Range** | `$57.52 - $57.52` | Current: $57.52 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Broad energy sector strength combined with Wall Street analyst upgrades and price target increases |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1023,7 +1021,6 @@ Matador Resources (MTDR) surged +5.97% driven by strong energy sector tailwinds 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

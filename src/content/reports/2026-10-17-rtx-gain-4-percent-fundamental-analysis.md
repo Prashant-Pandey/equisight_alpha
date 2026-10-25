@@ -1017,9 +1017,7 @@ RTX surged +4.27% driven by major multi-billion defense contract awards, headlin
 | **52-Week Range** | `$193.92 - $193.92` | Current: $193.92 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Major $6.3B missile defense contract award and backlog expansion |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1037,7 +1035,6 @@ RTX surged +4.27% driven by major multi-billion defense contract awards, headlin
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

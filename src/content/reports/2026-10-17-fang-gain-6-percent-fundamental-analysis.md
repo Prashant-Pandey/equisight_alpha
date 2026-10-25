@@ -120,19 +120,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > [!NOTE]
-
-    > **Legal Compliance & Regulatory Notice (Publisher's Exemption)**: This
-    publication is prepared exclusively for general institutional, educational,
-    and informational purposes under the Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule
-    2210. Nothing contained herein constitutes individualized investment advice,
-    financial planning, a price target forecast, or a directive to buy or sell
-    securities. Deductions and financial evaluations are algorithmically
-    compiled using quantitative analytics pipelines from verified SEC public
-    filings and institutional market feeds.
-
-
     ### 1. Session Catalyst Identification & Precision
 
     Diamondback Energy, Inc. (NASDAQ: FANG) experienced a sharp upward re-rating
@@ -1171,9 +1158,6 @@ archetypeScore: 0.1424
 ---
 ## Executive Summary & Session Catalyst
 
-> [!NOTE]
-> **Legal Compliance & Regulatory Notice (Publisher's Exemption)**: This publication is prepared exclusively for general institutional, educational, and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. Nothing contained herein constitutes individualized investment advice, financial planning, a price target forecast, or a directive to buy or sell securities. Deductions and financial evaluations are algorithmically compiled using quantitative analytics pipelines from verified SEC public filings and institutional market feeds.
-
 ### 1. Session Catalyst Identification & Precision
 Diamondback Energy, Inc. (NASDAQ: FANG) experienced a sharp upward re-rating during today's trading session, closing at **$203.95 USD (+6.20% / +$11.90)** on the Nasdaq Global Select Market. The primary catalyst driving the session's dislocation was the release of strong quarterly operational and financial results, which initiated an immediate cascade of Wall Street price target increases and brokerage upgrades. Crucially, Scotiabank designated Diamondback Energy among its top exploration and production (E&P) picks, while multiple institutional research desks raised their forward price targets in response to enhanced visibility surrounding the company's multi-year 2027 capital and development programs. This operational outperformance was further reinforced by a buoyant commodity pricing environment, with WTI crude holding at **$99.02/bbl**, providing strong macro tailwinds to upstream net realized pricing. The catalyst is formally categorized under **Earnings Surprise & Analyst Target Upgrades**, exhibiting an **ALIGNED** catalyst-price relationship where fundamental announcements directly justify the price trajectory.
 
@@ -1233,9 +1217,7 @@ Notwithstanding the session's operational tailwinds, fundamental valuation bench
 > * **Valuation Multiple Dispersion**: Despite short-term commodity tailwinds, the equity exhibits a stark valuation divergence, trading at 2.39x Consensus Fair Value ($85.17) under a 1-Star Morningstar rating and Negative Moat trend.
 > * **Balance Sheet Vigilance**: A total debt footprint of $12.61B—including $1,548.0M in near-term short-term maturities—against $0.46B in cash requires ongoing discipline as elevated sovereign yields (5.10% 10Y) maintain high refinancing hurdles.
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1253,7 +1235,6 @@ Notwithstanding the session's operational tailwinds, fundamental valuation bench
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

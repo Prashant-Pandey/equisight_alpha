@@ -271,17 +271,6 @@ executiveSummaryData:
 
     | **Macroeconomic Backdrop** | **US 10Y: 5.24% \| Fed Funds: 4.21%** | VIX:
     14.8 (Subdued volatility) \| WTI Crude: $91.85/bbl |
-
-
-    ---
-
-    *Methodology & Legal Disclosures: This report is compiled algorithmically by
-    institutional quantitative research pipelines from verified regulatory
-    filings (SEC EDGAR) and market data feeds. Prepared solely for informational
-    and educational purposes under the Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule
-    2210. No personalized investment advice, individual price targets, or
-    security recommendations are provided.*
   fundamentalImpact: >-
     The session's price action and strategic headlines reaffirm JPMorgan Chase's
     baseline fundamental trajectory rather than altering it. Long-term
@@ -1192,7 +1181,6 @@ JPMorgan Chase's operational foundation remains backed by verified regulatory di
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1209,9 +1197,6 @@ JPMorgan Chase's operational foundation remains backed by verified regulatory di
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Legal Disclosures: This report is compiled algorithmically by institutional quantitative research pipelines from verified regulatory filings (SEC EDGAR) and market data feeds. Prepared solely for informational and educational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. No personalized investment advice, individual price targets, or security recommendations are provided.*
-
 
 ---
 

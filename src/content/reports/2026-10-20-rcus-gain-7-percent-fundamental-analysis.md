@@ -302,19 +302,6 @@ executiveSummaryData:
     3. **Elevated Macro Cost of Capital:** A US 10-Year Treasury yield of 5.12%
     imposes a steep discount rate on pre-commercial biotechnology cash flows,
     increasing the hurdle rate for speculative terminal pipeline value.
-
-
-    ---
-
-    *Methodology & Regulatory Disclosure: This publication is prepared using
-    automated quantitative research agents and data integration pipelines under
-    the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940 and FINRA Rule 2210. All financial figures are
-    algorithmically compiled from verified public regulatory filings (SEC EDGAR
-    Form 10-K, CIK 0001724521) and real-time market data feeds. This analysis is
-    distributed strictly for general informational and educational purposes and
-    does not constitute personalized investment advice, endorsements, price
-    targets, or solicitations to buy or sell any security.*
   fundamentalImpact: >-
     The ARC-20 readout meaningfully validates Arcus's HIF-2α inhibitor platform
     and enhances the strategic value of casdatifan in advanced ccRCC. However,
@@ -1286,7 +1273,6 @@ From a macro and duration standpoint, equity market participants absorbed the cl
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1303,9 +1289,6 @@ From a macro and duration standpoint, equity market participants absorbed the cl
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Regulatory Disclosure: This publication is prepared using automated quantitative research agents and data integration pipelines under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. All financial figures are algorithmically compiled from verified public regulatory filings (SEC EDGAR Form 10-K, CIK 0001724521) and real-time market data feeds. This analysis is distributed strictly for general informational and educational purposes and does not constitute personalized investment advice, endorsements, price targets, or solicitations to buy or sell any security.*
-
 
 ---
 

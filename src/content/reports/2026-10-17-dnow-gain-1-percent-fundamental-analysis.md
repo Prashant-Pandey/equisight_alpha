@@ -991,9 +991,7 @@ Recent news flow for DNOW is heavily populated by automated options chain listin
 | **52-Week Range** | `$15.68 - $15.68` | Current: $15.68 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Low-conviction range-bound drift on absence of fresh fundamental catalysts |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1011,7 +1009,6 @@ Recent news flow for DNOW is heavily populated by automated options chain listin
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

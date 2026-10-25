@@ -124,17 +124,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > **Regulatory Compliance & Automated Methodology Disclosure:** This
-    publication is prepared solely for general educational and informational
-    purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the
-    U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not
-    provide personalized investment advice, individual portfolio
-    recommendations, or buy/sell directives. All quantitative deductions,
-    valuation anchors, and session metrics are algorithmically compiled by
-    automated quantitative research pipelines utilizing verified SEC EDGAR
-    filings, audited financial statements, and real-time market feeds.
-
-
     ### Session Catalyst Identification & Price Realignment
 
     During today's trading session, equity shares of **The Children's Place,
@@ -1184,8 +1173,6 @@ sectorDynamics:
 ---
 ## Executive Summary & Session Catalyst
 
-> **Regulatory Compliance & Automated Methodology Disclosure:** This publication is prepared solely for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not provide personalized investment advice, individual portfolio recommendations, or buy/sell directives. All quantitative deductions, valuation anchors, and session metrics are algorithmically compiled by automated quantitative research pipelines utilizing verified SEC EDGAR filings, audited financial statements, and real-time market feeds.
-
 ### Session Catalyst Identification & Price Realignment
 During today's trading session, equity shares of **The Children's Place, Inc. ($PLCE)** experienced a severe downside dislocation, tumbling **-26.0%** to close at **$1.42 USD** on the **Nasdaq Capital Market**. The primary catalyst behind this aggressive repricing was a pronounced operational and bottom-line disappointment: Q2 earnings per share (EPS) missed consensus Wall Street expectations by **78.25%**, characterized by accelerating net losses and an operating margin contraction to **-8.2%** on trailing twelve-month (TTM) revenues of **$1.13B** (SEC EDGAR Form 10-K, CIK 0001041859). The catalyst nature is formally categorized as **Earnings Surprise & Capital Structure / Solvency Distress**, as fundamental market participants heavily weighted near-term balance sheet distress—centered on an impending **$40M financing test** and increased reliance on subordinated term loan facilities—over secondary operational positives such as 19 newly opened retail doors, proactive inventory reductions, and a reported **$39M tariff refund**.
 
@@ -1235,9 +1222,7 @@ The idiosyncratic sell-off in $PLCE materialized against a high interest rate ma
 | **Consensus Fair Value / P/FV** | $19.55 (0.07x P/FV) | Morningstar 5-Star (★★★★★) | Theoretical valuation upside constrained by "Extreme" uncertainty and zero moat |
 | **Macro Backdrop (10Y / VIX)** | 5.24% / 14.8 | Low Volatility / Restrictive Rates | Idiosyncratic credit shock magnified by restrictive borrowing costs |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1255,7 +1240,6 @@ The idiosyncratic sell-off in $PLCE materialized against a high interest rate ma
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

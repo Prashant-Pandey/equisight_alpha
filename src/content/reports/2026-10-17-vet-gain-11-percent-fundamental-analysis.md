@@ -980,9 +980,7 @@ The sharp +11.20% move in $VET is driven primarily by macro commodity tailwinds 
 | **52-Week Range** | `$13.20 - $13.20` | Current: $13.20 |
 | **Social Sentiment** | `50% Bull / 50% Bear` | Major Driver: Commodity tailwinds combined with accelerated debt reduction driving enhanced shareholder returns |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1000,7 +998,6 @@ The sharp +11.20% move in $VET is driven primarily by macro commodity tailwinds 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -1032,9 +1032,7 @@ Despite heavy promotional buzz and headline optimism surrounding Elon Musk's 'Fl
 | **52-Week Range** | `$359.94 - $359.94` | Current: $359.94 |
 | **Social Sentiment** | `88.9% Bull / 11.1% Bear` | Major Driver: Earnings risk and margin test overshadowing long-dated Roadster hype (Sell the News) |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1052,7 +1050,6 @@ Despite heavy promotional buzz and headline optimism surrounding Elon Musk's 'Fl
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

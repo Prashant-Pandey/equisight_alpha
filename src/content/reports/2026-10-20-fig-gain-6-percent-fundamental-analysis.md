@@ -345,21 +345,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance & Automated Methodology Disclosure
-
-    *This publication has been prepared exclusively for general institutional
-    educational and informational purposes under the **Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in
-    strict adherence to **FINRA Rule 2210**. This document does not constitute
-    personalized investment advice, a portfolio recommendation, or an
-    endorsement to buy, hold, or liquidate any equity or derivative instrument.
-    All analytical evaluations, metric comparisons, and valuation syntheses are
-    systematically compiled via automated quantitative research engines
-    ingesting verified SEC EDGAR regulatory filings and synchronized
-    institutional market data feeds. Historical market metrics and quantitative
-    model outputs do not guarantee future performance.*
   fundamentalImpact: >-
     The +5.6% price advance does not alter Figma's verified fundamental
     trajectory. Per the official FY2025 SEC Form 10-K filing (CIK 0001579878,
@@ -1165,7 +1150,6 @@ From a solvency perspective, Figma exhibits an unencumbered balance sheet:
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1183,7 +1167,6 @@ From a solvency perspective, Figma exhibits an unencumbered balance sheet:
   </div>
 </div>
 
-
 ### Empirical Bull vs. Bear Structural Analysis
 
 #### Evidence-Based Bull Case
@@ -1197,12 +1180,6 @@ From a solvency perspective, Figma exhibits an unencumbered balance sheet:
 2. **Persistent GAAP Operating Deficits**: A TTM operating margin of -123.8% indicates substantial ongoing operational cash absorption, necessitating continued scale to achieve operational break-even.
 3. **Deteriorating Moat Trajectory**: While currently designated as Wide Moat, the moat trend is officially classified as **Negative**, reflecting rising competitive alternatives and potential feature convergence across enterprise productivity suites.
 4. **Sell-Side Expectation Reductions & Speculative Volume**: The absence of company-specific catalysts alongside Stifel Nicolaus lowering expectations reinforces that the +5.60% session move was speculative noise, exposing the stock to mean-reversion as high-rate macro pressures persist.
-
----
-
-### Regulatory Compliance & Automated Methodology Disclosure
-*This publication has been prepared exclusively for general institutional educational and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict adherence to **FINRA Rule 2210**. This document does not constitute personalized investment advice, a portfolio recommendation, or an endorsement to buy, hold, or liquidate any equity or derivative instrument. All analytical evaluations, metric comparisons, and valuation syntheses are systematically compiled via automated quantitative research engines ingesting verified SEC EDGAR regulatory filings and synchronized institutional market data feeds. Historical market metrics and quantitative model outputs do not guarantee future performance.*
-
 
 ---
 

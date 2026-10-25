@@ -1033,9 +1033,7 @@ Millicom International Cellular ($TIGO) tumbled -9.63% in the session despite no
 | **52-Week Range** | `$44.88 - $107.13` | Current: $79.48 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Technical breakdown below key moving averages amid automated valuation recalibration |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1053,7 +1051,6 @@ Millicom International Cellular ($TIGO) tumbled -9.63% in the session despite no
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

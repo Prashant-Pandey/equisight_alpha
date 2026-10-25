@@ -1037,9 +1037,7 @@ $SPCX surged +6.89% on the back of blockbuster Q3 earnings and massive top-line 
 | **52-Week Range** | `$162.65 - $162.65` | Current: $162.65 |
 | **Social Sentiment** | `92.3% Bull / 7.7% Bear` | Major Driver: Blockbuster Q3 earnings beat with 161% revenue growth |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1057,7 +1055,6 @@ $SPCX surged +6.89% on the back of blockbuster Q3 earnings and massive top-line 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

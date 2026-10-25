@@ -1080,9 +1080,7 @@ Despite positive product catalysts around AI PC showcases (with Microsoft and Nv
 | **52-Week Range** | `$17.56 - $36.23` | Current: $30.20 |
 | **Social Sentiment** | `63.6% Bull / 36.4% Bear` | Major Driver: Post-run valuation multiple compression and insider selling following AI PC announcements |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1100,7 +1098,6 @@ Despite positive product catalysts around AI PC showcases (with Microsoft and Nv
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

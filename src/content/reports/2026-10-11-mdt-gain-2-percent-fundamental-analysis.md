@@ -1036,9 +1036,7 @@ The session move (+2.43%) is fundamentally supported and aligned with two major 
 | **52-Week Range** | `$88.48 - $88.48` | Current: $88.48 |
 | **Social Sentiment** | `87.5% Bull / 12.5% Bear` | Major Driver: MiniMed split-off final exchange ratio terms and Category I CPT code reimbursement approvals |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1056,7 +1054,6 @@ The session move (+2.43%) is fundamentally supported and aligned with two major 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

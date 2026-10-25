@@ -1038,9 +1038,7 @@ Ahead of Q1 earnings (Oct 28), analyst notes from Morgan Stanley caution on an i
 | **52-Week Range** | `$532.86 - $532.86` | Current: $532.86 |
 | **Social Sentiment** | `70% Bull / 30% Bear` | Major Driver: Pre-earnings positioning amid Morgan Stanley caution and AI data center capacity constraints |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1058,7 +1056,6 @@ Ahead of Q1 earnings (Oct 28), analyst notes from Morgan Stanley caution on an i
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

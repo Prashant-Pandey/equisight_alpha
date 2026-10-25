@@ -998,9 +998,7 @@ Despite reporting a planned 5% workforce reduction and facing cautious/lowered W
 | **52-Week Range** | `$70.30 - $70.30` | Current: $70.30 |
 | **Social Sentiment** | `76.5% Bull / 23.5% Bear` | Major Driver: Workforce reduction cost-discipline and pre-Q3 earnings relief rally |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1018,7 +1016,6 @@ Despite reporting a planned 5% workforce reduction and facing cautious/lowered W
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

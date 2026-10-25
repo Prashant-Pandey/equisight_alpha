@@ -336,21 +336,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Legal Compliance, Regulatory & Automation Disclosures
-
-    *This executive summary and session analysis has been prepared by automated
-    quantitative research pipelines under the **Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict
-    adherence to **FINRA Rule 2210**. This publication is intended exclusively
-    for general informational and educational purposes and does not constitute
-    personalized investment advice, a portfolio recommendation, a target price
-    projection, or a buy/sell directive. All financial metrics and balance sheet
-    figures are reconciled directly against public regulatory filings (SEC EDGAR
-    CIK 0001321655, FY2025 Form 10-K) and real-time market data feeds.
-    Historical performance and quantitative deductions do not guarantee future
-    market outcomes.*
   fundamentalImpact: >-
     The Knox Systems partnership reinforces Palantir's Wide Economic Moat and
     positive moat trajectory across mission-critical federal cloud deployments
@@ -1253,7 +1238,6 @@ Trading volume contracted dramatically to **9,641,014 shares**, generating a Rel
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1270,7 +1254,6 @@ Trading volume contracted dramatically to **9,641,014 shares**, generating a Rel
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1327,12 +1310,6 @@ The prevailing macroeconomic framework continues to impose strict constraints on
 * **Severe Multiple Disconnect:** Palantir's closing price of **$200.02** reflects a **3.45x multiple over its Consensus Fair Value of $58.02** (Morningstar 1-Star rating). At a $460.19B market capitalization against $6.16B in revenue, the valuation bakes in an unprecedented degree of operational execution, leaving zero margin of safety for contract delays or budget reprioritizations.
 * **Institutional Selling & Liquidity Absorption:** High-profile institutional trimming (Ark Invest's $5.4M sale) and systematic executive 10b5-1 selling, set against retail sentiment euphoria (88.9% bullish), suggest that sophisticated market participants view current price levels as an optimal distribution window.
 * **Macro Duration Friction:** Sustained benchmark yields of **5.11% on the US 10-Year** compress long-duration cash flow present values, making multiple expansion increasingly difficult to defend from an institutional capital-allocation perspective.
-
----
-
-### Legal Compliance, Regulatory & Automation Disclosures
-*This executive summary and session analysis has been prepared by automated quantitative research pipelines under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict adherence to **FINRA Rule 2210**. This publication is intended exclusively for general informational and educational purposes and does not constitute personalized investment advice, a portfolio recommendation, a target price projection, or a buy/sell directive. All financial metrics and balance sheet figures are reconciled directly against public regulatory filings (SEC EDGAR CIK 0001321655, FY2025 Form 10-K) and real-time market data feeds. Historical performance and quantitative deductions do not guarantee future market outcomes.*
-
 
 ---
 

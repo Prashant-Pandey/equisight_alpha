@@ -299,18 +299,6 @@ executiveSummaryData:
 
     | **Macroeconomic Backdrop** | US 10Y: 5.24% \| Fed Funds: 4.20% | VIX: 15.2
     \| WTI Crude: $93.39/bbl |
-
-
-    ---
-
-    *Methodology & Compliance Disclosure: This report is compiled
-    algorithmically through quantitative equity analysis agents and automated
-    public filing ingestion pipelines under the Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule
-    2210. It is intended strictly for general institutional information and
-    educational purposes, without regard to individual investment objectives or
-    personal financial circumstances. No component of this report constitutes
-    personalized investment advice, a price target, or an investment directive.*
   fundamentalImpact: >-
     The successful deployment of 20 satellites and on-orbit Google AI
     demonstrations operationally reinforces Planet Labs' Wide Moat in
@@ -1262,7 +1250,6 @@ The equity's valuation friction is intensified by the prevailing macroeconomic r
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1279,9 +1266,6 @@ The equity's valuation friction is intensified by the prevailing macroeconomic r
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Compliance Disclosure: This report is compiled algorithmically through quantitative equity analysis agents and automated public filing ingestion pipelines under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It is intended strictly for general institutional information and educational purposes, without regard to individual investment objectives or personal financial circumstances. No component of this report constitutes personalized investment advice, a price target, or an investment directive.*
-
 
 ---
 

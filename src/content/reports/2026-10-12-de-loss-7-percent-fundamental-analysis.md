@@ -1054,9 +1054,7 @@ Deere ($DE) dropped sharply (-7.20%) alongside agricultural machinery peers foll
 | **52-Week Range** | `$633.05 - $633.05` | Current: $633.05 |
 | **Social Sentiment** | `33.3% Bull / 66.7% Bear` | Major Driver: U.S. regulatory antitrust probe into farm equipment market compounded by demand weakness |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1074,7 +1072,6 @@ Deere ($DE) dropped sharply (-7.20%) alongside agricultural machinery peers foll
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

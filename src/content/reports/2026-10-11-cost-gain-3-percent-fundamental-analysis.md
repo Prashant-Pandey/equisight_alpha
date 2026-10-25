@@ -260,21 +260,6 @@ executiveSummaryData:
     RVOL (0.8x) points to institutional reluctance to chase multiples at current
     levels, especially as elevated 10-Year risk-free yields (5.24%) offer
     attractive non-equity alternatives.
-
-
-    ---
-
-    ### Regulatory, Editorial & Methodology Disclosure
-
-    *This report has been prepared solely for institutional educational and
-    informational purposes under the Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule
-    2210. It does not constitute personalized investment advice, a financial
-    recommendation, or a buy/sell directive. All quantitative assessments,
-    valuation anchors, and order flow metrics are algorithmically compiled via
-    institutional automated pipelines from verified public market data and
-    regulatory filings (SEC EDGAR CIK 0000909832 Form 10-K). Market participants
-    are advised to conduct independent due diligence.*
   fundamentalImpact: >-
     The September performance reinforces Costco's exceptional core execution,
     membership loyalty, and positive-trending Narrow Economic Moat, validating
@@ -1189,7 +1174,6 @@ Costco's underlying enterprise fundamentals remain robust, verified by **$303.15
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1206,10 +1190,6 @@ Costco's underlying enterprise fundamentals remain robust, verified by **$303.15
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-### Regulatory, Editorial & Methodology Disclosure
-*This report has been prepared solely for institutional educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute personalized investment advice, a financial recommendation, or a buy/sell directive. All quantitative assessments, valuation anchors, and order flow metrics are algorithmically compiled via institutional automated pipelines from verified public market data and regulatory filings (SEC EDGAR CIK 0000909832 Form 10-K). Market participants are advised to conduct independent due diligence.*
-
 
 ---
 

@@ -98,23 +98,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > [!NOTE]
-
-    > **Regulatory Compliance & Automated Methodology Disclosure:**  
-
-    > This publication has been prepared exclusively for institutional
-    educational and analytical purposes under the **Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and
-    **FINRA Rule 2210**. It does not constitute personalized investment advice,
-    financial planning, a solicitation, or an individualized buy/sell directive.
-    All empirical deductions, market microstructure analytics, and financial
-    evaluations have been algorithmically synthesized by automated quantitative
-    research pipelines ingesting verified regulatory filings (including SEC
-    EDGAR 10-K CIK 0000001800) and live interdealer market data feeds.
-
-
-    ---
-
 
     > ### Key Session Takeaways
 
@@ -1371,12 +1354,6 @@ sectorDynamics:
 ---
 ## Executive Summary & Session Catalyst
 
-> [!NOTE]
-> **Regulatory Compliance & Automated Methodology Disclosure:**  
-> This publication has been prepared exclusively for institutional educational and analytical purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and **FINRA Rule 2210**. It does not constitute personalized investment advice, financial planning, a solicitation, or an individualized buy/sell directive. All empirical deductions, market microstructure analytics, and financial evaluations have been algorithmically synthesized by automated quantitative research pipelines ingesting verified regulatory filings (including SEC EDGAR 10-K CIK 0000001800) and live interdealer market data feeds.
-
----
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1394,7 +1371,6 @@ sectorDynamics:
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 > ### Key Session Takeaways
 > * **Guidance Compression & Strategic Separation:** Abbott lowered its forward 2026 sales growth guidance while announcing a planned tax-free spinoff of its litigation-burdened Nutrition unit by late 2027, eliminating long-term reputational overhang at the cost of intermediate execution friction.
@@ -1512,7 +1488,6 @@ Abbott's current enterprise fundamentals present a distinct contrast between hig
 ### 7. Strategic Outlook & Quantitative Synthesis
 
 The session dislocation in Abbott Laboratories represents an orderly fundamental repricing in response to reduced intermediate top-line expectations and structural corporate changes. The combination of narrowed forward growth and a multi-year spinoff process introduces intermediate uncertainty for an equity commanding a premium valuation multiple. While Abbott's fortress free cash flow conversion ($7.38B) and $6.80B cash position safeguard its narrow economic moat, institutional investors will closely monitor subsequent SEC filings to quantify the exact allocation of corporate debt, stranded overhead, and litigation liabilities prior to the late-2027 separation.
-
 
 ---
 

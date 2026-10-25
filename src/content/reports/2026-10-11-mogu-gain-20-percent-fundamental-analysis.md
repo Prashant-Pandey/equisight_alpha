@@ -982,9 +982,7 @@ The +20.11% move in $MOGU lacks direct company-specific fundamental catalysts in
 | **52-Week Range** | `$1.27 - $3.36` | Current: $2.24 |
 | **Social Sentiment** | `63.6% Bull / 36.4% Bear` | Major Driver: Micro-cap liquidity noise and speculative retail momentum |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1002,7 +1000,6 @@ The +20.11% move in $MOGU lacks direct company-specific fundamental catalysts in
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

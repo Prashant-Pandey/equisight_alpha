@@ -989,9 +989,7 @@ $RRC surged +5.70% despite mixed to trimmed analyst price targets (Mizuho, Truis
 | **52-Week Range** | `$43.22 - $43.22` | Current: $43.22 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Broader energy sector tailwinds and strong liquids pricing offsetting natural gas weakness |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1009,7 +1007,6 @@ $RRC surged +5.70% despite mixed to trimmed analyst price targets (Mizuho, Truis
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

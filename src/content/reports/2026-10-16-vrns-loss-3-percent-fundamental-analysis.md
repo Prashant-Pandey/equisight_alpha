@@ -1083,9 +1083,7 @@ Varonis Systems ($VRNS) entered into a definitive agreement to be acquired by Pr
 | **52-Week Range** | `$48.72 - $48.72` | Current: $48.72 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Definitive $6.3B all-cash acquisition agreement by Proofpoint at $49.75 per share |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1103,7 +1101,6 @@ Varonis Systems ($VRNS) entered into a definitive agreement to be acquired by Pr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

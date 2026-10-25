@@ -1054,9 +1054,7 @@ Microsoft declined -1.13% in line with emergent negative regulatory and fundamen
 | **52-Week Range** | `$529.05 - $529.05` | Current: $529.05 |
 | **Social Sentiment** | `83.3% Bull / 16.7% Bear` | Major Driver: UK regulatory investigation and mounting AI capex/cost concerns ahead of Q1 earnings |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1074,7 +1072,6 @@ Microsoft declined -1.13% in line with emergent negative regulatory and fundamen
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

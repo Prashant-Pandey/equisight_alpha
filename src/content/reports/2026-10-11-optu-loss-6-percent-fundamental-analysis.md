@@ -117,16 +117,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > **Regulatory & Methodology Disclosure:** This report is prepared solely
-    for general educational and informational purposes under the Publisher's
-    Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of
-    1940 and FINRA Rule 2210. This publication does not constitute personalized
-    investment advice, a financial recommendation, or an endorsement to buy,
-    sell, or hold any security. All analytical deductions and evaluations are
-    algorithmically synthesized via automated quantitative research pipelines
-    using verified public filings (SEC EDGAR) and consolidated market feeds.
-
-
     ### Session Catalyst Identification & Expectation Gap Analysis
 
 
@@ -1193,8 +1183,6 @@ sectorDynamics:
 ---
 ## Executive Summary & Session Catalyst
 
-> **Regulatory & Methodology Disclosure:** This report is prepared solely for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This publication does not constitute personalized investment advice, a financial recommendation, or an endorsement to buy, sell, or hold any security. All analytical deductions and evaluations are algorithmically synthesized via automated quantitative research pipelines using verified public filings (SEC EDGAR) and consolidated market feeds.
-
 ### Session Catalyst Identification & Expectation Gap Analysis
 
 Optimum Communications, Inc. (NYSE American: **$OPTU**) experienced persistent selling pressure during today's trading session, declining **-5.81%** to close at **$0.93 USD**. The price action is classified as **ALIGNED** with fundamental developments, driven primarily by negative sell-side earnings estimate revisions from Zacks Research and renewed market scrutiny over the company’s operating trajectory. The downward adjustment in EPS forecasts directly challenged pre-session whisper expectations of margin stabilization, reinforcing skepticism regarding the durability of prior short-term rallies.
@@ -1248,9 +1236,7 @@ Fundamentally, $OPTU's balance sheet exhibits acute capital structure dislocatio
 | **Retail Sentiment Index** | 35.7% Bull / 64.3% Bear | Monitored Social Feeds | Prevailing negative positioning and retail exhaustion |
 | **Macroeconomic Backdrop** | US 10Y: 5.24% \| Fed: 4.21% | VIX: 14.8 \| WTI: $91.85/bbl | Restrictive sovereign discount rates and elevated energy input costs |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1268,7 +1254,6 @@ Fundamentally, $OPTU's balance sheet exhibits acute capital structure dislocatio
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

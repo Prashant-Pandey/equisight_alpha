@@ -1075,9 +1075,7 @@ Verizon experienced a sharp drop (-8.75%) driven primarily by competitive and st
 | **52-Week Range** | `$38.39 - $51.68` | Current: $41.65 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: SpaceX spectrum deal competitive threat and Scotiabank analyst downgrades |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1095,7 +1093,6 @@ Verizon experienced a sharp drop (-8.75%) driven primarily by competitive and st
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

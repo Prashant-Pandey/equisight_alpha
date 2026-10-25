@@ -326,16 +326,6 @@ executiveSummaryData:
     ---
 
 
-    ### Legal Disclosures & Methodology Notice
-
-    **PUBLISHER'S EXEMPTION & COMPLIANCE NOTICE:**  
-
-    This research section is prepared and distributed exclusively for general
-    educational and informational purposes in reliance upon the Publisher's
-    Exemption under **Section 202(a)(11)(D) of the U.S. Investment Advisers Act
-    of 1940** and in strict adherence to **FINRA Rule 2210**. 
-
-
     **NO PERSONALIZED INVESTMENT ADVICE:**  
 
     This document does not constitute an individualized investment
@@ -1216,7 +1206,6 @@ The session move is classified as **ALIGNED** with the fundamental nature of the
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1233,7 +1222,6 @@ The session move is classified as **ALIGNED** with the fundamental nature of the
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1291,13 +1279,8 @@ Against these macro realities, Abbott's valuation profile exhibits an empirical 
 
 ---
 
-### Legal Disclosures & Methodology Notice
-**PUBLISHER'S EXEMPTION & COMPLIANCE NOTICE:**  
-This research section is prepared and distributed exclusively for general educational and informational purposes in reliance upon the Publisher's Exemption under **Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict adherence to **FINRA Rule 2210**. 
-
 **NO PERSONALIZED INVESTMENT ADVICE:**  
 This document does not constitute an individualized investment recommendation, personal financial advice, endorsement, solicitation, or offer to buy or sell any security. All analytical deductions represent impersonal, quantitative evaluations derived algorithmically from verified corporate filings (**SEC EDGAR Form 10-K, CIK 0000001800**) and public market data feeds. Historical performance and quantitative multiples are not guarantees of future outcomes. Capital allocation decisions involve substantial risk of loss. Investors must conduct independent due diligence and consult licensed financial fiduciaries before executing transactions.
-
 
 ---
 

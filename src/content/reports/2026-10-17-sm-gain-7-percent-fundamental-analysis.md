@@ -993,9 +993,7 @@ SM Energy ($SM) advanced +6.76% in strong alignment with bullish Wall Street sen
 | **52-Week Range** | `$39.50 - $39.50` | Current: $39.50 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Bullish Wall Street analyst revisions and positive earnings estimate momentum |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1013,7 +1011,6 @@ SM Energy ($SM) advanced +6.76% in strong alignment with bullish Wall Street sen
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

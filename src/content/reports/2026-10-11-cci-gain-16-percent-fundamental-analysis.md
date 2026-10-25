@@ -121,23 +121,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    ### Regulatory Compliance & Quantitative Pipeline Methodology
-
-    This executive analysis is prepared strictly for institutional educational
-    and informational purposes under the **Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in alignment
-    with **FINRA Rule 2210**. This publication does not constitute
-    individualized investment advice, an endorsement, a financial promotion, or
-    a solicitation of transactions. All evaluations, valuation ratios, and
-    forward projections are algorithmically compiled by automated quantitative
-    equity research pipelines utilizing verified SEC EDGAR corporate filings and
-    institutional market telemetry. In conformance with fiduciary-grade
-    analytical standards, this report presents balanced empirical evidence
-    without personalized directives.
-
-
-    ---
-
 
     ### Catalyst Deconstruction & Expectations vs. Reality Gap
 
@@ -1217,11 +1200,6 @@ sectorDynamics:
 ---
 ## Executive Summary & Session Catalyst
 
-### Regulatory Compliance & Quantitative Pipeline Methodology
-This executive analysis is prepared strictly for institutional educational and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in alignment with **FINRA Rule 2210**. This publication does not constitute individualized investment advice, an endorsement, a financial promotion, or a solicitation of transactions. All evaluations, valuation ratios, and forward projections are algorithmically compiled by automated quantitative equity research pipelines utilizing verified SEC EDGAR corporate filings and institutional market telemetry. In conformance with fiduciary-grade analytical standards, this report presents balanced empirical evidence without personalized directives.
-
----
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1239,7 +1217,6 @@ This executive analysis is prepared strictly for institutional educational and i
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Catalyst Deconstruction & Expectations vs. Reality Gap
 **Crown Castle Inc. (NYSE: CCI)** registered a decisive session dislocation, advancing **+15.6%** to settle at **$79.64 USD**, establishing an equity market capitalization of **$34.80B**. The primary catalyst fueling this aggressive re-pricing was confirmed reporting regarding **SpaceX’s multi-billion-dollar acquisition of 800 MHz spectrum** (with capital outlays estimated at ~$8 billion) aimed at building out a terrestrial wireless and direct-to-cell network. Institutional equity research desks—highlighted by sell-side analysis from Bernstein—identified specialized tower REITs, and Crown Castle specifically, as prime direct beneficiaries of this prospective infrastructure rollout.
@@ -1328,7 +1305,6 @@ Empirical baseline calibration relies upon verified SEC EDGAR disclosures and fu
 | **Near-Term Debt** | $2,260.0M ($2.26B USD) | Maturing Short-Term Obligations | High Sensitivity | Refinancing exposure under prevailing 5.24% 10Y yield |
 | **Options Gamma Skew** | 2.44x Call/Put Ratio | Elevated Call Open Interest | High Skew | Asymmetric market maker short gamma accelerating upward velocity |
 | **Benchmark Rates & VIX** | US 10Y: 5.24% \| Fed Funds: 4.21% | VIX: 14.8 \| WTI: $91.85/bbl | Restrictive Macro | High duration discount hurdle cushioned by low equity volatility |
-
 
 ---
 

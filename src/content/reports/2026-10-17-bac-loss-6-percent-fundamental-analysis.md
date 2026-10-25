@@ -1015,9 +1015,7 @@ The -5.69% sharp sell-off in $BAC is primarily driven by mounting regulatory scr
 | **52-Week Range** | `$51.23 - $51.23` | Current: $51.23 |
 | **Social Sentiment** | `80% Bull / 20% Bear` | Major Driver: Substantial AML regulatory penalty and Q3 profit squeeze leading to analyst target cuts |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1035,7 +1033,6 @@ The -5.69% sharp sell-off in $BAC is primarily driven by mounting regulatory scr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

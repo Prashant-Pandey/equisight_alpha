@@ -1054,9 +1054,7 @@ Becton Dickinson ($BDX) experienced a strong +4.90% breakout session, reaching 5
 | **52-Week Range** | `$192.76 - $192.76` | Current: $192.76 |
 | **Social Sentiment** | `88.9% Bull / 11.1% Bear` | Major Driver: Massive domestic US manufacturing investment and domestic supply chain expansion commitment |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1074,7 +1072,6 @@ Becton Dickinson ($BDX) experienced a strong +4.90% breakout session, reaching 5
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

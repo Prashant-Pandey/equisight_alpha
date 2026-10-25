@@ -1012,9 +1012,7 @@ Planet Fitness surged +7.77% driven by bullish Wall Street commentary, spearhead
 | **52-Week Range** | `$51.71 - $51.71` | Current: $51.71 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: UBS defense dismissing AI agent disruption risks and citing strong fall sign-ups |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1032,7 +1030,6 @@ Planet Fitness surged +7.77% driven by bullish Wall Street commentary, spearhead
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

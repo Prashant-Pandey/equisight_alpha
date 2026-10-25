@@ -275,18 +275,6 @@ executiveSummaryData:
     > - **Macroeconomic Drag:** A 5.01% US 10-Year yield and 4.18% policy rate
     create severe capital allocation headwinds for speculative micro-cap assets
     despite a low-volatility backdrop (VIX 19.3).
-
-
-    ---
-
-    *Methodology & Regulatory Notice: This document is prepared algorithmically
-    by automated quantitative research systems under the Publisher's Exemption
-    of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and
-    FINRA Rule 2210. It is provided exclusively for general informational and
-    educational purposes and does not constitute personalized investment advice,
-    a price target, or a recommendation to buy or sell any security. All
-    analytical deductions are derived strictly from verified public filings and
-    real-time market data feeds.*
   fundamentalImpact: >-
     Today's session advance exerts zero empirical impact on Concord Medical
     Services' underlying fundamental trajectory. Ingested financial filings
@@ -1125,7 +1113,6 @@ Macroeconomic discount hurdles continue to govern small-cap equity multiples. Th
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1142,7 +1129,6 @@ Macroeconomic discount hurdles continue to govern small-cap equity multiples. Th
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1180,10 +1166,6 @@ Macroeconomic discount hurdles continue to govern small-cap equity multiples. Th
 > - **Microstructure Divergence:** The +4.8% advance occurred on negligible volume (2,398 shares vs. 17,280 90-day average, 0.14x RVOL), demonstrating lack of institutional participation and retail/spread dominance.
 > - **Fundamental Baseline:** Core operational metrics remain unchanged ($0.00B TTM revenue, 0.0% operating margin, Morningstar 3 Stars with Extreme Uncertainty and No Moat).
 > - **Macroeconomic Drag:** A 5.01% US 10-Year yield and 4.18% policy rate create severe capital allocation headwinds for speculative micro-cap assets despite a low-volatility backdrop (VIX 19.3).
-
----
-*Methodology & Regulatory Notice: This document is prepared algorithmically by automated quantitative research systems under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It is provided exclusively for general informational and educational purposes and does not constitute personalized investment advice, a price target, or a recommendation to buy or sell any security. All analytical deductions are derived strictly from verified public filings and real-time market data feeds.*
-
 
 ---
 

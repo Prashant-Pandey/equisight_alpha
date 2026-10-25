@@ -1052,9 +1052,7 @@ The massive +25.16% session rally in $CCM is driven by the formal completion of 
 | **52-Week Range** | `$2.79 - $6.96` | Current: $3.88 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Completion of Two Harbors (TWO) merger with CrossCountry Mortgage (CCM) after bidding war |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1072,7 +1070,6 @@ The massive +25.16% session rally in $CCM is driven by the formal completion of 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

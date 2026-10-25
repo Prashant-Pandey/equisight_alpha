@@ -343,19 +343,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance & Editorial Disclosures
-
-    *This section has been prepared strictly for general educational and
-    institutional informational purposes pursuant to the Publisher's Exemption
-    under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and
-    FINRA Rule 2210. Nothing contained herein constitutes personalized
-    investment advice, a financial recommendation, or an individual solicitation
-    to buy, hold, or sell any security. Analytical deductions are compiled
-    algorithmically by automated quantitative research pipelines leveraging
-    verified public SEC filings, exchange market data, and institutional
-    financial feeds.*
   fundamentalImpact: >-
     The fundamental trajectory for Wells Fargo reinforces its core domestic
     commercial banking franchise (Wide Economic Moat; Stable Trend) navigating
@@ -1262,7 +1249,6 @@ The macroeconomic operating environment remains shaped by elevated benchmark yie
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1279,7 +1265,6 @@ The macroeconomic operating environment remains shaped by elevated benchmark yie
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1330,12 +1315,6 @@ The macroeconomic operating environment remains shaped by elevated benchmark yie
 > - **Microstructure & Institutional Accumulation:** Trading volume of 31.93M shares represented an elevated 1.36x RVOL on the NYSE, supported by a 99.7% public float, low artificial inflation risk, and a high 2.76x call/put option gamma skew.
 > - **Valuation Divergence vs. Fair Value Anchor:** Despite a Wide Economic Moat with a Stable Trend, current prices reflect a 1.24x multiple over Consensus Fair Value ($67.59), aligning with Morningstar’s 2-Star (Modestly Overvalued) classification.
 > - **Macro & Solvency Equilibrium:** With US 10-Year yields at 5.10% and Fed Funds at 4.22%, Wells Fargo’s $201.46B in cash balances against $207.31B in total debt ($25.17B short-term), sustaining balance sheet resilience against late-cycle headwinds.
-
----
-
-### Regulatory Compliance & Editorial Disclosures
-*This section has been prepared strictly for general educational and institutional informational purposes pursuant to the Publisher's Exemption under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. Nothing contained herein constitutes personalized investment advice, a financial recommendation, or an individual solicitation to buy, hold, or sell any security. Analytical deductions are compiled algorithmically by automated quantitative research pipelines leveraging verified public SEC filings, exchange market data, and institutional financial feeds.*
-
 
 ---
 

@@ -318,15 +318,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    *Regulatory & Editorial Disclosure: This institutional summary is prepared
-    for educational and informational purposes only under the Publisher's
-    Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of
-    1940 and FINRA Rule 2210. This publication does not constitute personalized
-    investment advice, a recommendation, or an offer to buy or sell securities.
-    Deductions and metrics are algorithmically compiled from audited SEC
-    filings, market data feeds, and quantitative valuation models.*
   fundamentalImpact: >-
     From a fundamental perspective, today's speculative session leaves Klaviyo's
     underlying operational trajectory unchanged. The company's baseline
@@ -1236,7 +1227,6 @@ When evaluated against institutional intrinsic benchmarks, Klaviyo retains stron
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1253,10 +1243,6 @@ When evaluated against institutional intrinsic benchmarks, Klaviyo retains stron
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-
-*Regulatory & Editorial Disclosure: This institutional summary is prepared for educational and informational purposes only under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This publication does not constitute personalized investment advice, a recommendation, or an offer to buy or sell securities. Deductions and metrics are algorithmically compiled from audited SEC filings, market data feeds, and quantitative valuation models.*
-
 
 ---
 

@@ -266,20 +266,6 @@ executiveSummaryData:
     | **Macro Backdrop** | US 10Y: 5.01% \| Fed Funds: 4.18% \| VIX: 19.3 |
     Elevated discount rate environment coupled with input energy costs (WTI at
     $98.19/bbl). |
-
-
-    ---
-
-    *Methodology & Legal Disclosures: This report is compiled algorithmically by
-    quantitative equity research agents utilizing verified SEC public filings
-    (SEC EDGAR CIK 0001675149), consensus estimates, and real-time market data
-    feeds. This publication is prepared strictly for general informational and
-    educational purposes under the Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule
-    2210. It does not constitute personalized investment advice, a portfolio
-    recommendation, a solicitation, or an individualized buy/sell directive. All
-    empirical deductions reflect objective financial analysis based on
-    prevailing market conditions and historical disclosures.*
   fundamentalImpact: >-
     The wave of sell-side rating downgrades and target trims serves to calibrate
     Alcoa's forward earnings trajectory rather than signal any imminent balance
@@ -1181,7 +1167,6 @@ From a fundamental vantage point, the sell-side revisions do not signal balance 
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1198,9 +1183,6 @@ From a fundamental vantage point, the sell-side revisions do not signal balance 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Legal Disclosures: This report is compiled algorithmically by quantitative equity research agents utilizing verified SEC public filings (SEC EDGAR CIK 0001675149), consensus estimates, and real-time market data feeds. This publication is prepared strictly for general informational and educational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute personalized investment advice, a portfolio recommendation, a solicitation, or an individualized buy/sell directive. All empirical deductions reflect objective financial analysis based on prevailing market conditions and historical disclosures.*
-
 
 ---
 

@@ -1098,9 +1098,7 @@ Iovance Biotherapeutics ($IOVA) experienced a +9.84% session surge predominantly
 | **52-Week Range** | `$1.76 - $15.30` | Current: $14.62 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Raised multi-year revenue guidance and commercial Amtagvi demand momentum |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1118,7 +1116,6 @@ Iovance Biotherapeutics ($IOVA) experienced a +9.84% session surge predominantly
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

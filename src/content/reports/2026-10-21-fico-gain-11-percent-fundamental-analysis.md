@@ -394,26 +394,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance & Automated Pipeline Disclosure
-
-    * **Publisher's Exemption Notice:** This publication has been prepared
-    exclusively for general educational and institutional market information
-    purposes pursuant to the Publisher's Exemption under Section 202(a)(11)(D)
-    of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not
-    constitute an offer, solicitation, or personalized investment recommendation
-    to acquire, hold, or liquidate any security, derivative, or instrument.
-
-    * **Impersonal & Non-Advisory Nature:** All observations reflect algorithmic
-    quantitative synthesis and financial metric compilation. Individual investor
-    risk tolerance, portfolio objectives, and financial circumstances have not
-    been evaluated.
-
-    * **Automated Quantitative Research Architecture:** Financial statements,
-    pricing arrays, options skew, and volume anomaly indicators were compiled
-    algorithmically from verified public filings (SEC EDGAR CIK 0000814547) and
-    standardized market feeds.
   fundamentalImpact: >-
     The catalyst provides authoritative validation of Fair Isaac's Wide Economic
     Moat (Positive trend) and reaffirms Morningstar's ★★★★ (4-Star, Medium
@@ -1304,7 +1284,6 @@ While total debt of $5.58B against $0.25B in cash reserves indicates a leveraged
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1321,7 +1300,6 @@ While total debt of $5.58B against $0.25B in cash reserves indicates a leveraged
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Empirical Scenario Analysis: Balanced Bull vs. Bear Arguments
 
@@ -1362,14 +1340,6 @@ While total debt of $5.58B against $0.25B in cash reserves indicates a leveraged
 > * **Liquidity Vacuum Dictated Price Discovery:** Today's +11.2% price surge materialized on exceptionally low trading volume (102,562 shares vs. 540,492 90-day average, or 0.19x RVOL), demonstrating that institutional holders withheld supply, forcing marginal buyers to re-rate the stock aggressively.
 > * **Fundamental Valuation Asymmetry:** At $800.00, FICO trades at a 26% discount (0.74x P/FV) to Consensus Fair Value ($1,081.91), anchored by a Morningstar 4-Star Wide-Moat rating and a 51.7% operating margin on $2.39B in TTM revenue.
 > * **Solvency Insulated Despite Macro Yield Pressures:** Robust TTM Free Cash Flow of $1.00B provides dependable coverage for near-term debt maturities ($300.0M short-term out of $5.58B total debt), despite prolonged macro headwinds from 5.11% 10-Year Treasury yields and mortgage origination volume compression.
-
----
-
-### Regulatory Compliance & Automated Pipeline Disclosure
-* **Publisher's Exemption Notice:** This publication has been prepared exclusively for general educational and institutional market information purposes pursuant to the Publisher's Exemption under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute an offer, solicitation, or personalized investment recommendation to acquire, hold, or liquidate any security, derivative, or instrument.
-* **Impersonal & Non-Advisory Nature:** All observations reflect algorithmic quantitative synthesis and financial metric compilation. Individual investor risk tolerance, portfolio objectives, and financial circumstances have not been evaluated.
-* **Automated Quantitative Research Architecture:** Financial statements, pricing arrays, options skew, and volume anomaly indicators were compiled algorithmically from verified public filings (SEC EDGAR CIK 0000814547) and standardized market feeds.
-
 
 ---
 

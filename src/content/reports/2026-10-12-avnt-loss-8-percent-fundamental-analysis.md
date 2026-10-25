@@ -1070,9 +1070,7 @@ The sharp -7.78% selloff was triggered by an abrupt CEO transition (naming Mike 
 | **52-Week Range** | `$27.48 - $46.64` | Current: $37.79 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Abrupt CEO transition introducing leadership uncertainty |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1090,7 +1088,6 @@ The sharp -7.78% selloff was triggered by an abrupt CEO transition (naming Mike 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

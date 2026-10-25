@@ -326,25 +326,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Legal Compliance, Automation Disclosure & Regulatory Directives
-
-    * **Publisher's Exemption Notice:** This research analysis is compiled and
-    distributed solely for general educational and informational purposes in
-    accordance with the Publisher’s Exemption under Section 202(a)(11)(D) of the
-    U.S. Investment Advisers Act of 1940 and FINRA Rule 2210.
-
-    * **No Personalized Investment Advice:** Nothing within this publication
-    constitutes individualized investment, legal, or tax advice, nor does it
-    provide an individual buy/sell recommendation, rating, or price target. All
-    market metrics, valuations, and scenario analyses represent objective,
-    quantitative empirical deductions.
-
-    * **Algorithmic Methodology Disclosure:** This report was synthesized
-    utilizing automated quantitative pipelines, ingesting verified SEC EDGAR
-    filings (CIK 0001662991), exchange-cleared tape data, and multi-contributor
-    consensus models. Historical performance does not guarantee future results.
   fundamentalImpact: >-
     The catalyst confirms Sezzle's fundamental inflection from a legacy
     speculative BNPL model to a highly profitable, self-funding financial
@@ -1240,7 +1221,6 @@ Sezzle Inc. (NASDAQ: **SEZL**) experienced a decisive upward dislocation during 
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1257,7 +1237,6 @@ Sezzle Inc. (NASDAQ: **SEZL**) experienced a decisive upward dislocation during 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1313,14 +1292,6 @@ Today’s tape action reflected a composite of measured institutional participat
 
 ### Macro Backdrop Interplay
 Equity duration and fintech multiples remain tethered to the broader macro rate regime. With the **US 10-Year Treasury Yield anchored at 5.24%** and the **Fed Funds Rate at 4.20%**, the cost of capital remains restrictive, demanding elevated free-cash-flow yields across high-growth tech assets. However, broad market volatility remains subdued, with the **Cboe Volatility Index (VIX) at 15.5**, indicating an orderly risk-on environment that supported multiple recovery. While WTI crude at **$93.86/bbl** presents a latent headwind to retail discretionary capacity, Sezzle's zero-debt capital structure uniquely immunizes its cash conversion cycle from high borrowing costs.
-
----
-
-### Legal Compliance, Automation Disclosure & Regulatory Directives
-* **Publisher's Exemption Notice:** This research analysis is compiled and distributed solely for general educational and informational purposes in accordance with the Publisher’s Exemption under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210.
-* **No Personalized Investment Advice:** Nothing within this publication constitutes individualized investment, legal, or tax advice, nor does it provide an individual buy/sell recommendation, rating, or price target. All market metrics, valuations, and scenario analyses represent objective, quantitative empirical deductions.
-* **Algorithmic Methodology Disclosure:** This report was synthesized utilizing automated quantitative pipelines, ingesting verified SEC EDGAR filings (CIK 0001662991), exchange-cleared tape data, and multi-contributor consensus models. Historical performance does not guarantee future results.
-
 
 ---
 

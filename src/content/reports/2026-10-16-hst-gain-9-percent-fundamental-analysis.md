@@ -1001,9 +1001,7 @@ Host Hotels & Resorts ($HST) rallied sharply (+9.36%) driven by strong financial
 | **52-Week Range** | `$24.77 - $24.77` | Current: $24.77 |
 | **Social Sentiment** | `80% Bull / 20% Bear` | Major Driver: Raised RevPAR guidance and earnings beat paired with Wall Street price target increase |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1021,7 +1019,6 @@ Host Hotels & Resorts ($HST) rallied sharply (+9.36%) driven by strong financial
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

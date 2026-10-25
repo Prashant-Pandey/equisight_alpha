@@ -336,19 +336,6 @@ executiveSummaryData:
 
 
     ***
-
-
-    #### Regulatory Compliance & Automated Methodology Disclosure
-
-    *This publication is prepared solely for general educational and
-    informational purposes in accordance with the Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA
-    Rule 2210. This report does not constitute personalized investment advice,
-    financial planning, a recommendation to buy or sell securities, or an
-    endorsement of any investment strategy. All financial figures and deductions
-    are algorithmically compiled from verified public regulatory filings (SEC
-    EDGAR Form 10-K, CIK 0000097476) and institutional market data feeds using
-    automated quantitative research pipelines.*
   fundamentalImpact: >-
     The session move does not alter the fundamental trajectory or structural
     competitive advantages of Texas Instruments. Verified regulatory data from
@@ -1307,12 +1294,7 @@ From a fundamental standpoint, today's session does not compromise Texas Instrum
 
 ***
 
-#### Regulatory Compliance & Automated Methodology Disclosure
-*This publication is prepared solely for general educational and informational purposes in accordance with the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This report does not constitute personalized investment advice, financial planning, a recommendation to buy or sell securities, or an endorsement of any investment strategy. All financial figures and deductions are algorithmically compiled from verified public regulatory filings (SEC EDGAR Form 10-K, CIK 0000097476) and institutional market data feeds using automated quantitative research pipelines.*
-
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1330,7 +1312,6 @@ From a fundamental standpoint, today's session does not compromise Texas Instrum
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -1084,9 +1084,7 @@ BMNR shares fell sharply (-9.86%) primarily due to concerns surrounding the impe
 | **52-Week Range** | `$21.66 - $21.66` | Current: $21.66 |
 | **Social Sentiment** | `62.5% Bull / 37.5% Bear` | Major Driver: Pause of Ethereum treasury accumulation streak and Tom Lee selloff warning |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1104,7 +1102,6 @@ BMNR shares fell sharply (-9.86%) primarily due to concerns surrounding the impe
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

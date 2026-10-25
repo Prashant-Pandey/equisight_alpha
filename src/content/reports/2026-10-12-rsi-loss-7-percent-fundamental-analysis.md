@@ -1061,9 +1061,7 @@ Multiple SEC Form 4 filings revealed coordinated/clustered insider selling acros
 | **52-Week Range** | `$15.51 - $34.53` | Current: $18.90 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Clustered C-suite insider stock sales led by CEO divestment and Wall Street PT reduction |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1081,7 +1079,6 @@ Multiple SEC Form 4 filings revealed coordinated/clustered insider selling acros
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

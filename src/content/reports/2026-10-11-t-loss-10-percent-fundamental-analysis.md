@@ -1109,9 +1109,7 @@ SpaceX's acquisition of 800 MHz wireless spectrum previously held by T-Mobile di
 | **52-Week Range** | `$19.89 - $29.44` | Current: $22.18 |
 | **Social Sentiment** | `91.7% Bull / 8.3% Bear` | Major Driver: SpaceX spectrum purchase sparking Starlink direct-to-cell competitive threat across telecom sector |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1129,7 +1127,6 @@ SpaceX's acquisition of 800 MHz wireless spectrum previously held by T-Mobile di
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

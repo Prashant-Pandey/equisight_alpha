@@ -974,9 +974,7 @@ $TALO surged +5.77% despite heavy recurring headlines detailing substantial insi
 | **52-Week Range** | `$17.77 - $17.77` | Current: $17.77 |
 | **Social Sentiment** | `80% Bull / 20% Bear` | Major Driver: Overhang relief following large insider share sales absorption and positive Citigroup analyst forecast |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -994,7 +992,6 @@ $TALO surged +5.77% despite heavy recurring headlines detailing substantial insi
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

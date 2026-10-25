@@ -270,24 +270,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology & Regulatory Disclosures
-
-    * **Methodology & Algorithmic Compilation:** This report was prepared using
-    automated quantitative research pipelines and algorithmic data extraction
-    engines. Data inputs are programmatically reconciled against audited
-    regulatory filings—including the Johnson & Johnson SEC Form 10-K (CIK:
-    0000200406, FY2025, filed 2026-02-11)—and real-time market microstructure
-    tape feeds.
-
-    * **Publisher's Exemption & Regulatory Compliance:** Prepared strictly for
-    educational, informational, and general market analysis purposes under the
-    **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940** and **FINRA Rule 2210**. This publication does not
-    constitute personalized investment advice, a portfolio recommendation, an
-    endorsement, or a solicitation to buy or sell any financial instrument. All
-    empirical findings reflect standardized quantitative frameworks.
   fundamentalImpact: >-
     The catalyst framework fundamentally impacts Johnson & Johnson by de-risking
     balance sheet contingent liabilities while validating internal drug
@@ -1204,7 +1186,6 @@ Conversely, institutional skeptics focus on the pronounced disconnect between ma
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1221,12 +1202,6 @@ Conversely, institutional skeptics focus on the pronounced disconnect between ma
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-
-### Transparent Methodology & Regulatory Disclosures
-* **Methodology & Algorithmic Compilation:** This report was prepared using automated quantitative research pipelines and algorithmic data extraction engines. Data inputs are programmatically reconciled against audited regulatory filings—including the Johnson & Johnson SEC Form 10-K (CIK: 0000200406, FY2025, filed 2026-02-11)—and real-time market microstructure tape feeds.
-* **Publisher's Exemption & Regulatory Compliance:** Prepared strictly for educational, informational, and general market analysis purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and **FINRA Rule 2210**. This publication does not constitute personalized investment advice, a portfolio recommendation, an endorsement, or a solicitation to buy or sell any financial instrument. All empirical findings reflect standardized quantitative frameworks.
-
 
 ---
 

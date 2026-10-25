@@ -1039,9 +1039,7 @@ IonQ shares slid -9.27% under heavy pressure driven by acute dilution and inside
 | **52-Week Range** | `$31.51 - $31.51` | Current: $31.51 |
 | **Social Sentiment** | `63.6% Bull / 36.4% Bear` | Major Driver: Severe dilution concerns from $2B capital raise and $1.3B all-stock Elisity acquisition compounded by insider selling |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1059,7 +1057,6 @@ IonQ shares slid -9.27% under heavy pressure driven by acute dilution and inside
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

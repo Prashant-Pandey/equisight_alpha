@@ -1008,9 +1008,7 @@ Dycom Industries ($DY) experienced a sharp session drop of -8.78% driven by oper
 | **52-Week Range** | `$237.15 - $237.15` | Current: $237.15 |
 | **Social Sentiment** | `70% Bull / 30% Bear` | Major Driver: Wireless segment revenue drag and telecom margin mix compression |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1028,7 +1026,6 @@ Dycom Industries ($DY) experienced a sharp session drop of -8.78% driven by oper
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

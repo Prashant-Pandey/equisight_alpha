@@ -997,9 +997,7 @@ OXY's +3.78% gain was strongly propelled by a surge in underlying commodity pric
 | **52-Week Range** | `$62.38 - $62.38` | Current: $62.38 |
 | **Social Sentiment** | `75% Bull / 25% Bear` | Major Driver: Crude oil rally (Brent >$94/bbl) and Q3 earnings optimism alongside Wall Street upgrades |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1017,7 +1015,6 @@ OXY's +3.78% gain was strongly propelled by a surge in underlying commodity pric
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -324,20 +324,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Automated Quantitative Methodology & Legal Compliance Disclosure
-
-    *This equity analysis is generated utilizing institutional quantitative
-    analytics pipelines and automated algorithmic data synthesis under the
-    **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940** and in alignment with **FINRA Rule 2210**. All
-    financial metrics, balance sheet positions, and trading figures have been
-    algorithmically derived from verified public SEC disclosures, exchange data
-    feeds, and institutional consensus benchmarks. This report is published
-    exclusively for general educational and informational purposes and does not
-    constitute personalized investment advice, a financial recommendation, or an
-    endorsement of any security.*
   fundamentalImpact: >-
     The catalyst meaningfully confirms the commercial viability of Veradermics'
     dermatological asset pipeline and provides quantitative backing for its
@@ -1189,7 +1175,6 @@ Shares of **Veradermics, Incorporated (NYSE: MANE)** experienced an acute price 
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1206,7 +1191,6 @@ Shares of **Veradermics, Incorporated (NYSE: MANE)** experienced an acute price 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Expectations vs. Reality Gap & Price-Catalyst Alignment
 The session's price trajectory reflects an **ALIGNED** catalyst-price dynamic. Prior to the announcement, market participants had discounted the pipeline against typical developmental attrition risks and capital cost constraints imposed by benchmark rates (US 10-Year Treasury yield at 5.11%). 
@@ -1258,12 +1242,6 @@ The session occurred against a stringent macroeconomic backdrop characterized by
 1. **Severe Valuation Divergence:** At $139.01, the equity trades at **6.54x its Consensus Fair Value of $21.27** (Morningstar 1-Star Rating), leaving no margin of safety for clinical setbacks, manufacturing challenges, or regulatory delays.
 2. **Pre-Revenue Operational Realities:** Ingested financial metrics show **TTM Revenue of $0.00B** and an operating margin of 0.0%. Long-duration developmental risk remains acute prior to the pivotal H2 2026 data readouts.
 3. **Macroeconomic Valuation Headwinds:** In an economic regime where the US 10-Year Treasury yield remains at 5.11%, pre-commercial cash flows face aggressive mathematical discounting, leaving high-multiple assets vulnerable to sharp mean reversion upon sentiment exhaustion.
-
----
-
-### Automated Quantitative Methodology & Legal Compliance Disclosure
-*This equity analysis is generated utilizing institutional quantitative analytics pipelines and automated algorithmic data synthesis under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in alignment with **FINRA Rule 2210**. All financial metrics, balance sheet positions, and trading figures have been algorithmically derived from verified public SEC disclosures, exchange data feeds, and institutional consensus benchmarks. This report is published exclusively for general educational and informational purposes and does not constitute personalized investment advice, a financial recommendation, or an endorsement of any security.*
-
 
 ---
 

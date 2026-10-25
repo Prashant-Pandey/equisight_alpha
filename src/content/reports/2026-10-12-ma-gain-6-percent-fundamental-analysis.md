@@ -99,17 +99,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > **Regulatory Disclosure & Methodology Notice:** This research section is
-    prepared using automated quantitative analytical pipelines and algorithmic
-    compilation of verified public SEC filings (EDGAR CIK 0001141391) and market
-    data feeds. This report is published exclusively for general educational and
-    institutional informational purposes pursuant to the Publisher's Exemption
-    under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and
-    FINRA Rule 2210. It does not constitute individualized investment advice,
-    financial planning, a personal recommendation, or an endorsement to buy,
-    hold, or sell securities.
-
-
     ### Session Catalyst & Price Alignment: Macro-Driven Expansion
 
 
@@ -1129,8 +1118,6 @@ archetypeScore: 2.0834
 ---
 ## Executive Summary & Session Catalyst
 
-> **Regulatory Disclosure & Methodology Notice:** This research section is prepared using automated quantitative analytical pipelines and algorithmic compilation of verified public SEC filings (EDGAR CIK 0001141391) and market data feeds. This report is published exclusively for general educational and institutional informational purposes pursuant to the Publisher's Exemption under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute individualized investment advice, financial planning, a personal recommendation, or an endorsement to buy, hold, or sell securities.
-
 ### Session Catalyst & Price Alignment: Macro-Driven Expansion
 
 During the trading session, Mastercard Incorporated ($MA) registered an outsized single-session advance of +5.60%, settling at $596.24 on the New York Stock Exchange. The price action marked an aggressive seven-session extension, expanding the company's equity market capitalization to $518.40B. Empirical analysis classifies the session driver as **MACRO_DOMINATED**, primarily reflecting broad payments sector momentum and factor repositioning ahead of the upcoming Q3 earnings release scheduled for October 29. 
@@ -1176,9 +1163,7 @@ Mastercard's underlying balance sheet and operating metrics remain exceptionally
 | **TTM Free Cash Flow** | $16.70B | Cash: $11.29B vs Total Debt: $24.64B | Exceptional cash generation capacity and solid solvency balance |
 | **Macro Benchmark Yields** | US 10Y: 5.24% \| Fed: 4.20% | VIX: 15.3 \| WTI Crude: $93.50/bbl | Subdued volatility supporting beta despite elevated discount rates |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1196,7 +1181,6 @@ Mastercard's underlying balance sheet and operating metrics remain exceptionally
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

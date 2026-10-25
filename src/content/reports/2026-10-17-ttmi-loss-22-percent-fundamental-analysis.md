@@ -1062,9 +1062,7 @@ TTM Technologies plunged -22.42% following investor backlash and margin/cash flo
 | **52-Week Range** | `$93.88 - $93.88` | Current: $93.88 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Investor concern over aggressive $400M AI capacity expansion capex and execution risk |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1082,7 +1080,6 @@ TTM Technologies plunged -22.42% following investor backlash and margin/cash flo
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

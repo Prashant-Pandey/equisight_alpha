@@ -283,20 +283,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology & Regulatory Disclosures
-
-    *This publication is prepared solely for general educational and
-    informational purposes under the **Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in
-    accordance with **FINRA Rule 2210**. Nothing contained herein constitutes
-    personalized investment advice, a financial recommendation, or a
-    solicitation to buy or sell securities. All deductions are compiled using
-    automated quantitative analysis pipelines and verified public data feeds,
-    including SEC EDGAR filings and exchange tape data. Forward-looking
-    valuations and consensus metrics reflect multi-model estimations subject to
-    market volatility.*
   fundamentalImpact: >-
     Operationally, integrating AI-agent B2B invoice authorization with industry
     leaders BILL and Billtrust directly fortifies Visa's Wide Economic Moat
@@ -1196,7 +1182,6 @@ Today's price action occurred in an elevated interest rate regime. The **US 10-Y
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1213,11 +1198,6 @@ Today's price action occurred in an elevated interest rate regime. The **US 10-Y
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-
-### Transparent Methodology & Regulatory Disclosures
-*This publication is prepared solely for general educational and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in accordance with **FINRA Rule 2210**. Nothing contained herein constitutes personalized investment advice, a financial recommendation, or a solicitation to buy or sell securities. All deductions are compiled using automated quantitative analysis pipelines and verified public data feeds, including SEC EDGAR filings and exchange tape data. Forward-looking valuations and consensus metrics reflect multi-model estimations subject to market volatility.*
-
 
 ---
 

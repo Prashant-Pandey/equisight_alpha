@@ -277,18 +277,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology & Regulatory Disclosures
-
-    *This section was prepared using automated quantitative research agents and
-    institutional equity analysis pipelines under the **Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in
-    accordance with **FINRA Rule 2210**. All financial deductions are
-    algorithmically compiled from verified public regulatory filings (SEC EDGAR
-    10-K, CIK 0000829224) and market feeds. This document provides impersonal,
-    educational analysis and does not constitute individual investment advice, a
-    price target, or a recommendation to transact in any security.*
   fundamentalImpact: >-
     The speculative M&A catalyst introduces substantial strategic ambiguity into
     Starbucks' fundamental trajectory. Fundamentally, Starbucks generated
@@ -1186,7 +1174,6 @@ The session move unfolded against an elevated interest rate backdrop, with the *
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1203,7 +1190,6 @@ The session move unfolded against an elevated interest rate backdrop, with the *
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1233,12 +1219,6 @@ The session move unfolded against an elevated interest rate backdrop, with the *
 - **Valuation Vulnerability:** At $90.75, equity pricing trades at a 29% premium to Consensus Fair Value ($70.34, Morningstar 2-Star rating), indicating vulnerability to multiple compression if comparable-store sales fail to inflect positively.
 - **Capital Structure Constraints:** Carrying $13.28B in total debt (including $1,498.4M in short-term maturities) against $3.45B in liquid cash, Starbucks faces severe interest expense hurdles under prevailing 5.24% 10-Year sovereign yields if additional leverage is incurred.
 - **Execution & Margin Headwinds:** Operating margins remain compressed at 7.8%, while elevated input costs (WTI at $91.85/bbl) and labor overhead leave little operational headroom for complex corporate integration distractions.
-
----
-
-### Transparent Methodology & Regulatory Disclosures
-*This section was prepared using automated quantitative research agents and institutional equity analysis pipelines under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in accordance with **FINRA Rule 2210**. All financial deductions are algorithmically compiled from verified public regulatory filings (SEC EDGAR 10-K, CIK 0000829224) and market feeds. This document provides impersonal, educational analysis and does not constitute individual investment advice, a price target, or a recommendation to transact in any security.*
-
 
 ---
 

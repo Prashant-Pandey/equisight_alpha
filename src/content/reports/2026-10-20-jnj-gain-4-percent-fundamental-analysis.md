@@ -1004,9 +1004,7 @@ JNJ gained +4.15% primarily due to a relief rally surrounding the $5.5B talc set
 | **52-Week Range** | `$258.93 - $258.93` | Current: $258.93 |
 | **Social Sentiment** | `85.7% Bull / 14.3% Bear` | Major Driver: Proposed $5.5B talc litigation settlement removing overhang |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1024,7 +1022,6 @@ JNJ gained +4.15% primarily due to a relief rally surrounding the $5.5B talc set
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

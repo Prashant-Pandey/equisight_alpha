@@ -364,21 +364,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance & Methodology Disclosure
-
-    *This document is prepared solely for general educational and informational
-    purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the
-    U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This research does
-    not constitute personalized investment advice, financial planning, a
-    recommendation, or an endorsement to buy, sell, or hold any security,
-    derivative, or financial instrument. Deductions, metric evaluations, and
-    structured analytics presented herein are compiled algorithmically via
-    automated quantitative research pipelines using verified public regulatory
-    filings (including SEC EDGAR Form 10-K, CIK 0001535527) and real-time market
-    data feeds. Past operational and market performance is no guarantee of
-    future financial results.*
   fundamentalImpact: >-
     From a fundamental perspective, the expanded NVIDIA alliance validates
     CrowdStrike's Falcon platform as an architectural cornerstone for enterprise
@@ -1291,7 +1276,6 @@ CrowdStrike's fundamental and quantitative valuation anchors reveal a pronounced
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1308,7 +1292,6 @@ CrowdStrike's fundamental and quantitative valuation anchors reveal a pronounced
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Empirical Bull vs. Bear Case
 
@@ -1354,12 +1337,6 @@ CrowdStrike's fundamental and quantitative valuation anchors reveal a pronounced
 > - **Volume Contraction & Microstructure Stability:** Turnover of 4.44M shares represented just 0.49x of the 90-day average (9.08M shares), confirming the decline was characterized by buyer exhaustion and liquidity withdrawal rather than panicky institutional distribution; options gamma skew remained neutral at 0.99x.
 > - **Discount Rate Drag in Extended Multiple Regime:** With the US 10-Year yield holding at 5.11% and Fed Funds at 4.21%, elevated discount rates continue to exert gravity on software valuations, amplifying scrutiny over the 11.04x Price-to-Consensus Fair Value multiple ($240.32 market price vs. $21.77 fair value benchmark).
 > - **Solvency vs. GAAP Operating Deficit:** CrowdStrike maintains exceptional balance sheet resilience with $5.01B in cash, $1.61B in TTM FCF, and zero short-term debt ($0.75B total long-term debt), though FY2026 GAAP operating margins (-2.5% on $5.40B revenue) and a Negative Moat Trend continue to provide fundamental friction.
-
----
-
-### Regulatory Compliance & Methodology Disclosure
-*This document is prepared solely for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This research does not constitute personalized investment advice, financial planning, a recommendation, or an endorsement to buy, sell, or hold any security, derivative, or financial instrument. Deductions, metric evaluations, and structured analytics presented herein are compiled algorithmically via automated quantitative research pipelines using verified public regulatory filings (including SEC EDGAR Form 10-K, CIK 0001535527) and real-time market data feeds. Past operational and market performance is no guarantee of future financial results.*
-
 
 ---
 

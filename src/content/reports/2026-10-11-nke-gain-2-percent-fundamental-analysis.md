@@ -1065,9 +1065,7 @@ Despite predominantly bearish sentiment surrounding multi-quarter China weakness
 | **52-Week Range** | `$34.71 - $34.71` | Current: $34.71 |
 | **Social Sentiment** | `88.9% Bull / 11.1% Bear` | Major Driver: Turnaround optimism and channel partner confidence sparking a relief rally despite persistent China headwinds |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1085,7 +1083,6 @@ Despite predominantly bearish sentiment surrounding multi-quarter China weakness
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -1042,9 +1042,7 @@ ADBE's +1.93% session gain aligned with positive regulatory clearance (FTC early
 | **52-Week Range** | `$242.27 - $242.27` | Current: $242.27 |
 | **Social Sentiment** | `18.2% Bull / 81.8% Bear` | Major Driver: FTC early approval of Topaz Labs acquisition and massive share buyback support |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1062,7 +1060,6 @@ ADBE's +1.93% session gain aligned with positive regulatory clearance (FTC early
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

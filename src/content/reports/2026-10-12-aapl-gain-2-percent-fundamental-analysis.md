@@ -364,20 +364,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance & Methodology Disclosure
-
-    *This publication is prepared solely for general educational and
-    institutional informational purposes pursuant to the Publisher's Exemption
-    of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and
-    FINRA Rule 2210. Nothing contained herein constitutes personalized
-    investment advice, a financial recommendation, or a solicitation to buy or
-    sell securities. This analysis was generated via automated quantitative
-    agents and institutional analysis pipelines compiling verified public
-    filings (including Apple Inc. SEC Form 10-K, CIK 0000320193), regulated
-    market data feeds, and multi-model consensus frameworks under the
-    Publisher's Exemption.*
   fundamentalImpact: >-
     From a fundamental trajectory perspective, reported 30% order increases for
     iPhone Duo and expansion into smart home infrastructure confirm near-term
@@ -1286,7 +1272,6 @@ From a catalyst-price alignment framework, the session exhibited an **ALIGNED** 
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1303,7 +1288,6 @@ From a catalyst-price alignment framework, the session exhibited an **ALIGNED** 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Order Flow Structure, Volume Anomaly & Trading Venue
 Price discovery took place on the **Nasdaq Global Select Market** (Penny Stock: No). A quantitative evaluation of secondary market liquidity reveals a pronounced volume-price divergence: Apple traded **16,518,836 shares** against its 90-day average daily volume of **30,860,627 shares**, generating a **Relative Volume (RVOL) of 0.54x**. 
@@ -1371,12 +1355,6 @@ However, a marked divergence persists between fundamental earnings power and pre
 | **TTM Revenue** | $466.82B | SEC Form 10-K (CIK 0000320193) | Massive baseline revenue supporting 33.2% operating margin |
 | **TTM Free Cash Flow** | $136.68B | Free Cash Flow Conversion | $39.54B Cash fully covers $13,004.0M ST Debt ($84.34B Total Debt) |
 | **Macro Benchmark Rates** | US 10Y: 5.24% \| Fed: 4.20% | VIX: 15.3 \| WTI: $93.50/bbl | Restrictive sovereign yield environment offset by subdued equity volatility regime |
-
----
-
-### Regulatory Compliance & Methodology Disclosure
-*This publication is prepared solely for general educational and institutional informational purposes pursuant to the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. Nothing contained herein constitutes personalized investment advice, a financial recommendation, or a solicitation to buy or sell securities. This analysis was generated via automated quantitative agents and institutional analysis pipelines compiling verified public filings (including Apple Inc. SEC Form 10-K, CIK 0000320193), regulated market data feeds, and multi-model consensus frameworks under the Publisher's Exemption.*
-
 
 ---
 

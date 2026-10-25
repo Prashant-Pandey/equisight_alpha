@@ -1047,9 +1047,7 @@ The 10.48% selloff was precipitated by competitive threats emerging from SpaceX'
 | **52-Week Range** | `$47.57 - $133.86` | Current: $50.97 |
 | **Social Sentiment** | `64.7% Bull / 35.3% Bear` | Major Driver: SpaceX 800 MHz spectrum acquisition announcement raising direct-to-cell competitive concerns |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1067,7 +1065,6 @@ The 10.48% selloff was precipitated by competitive threats emerging from SpaceX'
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

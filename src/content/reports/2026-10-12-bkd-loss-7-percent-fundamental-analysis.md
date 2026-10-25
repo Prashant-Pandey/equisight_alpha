@@ -1063,9 +1063,7 @@ Despite reports of rising Q3 occupancy and outperforming broader senior housing 
 | **52-Week Range** | `$8.02 - $17.09` | Current: $10.12 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Occupancy recovery deceleration concerns and valuation compression following Q3 operating updates |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1083,7 +1081,6 @@ Despite reports of rising Q3 occupancy and outperforming broader senior housing 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

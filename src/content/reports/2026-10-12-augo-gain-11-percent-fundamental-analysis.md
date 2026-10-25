@@ -440,34 +440,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology, Automation & Regulatory Compliance Disclosures
-
-
-    > **Publisher's Exemption & Compliance Notice (FINRA Rule 2210 / Section
-    202(a)(11)(D))**  
-
-    > This publication has been compiled for general educational and
-    informational purposes only pursuant to the Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule
-    2210. This document **does not** constitute personalized investment advice,
-    individual financial planning, an endorsement, or a direct recommendation to
-    buy, sell, or hold any security, derivative, or financial instrument. All
-    statements, analyses, and metrics presented reflect impersonal, quantitative
-    market observations.
-
-    >
-
-    > **Automated Quantitative Research Methodology**  
-
-    > Financial deductions, anomalies, and metrics contained herein were
-    algorithmically compiled and synthesized by automated quantitative research
-    pipelines and large language agents ingesting publicly available exchange
-    feeds, SEC filings, and audited market data. Historical metrics cited
-    conform strictly to ingested company filings. Investors must conduct their
-    own independent due diligence and consult with a licensed fiduciary
-    investment advisor before executing transactions.
   fundamentalImpact: >-
     Operationally, the reported Q3 figures validate management's execution on
     its 600,000-ounce medium-term growth strategy, confirming asset-level
@@ -1320,7 +1292,6 @@ Aura Minerals Inc. (**NASDAQ: AUGO**) experienced a significant upside expansion
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1337,7 +1308,6 @@ Aura Minerals Inc. (**NASDAQ: AUGO**) experienced a significant upside expansion
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics Table
 
@@ -1424,17 +1394,6 @@ From a quantitative valuation standpoint, the equity's current market pricing pr
 1. **Severe Valuation Multiple Vulnerability:** At 3.39x Consensus Fair Value ($26.91), current equity pricing leaves zero margin of safety. Any operational setback, equipment delivery delay, or metallurgical variance could trigger swift multiple contraction toward fundamental fair value baselines.
 2. **Commodity Factor Exposure & Cost of Capital:** Elevated benchmark rates (5.24% US 10Y) raise required returns on equity, while sustained $93.86/bbl WTI crude prices directly inflate extraction and transport expenditures, potentially offsetting projected cost reductions.
 3. **Gamma Unwind & No Economic Moat:** The session's +10.63% extension was heavily accelerated by dealer gamma hedging (10.94x call/put ratio). As options expire and delta positioning resets, the absence of an economic moat exposes the stock to sharp mean-reverting pressure once momentum buying abates.
-
----
-
-### Transparent Methodology, Automation & Regulatory Compliance Disclosures
-
-> **Publisher's Exemption & Compliance Notice (FINRA Rule 2210 / Section 202(a)(11)(D))**  
-> This publication has been compiled for general educational and informational purposes only pursuant to the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This document **does not** constitute personalized investment advice, individual financial planning, an endorsement, or a direct recommendation to buy, sell, or hold any security, derivative, or financial instrument. All statements, analyses, and metrics presented reflect impersonal, quantitative market observations.
->
-> **Automated Quantitative Research Methodology**  
-> Financial deductions, anomalies, and metrics contained herein were algorithmically compiled and synthesized by automated quantitative research pipelines and large language agents ingesting publicly available exchange feeds, SEC filings, and audited market data. Historical metrics cited conform strictly to ingested company filings. Investors must conduct their own independent due diligence and consult with a licensed fiduciary investment advisor before executing transactions.
-
 
 ---
 

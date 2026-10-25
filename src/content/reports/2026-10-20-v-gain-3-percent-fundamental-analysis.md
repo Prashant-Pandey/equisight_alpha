@@ -348,20 +348,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance & Automated Methodology Disclosure
-
-    *This publication is prepared solely for general educational and
-    informational purposes under the **Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict
-    adherence to **FINRA Rule 2210**. This content does not constitute
-    personalized investment advice, a recommendation, endorsement, or price
-    target directive. All analytical deductions and structured financial metrics
-    are algorithmically compiled by automated quantitative equity research
-    systems from verified public filings (SEC EDGAR) and live institutional
-    market data feeds. Historical performance and quantitative multiples do not
-    guarantee future performance.*
   fundamentalImpact: >-
     The transition of USDC stablecoin settlement onto Visa Direct and the
     AI-agent payment automation initiative reinforce Visa's Wide Economic Moat
@@ -1230,7 +1216,6 @@ Operationally, the primary catalyst centered on the commercial production launch
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1247,7 +1232,6 @@ Operationally, the primary catalyst centered on the commercial production launch
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Catalyst-Price Alignment & Expectations vs. Reality Gap
 From an empirical microstructure perspective, the session's price reaction is classified as **ALIGNED** with the underlying fundamental drivers. Pre-session positioning had seen Visa appreciate roughly 11% over the course of October, establishing an elevated expectations bar even as sell-side consensus forward EPS revisions remained largely flat. 
@@ -1329,12 +1313,6 @@ On fundamental benchmarks, Visa’s valuation remains exceptionally stretched. A
 > * **Gamma-Driven Microstructure Expansion:** The +2.9% breakout to new records unfolded on lighter volume (0.68x RVOL), driven by an asymmetric 2.74x Call/Put gamma skew that forced dealer delta-hedging through thin offer books.
 > * **Valuation Stretch vs. Secular Quality:** At $407.46, Visa trades at 1.66x Consensus Fair Value ($245.26) and carries a 1-Star Morningstar rating, reflecting a substantial valuation premium where forward multiple expansion appears constrained ahead of earnings.
 > * **Exceptional Cash Generation:** Visa's underlying engine remains virtually peerless with a 61.1% operating margin, $21.18B in TTM FCF, and $12.40B in cash, providing an impenetrable financial buffer against a 5.12% sovereign yield environment.
-
----
-
-### Regulatory Compliance & Automated Methodology Disclosure
-*This publication is prepared solely for general educational and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict adherence to **FINRA Rule 2210**. This content does not constitute personalized investment advice, a recommendation, endorsement, or price target directive. All analytical deductions and structured financial metrics are algorithmically compiled by automated quantitative equity research systems from verified public filings (SEC EDGAR) and live institutional market data feeds. Historical performance and quantitative multiples do not guarantee future performance.*
-
 
 ---
 

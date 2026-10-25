@@ -98,16 +98,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > **Regulatory & Compliance Notice**: Prepared solely for general
-    educational and informational purposes under the Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA
-    Rule 2210. This quantitative research report does not constitute
-    personalized investment advice, an endorsement, or an individual buy/sell
-    recommendation. Deductions are compiled algorithmically through automated
-    quantitative agents and institutional analysis pipelines utilizing verified
-    SEC EDGAR filings and synchronized market data feeds.
-
-
     Century Aluminum Company ($CENX) registered a -5.7% price contraction during
     today's trading session, settling at $32.26 on the Nasdaq Global Select
     Market. Systematic examination of ingested regulatory and corporate feeds
@@ -1026,8 +1016,6 @@ sectorDynamics:
 ---
 ## Executive Summary & Session Catalyst
 
-> **Regulatory & Compliance Notice**: Prepared solely for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This quantitative research report does not constitute personalized investment advice, an endorsement, or an individual buy/sell recommendation. Deductions are compiled algorithmically through automated quantitative agents and institutional analysis pipelines utilizing verified SEC EDGAR filings and synchronized market data feeds.
-
 Century Aluminum Company ($CENX) registered a -5.7% price contraction during today's trading session, settling at $32.26 on the Nasdaq Global Select Market. Systematic examination of ingested regulatory and corporate feeds reveals that the price dislocation developed entirely absent company-specific fundamental catalysts. Corporate filings remain consistent with the FY2025 Form 10-K filed on March 3, 2026 (CIK 0000949157), which codified full-year revenue of $2.67B. Media flow throughout the session consisted exclusively of automated scrapers, price-action aggregators, and algorithmic summaries across Yahoo Finance and GuruFocus. In the absence of actionable earnings revisions, executive departures, or commercial developments, the session's downward price action is classified under **NOISE_SPECULATION**, reflecting mechanical algorithmic selling and passive sector de-risking rather than an institutional reassessment of the company's operating profile.
 
 Market microstructure and execution telemetry underscore an acute order flow anomaly: session trading volume totaled just 382,533 shares, representing a volume anomaly ratio of 0.2x (or 19.8%) relative to the 90-day historical average of 1,929,787 shares. This severe liquidity contraction indicates that the -5.7% decline was generated within an order-book vacuum rather than through aggressive institutional block liquidation. Furthermore, Century Aluminum's float structure exhibits low concentration risk with 69.3% in public float distribution, providing insulation against artificial supply-side squeezes. Derivatives positioning reflected a moderate call options skew of 1.40x, indicating retail speculative bullish bias that diverged from underlying tape action, alongside a 100% bullish sentiment reading across retail tracking channels (29 StockTwits posts, 0 Reddit threads). On the Nasdaq Global Select Market, trading well outside penny-stock thresholds at a market capitalization of $3.19B, the asset experienced price slippage characteristic of algorithmic execution crossing wide bid-ask spreads during low-volume sessions.
@@ -1060,9 +1048,7 @@ From a solvency and valuation standpoint, Century Aluminum remains anchored by a
 * **Empirical Bull Case**: Century Aluminum trades at an extreme valuation discount (Price/Fair Value of 0.44x against a $73.02 fair value target) backed by a 5-Star Morningstar rating and an expanding Wide Economic Moat. Structural solvency is uncompromised due to an unencumbered, zero-debt balance sheet ($0.00B debt, $0.34B cash), shielding enterprise cash flows from prevailing 5.01% cost-of-capital hurdles. Robust TTM profitability ($2.67B revenue, 25.6% operating margin, $0.15B FCF) provides substantial fundamental support against transient, low-volume trading noise.
 * **Empirical Bear Case**: High energy commodity pricing (WTI at $98.10/bbl) exerts sustained cost pressure on primary smelting operations, threatening to compress conversion margins if elevated power tariffs persist. Furthermore, elevated global benchmark interest rates (Fed Funds at 4.18%, 10Y Yield at 5.01%) dampen macroeconomic cyclical capital allocation, potentially softening downstream industrial demand and lengthening the duration required for market valuation to converge toward intrinsic fair value.
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1080,7 +1066,6 @@ From a solvency and valuation standpoint, Century Aluminum remains anchored by a
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

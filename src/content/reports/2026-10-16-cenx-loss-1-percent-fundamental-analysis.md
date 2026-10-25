@@ -944,9 +944,7 @@ The session decline of -1.44% occurs in the absence of fundamental, material cor
 | **52-Week Range** | `$36.23 - $36.23` | Current: $36.23 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Technical pullback and low-volume consolidation devoid of material fundamental catalysts |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -964,7 +962,6 @@ The session decline of -1.44% occurs in the absence of fundamental, material cor
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

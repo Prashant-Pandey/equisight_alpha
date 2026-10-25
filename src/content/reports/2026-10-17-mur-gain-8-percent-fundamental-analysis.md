@@ -983,9 +983,7 @@ Murphy Oil (MUR) surged +7.91% driven by major operational milestones in offshor
 | **52-Week Range** | `$41.74 - $41.74` | Current: $41.74 |
 | **Social Sentiment** | `90% Bull / 10% Bear` | Major Driver: Offshore exploration discoveries and milestone first oil production in Vietnam and the Gulf of Mexico |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1003,7 +1001,6 @@ Murphy Oil (MUR) surged +7.91% driven by major operational milestones in offshor
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

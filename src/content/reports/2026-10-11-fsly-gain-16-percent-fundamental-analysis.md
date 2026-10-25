@@ -1092,9 +1092,7 @@ Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer upg
 | **52-Week Range** | `$7.74 - $34.82` | Current: $29.30 |
 | **Social Sentiment** | `92.3% Bull / 7.7% Bear` | Major Driver: Oppenheimer upgrade to Outperform/Buy citing Agentic AI growth and expanding contract sizes, complemented by Comcast Peacock partnership momentum |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1112,7 +1110,6 @@ Fastly ($FSLY) rallied +15.86% driven primarily by a high-impact Oppenheimer upg
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

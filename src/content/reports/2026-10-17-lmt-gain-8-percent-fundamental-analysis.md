@@ -343,24 +343,6 @@ executiveSummaryData:
     upside, leaving the equity vulnerable to "sell-the-news" dynamics if Q3
     operating margins (baseline 11.9%) fail to demonstrate immediate margin
     expansion.
-
-
-    ---
-
-    ### Regulatory & Methodological Disclosures
-
-    **Publisher's Exemption & Automated Methodology Notice**: This publication
-    is prepared exclusively for general institutional educational and
-    informational purposes in accordance with the Publisher’s Exemption under
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA
-    Rule 2210. This research does not constitute personalized investment, legal,
-    or tax advice, nor does it present individualized recommendations, price
-    targets, or solicitations to purchase or sell any security. All analytical
-    deductions and quantitative figures are algorithmically compiled by
-    automated quantitative research systems using verified public regulatory
-    filings (including SEC EDGAR Form 10-K, CIK 0000936468) and institutional
-    market data feeds. Past operational performance and backlog disclosures do
-    not guarantee future execution.
   fundamentalImpact: >-
     The confirmed $88B missile defense backlog materially de-risks multi-year
     top-line visibility across Lockheed Martin's Missiles and Fire Control (MFC)
@@ -1286,7 +1268,6 @@ Evaluating the session move against multi-model valuation anchors demonstrates a
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1303,10 +1284,6 @@ Evaluating the session move against multi-model valuation anchors demonstrates a
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-### Regulatory & Methodological Disclosures
-**Publisher's Exemption & Automated Methodology Notice**: This publication is prepared exclusively for general institutional educational and informational purposes in accordance with the Publisher’s Exemption under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This research does not constitute personalized investment, legal, or tax advice, nor does it present individualized recommendations, price targets, or solicitations to purchase or sell any security. All analytical deductions and quantitative figures are algorithmically compiled by automated quantitative research systems using verified public regulatory filings (including SEC EDGAR Form 10-K, CIK 0000936468) and institutional market data feeds. Past operational performance and backlog disclosures do not guarantee future execution.
-
 
 ---
 

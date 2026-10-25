@@ -127,16 +127,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > **Regulatory & Automation Disclosure**: Prepared strictly for general
-    educational and informational purposes under the Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA
-    Rule 2210. This research synthesis is algorithmically generated via
-    institutional quantitative pipelines utilizing verified SEC EDGAR public
-    filings (CIK 0001403161) and direct market data feeds. This publication does
-    not provide personalized investment advice, individual suitability
-    assessments, price targets, or solicitations to execute transactions.
-
-
     ### Session Catalyst & Price Alignment
 
 
@@ -1205,8 +1195,6 @@ archetypeScore: 0.0843
 ---
 ## Executive Summary & Session Catalyst
 
-> **Regulatory & Automation Disclosure**: Prepared strictly for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This research synthesis is algorithmically generated via institutional quantitative pipelines utilizing verified SEC EDGAR public filings (CIK 0001403161) and direct market data feeds. This publication does not provide personalized investment advice, individual suitability assessments, price targets, or solicitations to execute transactions.
-
 ### Session Catalyst & Price Alignment
 
 During today's trading session, Visa Inc. ($V) registered an acute breakout, advancing +6.87% (+6.9%) to close at $385.45 USD on the New York Stock Exchange. The price action demonstrated decisive alignment (**ALIGNED**) with underlying fundamental catalysts, characterized by sustained operational momentum, resilient global consumer card spending, and expanding institutional recognition of Visa’s multi-rail settlement integration across stablecoins. While pre-session market positioning absorbed headlines regarding a $563M restructuring charge associated with workforce reductions and routine executive option exercises, market participants interpreted the disclosures constructively. Sell-side updates—including an Oppenheimer Buy rating—re-anchored market focus onto the core franchise's operating leverage and anticipated earnings delivery, viewing the restructuring expense as structural cost discipline rather than top-line deterioration.
@@ -1268,9 +1256,7 @@ The session's multiple expansion unfolded against a restrictive sovereign yield 
 | **Total Debt & Cash** | $23.98B Debt / $12.40B Cash | Short-Term Debt: $1,559.0M (13.5x FCF Coverage) |
 | **Macroeconomic Backdrop** | US 10Y: 5.24% \| Fed Funds: 4.21% | VIX: 14.8 \| WTI Crude: $91.85/bbl |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1288,7 +1274,6 @@ The session's multiple expansion unfolded against a restrictive sovereign yield 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

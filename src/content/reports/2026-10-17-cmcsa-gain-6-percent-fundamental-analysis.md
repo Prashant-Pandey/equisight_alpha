@@ -1029,9 +1029,7 @@ Headlines highlight prevailing bearish sentiment around competitive broadband pr
 | **52-Week Range** | `$21.90 - $21.90` | Current: $21.90 |
 | **Social Sentiment** | `93.3% Bull / 6.7% Bear` | Major Driver: Oversold valuation relief rally despite broadband competition headwinds |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1049,7 +1047,6 @@ Headlines highlight prevailing bearish sentiment around competitive broadband pr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

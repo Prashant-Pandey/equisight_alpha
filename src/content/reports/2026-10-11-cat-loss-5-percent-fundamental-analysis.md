@@ -1055,9 +1055,7 @@ Caterpillar experienced a sharp session decline of -5.32%, primarily catalyzed b
 | **52-Week Range** | `$800.47 - $800.47` | Current: $800.47 |
 | **Social Sentiment** | `75% Bull / 25% Bear` | Major Driver: Surging long-term Treasury yields and sector-wide industrial sell-off alongside FTC/USDA inquiry headlines |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1075,7 +1073,6 @@ Caterpillar experienced a sharp session decline of -5.32%, primarily catalyzed b
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -320,18 +320,6 @@ executiveSummaryData:
     4.23% | VIX: 17.4 \| WTI Crude: $97.97/bbl | High sovereign discount rates
     compress equity duration; elevated energy costs create transportation margin
     headwinds |
-
-
-    ---
-
-    *Legal Compliance & Regulatory Methodology Disclosure: This document has
-    been prepared for general educational and informational purposes only under
-    the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940 and FINRA Rule 2210. It does not constitute
-    personalized investment advice, a portfolio recommendation, or an offer to
-    buy or sell any security. Analytical deductions and financial metrics are
-    compiled via automated quantitative research pipelines utilizing verified
-    SEC EDGAR filings and synchronized market data feeds.*
   fundamentalImpact: >-
     The session's price dislocation does not indicate structural erosion of
     Sterling Infrastructure's core fundamentals or solvency profile. Regulatory
@@ -364,12 +352,8 @@ executiveSummaryData:
       FCF. However, market pricing at $412.08 continues to reflect a 1.35x
       premium over Consensus Fair Value ($305.72, Morningstar 2-Star rating).
     - >-
-      Defensive Derivatives & Regulatory Context: Low option gamma skew (put
-      concentration 0.36x) buffered reflexive hedging cascades. This publication
-      is compiled via automated institutional quantitative pipelines under the
-      Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-      Advisers Act of 1940 and FINRA Rule 2210 without personalized investment
-      advice.
+      Defensive Derivatives Context: Low option gamma skew (put concentration 0.36x)
+      buffered reflexive hedging cascades.
   macroeconomicContext: >-
     The macroeconomic tape exerted significant downward pressure on
     high-multiple capital goods and infrastructure equities during the session.
@@ -1254,7 +1238,6 @@ Nevertheless, valuation metrics emphasize why multiple compression unfolded: Con
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1271,9 +1254,6 @@ Nevertheless, valuation metrics emphasize why multiple compression unfolded: Con
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Legal Compliance & Regulatory Methodology Disclosure: This document has been prepared for general educational and informational purposes only under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute personalized investment advice, a portfolio recommendation, or an offer to buy or sell any security. Analytical deductions and financial metrics are compiled via automated quantitative research pipelines utilizing verified SEC EDGAR filings and synchronized market data feeds.*
-
 
 ---
 

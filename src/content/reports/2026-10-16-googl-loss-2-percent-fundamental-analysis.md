@@ -317,17 +317,6 @@ executiveSummaryData:
 
     | **Macro Benchmark Rates** | US 10-Year: 5.08% \| Fed Funds: 4.22% | VIX:
     16.4 \| WTI Crude: $95.73/bbl |
-
-
-    ---
-
-    *Methodology & Regulatory Disclosure: This research document is prepared and
-    distributed under the Publisher's Exemption of Section 202(a)(11)(D) of the
-    U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This content is
-    compiled algorithmically by automated quantitative research pipelines using
-    verified public regulatory filings (SEC EDGAR) and market telemetry feeds.
-    It does not constitute personalized investment advice, a portfolio
-    recommendation, or an offer to buy or sell securities.*
   fundamentalImpact: >-
     From a fundamental trajectory perspective, today's macro-driven session
     dislocation leaves Alphabet’s operating engine entirely unimpaired. As
@@ -1220,7 +1209,6 @@ From a solvency and fundamental valuation perspective, the session decline expan
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1237,7 +1225,6 @@ From a solvency and fundamental valuation perspective, the session decline expan
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Empirical Evidence Matrix: Balanced Analytical Cases
 
@@ -1287,10 +1274,6 @@ From a solvency and fundamental valuation perspective, the session decline expan
 | **Balance Sheet Liquidity & Leverage** | Cash: $55.91B \| Total Debt: $100.16B | Short-Term Debt: $1,999.0M (26.6x FCF Coverage) |
 | **Derivatives Gamma Skew** | Call/Put OI Ratio: 2.31x | High upside convexity / delta sensitivity |
 | **Macro Benchmark Rates** | US 10-Year: 5.08% \| Fed Funds: 4.22% | VIX: 16.4 \| WTI Crude: $95.73/bbl |
-
----
-*Methodology & Regulatory Disclosure: This research document is prepared and distributed under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This content is compiled algorithmically by automated quantitative research pipelines using verified public regulatory filings (SEC EDGAR) and market telemetry feeds. It does not constitute personalized investment advice, a portfolio recommendation, or an offer to buy or sell securities.*
-
 
 ---
 

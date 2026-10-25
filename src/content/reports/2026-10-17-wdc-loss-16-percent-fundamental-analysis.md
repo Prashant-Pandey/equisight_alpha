@@ -1028,9 +1028,7 @@ $WDC suffered a severe session decline of -16.43% amid accelerating memory secto
 | **52-Week Range** | `$332.00 - $332.00` | Current: $332.00 |
 | **Social Sentiment** | `50% Bull / 50% Bear` | Major Driver: Memory sector selloff driven by China competition fears and cyclical top concerns |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1048,7 +1046,6 @@ $WDC suffered a severe session decline of -16.43% amid accelerating memory secto
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

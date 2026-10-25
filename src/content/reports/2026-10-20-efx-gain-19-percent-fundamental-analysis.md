@@ -1100,9 +1100,7 @@ Equifax ($EFX) surged +18.72% following strong Q3 2026 financial results that ex
 | **52-Week Range** | `$177.00 - $177.00` | Current: $177.00 |
 | **Social Sentiment** | `80% Bull / 20% Bear` | Major Driver: Q3 earnings beat led by +15% mortgage revenue growth and AI-driven margin expansion |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1120,7 +1118,6 @@ Equifax ($EFX) surged +18.72% following strong Q3 2026 financial results that ex
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -992,9 +992,7 @@ Goldman Sachs demonstrated an earnings beat alongside price target upgrades to $
 | **52-Week Range** | `$881.26 - $881.26` | Current: $881.26 |
 | **Social Sentiment** | `85.7% Bull / 14.3% Bear` | Major Driver: Post-earnings 'sell-the-news' profit taking and valuation consolidation |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1012,7 +1010,6 @@ Goldman Sachs demonstrated an earnings beat alongside price target upgrades to $
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

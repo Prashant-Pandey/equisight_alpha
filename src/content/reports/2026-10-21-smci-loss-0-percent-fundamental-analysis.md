@@ -290,21 +290,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance, Automated Methodology & Publisher's Exemption
-
-    *This executive analysis is published strictly for general educational and
-    informational purposes under the **Publisher's Exemption** of **Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict
-    adherence to **FINRA Rule 2210**. This document does not constitute
-    individualized investment advice, financial planning, a personal
-    recommendation, or a solicitation to buy or sell any security. All
-    analytical evaluations are compiled algorithmically via automated
-    quantitative equity research pipelines and verified data feeds from SEC
-    EDGAR filings (CIK 0001375365) and exchange trade feeds. Historical
-    financial metrics and consensus valuation models reflect empirical public
-    disclosures and are subject to market volatility and execution risks.*
   fundamentalImpact: >-
     Fundamentally, the preliminary revenue beat and raised $19.5B AI platform
     guidance confirm Super Micro's Tier-1 hardware architecture positioning
@@ -1271,7 +1256,6 @@ The broader macroeconomic backdrop presented measurable valuation friction that 
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1288,11 +1272,6 @@ The broader macroeconomic backdrop presented measurable valuation friction that 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-
-### Regulatory Compliance, Automated Methodology & Publisher's Exemption
-*This executive analysis is published strictly for general educational and informational purposes under the **Publisher's Exemption** of **Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict adherence to **FINRA Rule 2210**. This document does not constitute individualized investment advice, financial planning, a personal recommendation, or a solicitation to buy or sell any security. All analytical evaluations are compiled algorithmically via automated quantitative equity research pipelines and verified data feeds from SEC EDGAR filings (CIK 0001375365) and exchange trade feeds. Historical financial metrics and consensus valuation models reflect empirical public disclosures and are subject to market volatility and execution risks.*
-
 
 ---
 

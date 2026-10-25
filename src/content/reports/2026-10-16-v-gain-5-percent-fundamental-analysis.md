@@ -351,20 +351,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### 6. Regulatory Compliance & Methodology Disclosure
-
-
-    *This market commentary and quantitative synthesis is prepared strictly for
-    institutional, general educational, and informational purposes under the
-    **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940** and in alignment with **FINRA Rule 2210**. This
-    analysis does not constitute personalized investment advice, financial
-    planning, an individual recommendation, or an endorsement to purchase or
-    sell any security. All analytical deductions, valuation metrics, and volume
-    anomaly ratios are algorithmically derived from verified public SEC EDGAR
-    filings (CIK 0001403161) and normalized market exchange data feeds.*
   fundamentalImpact: >-
     The PBOC domestic card clearing approval establishes a pivotal strategic
     foothold within the world's second-largest economy, representing a
@@ -1240,7 +1226,6 @@ This regulatory announcement exhibited clear fundamental alignment (**ALIGNED**)
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1257,7 +1242,6 @@ This regulatory announcement exhibited clear fundamental alignment (**ALIGNED**)
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### 2. Order Flow Dynamics, Volume Anomaly & Market Microstructure
 
@@ -1325,13 +1309,6 @@ The broader macroeconomic environment presents a restrictive discount rate backd
 | **Macroeconomic** | US 10-Year Sovereign Yield | **5.08%** | Restrictive Equity Cost of Capital Benchmark |
 | **Monetary & Risk** | Fed Funds / CBOE VIX | **4.22% / 16.4** | Moderate Monetary Drag; Low Broad Volatility Regime |
 | **Commodity Benchmark**| WTI Crude Oil | **$95.73 / barrel** | Sustained Input Cost / Consumer Elasticity Pressure |
-
----
-
-### 6. Regulatory Compliance & Methodology Disclosure
-
-*This market commentary and quantitative synthesis is prepared strictly for institutional, general educational, and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in alignment with **FINRA Rule 2210**. This analysis does not constitute personalized investment advice, financial planning, an individual recommendation, or an endorsement to purchase or sell any security. All analytical deductions, valuation metrics, and volume anomaly ratios are algorithmically derived from verified public SEC EDGAR filings (CIK 0001403161) and normalized market exchange data feeds.*
-
 
 ---
 

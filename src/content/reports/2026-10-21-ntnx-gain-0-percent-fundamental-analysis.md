@@ -336,25 +336,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Automated Methodology & Regulatory Disclosures
-
-    * **Publisher's Exemption Notice:** This publication is prepared solely for
-    general educational, academic, and informational purposes under the
-    Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940 and the analytical standards of FINRA Rule 2210.
-
-    * **No Personalized Advice:** Nothing herein constitutes personalized
-    investment, tax, legal, or financial advice, nor does it provide individual
-    buy, sell, or hold recommendations. All observations are impersonal,
-    objective, and algorithmically derived from verified public market feeds and
-    regulatory disclosures.
-
-    * **Automated Institutional Pipeline:** Financial deductions, volume anomaly
-    calculations, and comparative ratios were compiled via automated
-    quantitative systems auditing verified SEC EDGAR filings (including Nutanix,
-    Inc. Form 10-K, CIK 0001618732) and normalized financial market feeds.
   fundamentalImpact: >-
     The four-way enterprise AI infrastructure collaboration reinforces Nutanix's
     Wide Economic Moat and positive moat trend by establishing its hybrid
@@ -1241,7 +1222,6 @@ The macro environment continues to impose strict valuation discipline on enterpr
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1258,7 +1238,6 @@ The macro environment continues to impose strict valuation discipline on enterpr
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Balanced Empirical Case: Bull vs. Bear Scenarios
 
@@ -1310,14 +1289,6 @@ The macro environment continues to impose strict valuation discipline on enterpr
 | **Capital Structure (Debt / Cash)** | **$0.00B Total Debt** / $0.78B Cash | Zero Short-Term Rollover or Solvency Risk |
 | **Options Gamma Skew / Ratio** | **Severe Upside Skew** (7.69x Call/Put) | Asymmetric Dealer Delta-Hedging Convexity |
 | **Macro Factors (US 10Y / VIX / WTI)** | **5.11%** / **16.8** / **$96.78/bbl** | Restrictive Rates (Fed Funds: 4.21%); Low Vol |
-
----
-
-### Automated Methodology & Regulatory Disclosures
-* **Publisher's Exemption Notice:** This publication is prepared solely for general educational, academic, and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and the analytical standards of FINRA Rule 2210.
-* **No Personalized Advice:** Nothing herein constitutes personalized investment, tax, legal, or financial advice, nor does it provide individual buy, sell, or hold recommendations. All observations are impersonal, objective, and algorithmically derived from verified public market feeds and regulatory disclosures.
-* **Automated Institutional Pipeline:** Financial deductions, volume anomaly calculations, and comparative ratios were compiled via automated quantitative systems auditing verified SEC EDGAR filings (including Nutanix, Inc. Form 10-K, CIK 0001618732) and normalized financial market feeds.
-
 
 ---
 

@@ -1029,9 +1029,7 @@ Oracle's sharp intraday decline (-8.08%) was catalyzed by sector-wide contagion 
 | **52-Week Range** | `$129.97 - $129.97` | Current: $129.97 |
 | **Social Sentiment** | `38.5% Bull / 61.5% Bear` | Major Driver: CoreWeave debt concerns and macro rate pressures triggering AI cloud sector contagion |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1049,7 +1047,6 @@ Oracle's sharp intraday decline (-8.08%) was catalyzed by sector-wide contagion 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

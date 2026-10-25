@@ -1074,9 +1074,7 @@ LUMN dropped -8.17% amid heavy debt concerns ($13.5B load analyzed in a downgrad
 | **52-Week Range** | `$5.13 - $11.95` | Current: $5.28 |
 | **Social Sentiment** | `42.9% Bull / 57.1% Bear` | Major Driver: Excessive balance sheet debt burden and technical breakdown below key support |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1094,7 +1092,6 @@ LUMN dropped -8.17% amid heavy debt concerns ($13.5B load analyzed in a downgrad
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

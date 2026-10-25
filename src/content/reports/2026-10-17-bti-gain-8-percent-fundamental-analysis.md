@@ -453,31 +453,6 @@ executiveSummaryData:
     ---
 
 
-    ### Transparent Methodology & Regulatory Disclosures
-
-
-    #### Automated Quantitative Methodology Disclosure
-
-    This research publication was prepared utilizing automated quantitative
-    analytics pipelines, real-time market data feed parsers, and algorithmic
-    news categorization frameworks. Quantitative deductions, volume anomaly
-    calculations (RVOL), option gamma skew profiling, and catalyst alignments
-    are derived algorithmically from verified public exchange feeds, SEC
-    filings, and standardized financial market datasets. Where ingested
-    automated SEC summary feeds reflect unfiled or non-reported line items (such
-    as CapEx, TTM FCF, and debt metrics), models default to neutral or
-    inconclusive parameters to maintain analytical objectivity and prevent
-    speculative extrapolation.
-
-
-    #### Legal Compliance & Publisher's Exemption
-
-    This analysis is published strictly for general institutional informational,
-    educational, and analytical purposes pursuant to the **Publisher's
-    Exemption** under **Section 202(a)(11)(D) of the U.S. Investment Advisers
-    Act of 1940** and **FINRA Rule 2210**. 
-
-
     This document does **not** constitute personalized investment advice, an
     endorsement, a buy or sell recommendation, a price target, an investment
     directive, or a financial solicitation. No consideration has been paid or
@@ -1328,7 +1303,6 @@ The primary driver behind today's price action is classified as **Macro / Sector
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1345,7 +1319,6 @@ The primary driver behind today's price action is classified as **Macro / Sector
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Expectations vs. Reality Gap Analysis
 Pre-session consensus positioning across the consumer staples and tobacco peer group was characterized by valuation multiple compression and muted sentiment. With the US 10-Year sovereign yield sustained at **5.10%** and the Fed Funds effective rate at **4.22%**, traditional high-yield equities have competed directly with risk-free yields, dampening investor appetite for bond-proxy equity instruments. Concurrently, broader structural concerns regarding combustible volume attrition, smoke-free transition capital expenditures, and regulatory oversight in major Western jurisdictions had constrained forward multiple expansion.
@@ -1434,16 +1407,7 @@ From a fundamental and quantitative valuation perspective, today's move must be 
 
 ---
 
-### Transparent Methodology & Regulatory Disclosures
-
-#### Automated Quantitative Methodology Disclosure
-This research publication was prepared utilizing automated quantitative analytics pipelines, real-time market data feed parsers, and algorithmic news categorization frameworks. Quantitative deductions, volume anomaly calculations (RVOL), option gamma skew profiling, and catalyst alignments are derived algorithmically from verified public exchange feeds, SEC filings, and standardized financial market datasets. Where ingested automated SEC summary feeds reflect unfiled or non-reported line items (such as CapEx, TTM FCF, and debt metrics), models default to neutral or inconclusive parameters to maintain analytical objectivity and prevent speculative extrapolation.
-
-#### Legal Compliance & Publisher's Exemption
-This analysis is published strictly for general institutional informational, educational, and analytical purposes pursuant to the **Publisher's Exemption** under **Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and **FINRA Rule 2210**. 
-
 This document does **not** constitute personalized investment advice, an endorsement, a buy or sell recommendation, a price target, an investment directive, or a financial solicitation. No consideration has been paid or received regarding the equity evaluated herein. All market participants must independently evaluate securities based on individual risk tolerance, investment objectives, and verified primary regulatory filings before deploying risk capital. Past market performance is not indicative of future market outcomes.
-
 
 ---
 

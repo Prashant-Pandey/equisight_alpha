@@ -1035,9 +1035,7 @@ United Airlines reported Q3 results that showed an EPS/revenue miss and margin p
 | **52-Week Range** | `$104.28 - $104.28` | Current: $104.28 |
 | **Social Sentiment** | `66.7% Bull / 33.3% Bear` | Major Driver: Relief rally on premium demand resilience and double-digit margin targets despite Q3 earnings miss and fuel headwinds |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1055,7 +1053,6 @@ United Airlines reported Q3 results that showed an EPS/revenue miss and margin p
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

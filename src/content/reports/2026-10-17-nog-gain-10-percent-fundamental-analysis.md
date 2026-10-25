@@ -897,9 +897,7 @@ Northern Oil and Gas, Inc.'s session movement of +9.7% aligned with market parti
 | **52-Week Range** | `$27.16 - $27.16` | Current: $27.16 |
 | **Social Sentiment** | `90% Bull / 10% Bear` | Major Driver: Regulatory / FDA Catalyst |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -917,7 +915,6 @@ Northern Oil and Gas, Inc.'s session movement of +9.7% aligned with market parti
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

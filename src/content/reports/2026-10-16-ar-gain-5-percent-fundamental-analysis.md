@@ -262,26 +262,6 @@ executiveSummaryData:
     in the short term) against a $0.00B balance sheet cash position,
     necessitating continuous operational FCF generation to service debt
     obligations without relying on refinancing at elevated interest rates.
-
-
-    ### Legal Compliance & Regulatory Disclosures
-
-    **Publisher's Exemption & Regulatory Status:** This publication and
-    quantitative analysis are prepared solely for general educational,
-    informational, and analytical purposes under the Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA
-    Rule 2210. 
-
-    **No Personalized Investment Advice:** This document does not constitute
-    personalized investment advice, a solicitation, an endorsement, a price
-    target guarantee, or an individualized buy/sell directive. All observations
-    are based on impersonal, quantitative deduplication of public data. 
-
-    **Methodology & Algorithmic Disclosure:** The financial deductions,
-    valuation benchmarks, and metrics referenced herein were algorithmically
-    compiled and ingested from verified public filings (SEC EDGAR Form 10-K, CIK
-    0001433270), regulatory filings (FERC), and market feeds. Equal analytical
-    rigor has been applied to both bull and bear empirical factors.
   fundamentalImpact: >-
     The session catalyst confirms Antero's fundamental trajectory rather than
     impairing it. The company's official FY2025 SEC EDGAR Form 10-K filing (CIK
@@ -1158,14 +1138,7 @@ Despite the robust +5.32% capital appreciation, volume mechanics reveal a pronou
 2. **Near-Term Gas Pricing Headwinds & Target Trims:** Sell-side adjustments by Mizuho and UBS underscore fundamental concerns regarding near-term Henry Hub gas supply surpluses and production growth outlook hurdles, potentially dampening forward realization pricing.
 3. **Macro Discount Rate Burden & Zero-Cash Buffer:** With the US 10-Year yield elevated at 5.08% and the Fed Funds Rate at 4.22%, cost of capital hurdles remain high. The company carries $2.61B in total debt ($182.0M due in the short term) against a $0.00B balance sheet cash position, necessitating continuous operational FCF generation to service debt obligations without relying on refinancing at elevated interest rates.
 
-### Legal Compliance & Regulatory Disclosures
-**Publisher's Exemption & Regulatory Status:** This publication and quantitative analysis are prepared solely for general educational, informational, and analytical purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. 
-**No Personalized Investment Advice:** This document does not constitute personalized investment advice, a solicitation, an endorsement, a price target guarantee, or an individualized buy/sell directive. All observations are based on impersonal, quantitative deduplication of public data. 
-**Methodology & Algorithmic Disclosure:** The financial deductions, valuation benchmarks, and metrics referenced herein were algorithmically compiled and ingested from verified public filings (SEC EDGAR Form 10-K, CIK 0001433270), regulatory filings (FERC), and market feeds. Equal analytical rigor has been applied to both bull and bear empirical factors.
-
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1183,7 +1156,6 @@ Despite the robust +5.32% capital appreciation, volume mechanics reveal a pronou
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

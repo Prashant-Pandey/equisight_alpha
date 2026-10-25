@@ -351,25 +351,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology & Regulatory Disclosures
-
-    * **Publisher's Exemption & Nature of Content:** This document is prepared
-    and distributed strictly for general educational and institutional market
-    analysis purposes under the **Publisher's Exemption of Section 202(a)(11)(D)
-    of the U.S. Investment Advisers Act of 1940** and in adherence with **FINRA
-    Rule 2210**. It does not constitute personalized investment advice, a
-    portfolio recommendation, an endorsement, or a solicitation to buy or sell
-    securities.
-
-    * **Automated Quantitative Research Pipeline:** This analytical report was
-    generated using algorithmic research engines and institutional-grade data
-    ingestion pipelines. Financial metrics, balance sheet records, and EDGAR
-    filings (CIK 0001920406) are extracted programmatically from verified public
-    data sources. All financial inferences represent automated quantitative
-    deductions and should be evaluated within a broader institutional risk
-    management framework.
   fundamentalImpact: >-
     The session catalyst fundamentally solidifies Strive's transition from a
     nascent commercial entity into a dedicated corporate Bitcoin treasury
@@ -1280,7 +1261,6 @@ The macroeconomic environment presents an acute cost-of-capital contrast for Str
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1297,7 +1277,6 @@ The macroeconomic environment presents an acute cost-of-capital contrast for Str
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1329,13 +1308,6 @@ The macroeconomic environment presents an acute cost-of-capital contrast for Str
 1. **Severe Fundamental & Fair Value Disconnect:** Fundamental multi-model valuation benchmarks establish a Consensus Fair Value of **$7.46**, indicating that at $30.39, Strive trades at a **4.07x Price/Fair Value premium** and warrants a Morningstar **1-Star (★)** rating. The company generated **$0.00B in TTM revenue**, an operating margin of **-620.7%**, and **-$0.02B in TTM Free Cash Flow** (SEC EDGAR Form 10-K, FY2025).
 2. **Cumbersome Capital Hurdle Rate (15% Preferred Dividend):** The $630M preferred tranche carries a 15% annual dividend on a $100 base, representing an annualized potential cash drain of ~$94.5M. In an elevated rate environment (US 10-Year at 5.11%), funding a zero-yielding crypto asset with a 15% fixed cost creates severe structural negative carry. If Bitcoin enters an extended cyclical drawdown, Strive faces potential liquidity strain or capital-destructive asset sales to meet obligations.
 3. **Volume Anomaly & Execution Fragility:** The +23.1% rally transpired on **0.68x RVOL** (trading 6.23M shares versus the 9.15M 90-day norm), signaling that the advance was driven by liquidity thinning and derivatives gamma mechanics rather than broad-based institutional spot accumulation, leaving the stock vulnerable to sharp mean reversion if call option open interest unwinds.
-
----
-
-### Transparent Methodology & Regulatory Disclosures
-* **Publisher's Exemption & Nature of Content:** This document is prepared and distributed strictly for general educational and institutional market analysis purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in adherence with **FINRA Rule 2210**. It does not constitute personalized investment advice, a portfolio recommendation, an endorsement, or a solicitation to buy or sell securities.
-* **Automated Quantitative Research Pipeline:** This analytical report was generated using algorithmic research engines and institutional-grade data ingestion pipelines. Financial metrics, balance sheet records, and EDGAR filings (CIK 0001920406) are extracted programmatically from verified public data sources. All financial inferences represent automated quantitative deductions and should be evaluated within a broader institutional risk management framework.
-
 
 ---
 

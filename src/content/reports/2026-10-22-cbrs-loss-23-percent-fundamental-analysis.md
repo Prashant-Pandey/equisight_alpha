@@ -360,27 +360,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Automated Quantitative Methodology & Legal Regulatory Disclosures
-
-    * **Publisher's Exemption Notice:** This research section is prepared and
-    distributed exclusively for general institutional, educational, and
-    informational purposes under the **Publisher's Exemption of Section
-    202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict
-    adherence to **FINRA Rule 2210**.
-
-    * **No Personalized Investment Advice:** Nothing within this document
-    constitutes personalized investment, tax, or legal advice, nor does it form
-    an individual recommendation, price target directive, or solicitation to
-    buy, sell, or hold any security. All analytical observations are impersonal,
-    objective, and mathematically derived.
-
-    * **Automated Pipeline Disclosure:** Financial metrics, order flow
-    anomalies, sentiment scores, and valuation multiples were compiled
-    algorithmically via quantitative market intelligence pipelines ingesting
-    verified public filings, regulatory disclosures, and exchange data feeds.
-    Past market performance is never indicative of future results.
   fundamentalImpact: >-
     The session's multiple contraction recalibrates $CBRS back into direct
     alignment with its multi-model Consensus Fair Value of $110.00 (Price/Fair
@@ -1228,7 +1207,6 @@ From an empirical expectations-versus-reality standpoint, the session move is cl
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1245,7 +1223,6 @@ From an empirical expectations-versus-reality standpoint, the session move is cl
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### 2. Market Microstructure, Order Flow & Volume Anomaly Analysis
 Cerebras Systems trades on the **Nasdaq Global Select Market** and operates well outside penny stock definitions, ending the session with a market capitalization of **$12.25B**. A rigorous examination of session order flow reveals critical structural divergences:
@@ -1310,14 +1287,6 @@ Despite the session's severe percentage decline, the repricing has anchored $CBR
 | **Social / Sentiment Score** | **40% Bull / 60% Bear** | Tracked across 30 StockTwits posts and 15 Reddit discussions |
 | **Macroeconomic Yield Benchmark** | **5.01% (US 10-Year Yield)** | Elevated hurdle rates exerting sustained multiple compression |
 | **Monetary & Volatility Climate** | **Fed Funds: 4.18% \| VIX: 19.3** | Idiosyncratic equity re-rating in a low systemic-volatility regime |
-
----
-
-### Automated Quantitative Methodology & Legal Regulatory Disclosures
-* **Publisher's Exemption Notice:** This research section is prepared and distributed exclusively for general institutional, educational, and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and in strict adherence to **FINRA Rule 2210**.
-* **No Personalized Investment Advice:** Nothing within this document constitutes personalized investment, tax, or legal advice, nor does it form an individual recommendation, price target directive, or solicitation to buy, sell, or hold any security. All analytical observations are impersonal, objective, and mathematically derived.
-* **Automated Pipeline Disclosure:** Financial metrics, order flow anomalies, sentiment scores, and valuation multiples were compiled algorithmically via quantitative market intelligence pipelines ingesting verified public filings, regulatory disclosures, and exchange data feeds. Past market performance is never indicative of future results.
-
 
 ---
 

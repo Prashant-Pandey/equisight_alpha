@@ -1028,9 +1028,7 @@ GOOGL gained +2.38% on strong enterprise AI and Google Cloud momentum, highlight
 | **52-Week Range** | `$351.66 - $351.66` | Current: $351.66 |
 | **Social Sentiment** | `91.7% Bull / 8.3% Bear` | Major Driver: Enterprise AI adoption & Google Cloud growth acceleration |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1048,7 +1046,6 @@ GOOGL gained +2.38% on strong enterprise AI and Google Cloud momentum, highlight
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

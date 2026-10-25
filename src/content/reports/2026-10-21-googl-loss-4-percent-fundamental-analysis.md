@@ -428,23 +428,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology & Automation Disclosure
-
-    *This equity research executive summary is generated via automated
-    quantitative analytics pipelines and institutional natural language models,
-    utilizing verified public regulatory filings (SEC EDGAR Form 10-K, CIK
-    0001652044) and real-time market data feeds. All financial deductions and
-    ratio calculations are compiled algorithmically.*
-
-
-    *Legal Notice: Prepared solely for general educational and informational
-    purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the
-    U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This report does
-    not constitute personalized investment advice, a portfolio recommendation,
-    or a directive to buy or sell securities. Past financial performance and
-    algorithmic valuation targets are not indicative of future market outcomes.*
   fundamentalImpact: >-
     Management's calculated strategy to allocate compute internally rather than
     maximize near-term enterprise cloud billings alters the timing—rather than
@@ -1350,7 +1333,6 @@ Despite the session retrenchment, Alphabet’s fundamental baseline and balance 
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1367,7 +1349,6 @@ Despite the session retrenchment, Alphabet’s fundamental baseline and balance 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics Summary Table
 
@@ -1433,14 +1414,6 @@ Despite the session retrenchment, Alphabet’s fundamental baseline and balance 
 > * **Non-Capitulatory Volume Profile:** Session volume of 16.57M shares registered below the 90-day moving average (0.79x RVOL), demonstrating an orderly pre-earnings buyers' strike rather than systemic institutional liquidation.
 > * **Asymmetric Valuation Cushion:** The equity trades at a 0.74x Price/Consensus Fair Value ratio against an intrinsic target of $451.95, underpinned by a Morningstar Wide Moat rating, $55.91B in cash reserves, and $53.27B in TTM Free Cash Flow.
 > * **Macro Discount Pressures:** With US 10-Year Treasury yields at 5.11% and the Fed Funds Rate at 4.21%, delayed revenue milestones face heightened duration discounting, while orderly two-way derivatives flow (1.13x options ratio) mitigates non-linear volatility risks.
-
----
-
-### Transparent Methodology & Automation Disclosure
-*This equity research executive summary is generated via automated quantitative analytics pipelines and institutional natural language models, utilizing verified public regulatory filings (SEC EDGAR Form 10-K, CIK 0001652044) and real-time market data feeds. All financial deductions and ratio calculations are compiled algorithmically.*
-
-*Legal Notice: Prepared solely for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This report does not constitute personalized investment advice, a portfolio recommendation, or a directive to buy or sell securities. Past financial performance and algorithmic valuation targets are not indicative of future market outcomes.*
-
 
 ---
 

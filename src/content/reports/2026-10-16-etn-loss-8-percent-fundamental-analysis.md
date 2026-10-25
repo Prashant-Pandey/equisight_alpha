@@ -337,17 +337,6 @@ executiveSummaryData:
     ---
 
 
-    ### Regulatory Compliance & Automated Methodology Disclosure
-
-    *This publication is prepared solely for general educational and
-    institutional informational purposes under the **Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and
-    **FINRA Rule 2210**. Nothing contained herein constitutes personalized
-    investment, tax, legal, or financial advice, nor does it constitute an
-    individualized recommendation, price target, or endorsement to purchase or
-    liquidate any security.*
-
-
     *This research section was compiled utilizing automated quantitative
     pipelines and algorithmic multi-agent equity analysis frameworks. Financial
     metrics, filings data, and market microstructure inputs are algorithmically
@@ -1296,7 +1285,6 @@ Conversely, market participants advancing the cautious thesis focus on valuation
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1314,12 +1302,7 @@ Conversely, market participants advancing the cautious thesis focus on valuation
   </div>
 </div>
 
-
-### Regulatory Compliance & Automated Methodology Disclosure
-*This publication is prepared solely for general educational and institutional informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and **FINRA Rule 2210**. Nothing contained herein constitutes personalized investment, tax, legal, or financial advice, nor does it constitute an individualized recommendation, price target, or endorsement to purchase or liquidate any security.*
-
 *This research section was compiled utilizing automated quantitative pipelines and algorithmic multi-agent equity analysis frameworks. Financial metrics, filings data, and market microstructure inputs are algorithmically extracted from verified public disclosures (including SEC EDGAR Form 10-K CIK 0001551182), regulated exchange feeds (NYSE), and standardized consensus valuation models. Past market performance and quantitative factor models do not guarantee future fundamental trajectory.*
-
 
 ---
 

@@ -353,25 +353,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory & Automation Disclosures
-
-    * **Publisher's Exemption:** This research section is prepared and published
-    exclusively for general institutional educational and informational purposes
-    in reliance upon the Publisher's Exemption under Section 202(a)(11)(D) of
-    the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210.
-
-    * **No Personalized Advice:** This report does not constitute personalized
-    investment advice, financial planning, a price target, or an individual
-    recommendation to buy, sell, or hold any security. All observations are
-    impersonal and derived from publicly available financial data feeds and SEC
-    EDGAR filings (CIK 0001674335).
-
-    * **Automated Quantitative Pipeline Disclosure:** Content and metrics are
-    algorithmically compiled using quantitative research agents and
-    institutional analytics engines. Past market price action is not indicative
-    of future performance.
   fundamentalImpact: >-
     The debt restructuring and $135 million liquidity infusion fundamentally
     averts an immediate liquidity shortfall but structurally cements JELD-WEN's
@@ -1291,7 +1272,6 @@ The session move further decouples market pricing from traditional fundamental e
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1308,7 +1288,6 @@ The session move further decouples market pricing from traditional fundamental e
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### 6. Balanced Scenario Analysis: Institutional Bull vs. Bear Perspectives
 
@@ -1346,14 +1325,6 @@ The session move further decouples market pricing from traditional fundamental e
 > * **Retail vs. Institutional Order Flow Divergence:** Order flow dynamics highlight a retail bull trap (75% positive retail sentiment, 1.65x call skew) clashing against measured institutional selling on NYSE American across an average-volume session (0.96x RVOL).
 > * **Acute Solvency Constraints:** Fundamental health remains heavily constrained by a $1.24B debt load against $0.06B in balance sheet cash, negative free cash flow of $-0.15B, and negative operating margins (-8.8%), affirming Morningstar's Extreme Uncertainty rating.
 > * **Macro Cost-of-Capital Penalty:** Elevated US 10-Year sovereign yields (5.24%) and firm energy prices ($91.85/bbl WTI) create severe headwinds for capital-intensive, leveraged turnarounds, capping equity value recovery despite a benign broader volatility backdrop (VIX 14.8).
-
----
-
-### Regulatory & Automation Disclosures
-* **Publisher's Exemption:** This research section is prepared and published exclusively for general institutional educational and informational purposes in reliance upon the Publisher's Exemption under Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210.
-* **No Personalized Advice:** This report does not constitute personalized investment advice, financial planning, a price target, or an individual recommendation to buy, sell, or hold any security. All observations are impersonal and derived from publicly available financial data feeds and SEC EDGAR filings (CIK 0001674335).
-* **Automated Quantitative Pipeline Disclosure:** Content and metrics are algorithmically compiled using quantitative research agents and institutional analytics engines. Past market price action is not indicative of future performance.
-
 
 ---
 

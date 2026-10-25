@@ -1017,9 +1017,7 @@ $JNJ gained +0.91% in the session, aligning with positive pipeline advances (deb
 | **52-Week Range** | `$256.21 - $256.21` | Current: $256.21 |
 | **Social Sentiment** | `95% Bull / 5% Bear` | Major Driver: MedTech catheter rollout, positive Crohn's pipeline data, and talc litigation settlement progress |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1037,7 +1035,6 @@ $JNJ gained +0.91% in the session, aligning with positive pipeline advances (deb
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

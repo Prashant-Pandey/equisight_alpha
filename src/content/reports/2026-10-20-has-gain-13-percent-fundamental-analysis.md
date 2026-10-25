@@ -357,20 +357,6 @@ executiveSummaryData:
     Value of $127.17 (0.86x P/FV) and a 4-Star Morningstar rating, the equity
     reflects an empirical earnings-driven re-rating amid a high-yield (US 10Y:
     5.12%) macroeconomic environment.
-
-
-    ---
-
-    *Editorial & Regulatory Compliance Disclosure: This document is prepared
-    strictly for institutional research, general educational, and informational
-    purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the
-    U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This material does
-    not constitute personalized investment advice, a portfolio recommendation,
-    or an individual endorsement to purchase or sell any security.
-    Methodological note: Financial deductions, fundamental metrics, and volume
-    characteristics are algorithmically compiled from verified public filings
-    (SEC EDGAR Form 10-K, CIK 0000046080) and consolidated market data feeds via
-    automated quantitative research pipelines.*
   fundamentalImpact: >-
     The Q3 2026 operational disclosure confirms Hasbro’s strategic transition
     toward higher-margin, IP-centric digital and tabletop gaming assets within
@@ -1318,7 +1304,6 @@ From a solvency perspective:
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1335,7 +1320,6 @@ From a solvency perspective:
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Key Session Metrics
 
@@ -1377,10 +1361,6 @@ From a solvency perspective:
 > * **Order Flow & Structure**: Session volume reached 6.09M shares (1.99x RVOL) across a 99.5% public float, amplified by mechanical dealer delta-hedging linked to an elevated 1.80x call/put open interest ratio.
 > * **Solvency & Coverage**: Hasbro's $1.21B in TTM Free Cash Flow and 20.6% operating margin comfortably absorb $497.0M in near-term debt obligations (Total Debt: $3.54B; Cash: $0.88B).
 > * **Valuation Anchor**: Anchored against a multi-model Consensus Fair Value of $127.17 (0.86x P/FV) and a 4-Star Morningstar rating, the equity reflects an empirical earnings-driven re-rating amid a high-yield (US 10Y: 5.12%) macroeconomic environment.
-
----
-*Editorial & Regulatory Compliance Disclosure: This document is prepared strictly for institutional research, general educational, and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This material does not constitute personalized investment advice, a portfolio recommendation, or an individual endorsement to purchase or sell any security. Methodological note: Financial deductions, fundamental metrics, and volume characteristics are algorithmically compiled from verified public filings (SEC EDGAR Form 10-K, CIK 0000046080) and consolidated market data feeds via automated quantitative research pipelines.*
-
 
 ---
 

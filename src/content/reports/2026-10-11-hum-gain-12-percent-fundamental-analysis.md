@@ -290,18 +290,6 @@ executiveSummaryData:
     | **Macroeconomic Backdrop** | US 10Y: 5.24% \| Fed Funds: 4.21% \| VIX:
     14.8 \| WTI: $91.85 | Elevated discount rates offset by subdued broad equity
     volatility |
-
-
-    ---
-
-    *Methodology & Automation Disclosure: This section was algorithmically
-    compiled and synthesized by automated quantitative equity research systems
-    utilizing verified regulatory disclosures (SEC EDGAR Form 10-K, CIK
-    0000049071) and continuous market data feeds. This report is prepared solely
-    for general informational and educational purposes under the Publisher's
-    Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of
-    1940 and FINRA Rule 2210. It does not constitute personalized investment
-    advice, an endorsement, or a recommendation to buy or sell securities.*
   fundamentalImpact: >-
     The CMS Star Ratings recovery stabilizes Humana’s primary operational pillar
     by restoring eligibility for lucrative Medicare Advantage quality bonus
@@ -1269,7 +1257,6 @@ From a fundamental valuation standpoint, the equity's current market price of $4
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1286,9 +1273,6 @@ From a fundamental valuation standpoint, the equity's current market price of $4
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Automation Disclosure: This section was algorithmically compiled and synthesized by automated quantitative equity research systems utilizing verified regulatory disclosures (SEC EDGAR Form 10-K, CIK 0000049071) and continuous market data feeds. This report is prepared solely for general informational and educational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute personalized investment advice, an endorsement, or a recommendation to buy or sell securities.*
-
 
 ---
 

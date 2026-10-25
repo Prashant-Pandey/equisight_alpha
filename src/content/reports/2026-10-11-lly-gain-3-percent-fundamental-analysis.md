@@ -1051,9 +1051,7 @@ Eli Lilly ($LLY) gained +3.19% driven by strong clinical momentum in its next-ge
 | **52-Week Range** | `$1179.27 - $1179.27` | Current: $1179.27 |
 | **Social Sentiment** | `83.3% Bull / 16.7% Bear` | Major Driver: Next-generation obesity pipeline data (retatrutide) and dual-therapy clinical momentum |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1071,7 +1069,6 @@ Eli Lilly ($LLY) gained +3.19% driven by strong clinical momentum in its next-ge
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

@@ -1042,9 +1042,7 @@ IREN experienced a steep 20.19% plunge driven by sector-wide contagion and struc
 | **52-Week Range** | `$28.09 - $28.09` | Current: $28.09 |
 | **Social Sentiment** | `81.3% Bull / 18.8% Bear` | Major Driver: Neocloud sector selloff triggered by Gartner report on viability risks and rising debt costs |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1062,7 +1060,6 @@ IREN experienced a steep 20.19% plunge driven by sector-wide contagion and struc
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

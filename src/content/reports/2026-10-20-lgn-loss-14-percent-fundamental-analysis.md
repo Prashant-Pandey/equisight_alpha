@@ -121,20 +121,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > **Institutional Notice & Editorial Basis:** This executive summary and
-    session catalyst analysis is prepared solely for general educational,
-    institutional-grade financial analysis, and informational purposes under the
-    **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940** and **FINRA Rule 2210**. This publication does not
-    constitute personalized investment advice, a portfolio recommendation, or an
-    offer to buy or sell securities. Analytical conclusions are derived
-    systematically via automated quantitative agents and institutional data
-    parsing pipelines analyzing verified public regulatory filings (SEC EDGAR)
-    and live market microstructure feeds.
-
-
-    ---
-
 
     ### Session Overview & Primary Catalyst Identification
 
@@ -438,17 +424,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Transparent Methodology & Automation Disclosure
-
-    *This report was synthesized by institutional quantitative research systems
-    utilizing verified financial information ingested from SEC EDGAR filings
-    (CIK 0002052568, Form 10-K), multi-venue equity market microstructure feeds,
-    and consensus valuation databases. All figures represent verified historical
-    or market-observed data points. Prepared in strict accordance with the
-    Publisher's Exemption under Section 202(a)(11)(D) of the Investment Advisers
-    Act of 1940.*
   fundamentalImpact: >-
     The session catalyst fundamentally challenges the investment thesis that
     Legence’s top-line revenue expansion within AI and hyperscale data center
@@ -1287,10 +1262,6 @@ archetypeScore: 0.4026
 ---
 ## Executive Summary & Session Catalyst
 
-> **Institutional Notice & Editorial Basis:** This executive summary and session catalyst analysis is prepared solely for general educational, institutional-grade financial analysis, and informational purposes under the **Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940** and **FINRA Rule 2210**. This publication does not constitute personalized investment advice, a portfolio recommendation, or an offer to buy or sell securities. Analytical conclusions are derived systematically via automated quantitative agents and institutional data parsing pipelines analyzing verified public regulatory filings (SEC EDGAR) and live market microstructure feeds.
-
----
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1308,7 +1279,6 @@ archetypeScore: 0.4026
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Session Overview & Primary Catalyst Identification
 
@@ -1411,12 +1381,6 @@ From an institutional credit and solvency perspective, Legence exhibits notable 
 > * **Volume Profile Confirms Buyer Strike:** The session’s below-average volume (792,756 shares; 0.49x RVOL) signals an institutional liquidity withdrawal and bid retreat rather than panicky, high-turnover institutional liquidation.
 > * **Solvency Buffer Intact:** Solvency is preserved via $0.29B in liquid cash reserves and $0.32B in TTM Free Cash Flow against modest near-term debt obligations ($26.2M short-term debt), providing runway for operational remediation.
 > * **Valuation Multiple Discount vs. Execution Risk:** While the equity screens at a steep 32% discount to consensus intrinsic value ($60.65 Fair Value, 5-Star Morningstar rating), valuation realization remains gated by management's ability to halt project cost overruns under an elevated interest rate regime (US 10Y at 5.12%).
-
----
-
-### Transparent Methodology & Automation Disclosure
-*This report was synthesized by institutional quantitative research systems utilizing verified financial information ingested from SEC EDGAR filings (CIK 0002052568, Form 10-K), multi-venue equity market microstructure feeds, and consensus valuation databases. All figures represent verified historical or market-observed data points. Prepared in strict accordance with the Publisher's Exemption under Section 202(a)(11)(D) of the Investment Advisers Act of 1940.*
-
 
 ---
 

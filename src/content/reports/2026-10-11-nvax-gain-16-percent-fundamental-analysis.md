@@ -1028,9 +1028,7 @@ The session's +15.80% rally reflects speculative momentum and retail trading vol
 | **52-Week Range** | `$6.20 - $13.39` | Current: $12.75 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Speculative plague outbreak momentum & Sanofi licensing deal expectations |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1048,7 +1046,6 @@ The session's +15.80% rally reflects speculative momentum and retail trading vol
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

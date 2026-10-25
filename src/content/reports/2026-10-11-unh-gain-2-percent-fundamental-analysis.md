@@ -992,9 +992,7 @@ Anticipation and positioning ahead of the upcoming Q3 earnings disclosure serve 
 | **52-Week Range** | `$379.30 - $379.30` | Current: $379.30 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Pre-earnings positioning and Q3 results anticipation |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1012,7 +1010,6 @@ Anticipation and positioning ahead of the upcoming Q3 earnings disclosure serve 
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

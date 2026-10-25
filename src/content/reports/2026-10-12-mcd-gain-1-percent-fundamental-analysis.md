@@ -96,19 +96,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > [!NOTE]
-
-    > **Methodology & Regulatory Disclosure**: This publication is prepared
-    using automated quantitative agents and institutional analysis pipelines
-    under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S.
-    Investment Advisers Act of 1940 and FINRA Rule 2210. Financial deductions
-    are algorithmically compiled from verified public filings (SEC EDGAR Form
-    10-K, CIK 0000063908) and market data feeds. This report is for general
-    educational and informational purposes only and does not constitute
-    personalized investment advice, individual recommendations, or price
-    directives.
-
-
     ### Session Catalyst Identification & Expectations vs. Reality Gap
 
     During today's trading session, **McDonald's Corporation ($MCD)**
@@ -1168,9 +1155,6 @@ archetypeScore: 2.8959
 ---
 ## Executive Summary & Session Catalyst
 
-> [!NOTE]
-> **Methodology & Regulatory Disclosure**: This publication is prepared using automated quantitative agents and institutional analysis pipelines under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. Financial deductions are algorithmically compiled from verified public filings (SEC EDGAR Form 10-K, CIK 0000063908) and market data feeds. This report is for general educational and informational purposes only and does not constitute personalized investment advice, individual recommendations, or price directives.
-
 ### Session Catalyst Identification & Expectations vs. Reality Gap
 During today's trading session, **McDonald's Corporation ($MCD)** demonstrated a counter-intuitive price dislocation, advancing **+1.1%** to close at **$235.67 USD** against an onslaught of adverse legal and regulatory headline flow. The primary driver of news tape commentary centered on a newly filed antitrust lawsuit challenging the corporation's AI-driven dynamic menu pricing algorithms, compounding multi-month sentiment fatigue following four consecutive monthly losses and bear market drawdown conditions. Under orthodox price-discovery mechanics, active litigation targeting core revenue-optimization algorithms would trigger multiple contraction and institutional de-risking. However, the session closed with a clear **DIVERGENT_RELIEF_RALLY**, reflecting a classic disconnect between pre-session positioning and incremental informational value.
 
@@ -1222,9 +1206,7 @@ From a solvency perspective, audited filings (SEC Form 10-K, FY2025, CIK 0000063
 | **Options Gamma & Float Structure** | Put Concentration Ratio: 0.68x | Float: 99.9% Public Float | Dealer long gamma buffers intraday volatility; low squeeze mechanics |
 | **Macro Backdrop Benchmark** | US 10Y: 5.24% \| Fed Funds: 4.20% | VIX: 15.2 \| WTI: $93.39/bbl | High discount rate hurdles and elevated energy input costs |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1242,7 +1224,6 @@ From a solvency perspective, audited filings (SEC Form 10-K, FY2025, CIK 0000063
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

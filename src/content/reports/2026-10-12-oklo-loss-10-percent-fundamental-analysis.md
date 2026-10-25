@@ -285,17 +285,6 @@ executiveSummaryData:
 
     | **Market Microstructure** | Free Float: 84.9% \| Put Ratio: 0.37x | Low
     Gamma Skew \| Sentiment: 50% Bull / 50% Bear |
-
-
-    ---
-
-    *Methodology & Legal Disclosures: This publication is prepared using
-    automated quantitative agents and institutional analysis pipelines from
-    verified public filings and market data feeds. Prepared solely for general
-    educational and information purposes under the Publisher's Exemption of
-    Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA
-    Rule 2210. This material does not constitute personalized investment advice,
-    an endorsement, or a solicitation to buy or sell any security.*
   fundamentalImpact: >-
     The session sell-off does not alter Oklo's fundamental operational
     trajectory or licensing timeline, leaving its Morningstar Wide Economic Moat
@@ -1178,7 +1167,6 @@ From a fundamental valuation standpoint, Oklo remains stretched relative to quan
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1195,9 +1183,6 @@ From a fundamental valuation standpoint, Oklo remains stretched relative to quan
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-*Methodology & Legal Disclosures: This publication is prepared using automated quantitative agents and institutional analysis pipelines from verified public filings and market data feeds. Prepared solely for general educational and information purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. This material does not constitute personalized investment advice, an endorsement, or a solicitation to buy or sell any security.*
-
 
 ---
 

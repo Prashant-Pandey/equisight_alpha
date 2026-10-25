@@ -1021,9 +1021,7 @@ Galaxy Digital ($GLXY) plunged -20.61% alongside reports of posting an $85M Q2 n
 | **52-Week Range** | `$16.14 - $16.14` | Current: $16.14 |
 | **Social Sentiment** | `50% Bull / 50% Bear` | Major Driver: Q2 Net Loss of $85M Driven by Crypto Market Slump and Analyst Target Cuts |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1041,7 +1039,6 @@ Galaxy Digital ($GLXY) plunged -20.61% alongside reports of posting an $85M Q2 n
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

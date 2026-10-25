@@ -1019,9 +1019,7 @@ The +8.04% surge in $ALL is driven primarily by Wall Street revisions and target
 | **52-Week Range** | `$247.88 - $247.88` | Current: $247.88 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Wall Street price target increases and bullish technical breakout |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1039,7 +1037,6 @@ The +8.04% surge in $ALL is driven primarily by Wall Street revisions and target
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

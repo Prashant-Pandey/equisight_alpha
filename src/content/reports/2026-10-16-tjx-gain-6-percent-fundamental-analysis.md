@@ -999,9 +999,7 @@ TJX gained +6.15% driven by a raised financial outlook and full-year guidance bo
 | **52-Week Range** | `$147.30 - $147.30` | Current: $147.30 |
 | **Social Sentiment** | `81.8% Bull / 18.2% Bear` | Major Driver: Raised corporate earnings outlook and guidance hike |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1019,7 +1017,6 @@ TJX gained +6.15% driven by a raised financial outlook and full-year guidance bo
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

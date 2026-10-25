@@ -1071,9 +1071,7 @@ Heading into Q1 earnings, analysts and price target revisions are heavily bullis
 | **52-Week Range** | `$530.94 - $530.94` | Current: $530.94 |
 | **Social Sentiment** | `60% Bull / 40% Bear` | Major Driver: Pre-earnings multiple compression and CapEx scrutiny despite bullish Wall Street revisions |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1091,7 +1089,6 @@ Heading into Q1 earnings, analysts and price target revisions are heavily bullis
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

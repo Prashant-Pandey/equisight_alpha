@@ -137,6 +137,14 @@ export class AntiHallucinationFactChecker {
       }
     }
 
+    // 7. Strip redundant LLM-generated legal disclaimers / Publisher's Exemption boilerplate
+    // Statutory compliance disclaimers are handled deterministically by presentation templates.
+    const beforeStrip = patchedMarkdown;
+    patchedMarkdown = stripRedundantDisclaimers(patchedMarkdown);
+    if (patchedMarkdown !== beforeStrip) {
+      auditLog.push('[FactCheck] Stripped redundant LLM-generated Publisher Exemption notice; handled deterministically by layout templates.');
+    }
+
     const passed = violations.filter((v) => v.severity === 'critical').length === 0;
 
     auditLog.push(`[FactCheck] Verification complete for ${mover.ticker}. Passed: ${passed}. Total violations: ${violations.length}`);
@@ -151,3 +159,58 @@ export class AntiHallucinationFactChecker {
 }
 
 export const factChecker = new AntiHallucinationFactChecker();
+
+/**
+ * Strips LLM-generated legal disclaimers, methodology disclosures, and Publisher's Exemption notices
+ * from markdown content since these are handled deterministically by presentation templates.
+ */
+export function stripRedundantDisclaimers(markdown: string): string {
+  if (!markdown) return markdown;
+
+  // Split into paragraphs / blocks by double-newlines
+  const blocks = markdown.split(/\n{2,}/);
+  const resultBlocks: string[] = [];
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i].trim();
+
+    // Check if this block contains Publisher's Exemption / 1940 Act statutory disclaimer
+    const isDisclaimer =
+      /publisher['’]s exemption/i.test(block) ||
+      /202\(a\)\(11\)\(D\)/.test(block) ||
+      (/FINRA Rule 2210/i.test(block) && /educational|informational|statutory/i.test(block));
+
+    if (isDisclaimer) {
+      // If the preceding block was a disclaimer heading, remove it too
+      if (resultBlocks.length > 0) {
+        const prevBlock = resultBlocks[resultBlocks.length - 1].trim();
+        if (
+          /^#{2,4}\s+/m.test(prevBlock) &&
+          /(?:Methodology|Regulatory|Compliance|Disclosure|Publisher)/i.test(prevBlock)
+        ) {
+          resultBlocks.pop();
+        }
+      }
+      continue;
+    }
+
+    // Also check if block itself is just a heading for a disclaimer that has no content
+    if (
+      /^#{2,4}\s+(?:Automated Quantitative Methodology|Regulatory Compliance|Legal Regulatory Disclosures|Transparent Methodology|Regulatory, Compliance)/i.test(block) &&
+      !block.includes('\n')
+    ) {
+      continue;
+    }
+
+    resultBlocks.push(blocks[i]);
+  }
+
+  let cleaned = resultBlocks.join('\n\n').trim();
+
+  // Clean up duplicate horizontal rules, leading horizontal rule, or dangling HR after H2
+  cleaned = cleaned.replace(/(?:^|\n)---\s*\n+---/g, '\n---');
+  cleaned = cleaned.replace(/^---\s*\n+/, '');
+  cleaned = cleaned.replace(/(^##[^\n]+\n+)\s*---\s*\n+/gm, '$1\n');
+
+  return cleaned.trim();
+}

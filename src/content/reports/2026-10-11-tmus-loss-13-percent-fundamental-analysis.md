@@ -1096,9 +1096,7 @@ SpaceX's strategic acquisition of 800 MHz spectrum to expand Starlink Direct-to-
 | **52-Week Range** | `$147.90 - $230.65` | Current: $148.58 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: SpaceX Starlink 800 MHz spectrum acquisition and direct-to-cell competitive threat |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1116,7 +1114,6 @@ SpaceX's strategic acquisition of 800 MHz spectrum to expand Starlink Direct-to-
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

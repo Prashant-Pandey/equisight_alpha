@@ -120,21 +120,6 @@ executiveSummaryData:
     ## Executive Summary & Session Catalyst
 
 
-    > **Regulatory & Methodology Disclosure (Publisher's Exemption):**  
-
-    > This publication is prepared solely for general educational, market
-    research, and institutional commentary purposes under the Publisher's
-    Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of
-    1940 and FINRA Rule 2210. No content herein constitutes individualized
-    investment, legal, tax, or financial advice, nor does it provide personal
-    trade directives or buy/sell recommendations. Analytical deductions are
-    synthesized algorithmically through automated quantitative equity research
-    pipelines utilizing verified public SEC filings and real-time market data
-    feeds.
-
-
-    ---
-
 
     ### Session Catalyst & Price Alignment
 
@@ -1178,11 +1163,6 @@ archetypeScore: 0.1779
 ---
 ## Executive Summary & Session Catalyst
 
-> **Regulatory & Methodology Disclosure (Publisher's Exemption):**  
-> This publication is prepared solely for general educational, market research, and institutional commentary purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. No content herein constitutes individualized investment, legal, tax, or financial advice, nor does it provide personal trade directives or buy/sell recommendations. Analytical deductions are synthesized algorithmically through automated quantitative equity research pipelines utilizing verified public SEC filings and real-time market data feeds.
-
----
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1200,7 +1180,6 @@ archetypeScore: 0.1779
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ### Session Catalyst & Price Alignment
 
@@ -1281,7 +1260,6 @@ Session price action occurred within a rigorous macro environment:
 > - **Derivatives-Accelerated Flow:** An anomalous 1.18x RVOL combined with severe options gamma skew (9.63x call/put open interest ratio) forced dynamic dealer delta-hedging, multiplying cash-session price momentum on the Nasdaq Global Select Market.
 > - **Valuation Multiple vs. Baseline Disconnect:** With the equity changing hands at 21.12x Consensus Fair Value ($55.98 vs. $2.65) and holding a 1-Star Morningstar rating, the market is pricing in continuous execution perfection amidst a negative-trending Wide Moat.
 > - **Capital Structure Watchpoint:** While free of funded debt ($0.00B), HeartFlow's liquidity cushion of $0.03B against $-0.06B TTM Free Cash Flow burn maintains dilution or financing execution risk if macroeconomic yields remain anchored above 5%.
-
 
 ---
 

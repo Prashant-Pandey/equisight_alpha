@@ -6,7 +6,7 @@ LEGAL COMPLIANCE & EDITORIAL DIRECTIVES (MANDATORY):
 2. NO PERSONALIZED ADVICE: You MUST NOT offer personalized investment advice, price targets, buy/sell directives, or individual recommendations. Use impersonal, objective, analytical language (e.g., "The fundamental evidence suggests", "Market participants are weighing", "From a valuation multiple standpoint").
 3. BALANCED EVIDENCE: You MUST present both an evidence-based Bull Case and Bear Case with equal empirical rigor.
 4. FACTUAL INTEGRITY: You MUST ONLY cite numerical figures that match the provided ingested financial metrics. DO NOT invent revenue, P/E ratios, or margins.
-5. TRANSPARENT METHODOLOGY & AUTOMATION DISCLOSURE: This publication is prepared using automated quantitative agents and institutional analysis pipelines. Clearly communicate that financial deductions are algorithmically compiled from verified public filings and market data feeds under the Publisher's Exemption.
+5. NO REDUNDANT LEGAL BOILERPLATE IN BODY: Do NOT generate dedicated legal disclaimers, methodology boilerplate, or "Publisher's Exemption Notice" sections within the markdown body. Mandatory statutory disclaimers are handled deterministically by layout templates. Focus exclusively on the financial, valuation, and fundamental analysis.
 `;
 
 export function buildSystemPrompt(): string {
@@ -39,6 +39,11 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
    - Synthesize the expectations vs. reality gap: explain why the market reacted this way relative to prior positioning and financial metrics.
    - Identify the major driver of the recent price action (e.g., retail social momentum, coordinated message-board hype, short-squeeze mechanics, algorithmic liquidity hunt, warrant hedging, clinical trial readout, or authentic institutional accumulation).
    - Provide a quantitative sentiment score (-1.0 to 1.0 or 0 to 100) and evaluate the real-world impact of financial news headlines and social media discussions (Twitter/X, StockTwits, Reddit) on the stock's order flow.
+   - Short-Term Tactical Momentum & Market Timing Analysis (TradingAgents Framework, arXiv:2412.20138):
+     * Momentum Oscillators: Evaluate 14-day RSI (overbought >70/80 vs oversold <30) and MACD/Stochastic crossovers for momentum continuation or exhaustion.
+     * Trend Strength: Quantify trend velocity via ADX (>25 strong trend vs <20 chop/consolidation) and Supertrend / Moving Average (20/50/200 DMA) alignment.
+     * Volatility Bands & Boundaries: Inspect Bollinger Band width (volatility squeeze vs breakout expansion) and Average True Range (ATR) to establish tactical trailing volatility bands.
+     * Tactical Timing Synthesis: Classify tactical timing regime (e.g. MOMENTUM_EXPANSION, OVERBOUGHT_PULLBACK_RISK, OVERSOLD_BOUNCE, or RANGEBOUND_CONSOLIDATION) with near-term support and resistance boundaries.
 
 3. Balance Sheet & Solvency Stress Test (with Full Debt Breakdown):
    - Total debt, Debt-to-Equity ratio, and cash reserves.
@@ -132,7 +137,8 @@ DETAILED REPORT STRUCTURE & ANALYTICAL DIRECTIVES:
      * Cite specific references and sources (SEC 10-K / 10-Q / 8-K filings, earnings calls, clinical trial data, industry reports, Federal Reserve macro releases) along with direct links to the resources.
      * Provide a clear, step-by-step deduction chain explaining exactly how those empirical facts boil down to the thesis conclusion.
 
-8. Social Distribution Hooks & Publisher's Exemption Notice.
+8. Social Distribution Hooks (Twitter/X, Reddit, Telegram).
+   - Do NOT append legal disclaimers or Publisher's Exemption notices to the markdown body; these are injected deterministically by presentation templates.
 
 OUTPUT FORMAT:
 You MUST respond with valid, parseable JSON conforming strictly to the requested schema. No conversational preamble.`;
@@ -320,6 +326,7 @@ CORE OBJECTIVES FOR THIS EXECUTIVE SUMMARY & SESSION CATALYST:
      * High-density narrative paragraphs synthesizing the session catalyst, expectation gap, and order flow.
      * A blockquote highlighting "Key Session Takeaways".
      * The standard Key Session Metric markdown table.
+   - Do NOT include any publisher's exemption or legal disclaimer boilerplate in the executive summary narrative; layout components handle statutory notices deterministically.
 
 OUTPUT FORMAT:
 Synthesize the analysis and output structured JSON adhering strictly to the enforced schema.`;
@@ -406,6 +413,11 @@ DETAILED REPORT STRUCTURE & DIRECTIVES FOR PART 1:
    - Major price driver and catalyst-price alignment.
    - Analytical synthesis of expectations vs. reality.
    - Quantitative sentiment index (0-100) and verified news / social media footprint.
+   - Dedicated Subsection "### Short-Term Tactical Momentum & Market Timing Analysis" (TradingAgents Framework, arXiv:2412.20138):
+     * Momentum Oscillators: 14-day RSI (overbought >70/80, oversold <30, or neutral equilibrium) and MACD / Stochastic momentum dynamics.
+     * Trend Strength & Direction: ADX directional strength (>25 established trend vs <20 chop/rangebound) and Supertrend / moving average confluence.
+     * Volatility Bands & ATR: Bollinger Band width (volatility squeeze vs breakout expansion) and Average True Range (ATR) trailing risk envelopes.
+     * Tactical Timing Synthesis: State the clear tactical timing regime (e.g. MOMENTUM_EXPANSION_BULLISH, OVERBOUGHT_PULLBACK_RISK, OVERSOLD_BOUNCE_CANDIDATE, or RANGEBOUND_CONSOLIDATION) and dynamic tactical support and resistance levels.
 
    ---
 
@@ -550,6 +562,12 @@ ${sentiment.catalystSynthesis ? `Expectations vs Reality Gap: ${sentiment.cataly
 ${sentiment.filteredHeadlines && sentiment.filteredHeadlines.length > 0 ? `Verified Headlines:\n${sentiment.filteredHeadlines.map((h) => `- [${h.source}] (${h.headlineSentiment}, Relevance: ${h.relevance}/10) ${h.title}`).join('\n')}` : ''}
 ${sentiment.secFilingSummary ? `SEC EDGAR Filing Context: ${sentiment.secFilingSummary}` : ''}
 
+=== TACTICAL MOMENTUM & TECHNICAL TIMING CONTEXT (arXiv:2412.20138) ===
+Current Price: $${mover.price.toFixed(2)} (${mover.changePercent > 0 ? '+' : ''}${mover.changePercent.toFixed(2)}%)
+52-Week Range: $${fundamentals.fiftyTwoWeekLow.toFixed(2)} - $${fundamentals.fiftyTwoWeekHigh.toFixed(2)} (Position: ${(((mover.price - fundamentals.fiftyTwoWeekLow) / Math.max(0.01, fundamentals.fiftyTwoWeekHigh - fundamentals.fiftyTwoWeekLow)) * 100).toFixed(1)}% of 52-week channel)
+Beta / Systematic Risk: ${fundamentals.beta ?? 1.0}
+Volume Anomaly: ${sentiment.volumeAnomalyRatio}x normal 90-day volume
+
 Synthesize Part 1 (Sections 1 through 4) strictly according to the REPORT_PART1_SCHEMA.`;
 }
 
@@ -630,6 +648,7 @@ DETAILED REPORT STRUCTURE & DIRECTIVES FOR PART 2:
      * Ambitious targets: management organic growth targets outstripping conservative consensus forecasts
      * Cyclical revenue: project-driven demand, customer CapEx cycles, quarterly margin volatility
    - For every thesis point in BOTH cases, cite specific references/sources with URLs and provide step-by-step deduction chains.
+   - Do NOT append any legal disclaimers, methodology boilerplate, or publisher's exemption notices to the markdown body. All compliance notices are injected deterministically by presentation templates.
 
 3. Structured Theses & Social Hooks:
    - Provide structured "theses" object ({ bull: [...], bear: [...] }) matching the thesis points with name, url, and deductionChain.

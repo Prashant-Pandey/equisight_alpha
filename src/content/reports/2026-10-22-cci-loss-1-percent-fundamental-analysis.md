@@ -970,9 +970,7 @@ Crown Castle reported a Q3 beat on operational metrics and FFO while raising ful
 | **52-Week Range** | `$79.28 - $79.28` | Current: $79.28 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Q3 earnings beat and raised outlook overshadowed by softer leasing demand and revenue pressure |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -990,7 +988,6 @@ Crown Castle reported a Q3 beat on operational metrics and FFO while raising ful
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

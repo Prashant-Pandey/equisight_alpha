@@ -1065,9 +1065,7 @@ $HIMS jumped +10.19% driven by positive growth catalysts and fundamental expansi
 | **52-Week Range** | `$13.74 - $65.30` | Current: $30.92 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Working capital expansion via JPMorgan and strategic platform partnerships driving GLP-1 revenue optimism |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1085,7 +1083,6 @@ $HIMS jumped +10.19% driven by positive growth catalysts and fundamental expansi
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

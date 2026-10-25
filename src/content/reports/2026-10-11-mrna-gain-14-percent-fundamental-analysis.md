@@ -309,26 +309,6 @@ executiveSummaryData:
 
 
     ---
-
-
-    ### Regulatory Compliance & Automated Pipeline Methodology
-
-    * **Publisher’s Exemption Notice:** This research analysis is prepared and
-    published strictly for general educational and informational purposes under
-    the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment
-    Advisers Act of 1940 and FINRA Rule 2210. It does not constitute individual
-    investment advice, a personal recommendation, or an endorsement of any
-    transaction.
-
-    * **No Personalized Advice:** All assessments are objective, impersonal, and
-    quantitative deductions derived from empirical market data. No specific buy,
-    hold, or sell directives or individual price targets are provided.
-
-    * **Automated Quantitative Architecture:** This section was algorithmically
-    synthesized by automated quantitative equity research systems leveraging
-    ingested public market feeds, option analytics, and SEC EDGAR filings.
-    Trailing financial metrics originate from Moderna, Inc.'s official SEC EDGAR
-    10-K filing (CIK 0001682852, FY2025).
   fundamentalImpact: >-
     The catalyst significantly validates Moderna's strategic pivot toward
     therapeutic oncology and broadens the commercial viability of its mRNA
@@ -1277,7 +1257,6 @@ Key structural characteristics of the order flow include:
 
 ---
 
-
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
     <div>
@@ -1294,13 +1273,6 @@ Key structural characteristics of the order flow include:
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
-
-### Regulatory Compliance & Automated Pipeline Methodology
-* **Publisher’s Exemption Notice:** This research analysis is prepared and published strictly for general educational and informational purposes under the Publisher's Exemption of Section 202(a)(11)(D) of the U.S. Investment Advisers Act of 1940 and FINRA Rule 2210. It does not constitute individual investment advice, a personal recommendation, or an endorsement of any transaction.
-* **No Personalized Advice:** All assessments are objective, impersonal, and quantitative deductions derived from empirical market data. No specific buy, hold, or sell directives or individual price targets are provided.
-* **Automated Quantitative Architecture:** This section was algorithmically synthesized by automated quantitative equity research systems leveraging ingested public market feeds, option analytics, and SEC EDGAR filings. Trailing financial metrics originate from Moderna, Inc.'s official SEC EDGAR 10-K filing (CIK 0001682852, FY2025).
-
 
 ---
 

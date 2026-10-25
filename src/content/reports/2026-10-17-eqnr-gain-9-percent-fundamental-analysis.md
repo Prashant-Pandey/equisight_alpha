@@ -1028,9 +1028,7 @@ Equinor's (+9.23%) surge is fundamentally supported by strong upstream operation
 | **52-Week Range** | `$46.98 - $46.98` | Current: $46.98 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: North Sea operational/discovery milestones and accelerated share buyback execution |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1048,7 +1046,6 @@ Equinor's (+9.23%) surge is fundamentally supported by strong upstream operation
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 

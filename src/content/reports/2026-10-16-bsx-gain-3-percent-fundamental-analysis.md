@@ -1032,9 +1032,7 @@ Despite negative headlines regarding a major catheter recall (262k+ units over l
 | **52-Week Range** | `$44.01 - $44.01` | Current: $44.01 |
 | **Social Sentiment** | `100% Bull / 0% Bear` | Major Driver: Relief rally following three-segment business reorganization and oversold pessimism absorption |
 
-
 ---
-
 
 <div class="my-8 p-5 rounded-xl border border-emerald-500/20 bg-emerald-950/20 backdrop-blur-sm">
   <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -1052,7 +1050,6 @@ Despite negative headlines regarding a major catheter recall (262k+ units over l
     <span class="font-mono">FTC Sponsored Disclosure</span>
   </div>
 </div>
-
 
 ## 1. Trading Activity & Artificial Inflation Analysis
 
