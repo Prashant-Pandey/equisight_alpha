@@ -2,7 +2,7 @@
 
 > **Architecture Reference:** Phase 4 Continuous Learning & Episodic Reflection Loop (arXiv:2412.20138 *TradingAgents* + *EquiSight Alpha* Deterministic Valuation & Forensic Synthesis).
 > **Last Updated:** 2026-10-25T05:16:37.794Z
-> **Tracked Dossier Snapshots:** 161 | **Completed Post-Mortem Reflections:** 26
+> **Tracked Dossier Snapshots:** 160 | **Completed Post-Mortem Reflections:** 25
 
 ---
 
@@ -17,13 +17,6 @@
 ---
 
 ## 2. Empirical Post-Settlement Reflections & Post-Mortem Critiques
-
-### [NVDA] (Technology) — Verdict Accuracy: `ACCURATE` (1d holding window)
-- **Snapshot ID:** `NVDA-2026-10-25-2026-10-25-nvda-gain-4-percent-fundamental-analysis` | **Evaluated At:** `2026-10-25`
-- **Entry Price:** $138.50 -> **Realized Price:** $149.20 (**Realized Return:** `+7.73%` vs. **Implied Fair Value Upside:** `+8.30%` | **Initial Verdict:** `Strong`)
-- **Thesis Validation Outcome:** Bullish conviction (Strong rating, implied fair value gap of +8.30% ($150.00 target vs. $138.50 entry)) was validated as NVDA appreciated +7.73% over 1 days to $149.20. Subsequent earnings surprise registered +8.40%.
-- **Post-Mortem Critique:** The Bull Researcher's emphasis on Vertical integration. NVIDIA develops AND manufactures most of what it sells. It gives the company control over product development, quality, supply chain, capacity management and reduces lead times from R&D to commercialization appropriately outweighed near-term macro friction (Enterprise + customer concentration. A large share of recent growth has come from enterprise. The tailwind is currently strong but as enterprise becomes an increasingly important part of the revenue mix, the impact of any slowdown would also become more significant). Margin-of-safety discipline correctly identified asymmetric upside.
-- **Distilled Institutional Lesson:** [Technology / MOAT — Validated Bullish Margin-of-Safety] In Technology equities (NVDA), when Consensus Fair Value signals >15% upside backed by solid solvency and a 'Strong' rating, lean constructively into the Bull thesis even amidst transient session volatility.
 
 ### [CENX] (Basic Materials) — Verdict Accuracy: `INACCURATE` (6d holding window)
 - **Snapshot ID:** `CENX-2026-10-16-cenx-loss-1-percent-fundamental-analysis` | **Evaluated At:** `2026-10-22`

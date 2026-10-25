@@ -228,7 +228,8 @@ export class ContinuousLearningEngine {
     snapshotInput: Omit<PredictionSnapshot, 'id' | 'recordedAt'> & {
       id?: string;
       recordedAt?: string;
-    }
+    },
+    skipPersist = false
   ): PredictionSnapshot {
     const recordedAt = snapshotInput.recordedAt || new Date().toISOString();
     const datePrefix = recordedAt.split('T')[0];
@@ -269,8 +270,10 @@ export class ContinuousLearningEngine {
       this.ledger.snapshots.push(snapshot);
     }
 
-    this.persistLedgerSync();
-    this.writeLessonsMarkdownSync();
+    if (!skipPersist) {
+      this.persistLedgerSync();
+      this.writeLessonsMarkdownSync();
+    }
     return snapshot;
   }
 
@@ -283,7 +286,8 @@ export class ContinuousLearningEngine {
     snapshot: PredictionSnapshot,
     currentPrice: number,
     latestEarningsSurprisePct?: number | null,
-    evaluatedAtOverride?: string
+    evaluatedAtOverride?: string,
+    skipPersist = false
   ): EpisodicReflectionRecord {
     const evaluatedAt = evaluatedAtOverride || new Date().toISOString();
     const startMs = new Date(snapshot.recordedAt).getTime();
@@ -421,8 +425,10 @@ export class ContinuousLearningEngine {
       this.ledger.reflections.push(reflection);
     }
 
-    this.persistLedgerSync();
-    this.writeLessonsMarkdownSync();
+    if (!skipPersist) {
+      this.persistLedgerSync();
+      this.writeLessonsMarkdownSync();
+    }
     return reflection;
   }
 
@@ -440,7 +446,7 @@ export class ContinuousLearningEngine {
     // Group reports by ticker in chronological order
     const reportsByTicker = new Map<string, PredictionSnapshot[]>();
     for (const snap of parsedReports) {
-      const recordToUse = this.recordAnalysisSnapshot(snap);
+      const recordToUse = this.recordAnalysisSnapshot(snap, true);
       const list = reportsByTicker.get(recordToUse.ticker) || [];
       list.push(recordToUse);
       reportsByTicker.set(recordToUse.ticker, list);
@@ -468,7 +474,8 @@ export class ContinuousLearningEngine {
               earlierSnapshot,
               latestSnapshot.priceAtCoverage,
               null,
-              latestSnapshot.recordedAt
+              latestSnapshot.recordedAt,
+              true
             );
             newlyEvaluated.push(reflection);
           }
@@ -493,7 +500,9 @@ export class ContinuousLearningEngine {
             const reflection = this.evaluateReportOutcome(
               snap,
               liveQuote.price,
-              liveQuote.earningsSurprisePct ?? null
+              liveQuote.earningsSurprisePct ?? null,
+              undefined,
+              true
             );
             newlyEvaluated.push(reflection);
           }
@@ -609,7 +618,7 @@ export class ContinuousLearningEngine {
       const reportsByTicker = new Map<string, PredictionSnapshot[]>();
       for (const snap of parsedReports) {
         const existing = this.ledger.snapshots.find((s) => s.id === snap.id);
-        const recordToUse = existing || this.recordAnalysisSnapshot(snap);
+        const recordToUse = existing || this.recordAnalysisSnapshot(snap, true);
         const list = reportsByTicker.get(recordToUse.ticker) || [];
         list.push(recordToUse);
         reportsByTicker.set(recordToUse.ticker, list);
@@ -632,12 +641,16 @@ export class ContinuousLearningEngine {
                 earlierSnapshot,
                 latestSnapshot.priceAtCoverage,
                 null,
-                latestSnapshot.recordedAt
+                latestSnapshot.recordedAt,
+                true
               );
             }
           }
         }
       }
+
+      this.persistLedgerSync();
+      this.writeLessonsMarkdownSync();
     } catch (err) {
       console.warn('[ContinuousLearningEngine] Failed to seed from existing reports:', err);
     }
@@ -726,9 +739,11 @@ export class ContinuousLearningEngine {
           forensicCompositeScore:
             typeof data.forensicAudit?.compositeScore === 'number'
               ? data.forensicAudit.compositeScore
-              : undefined,
-          debateWinningEdge: data.adversarialDebate?.winningEdge,
-          riskGovernanceStatus: data.riskGovernance?.governanceStatus,
+              : typeof data.forensicAnalysis?.compositeScore === 'number'
+                ? data.forensicAnalysis.compositeScore
+                : undefined,
+          debateWinningEdge: data.dialecticDebate?.winningEdge ?? data.adversarialDebate?.winningEdge,
+          riskGovernanceStatus: data.riskGuardianAudit?.governanceStatus ?? data.riskGovernance?.governanceStatus,
           bullCoreThesis: bullFirst,
           bearCoreThesis: bearFirst,
           slug

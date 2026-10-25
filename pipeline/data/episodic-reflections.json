@@ -2527,25 +2527,6 @@
       "bullCoreThesis": "Multi-Model Valuation Asymmetry (Market price of $32.26 trades relative to intrinsic DCF ($174.98))",
       "bearCoreThesis": "Macro & Multiple Friction (Risk-free sovereign yields above 4%)",
       "slug": "cenx-loss-6-percent-fundamental-analysis"
-    },
-    {
-      "id": "NVDA-2026-10-25-2026-10-25-nvda-gain-4-percent-fundamental-analysis",
-      "ticker": "NVDA",
-      "companyName": "NVIDIA Corporation",
-      "sector": "Technology",
-      "archetype": "moat",
-      "recordedAt": "2026-10-25T05:16:37.792Z",
-      "priceAtCoverage": 138.5,
-      "consensusFairValue": 150,
-      "fundamentalRating": "Strong",
-      "starRating": 4,
-      "uncertaintyRating": "Very High",
-      "forensicCompositeScore": 14,
-      "debateWinningEdge": "BEAR_DOMINANT",
-      "riskGovernanceStatus": "CAUTION_ELEVATED_UNCERTAINTY",
-      "bullCoreThesis": "Vertical integration. NVIDIA develops AND manufactures most of what it sells. It gives the company control over product development, quality, supply chain, capacity management and reduces lead times from R&D to commercialization",
-      "bearCoreThesis": "Enterprise + customer concentration. A large share of recent growth has come from enterprise. The tailwind is currently strong but as enterprise becomes an increasingly important part of the revenue mix, the impact of any slowdown would also become more significant",
-      "slug": "2026-10-25-nvda-gain-4-percent-fundamental-analysis"
     }
   ],
   "reflections": [
@@ -2923,21 +2904,6 @@
       "thesisValidationOutcome": "Bullish verdict (Strong rating, implied fair value gap of +102.46% ($73.35 target vs. $36.23 entry)) diverged sharply as CENX declined -10.96% over 6 days to $32.26.",
       "postMortemCritique": "Post-mortem indicates the synthesis over-indexed on static model upside (Multi-Model Valuation Asymmetry (Market price of $36.23 trades relative to intrinsic DCF ($172.83))) while under-weighting the Bear Researcher's warning: \"Macro & Multiple Friction (Risk-free sovereign yields above 4%)\". Valuation discounts alone failed to arrest downside momentum without an immediate earnings or liquidity catalyst.",
       "distilledInstitutionalLesson": "[Basic Materials / PEAD — Value Trap Warning (CENX)] Do not let theoretical DCF/Fair-Value upside override active Bear warnings regarding (Macro & Multiple Friction (Risk-free sovereign yields above 4%)) in Basic Materials; require explicit cash-flow inflection or lower uncertainty hurdles before assigning Bull dominance."
-    },
-    {
-      "snapshotId": "NVDA-2026-10-25-2026-10-25-nvda-gain-4-percent-fundamental-analysis",
-      "ticker": "NVDA",
-      "sector": "Technology",
-      "evaluatedAt": "2026-10-25T05:16:37.794Z",
-      "holdingDays": 1,
-      "entryPrice": 138.5,
-      "realizedPrice": 149.2,
-      "realizedReturnPct": 7.73,
-      "impliedFairValueReturnPct": 8.3,
-      "directionalAccuracy": "ACCURATE",
-      "thesisValidationOutcome": "Bullish conviction (Strong rating, implied fair value gap of +8.30% ($150.00 target vs. $138.50 entry)) was validated as NVDA appreciated +7.73% over 1 days to $149.20. Subsequent earnings surprise registered +8.40%.",
-      "postMortemCritique": "The Bull Researcher's emphasis on Vertical integration. NVIDIA develops AND manufactures most of what it sells. It gives the company control over product development, quality, supply chain, capacity management and reduces lead times from R&D to commercialization appropriately outweighed near-term macro friction (Enterprise + customer concentration. A large share of recent growth has come from enterprise. The tailwind is currently strong but as enterprise becomes an increasingly important part of the revenue mix, the impact of any slowdown would also become more significant). Margin-of-safety discipline correctly identified asymmetric upside.",
-      "distilledInstitutionalLesson": "[Technology / MOAT — Validated Bullish Margin-of-Safety] In Technology equities (NVDA), when Consensus Fair Value signals >15% upside backed by solid solvency and a 'Strong' rating, lean constructively into the Bull thesis even amidst transient session volatility."
     }
   ]
 }

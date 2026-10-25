@@ -343,8 +343,8 @@ const replacedMarkdown = synthesisAgent.replaceExecutiveSummarySection(detReport
 assert.ok(replacedMarkdown.includes('Fresh specialized executive summary content.'), 'Replaced markdown contains fresh content');
 assert.ok(replacedMarkdown.includes('## 1. Trading Activity'), 'Replaced markdown retains Section 1');
 
-// 4.3 Test generateReport returns complete LLMAnalysisOutput with all properties
-const generated = await synthesisAgent.generateReport(mockMover, mockFundamentals, mockMacro, mockSentiment);
+// 4.3 Test generateDeterministicReport returns complete LLMAnalysisOutput with all properties
+const generated = synthesisAgent.generateDeterministicReport(mockMover, mockFundamentals, mockMacro, mockSentiment);
 assert.ok(generated.title && generated.title.length > 0, 'Report must have title');
 assert.ok(generated.slug && generated.slug.length > 0, 'Report must have slug');
 assert.ok(generated.seoDescription && generated.seoDescription.length > 0, 'Report must have seoDescription');

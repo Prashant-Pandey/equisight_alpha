@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import os from 'os';
+import path from 'path';
+import fs from 'fs';
 import {
   buildPhase1GroundTruthPacket,
   formatGroundTruthForPrompt
@@ -11,7 +14,7 @@ import {
   riskGuardianEngine,
   formatRiskGuardianMarkdown
 } from '../pipeline/src/llm/riskGuardian.js';
-import { reflectionEngine } from '../pipeline/src/storage/reflectionEngine.js';
+import { ContinuousLearningEngine } from '../pipeline/src/storage/reflectionEngine.js';
 import type {
   MarketMover,
   FundamentalMetrics,
@@ -177,79 +180,90 @@ async function runIntegrationTest() {
   console.log('✓ Phase 1 (Deterministic Ground Truth Engine) verified.');
 
   // 2. Test Phase 4 -> Phase 2 Feedback Retrieval
-  const lessons = reflectionEngine.getLessonsForDebate({
-    ticker: 'NVDA',
-    sector: 'Technology',
-    archetype: 'moat',
-    limit: 4
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'continuous-learning-test-'));
+  const testReflectionEngine = new ContinuousLearningEngine({
+    reflectionsFilePath: path.join(tempDir, 'episodic-reflections.json'),
+    lessonsFilePath: path.join(tempDir, 'lessons_learned.md'),
+    reportsDir: path.join(tempDir, 'reports')
   });
-  assert.ok(Array.isArray(lessons) && lessons.length > 0, 'Phase 4 must supply lessons to Phase 2');
-  console.log(`✓ Phase 4 -> Phase 2 Memory Retrieval verified (${lessons.length} lessons loaded).`);
 
-  // 3. Test Phase 2: Adversarial Dialectic Debate Engine
-  const debate = await dialecticDebateEngine.runAdversarialDebate({
-    mover,
-    fundamentals,
-    macro,
-    sentiment,
-    forensicSummaryText: promptBlock,
-    weaponizedBearFlags: phase1Packet.forensicAudit.weaponizedBearFlags,
-    institutionalMemoryLessons: lessons
-  });
-  assert.equal(debate.ticker, 'NVDA');
-  assert.ok(debate.rounds.length >= 2, 'Debate must execute multiple adversarial rounds');
-  assert.ok(debate.stressTestedBullTheses.length >= 2, 'Debate must output stress-tested Bull theses');
-  assert.ok(debate.stressTestedBearTheses.length >= 2, 'Debate must output stress-tested Bear theses');
-  const debateMd = formatDebateTranscriptMarkdown(debate);
-  assert.ok(debateMd.includes('Adversarial Bull vs. Bear Dialectical Cross-Examination'));
-  console.log(`✓ Phase 2 (Adversarial Dialectic Debate Engine) verified (${debate.roundsCompleted} rounds, edge: ${debate.winningEdge}).`);
+  try {
+    const lessons = testReflectionEngine.getLessonsForDebate({
+      ticker: 'NVDA',
+      sector: 'Technology',
+      archetype: 'moat',
+      limit: 4
+    });
+    assert.ok(Array.isArray(lessons) && lessons.length > 0, 'Phase 4 must supply lessons to Phase 2');
+    console.log(`✓ Phase 4 -> Phase 2 Memory Retrieval verified (${lessons.length} lessons loaded).`);
 
-  // 4. Test Phase 3: Independent Risk Guardian & Uncertainty Calibration
-  const riskAudit = await riskGuardianEngine.auditAndCalibrateRisk({
-    mover,
-    fundamentals,
-    macro,
-    sentiment,
-    forensicCompositeScore: phase1Packet.forensicAudit.compositeScore,
-    forensicSeverity: phase1Packet.forensicAudit.compositeSeverity,
-    forensicActiveAlertsCount: phase1Packet.forensicAudit.activeAlerts.length,
-    debateWinningEdge: debate.winningEdge,
-    unresolvedDebateTensions: debate.unresolvedTensions
-  });
-  assert.equal(riskAudit.ticker, 'NVDA');
-  assert.ok(riskAudit.compositeRiskScore >= 1 && riskAudit.compositeRiskScore <= 10);
-  assert.ok(riskAudit.riskProfiles.conservative && riskAudit.riskProfiles.moderate && riskAudit.riskProfiles.aggressive);
-  const riskMd = formatRiskGuardianMarkdown(riskAudit);
-  assert.ok(riskMd.includes('Independent Risk Guardian & Uncertainty Governance Audit'));
-  console.log(`✓ Phase 3 (Synthesis & Risk Governance Engine) verified (status: ${riskAudit.governanceStatus}, score: ${riskAudit.compositeRiskScore}/10).`);
+    // 3. Test Phase 2: Adversarial Dialectic Debate Engine
+    const debate = await dialecticDebateEngine.runAdversarialDebate({
+      mover,
+      fundamentals,
+      macro,
+      sentiment,
+      forensicSummaryText: promptBlock,
+      weaponizedBearFlags: phase1Packet.forensicAudit.weaponizedBearFlags,
+      institutionalMemoryLessons: lessons
+    });
+    assert.equal(debate.ticker, 'NVDA');
+    assert.ok(debate.rounds.length >= 2, 'Debate must execute multiple adversarial rounds');
+    assert.ok(debate.stressTestedBullTheses.length >= 2, 'Debate must output stress-tested Bull theses');
+    assert.ok(debate.stressTestedBearTheses.length >= 2, 'Debate must output stress-tested Bear theses');
+    const debateMd = formatDebateTranscriptMarkdown(debate);
+    assert.ok(debateMd.includes('Adversarial Bull vs. Bear Dialectical Cross-Examination'));
+    console.log(`✓ Phase 2 (Adversarial Dialectic Debate Engine) verified (${debate.roundsCompleted} rounds, edge: ${debate.winningEdge}).`);
 
-  // 5. Test Phase 4: Snapshot Recording & Post-Settlement Evaluation
-  const snapshot = reflectionEngine.recordAnalysisSnapshot({
-    ticker: 'NVDA',
-    companyName: 'NVIDIA Corporation',
-    sector: 'Technology',
-    archetype: 'moat',
-    priceAtCoverage: 138.5,
-    consensusFairValue: 150.0,
-    fundamentalRating: 'Strong',
-    starRating: 4,
-    uncertaintyRating: riskAudit.calibratedUncertaintyRating,
-    forensicCompositeScore: phase1Packet.forensicAudit.compositeScore,
-    debateWinningEdge: debate.winningEdge,
-    riskGovernanceStatus: riskAudit.governanceStatus,
-    bullCoreThesis: debate.stressTestedBullTheses[0]?.point,
-    bearCoreThesis: debate.stressTestedBearTheses[0]?.point,
-    slug: '2026-10-25-nvda-gain-4-percent-fundamental-analysis'
-  });
-  assert.equal(snapshot.ticker, 'NVDA');
+    // 4. Test Phase 3: Independent Risk Guardian & Uncertainty Calibration
+    const riskAudit = await riskGuardianEngine.auditAndCalibrateRisk({
+      mover,
+      fundamentals,
+      macro,
+      sentiment,
+      forensicCompositeScore: phase1Packet.forensicAudit.compositeScore,
+      forensicSeverity: phase1Packet.forensicAudit.compositeSeverity,
+      forensicActiveAlertsCount: phase1Packet.forensicAudit.activeAlerts.length,
+      debateWinningEdge: debate.winningEdge,
+      unresolvedDebateTensions: debate.unresolvedTensions
+    });
+    assert.equal(riskAudit.ticker, 'NVDA');
+    assert.ok(riskAudit.compositeRiskScore >= 1 && riskAudit.compositeRiskScore <= 10);
+    assert.ok(riskAudit.riskProfiles.conservative && riskAudit.riskProfiles.moderate && riskAudit.riskProfiles.aggressive);
+    const riskMd = formatRiskGuardianMarkdown(riskAudit);
+    assert.ok(riskMd.includes('Independent Risk Guardian & Uncertainty Governance Audit'));
+    console.log(`✓ Phase 3 (Synthesis & Risk Governance Engine) verified (status: ${riskAudit.governanceStatus}, score: ${riskAudit.compositeRiskScore}/10).`);
 
-  const reflection = reflectionEngine.evaluateReportOutcome(snapshot, 149.2, 8.4);
-  assert.equal(reflection.ticker, 'NVDA');
-  assert.equal(reflection.directionalAccuracy, 'ACCURATE');
-  assert.ok(reflection.distilledInstitutionalLesson.length > 20);
-  console.log(`✓ Phase 4 (Continuous Learning & Episodic Reflection Engine) verified (outcome: ${reflection.directionalAccuracy}, return: +${reflection.realizedReturnPct}%).`);
+    // 5. Test Phase 4: Snapshot Recording & Post-Settlement Evaluation
+    const snapshot = testReflectionEngine.recordAnalysisSnapshot({
+      ticker: 'NVDA',
+      companyName: 'NVIDIA Corporation',
+      sector: 'Technology',
+      archetype: 'moat',
+      priceAtCoverage: 138.5,
+      consensusFairValue: 150.0,
+      fundamentalRating: 'Strong',
+      starRating: 4,
+      uncertaintyRating: riskAudit.calibratedUncertaintyRating,
+      forensicCompositeScore: phase1Packet.forensicAudit.compositeScore,
+      debateWinningEdge: debate.winningEdge,
+      riskGovernanceStatus: riskAudit.governanceStatus,
+      bullCoreThesis: debate.stressTestedBullTheses[0]?.point,
+      bearCoreThesis: debate.stressTestedBearTheses[0]?.point,
+      slug: '2026-10-25-nvda-gain-4-percent-fundamental-analysis'
+    });
+    assert.equal(snapshot.ticker, 'NVDA');
 
-  console.log('=== ALL 4 PHASES PASSED END-TO-END INTEGRATION VERIFICATION ===');
+    const reflection = testReflectionEngine.evaluateReportOutcome(snapshot, 149.2, 8.4);
+    assert.equal(reflection.ticker, 'NVDA');
+    assert.equal(reflection.directionalAccuracy, 'ACCURATE');
+    assert.ok(reflection.distilledInstitutionalLesson.length > 20);
+    console.log(`✓ Phase 4 (Continuous Learning & Episodic Reflection Engine) verified (outcome: ${reflection.directionalAccuracy}, return: +${reflection.realizedReturnPct}%).`);
+
+    console.log('=== ALL 4 PHASES PASSED END-TO-END INTEGRATION VERIFICATION ===');
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
 }
 
 runIntegrationTest().catch((err) => {
