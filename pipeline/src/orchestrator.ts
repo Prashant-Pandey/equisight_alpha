@@ -13,6 +13,7 @@ import { sitemapGenerator } from './seo/sitemapGenerator.js';
 import { socialPublisher } from './distribution/socialPublisher.js';
 import { buildAndDeployManager } from './deploy/buildAndDeploy.js';
 import { historyTracker } from './storage/historyTracker.js';
+import { reflectionEngine } from './storage/reflectionEngine.js';
 import type { MarketMover, StockArchetype } from './types.js';
 
 export class PipelineOrchestrator {
@@ -207,6 +208,14 @@ export class PipelineOrchestrator {
 
       // 2. Ingest Global Macro Context
       const macroBackdrop = await macroContextIngestor.getMacroBackdrop();
+
+      // 2.5 Phase 4: Execute Post-Settlement P&L & Earnings Reflection Pass (updates lessons_learned.md for Phase 2 debates)
+      try {
+        const reflections = await reflectionEngine.runSettlementReflectionPass();
+        console.log(`[Phase 4: Continuous Learning] Post-settlement reflection pass active (${reflections.length} evaluated reflections in institutional memory).`);
+      } catch (reflErr: any) {
+        console.warn(`[Phase 4: Continuous Learning] Reflection pass warning: ${reflErr.message}`);
+      }
 
       // 3. Process each equity with isolated failover boundaries
       for (let i = 0; i < targetMovers.length; i++) {

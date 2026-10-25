@@ -612,6 +612,14 @@ export interface LLMAnalysisOutput {
     economicPoliticalCulturalRisksSimplified?: string;
   };
   forensicAnalysis?: any;
+  groundTruthPacket?: any;
+  dialecticDebate?: any;
+  riskGuardianAudit?: any;
+  archetype?: StockArchetype;
+  archetypeScore?: number;
+  archetypeRank?: number;
+  archetypeThesis?: string;
+  archetypeDetails?: Record<string, any>;
 }
 
 export interface CoverageRecord {
@@ -749,4 +757,12 @@ export interface FinalReportFrontmatter {
     economicPoliticalCulturalRisksSimplified?: string;
   };
   forensicAnalysis?: any;
+  groundTruthPacket?: any;
+  dialecticDebate?: any;
+  riskGuardianAudit?: any;
+  archetype?: StockArchetype;
+  archetypeScore?: number;
+  archetypeRank?: number;
+  archetypeThesis?: string;
+  archetypeDetails?: Record<string, any>;
 }

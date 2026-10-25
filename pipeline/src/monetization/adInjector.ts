@@ -517,7 +517,12 @@ export class ProgrammaticAdInjector {
       archetypeScore: mover.archetypeScore,
       archetypeRank: mover.archetypeRank,
       archetypeThesis: mover.archetypeThesis,
-      archetypeDetails: mover.archetypeDetails
+      archetypeDetails: mover.archetypeDetails,
+
+      // 4-Phase Hybrid Stock Analysis Outputs (Forensic Ground Truth, Dialectic Debate, Risk Guardian)
+      forensicAnalysis: analysis.forensicAnalysis,
+      dialecticDebate: analysis.dialecticDebate,
+      riskGuardianAudit: analysis.riskGuardianAudit
     };
 
     // Inject contextual monetization units into Markdown body

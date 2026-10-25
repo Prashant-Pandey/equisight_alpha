@@ -180,8 +180,8 @@ TTM Revenue: $${(fundamentals.revenueTTM / 1e9).toFixed(2)}B
 TTM Net Income: $${(fundamentals.netIncomeTTM / 1e9).toFixed(2)}B
 Gross Margin: ${fundamentals.grossMargin !== null && fundamentals.grossMargin !== undefined ? `${fundamentals.grossMargin.toFixed(1)}%` : 'Not Reported in SEC Summaries'}
 Operating Margin: ${fundamentals.operatingMargin.toFixed(1)}%
-Operating Cash Flow: $${(fundamentals.cashFlow.operatingCashFlow / 1e9).toFixed(2)}B
-TTM Free Cash Flow: ${fundamentals.freeCashFlowTTM !== null && fundamentals.freeCashFlowTTM !== undefined ? `$${(fundamentals.freeCashFlowTTM / 1e9).toFixed(2)}B` : 'Not Reported in SEC Summaries (CapEx unfiled)'} (Status: ${fundamentals.cashFlow.status})
+Operating Cash Flow: $${((fundamentals.cashFlow?.operatingCashFlow || 0) / 1e9).toFixed(2)}B
+TTM Free Cash Flow: ${fundamentals.freeCashFlowTTM !== null && fundamentals.freeCashFlowTTM !== undefined ? `$${(fundamentals.freeCashFlowTTM / 1e9).toFixed(2)}B` : 'Not Reported in SEC Summaries (CapEx unfiled)'} (Status: ${fundamentals.cashFlow?.status})
 
 === DEBT STRUCTURE BREAKDOWN ===
 Total Debt: $${(fundamentals.totalDebt / 1e9).toFixed(2)}B
@@ -506,7 +506,7 @@ Operating Margin: ${fundamentals.operatingMargin.toFixed(1)}%
 Return on Equity (ROE): ${fundamentals.returnOnEquity.toFixed(1)}%
 TTM Revenue: $${(fundamentals.revenueTTM / 1e9).toFixed(2)}B
 TTM Net Income: $${(fundamentals.netIncomeTTM / 1e9).toFixed(2)}B
-Operating Cash Flow: $${(fundamentals.cashFlow.operatingCashFlow / 1e9).toFixed(2)}B
+Operating Cash Flow: $${((fundamentals.cashFlow?.operatingCashFlow || 0) / 1e9).toFixed(2)}B
 TTM Free Cash Flow: ${fundamentals.freeCashFlowTTM !== null && fundamentals.freeCashFlowTTM !== undefined ? `$${(fundamentals.freeCashFlowTTM / 1e9).toFixed(2)}B` : 'Not Reported in SEC Summaries (CapEx unfiled)'} (Status: ${fundamentals.cashFlow.status})
 ROIC: ${fundamentals.roic !== null && fundamentals.roic !== undefined ? `${fundamentals.roic.toFixed(1)}%` : 'N/A'}
 Beta: ${fundamentals.beta ?? 1.0}

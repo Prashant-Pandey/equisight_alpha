@@ -18,6 +18,19 @@ import {
 } from './schemas.js';
 import { factChecker } from './factChecker.js';
 import { buildTheses } from '../monetization/adInjector.js';
+import {
+  buildPhase1GroundTruthPacket,
+  formatGroundTruthForPrompt
+} from '../ingestion/phase1GroundTruth.js';
+import {
+  dialecticDebateEngine,
+  formatDebateTranscriptMarkdown
+} from './dialecticDebate.js';
+import {
+  riskGuardianEngine,
+  formatRiskGuardianMarkdown
+} from './riskGuardian.js';
+import { reflectionEngine } from '../storage/reflectionEngine.js';
 import { formatPriceTimestamp } from '../../../src/utils/formatters.js';
 import {
   isPennyStock as checkPennyStock,
@@ -63,18 +76,42 @@ export class LLMSynthesisAgent {
   ): Promise<LLMAnalysisOutput> {
     console.log(`[LLMSynthesisAgent] Synthesizing research report for ${mover.ticker} (${mover.category})...`);
 
+    // =========================================================================
+    // PHASE 1: DETERMINISTIC GROUND TRUTH (SEC XBRL + 8-Model Valuation + 4-Pillar Forensics + Dealer Gamma)
+    // =========================================================================
+    console.log(`[Phase 1: Ground Truth] Building deterministic ground truth packet & 4-pillar forensic audit for $${mover.ticker}...`);
+    const groundTruthPacket = buildPhase1GroundTruthPacket(mover, fundamentals, macro, sentiment);
+    const groundTruthPromptBlock = formatGroundTruthForPrompt(groundTruthPacket);
+
+    // =========================================================================
+    // PHASE 4 -> PHASE 2 FEEDBACK LOOP: RETRIEVE PERSISTENT INSTITUTIONAL MEMORY
+    // =========================================================================
+    const institutionalLessons = reflectionEngine.getLessonsForDebate({
+      ticker: mover.ticker,
+      sector: fundamentals.sector,
+      archetype: mover.archetype,
+      limit: 5
+    });
+    console.log(`[Phase 4 -> Phase 2 Memory] Loaded ${institutionalLessons.length} persistent institutional lessons for $${mover.ticker} (${fundamentals.sector}).`);
+
     const part1SystemPrompt = buildReportPart1SystemPrompt();
-    const part1UserPrompt = buildReportPart1UserPrompt(mover, fundamentals, macro, sentiment);
+    const part1UserPrompt = `${buildReportPart1UserPrompt(mover, fundamentals, macro, sentiment)}\n\n${groundTruthPromptBlock}`;
 
     const part2SystemPrompt = buildReportPart2SystemPrompt();
-    const part2UserPrompt = buildReportPart2UserPrompt(mover, fundamentals, macro, sentiment);
+    const part2UserPrompt = `${buildReportPart2UserPrompt(mover, fundamentals, macro, sentiment)}\n\n${groundTruthPromptBlock}`;
 
     const execSystemPrompt = buildExecutiveSummarySystemPrompt();
-    const execUserPrompt = buildExecutiveSummaryUserPrompt(mover, fundamentals, macro, sentiment);
+    const execUserPrompt = `${buildExecutiveSummaryUserPrompt(mover, fundamentals, macro, sentiment)}\n\n${groundTruthPromptBlock}`;
 
-    // Launch parallel LLM calls dividing Full Report into 2 pieces to reduce hallucination
-    console.log(`[LLMSynthesisAgent] Launching PARALLEL LLM calls: [1] Report Part 1 (Financials & Solvency), [2] Report Part 2 (Moat, Valuation & Theses), and [3] Executive Summary for $${mover.ticker}...`);
-    const [part1Output, part2Output, execOutput] = await Promise.all([
+    // =========================================================================
+    // PHASE 2 & PHASE 3 PARALLEL EXECUTION:
+    // - Report Part 1 (Financials, Solvency & Microstructure)
+    // - Report Part 2 (Moat, 8-Model Valuation & Theses)
+    // - Executive Summary
+    // - Phase 2 Adversarial Bull vs. Bear Dialectical Cross-Examination
+    // =========================================================================
+    console.log(`[LLMSynthesisAgent] Launching PARALLEL LLM calls: [1] Report Part 1, [2] Report Part 2, [3] Executive Summary, and [4] Phase 2 Adversarial Bull/Bear Dialectic Debate for $${mover.ticker}...`);
+    const [part1Output, part2Output, execOutput, debateTranscript] = await Promise.all([
       this.executeLLMCall<ReportPart1Output>(
         part1SystemPrompt,
         part1UserPrompt,
@@ -92,8 +129,35 @@ export class LLMSynthesisAgent {
         execUserPrompt,
         `ExecSummary-${mover.ticker}`,
         EXECUTIVE_SUMMARY_SCHEMA
-      )
+      ),
+      dialecticDebateEngine.runAdversarialDebate({
+        mover,
+        fundamentals,
+        macro,
+        sentiment,
+        forensicSummaryText: groundTruthPromptBlock,
+        weaponizedBearFlags: groundTruthPacket.forensicAudit.weaponizedBearFlags,
+        institutionalMemoryLessons: institutionalLessons,
+        executeLLM: this.executeLLMCall.bind(this)
+      })
     ]);
+
+    // =========================================================================
+    // PHASE 3: INDEPENDENT RISK GUARDIAN & UNCERTAINTY CALIBRATION
+    // =========================================================================
+    console.log(`[Phase 3: Risk Governance] Running Independent Risk Guardian & Uncertainty Calibration for $${mover.ticker}...`);
+    const riskGuardianAudit = await riskGuardianEngine.auditAndCalibrateRisk({
+      mover,
+      fundamentals,
+      macro,
+      sentiment,
+      forensicCompositeScore: groundTruthPacket.forensicAudit.compositeScore,
+      forensicSeverity: groundTruthPacket.forensicAudit.compositeSeverity,
+      forensicActiveAlertsCount: groundTruthPacket.forensicAudit.activeAlerts.length,
+      debateWinningEdge: debateTranscript.winningEdge,
+      unresolvedDebateTensions: debateTranscript.unresolvedTensions,
+      executeLLM: this.executeLLMCall.bind(this)
+    });
 
     let rawOutput: LLMAnalysisOutput | null = null;
 
@@ -209,6 +273,33 @@ export class LLMSynthesisAgent {
       }
     }
 
+    // Attach Phase 1 Ground Truth & Forensic Audit, Phase 2 Dialectic Debate, and Phase 3 Risk Guardian Audit
+    rawOutput.groundTruthPacket = groundTruthPacket;
+    rawOutput.forensicAnalysis = groundTruthPacket.forensicAudit.report;
+    rawOutput.dialecticDebate = debateTranscript;
+    rawOutput.riskGuardianAudit = riskGuardianAudit;
+
+    // Merge Phase 2 stress-tested dialectical theses with LLM/deterministic theses
+    const combinedBullTheses: ThesisPoint[] = [
+      ...(debateTranscript.stressTestedBullTheses || []),
+      ...(rawOutput.theses?.bull || [])
+    ];
+    const combinedBearTheses: ThesisPoint[] = [
+      ...(debateTranscript.stressTestedBearTheses || []),
+      ...(rawOutput.theses?.bear || [])
+    ];
+    rawOutput.theses = {
+      bull: combinedBullTheses,
+      bear: combinedBearTheses
+    };
+
+    // Append Phase 2 Adversarial Dialectical Cross-Examination and Phase 3 Independent Risk Guardian Audit to the markdown dossier
+    const debateMarkdown = formatDebateTranscriptMarkdown(debateTranscript);
+    const riskGuardianMarkdown = formatRiskGuardianMarkdown(riskGuardianAudit);
+    if (!rawOutput.markdownBody.includes('Adversarial Bull vs. Bear Dialectical Cross-Examination')) {
+      rawOutput.markdownBody = `${rawOutput.markdownBody.trim()}\n\n---\n\n${debateMarkdown.trim()}\n\n---\n\n${riskGuardianMarkdown.trim()}\n`;
+    }
+
     // Run Anti-Hallucination & Compliance Verification
     const verification = factChecker.verifyAndCorrect(rawOutput, mover, fundamentals);
     for (const log of verification.auditLog) {
@@ -235,6 +326,31 @@ export class LLMSynthesisAgent {
         industry: fundamentals.industry,
         moatRating: fundamentals.competitiveMoat?.rating
       });
+    }
+
+    // =========================================================================
+    // PHASE 4: CONTINUOUS LEARNING & EPISODIC REFLECTION SNAPSHOT RECORDING
+    // =========================================================================
+    try {
+      reflectionEngine.recordAnalysisSnapshot({
+        ticker: mover.ticker,
+        companyName: fundamentals.companyName,
+        sector: fundamentals.sector,
+        archetype: mover.archetype,
+        priceAtCoverage: mover.price,
+        consensusFairValue: fundamentals.valuationModels?.consensusFairValue ?? null,
+        fundamentalRating: fundamentals.fundamentalRating || 'Fairly Valued',
+        starRating: fundamentals.starRating ?? fundamentals.morningstarRating?.starRating,
+        uncertaintyRating: riskGuardianAudit.calibratedUncertaintyRating || fundamentals.uncertaintyRating,
+        forensicCompositeScore: groundTruthPacket.forensicAudit.compositeScore,
+        debateWinningEdge: debateTranscript.winningEdge,
+        riskGovernanceStatus: riskGuardianAudit.governanceStatus,
+        bullCoreThesis: rawOutput.theses?.bull?.[0]?.point,
+        bearCoreThesis: rawOutput.theses?.bear?.[0]?.point,
+        slug: rawOutput.slug
+      });
+    } catch (reflErr: any) {
+      console.warn(`[Phase 4: Reflection] Non-fatal warning recording snapshot for $${mover.ticker}: ${reflErr.message}`);
     }
 
     return rawOutput;

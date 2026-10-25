@@ -667,3 +667,6 @@ export function generateForensicAnalysisFromReport(report: any): ForensicAnalysi
     multipleDivergenceScore
   });
 }
+
+export const computeForensicAnalysis = generateForensicAnalysisFromReport;
+
