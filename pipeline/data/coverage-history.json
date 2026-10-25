@@ -219,10 +219,10 @@
     "ticker": "COST",
     "companyName": "Costco Wholesale Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-11T21:31:14.367Z",
+    "coveredAt": "2026-10-25T06:45:46.658Z",
     "category": "gainer",
-    "movePercent": 2.85,
-    "slug": "cost-gain-3-percent-fundamental-analysis"
+    "movePercent": 1.44,
+    "slug": "cost-gain-1-percent-fundamental-analysis"
   },
   {
     "ticker": "ADBE",

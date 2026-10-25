@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-25T05:44:50.133Z",
+  "updatedAt": "2026-10-25T06:45:46.638Z",
   "snapshots": [
     {
       "id": "ADBE-2026-10-11-adbe-gain-2-percent-fundamental-analysis",
@@ -2545,6 +2545,24 @@
       "bullCoreThesis": "Vertical integration. NVIDIA develops AND manufactures most of what it sells. It gives the company control over product development, quality, supply chain, capacity management and reduces lead times from R&D to commercialization",
       "bearCoreThesis": "Enterprise + customer concentration. A large share of recent growth has come from enterprise. The tailwind is currently strong but as enterprise becomes an increasingly important part of the revenue mix, the impact of any slowdown would also become more significant",
       "slug": "nvda-gain-5-percent-fundamental-analysis"
+    },
+    {
+      "id": "COST-2026-10-25-cost-gain-1-percent-fundamental-analysis",
+      "ticker": "COST",
+      "companyName": "Costco Wholesale Corporation",
+      "sector": "Consumer Cyclical",
+      "recordedAt": "2026-10-25T06:45:46.636Z",
+      "priceAtCoverage": 1003.32,
+      "consensusFairValue": 471.81,
+      "fundamentalRating": "Weak",
+      "starRating": 1,
+      "uncertaintyRating": "High",
+      "forensicCompositeScore": 14,
+      "debateWinningEdge": "BEAR_DOMINANT",
+      "riskGovernanceStatus": "CAUTION_ELEVATED_UNCERTAINTY",
+      "bullCoreThesis": "Vertical integration. Costco Wholesale develops AND manufactures most of what it sells. It gives the company control over product development, quality, supply chain, capacity management and reduces lead times from R&D to commercialization",
+      "bearCoreThesis": "Primary customer segment + customer concentration. A large share of recent growth has come from primary customer segment. The tailwind is currently strong but as primary customer segment becomes an increasingly important part of the revenue mix, the impact of any slowdown would also become more significant",
+      "slug": "cost-gain-1-percent-fundamental-analysis"
     }
   ],
   "reflections": [
