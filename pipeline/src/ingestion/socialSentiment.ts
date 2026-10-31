@@ -70,7 +70,8 @@ Return STRICT JSON ONLY adhering to the catalyst analysis schema.`;
       'json',
       '--json-schema',
       JSON.stringify(TIER1_SENTIMENT_SCHEMA),
-      '--dangerously-skip-permissions'
+      '--dangerously-skip-permissions',
+      '--disable-slash-commands'
     ];
 
     try {
@@ -81,7 +82,11 @@ Return STRICT JSON ONLY adhering to the catalyst analysis schema.`;
           args,
           {
             maxBuffer: 5 * 1024 * 1024,
-            timeout: CONFIG.TIER1_TIMEOUT_MS || 15000
+            timeout: CONFIG.TIER1_TIMEOUT_MS || 15000,
+            env: {
+              ...process.env,
+              CASCADE_ENABLE_MCP_TOOLS: 'false'
+            }
           },
           (error, stdout, stderr) => {
             if (error) {

@@ -21,10 +21,10 @@
     "ticker": "CCI",
     "companyName": "Crown Castle Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-22T15:35:22.909Z",
-    "category": "loser",
-    "movePercent": -0.9,
-    "slug": "cci-loss-1-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T14:23:53.502Z",
+    "category": "gainer",
+    "movePercent": 12.69,
+    "slug": "cci-gain-13-percent-fundamental-analysis"
   },
   {
     "ticker": "MRNA",
@@ -93,10 +93,10 @@
     "ticker": "CCM",
     "companyName": "Concord Medical Services Holdings Limited",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-22T15:37:06.720Z",
+    "coveredAt": "2026-10-30T14:32:04.823Z",
     "category": "gainer",
-    "movePercent": 4.85,
-    "slug": "ccm-gain-5-percent-fundamental-analysis"
+    "movePercent": 4.57,
+    "slug": "concord-medical-services-ccm-stock-analysis-hong-kong-share-placement"
   },
   {
     "ticker": "MOGU",
@@ -219,10 +219,10 @@
     "ticker": "COST",
     "companyName": "Costco Wholesale Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-25T06:45:46.658Z",
-    "category": "gainer",
-    "movePercent": 1.44,
-    "slug": "cost-gain-1-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T15:03:05.032Z",
+    "category": "loser",
+    "movePercent": -2.17,
+    "slug": "cost-loss-2-percent-fundamental-analysis"
   },
   {
     "ticker": "ADBE",
@@ -291,10 +291,10 @@
     "ticker": "CAT",
     "companyName": "Caterpillar Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-11T21:47:28.132Z",
+    "coveredAt": "2026-10-30T14:07:45.805Z",
     "category": "loser",
-    "movePercent": -5.32,
-    "slug": "cat-loss-5-percent-fundamental-analysis"
+    "movePercent": -8.05,
+    "slug": "cat-loss-8-percent-fundamental-analysis"
   },
   {
     "ticker": "JPM",
@@ -372,10 +372,10 @@
     "ticker": "BKD",
     "companyName": "Brookdale Senior Living Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-12T13:18:36.112Z",
-    "category": "loser",
-    "movePercent": -7.07071,
-    "slug": "bkd-loss-7-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T13:19:19.250Z",
+    "category": "gainer",
+    "movePercent": 0.79,
+    "slug": "bkd-gain-1-percent-fundamental-analysis"
   },
   {
     "ticker": "RSI",
@@ -399,10 +399,10 @@
     "ticker": "CSCO",
     "companyName": "Cisco Systems, Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-12T19:30:55.965Z",
+    "coveredAt": "2026-10-30T15:27:38.137Z",
     "category": "gainer",
-    "movePercent": 2.51,
-    "slug": "csco-gain-3-percent-fundamental-analysis"
+    "movePercent": 3.53,
+    "slug": "csco-gain-4-percent-fundamental-analysis"
   },
   {
     "ticker": "AAPL",
@@ -426,10 +426,10 @@
     "ticker": "DE",
     "companyName": "Deere & Company",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-12T19:36:31.588Z",
-    "category": "loser",
-    "movePercent": -7.2,
-    "slug": "de-loss-7-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T15:33:05.841Z",
+    "category": "gainer",
+    "movePercent": 2.54,
+    "slug": "de-gain-3-percent-fundamental-analysis"
   },
   {
     "ticker": "PG",
@@ -561,10 +561,10 @@
     "ticker": "CVS",
     "companyName": "CVS Health Corporation",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-16T14:14:15.916Z",
-    "category": "gainer",
-    "movePercent": 7.85,
-    "slug": "cvs-gain-8-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T15:32:30.753Z",
+    "category": "loser",
+    "movePercent": -4.39,
+    "slug": "cvs-loss-4-percent-fundamental-analysis"
   },
   {
     "ticker": "TGT",
@@ -588,10 +588,10 @@
     "ticker": "DHR",
     "companyName": "Danaher Corporation",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-16T14:18:59.522Z",
+    "coveredAt": "2026-10-30T15:34:13.154Z",
     "category": "gainer",
-    "movePercent": 4.75,
-    "slug": "dhr-gain-5-percent-fundamental-analysis"
+    "movePercent": 1,
+    "slug": "dhr-gain-1-percent-fundamental-analysis"
   },
   {
     "ticker": "UPS",
@@ -624,10 +624,10 @@
     "ticker": "CBRS",
     "companyName": "Cerebras Systems Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-22T15:33:42.594Z",
-    "category": "loser",
-    "movePercent": -23.21,
-    "slug": "cbrs-loss-23-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T14:16:04.596Z",
+    "category": "gainer",
+    "movePercent": 5.71,
+    "slug": "cbrs-gain-6-percent-fundamental-analysis"
   },
   {
     "ticker": "IREN",
@@ -705,10 +705,10 @@
     "ticker": "CENX",
     "companyName": "Century Aluminum Company",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-22T15:38:46.519Z",
-    "category": "loser",
-    "movePercent": -5.67,
-    "slug": "cenx-loss-6-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T14:39:15.180Z",
+    "category": "gainer",
+    "movePercent": 6.13,
+    "slug": "cenx-gain-6-percent-fundamental-analysis"
   },
   {
     "ticker": "BDX",
@@ -723,10 +723,10 @@
     "ticker": "DIS",
     "companyName": "The Walt Disney Company",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-16T15:59:26.698Z",
-    "category": "gainer",
-    "movePercent": 4.13,
-    "slug": "dis-gain-4-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T15:34:38.196Z",
+    "category": "loser",
+    "movePercent": -0.92,
+    "slug": "dis-loss-1-percent-fundamental-analysis"
   },
   {
     "ticker": "PLNT",
@@ -750,10 +750,10 @@
     "ticker": "BSX",
     "companyName": "Boston Scientific Corporation",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-16T16:09:56.078Z",
-    "category": "gainer",
-    "movePercent": 2.98,
-    "slug": "bsx-gain-3-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T13:52:27.062Z",
+    "category": "loser",
+    "movePercent": -7.22,
+    "slug": "bsx-loss-7-percent-fundamental-analysis"
   },
   {
     "ticker": "TJX",
@@ -795,10 +795,10 @@
     "ticker": "CMCSA",
     "companyName": "Comcast Corporation",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-17T01:23:00.233Z",
-    "category": "gainer",
-    "movePercent": 6,
-    "slug": "cmcsa-gain-6-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T14:54:55.291Z",
+    "category": "loser",
+    "movePercent": -2.5,
+    "slug": "cmcsa-loss-2-percent-fundamental-analysis"
   },
   {
     "ticker": "BAC",
@@ -822,10 +822,10 @@
     "ticker": "CRGY",
     "companyName": "Crescent Energy Company",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T01:28:25.306Z",
+    "coveredAt": "2026-10-30T15:10:51.822Z",
     "category": "gainer",
-    "movePercent": 8.77,
-    "slug": "crgy-gain-9-percent-fundamental-analysis"
+    "movePercent": 3.15,
+    "slug": "crgy-gain-3-percent-fundamental-analysis"
   },
   {
     "ticker": "RTX",
@@ -840,10 +840,10 @@
     "ticker": "BTI",
     "companyName": "British American Tobacco p.l.c.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T01:31:50.600Z",
+    "coveredAt": "2026-10-30T14:00:12.914Z",
     "category": "gainer",
-    "movePercent": 8.11,
-    "slug": "bti-gain-8-percent-fundamental-analysis"
+    "movePercent": 0.99,
+    "slug": "bti-gain-1-percent-fundamental-analysis"
   },
   {
     "ticker": "TALO",
@@ -921,10 +921,10 @@
     "ticker": "BMNR",
     "companyName": "Bitmine Immersion Technologies, Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T17:16:14.371Z",
+    "coveredAt": "2026-10-30T13:35:46.184Z",
     "category": "loser",
-    "movePercent": -9.86,
-    "slug": "bmnr-loss-10-percent-fundamental-analysis"
+    "movePercent": -3.73,
+    "slug": "bmnr-loss-4-percent-fundamental-analysis"
   },
   {
     "ticker": "WFC",
@@ -966,10 +966,10 @@
     "ticker": "CVE",
     "companyName": "Cenovus Energy Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T17:24:44.614Z",
+    "coveredAt": "2026-10-30T15:31:47.827Z",
     "category": "gainer",
-    "movePercent": 4.94,
-    "slug": "cve-gain-5-percent-fundamental-analysis"
+    "movePercent": 0.37,
+    "slug": "cve-gain-0-percent-fundamental-analysis"
   },
   {
     "ticker": "APA",
@@ -993,10 +993,10 @@
     "ticker": "DNOW",
     "companyName": "DNOW Inc.",
     "exchange": "NYSE",
-    "coveredAt": "2026-10-17T17:44:39.411Z",
+    "coveredAt": "2026-10-30T15:35:04.957Z",
     "category": "gainer",
-    "movePercent": 0.71,
-    "slug": "dnow-gain-1-percent-fundamental-analysis"
+    "movePercent": 4.08,
+    "slug": "dnow-gain-4-percent-fundamental-analysis"
   },
   {
     "ticker": "TRGP",
@@ -1083,19 +1083,19 @@
     "ticker": "CHTR",
     "companyName": "Charter Communications, Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-20T19:16:29.261Z",
-    "category": "gainer",
-    "movePercent": 2.71,
-    "slug": "chtr-gain-3-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T14:47:21.003Z",
+    "category": "loser",
+    "movePercent": -2.48,
+    "slug": "chtr-loss-2-percent-fundamental-analysis"
   },
   {
     "ticker": "BRZE",
     "companyName": "Braze, Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-20T19:18:17.019Z",
-    "category": "gainer",
-    "movePercent": 57.09,
-    "slug": "brze-gain-57-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T13:44:17.665Z",
+    "category": "loser",
+    "movePercent": -0.13,
+    "slug": "brze-loss-0-percent-fundamental-analysis"
   },
   {
     "ticker": "LION",
@@ -1200,19 +1200,19 @@
     "ticker": "BKNG",
     "companyName": "Booking Holdings Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-21T17:04:22.045Z",
+    "coveredAt": "2026-10-30T13:27:43.247Z",
     "category": "loser",
-    "movePercent": -1.62,
-    "slug": "bkng-loss-2-percent-fundamental-analysis"
+    "movePercent": -6.62,
+    "slug": "bkng-loss-7-percent-fundamental-analysis"
   },
   {
     "ticker": "CRWD",
     "companyName": "CrowdStrike Holdings, Inc.",
     "exchange": "NASDAQ",
-    "coveredAt": "2026-10-21T17:06:07.687Z",
-    "category": "loser",
-    "movePercent": -3.6,
-    "slug": "crwd-loss-4-percent-fundamental-analysis"
+    "coveredAt": "2026-10-30T15:18:55.766Z",
+    "category": "gainer",
+    "movePercent": 9.75,
+    "slug": "crwd-gain-10-percent-fundamental-analysis"
   },
   {
     "ticker": "FICO",

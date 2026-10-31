@@ -131,25 +131,30 @@ export class LLMSynthesisAgent {
       executeLLM: this.executeLLMCall.bind(this)
     };
 
-    console.log(`[LLMSynthesisAgent] Launching 7 PARALLEL specialized sub-section LLM calls + Phase 2 Adversarial Dialectic Debate for $${mover.ticker}...`);
-    const [
-      titleAndExecOutput,
-      tradingActivityOutput,
-      balanceSheetSolvencyOutput,
-      profitabilityOperatingOutput,
-      moatAndCompetitorOutput,
-      valuationEngineOutput,
-      bullBearThesesOutput,
-      debateTranscript
-    ] = await Promise.all([
-      titleAndExecAgent.execute(subContext),
-      tradingActivityAgent.execute(subContext),
-      balanceSheetSolvencyAgent.execute(subContext),
-      profitabilityOperatingAgent.execute(subContext),
-      moatAndCompetitorAgent.execute(subContext),
-      valuationEngineAgent.execute(subContext),
-      bullBearThesesAgent.execute(subContext),
-      dialecticDebateEngine.runAdversarialDebate({
+    console.log(`[LLMSynthesisAgent] Launching specialized sub-section LLM calls + Phase 2 Adversarial Dialectic Debate for $${mover.ticker}...`);
+    // Throttle concurrency to 2 to eliminate local OS process, CPU thrashing, and SQLite lock contention in agy CLI runtime
+    const executeThrottled = async <T>(tasks: (() => Promise<T>)[], concurrency = 2): Promise<T[]> => {
+      const results: T[] = new Array(tasks.length);
+      let currentIndex = 0;
+      const workers = Array.from({ length: Math.min(concurrency, tasks.length) }, async () => {
+        while (currentIndex < tasks.length) {
+          const index = currentIndex++;
+          results[index] = await tasks[index]();
+        }
+      });
+      await Promise.all(workers);
+      return results;
+    };
+
+    const taskFns = [
+      () => titleAndExecAgent.execute(subContext),
+      () => tradingActivityAgent.execute(subContext),
+      () => balanceSheetSolvencyAgent.execute(subContext),
+      () => profitabilityOperatingAgent.execute(subContext),
+      () => moatAndCompetitorAgent.execute(subContext),
+      () => valuationEngineAgent.execute(subContext),
+      () => bullBearThesesAgent.execute(subContext),
+      () => dialecticDebateEngine.runAdversarialDebate({
         mover,
         fundamentals,
         macro,
@@ -159,7 +164,27 @@ export class LLMSynthesisAgent {
         institutionalMemoryLessons: institutionalLessons,
         executeLLM: this.executeLLMCall.bind(this)
       })
-    ]);
+    ];
+
+    const [
+      titleAndExecOutput,
+      tradingActivityOutput,
+      balanceSheetSolvencyOutput,
+      profitabilityOperatingOutput,
+      moatAndCompetitorOutput,
+      valuationEngineOutput,
+      bullBearThesesOutput,
+      debateTranscript
+    ] = await executeThrottled(taskFns, 2) as [
+      TitleAndExecOutput,
+      TradingActivityOutput,
+      BalanceSheetSolvencyOutput,
+      ProfitabilityOperatingOutput,
+      MoatAndCompetitorOutput,
+      ValuationEngineOutput,
+      BullBearThesesOutput,
+      DebateTranscript
+    ];
 
     // =========================================================================
     // PHASE 3: INDEPENDENT RISK GUARDIAN & UNCERTAINTY CALIBRATION
@@ -393,6 +418,7 @@ export class LLMSynthesisAgent {
       '-p',
       combinedPrompt,
       '--dangerously-skip-permissions',
+      '--disable-slash-commands',
       '--output-format',
       jsonSchema ? 'json' : 'text',
       '--model',
@@ -411,7 +437,11 @@ export class LLMSynthesisAgent {
         args,
         {
           maxBuffer: 20 * 1024 * 1024,
-          timeout: CONFIG.AGY_TIMEOUT_MS || 90000
+          timeout: CONFIG.AGY_TIMEOUT_MS || 90000,
+          env: {
+            ...process.env,
+            CASCADE_ENABLE_MCP_TOOLS: 'false'
+          }
         },
         (error, stdout, stderr) => {
           if (error) {
