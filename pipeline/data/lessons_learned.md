@@ -1,8 +1,8 @@
 # EquiSight Alpha — Persistent Institutional Memory (`lessons_learned.md`)
 
 > **Architecture Reference:** Phase 4 Continuous Learning & Episodic Reflection Loop (arXiv:2412.20138 *TradingAgents* + *EquiSight Alpha* Deterministic Valuation & Forensic Synthesis).
-> **Last Updated:** 2026-10-30T15:35:04.936Z
-> **Tracked Dossier Snapshots:** 202 | **Completed Post-Mortem Reflections:** 59
+> **Last Updated:** 2026-11-14T05:42:12.223Z
+> **Tracked Dossier Snapshots:** 204 | **Completed Post-Mortem Reflections:** 61
 
 ---
 
@@ -17,6 +17,20 @@
 ---
 
 ## 2. Empirical Post-Settlement Reflections & Post-Mortem Critiques
+
+### [DNOW] (Industrials) — Verdict Accuracy: `PREMATURE_OR_DIVERGENT` (13d holding window)
+- **Snapshot ID:** `DNOW-2026-10-17-dnow-gain-1-percent-fundamental-analysis` | **Evaluated At:** `2026-10-30`
+- **Entry Price:** $15.68 -> **Realized Price:** $16.33 (**Realized Return:** `+4.15%` vs. **Implied Fair Value Upside:** `-27.10%` | **Initial Verdict:** `Weak`)
+- **Thesis Validation Outcome:** Initial 'Weak' verdict (implied fair value gap of -27.10% ($11.43 target vs. $15.68 entry)) remains in gestation/mild divergence as DNOW moved +4.15% over 13 days to $16.33.
+- **Post-Mortem Critique:** Over a 13-day window, price action has not yet converged toward the -27.10% fair value spread. Both Bull (Multi-Model Valuation Asymmetry (Market price of $15.68 trades relative to intrinsic DCF ($21.19))) and Bear (Macro & Multiple Friction (Risk-free sovereign yields above 4%)) forces remain locked in tension.
+- **Distilled Institutional Lesson:** [Industrials / PEAD — Convergence Horizon (DNOW)] Valuation convergence in Industrials requires multi-quarter earnings confirmation; Phase 2 debates should explicitly separate 1-to-10 day microstructure noise from 12-month intrinsic value realization.
+
+### [DIS] (Communication Services) — Verdict Accuracy: `PREMATURE_OR_DIVERGENT` (14d holding window)
+- **Snapshot ID:** `DIS-2026-10-16-dis-gain-4-percent-fundamental-analysis` | **Evaluated At:** `2026-10-30`
+- **Entry Price:** $112.51 -> **Realized Price:** $111.49 (**Realized Return:** `-0.91%` vs. **Implied Fair Value Upside:** `-35.83%` | **Initial Verdict:** `Weak`)
+- **Thesis Validation Outcome:** Initial 'Weak' verdict (implied fair value gap of -35.83% ($72.20 target vs. $112.51 entry)) remains in gestation/mild divergence as DIS moved -0.91% over 14 days to $111.49.
+- **Post-Mortem Critique:** Over a 14-day window, price action has not yet converged toward the -35.83% fair value spread. Both Bull (Multi-Model Valuation Asymmetry (Market price of $112.51 trades relative to intrinsic DCF ($59.27))) and Bear (Macro & Multiple Friction (Risk-free sovereign yields above 4%)) forces remain locked in tension.
+- **Distilled Institutional Lesson:** [Communication Services / CONTRARIAN — Convergence Horizon (DIS)] Valuation convergence in Communication Services requires multi-quarter earnings confirmation; Phase 2 debates should explicitly separate 1-to-10 day microstructure noise from 12-month intrinsic value realization.
 
 ### [DE] (Industrials) — Verdict Accuracy: `PREMATURE_OR_DIVERGENT` (18d holding window)
 - **Snapshot ID:** `DE-2026-10-12-de-loss-7-percent-fundamental-analysis` | **Evaluated At:** `2026-10-30`

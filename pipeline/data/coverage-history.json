@@ -1312,5 +1312,23 @@
     "category": "gainer",
     "movePercent": 13.26,
     "slug": "inod-gain-13-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "ALNY",
+    "companyName": "Alnylam Pharmaceuticals, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T05:34:13.469Z",
+    "category": "gainer",
+    "movePercent": 5.84,
+    "slug": "alny-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SNDK",
+    "companyName": "Sandisk Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T05:42:12.233Z",
+    "category": "gainer",
+    "movePercent": 5.98,
+    "slug": "sndk-gain-6-percent-fundamental-analysis"
   }
 ]
