@@ -1330,5 +1330,86 @@
     "category": "gainer",
     "movePercent": 5.98,
     "slug": "sndk-gain-6-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "HL",
+    "companyName": "Hecla Mining Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-11-14T05:54:17.007Z",
+    "category": "loser",
+    "movePercent": -11.13,
+    "slug": "hl-loss-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CRWV",
+    "companyName": "CoreWeave, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T06:02:25.826Z",
+    "category": "gainer",
+    "movePercent": 14.5,
+    "slug": "crwv-gain-15-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "KLAC",
+    "companyName": "KLA Corporation",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T06:09:20.006Z",
+    "category": "gainer",
+    "movePercent": 9.99,
+    "slug": "klac-gain-10-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "SO",
+    "companyName": "The Southern Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-11-14T06:17:00.006Z",
+    "category": "gainer",
+    "movePercent": 1.35,
+    "slug": "so-gain-1-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "NBIS",
+    "companyName": "Nebius Group N.V.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T06:25:07.159Z",
+    "category": "loser",
+    "movePercent": -10.51,
+    "slug": "nbis-loss-11-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "LFTO",
+    "companyName": "Liftoff Mobile, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T06:33:00.859Z",
+    "category": "gainer",
+    "movePercent": 34.8,
+    "slug": "lfto-gain-35-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "MOD",
+    "companyName": "Modine Manufacturing Company",
+    "exchange": "NYSE",
+    "coveredAt": "2026-11-14T06:40:03.781Z",
+    "category": "gainer",
+    "movePercent": 40.42,
+    "slug": "mod-gain-40-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "KDP",
+    "companyName": "Keurig Dr Pepper Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T06:47:39.865Z",
+    "category": "loser",
+    "movePercent": -0.79,
+    "slug": "kdp-loss-1-percent-fundamental-analysis"
+  },
+  {
+    "ticker": "CGON",
+    "companyName": "CG Oncology, Inc.",
+    "exchange": "NASDAQ",
+    "coveredAt": "2026-11-14T13:10:41.723Z",
+    "category": "loser",
+    "movePercent": -2.09,
+    "slug": "cgon-loss-2-percent-fundamental-analysis"
   }
 ]
